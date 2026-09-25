@@ -46,6 +46,9 @@ final class AppModel {
     /// The channel to return to once a slower server brings it into the lineup,
     /// and the tune it replaced (so we don't override a channel the viewer chose).
     @ObservationIgnored private var pendingResume: (channelID: String, tuneGeneration: Int)?
+    #if os(tvOS)
+    @ObservationIgnored private let displayMode = DisplayModeController()
+    #endif
 
     init(store: PreferencesStore = PreferencesStore(), snapshotStore: LibrarySnapshotStore = LibrarySnapshotStore()) {
         self.store = store
@@ -63,6 +66,9 @@ final class AppModel {
         }
         tuner.onServerTrouble = { [weak self] _ in
             Task { await self?.recheckServers() }
+        }
+        tuner.onVideoFormatChanged = { [weak self] in
+            self?.updateDisplayMode()
         }
     }
 
@@ -159,6 +165,9 @@ final class AppModel {
         libraryIndex = .empty
         customization = LineupCustomization()
         preferences = UserPreferences()
+        #if os(tvOS)
+        displayMode.reset()
+        #endif
         phase = .onboarding
     }
 
@@ -335,6 +344,9 @@ final class AppModel {
         if old.playerEngine != preferences.playerEngine {
             tuner.useEngine(preferences.playerEngine)
         }
+        if old.displayMatching != preferences.displayMatching {
+            updateDisplayMode()
+        }
         if old.scheduleGrid != preferences.scheduleGrid {
             Task {
                 await rebuildLineup()
@@ -343,5 +355,14 @@ final class AppModel {
                 }
             }
         }
+    }
+
+    /// Apple TV: switches the TV's output mode for the playing video and tells
+    /// the player whether to output HDR. iPhone and iPad handle HDR on their own.
+    private func updateDisplayMode() {
+        #if os(tvOS)
+        let prefersHDROutput = displayMode.update(format: tuner.videoFormat, matching: preferences.displayMatching)
+        tuner.engine.setPrefersHDROutput(prefersHDROutput)
+        #endif
     }
 }

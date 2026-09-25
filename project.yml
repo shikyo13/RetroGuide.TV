@@ -36,6 +36,9 @@ targets:
       # LGPL build of libmpv (not the -GPL product); see NOTICE.
       - package: MPVKit
         product: MPVKit
+      # Linked explicitly: the display-mode API is an AVKit category on UIWindow,
+      # which references no symbols, so automatic linking would drop it.
+      - sdk: AVKit.framework
     info:
       path: App/Resources/Info.plist
       properties:

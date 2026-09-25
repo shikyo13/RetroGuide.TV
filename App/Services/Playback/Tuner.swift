@@ -32,11 +32,15 @@ final class Tuner {
     private(set) var signal: Signal = .off
     /// Increments on every tune so overlays can re-appear even on the same channel.
     private(set) var tuneGeneration = 0
+    /// The playing video's dynamic range and frame rate. Kept while surfing
+    /// until the next video reports its own, so the TV doesn't switch modes in between.
+    private(set) var videoFormat: VideoFormat?
     private(set) var engine: any PlaybackEngine
 
     @ObservationIgnored var onChannelChanged: ((String) -> Void)?
     /// Called with a server id when its streams keep failing, so reachability can be re-checked.
     @ObservationIgnored var onServerTrouble: ((String) -> Void)?
+    @ObservationIgnored var onVideoFormatChanged: (() -> Void)?
 
     @ObservationIgnored private var channels: [Channel] = []
     @ObservationIgnored private var previousChannelID: String?
@@ -65,6 +69,7 @@ final class Tuner {
         stopPlayback()
         engine = PlaybackEngineFactory.make(kind)
         attach(engine)
+        setVideoFormat(nil)
         resume()
     }
 
@@ -212,7 +217,15 @@ final class Tuner {
         case let .failed(message):
             guard signal == .tuning || signal == .live else { return }
             fail(with: message)
+        case let .format(format):
+            setVideoFormat(format)
         }
+    }
+
+    private func setVideoFormat(_ format: VideoFormat?) {
+        guard format != videoFormat else { return }
+        videoFormat = format
+        onVideoFormatChanged?()
     }
 
     private func enterIntermission(until date: Date) {

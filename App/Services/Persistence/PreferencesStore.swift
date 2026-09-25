@@ -8,6 +8,7 @@ struct UserPreferences: Codable, Equatable, Sendable {
     var scheduleGrid: ScheduleGrid = .continuous
     var showsScanlines = true
     var playerEngine: PlaybackEngineKind = .universal
+    var displayMatching: DisplayMatching = .dynamicRange
     var lastChannelID: String?
 
     init() {}
@@ -21,6 +22,7 @@ struct UserPreferences: Codable, Equatable, Sendable {
         scheduleGrid = (try? container.decode(ScheduleGrid.self, forKey: .scheduleGrid)) ?? defaults.scheduleGrid
         showsScanlines = (try? container.decode(Bool.self, forKey: .showsScanlines)) ?? defaults.showsScanlines
         playerEngine = (try? container.decode(PlaybackEngineKind.self, forKey: .playerEngine)) ?? defaults.playerEngine
+        displayMatching = (try? container.decode(DisplayMatching.self, forKey: .displayMatching)) ?? defaults.displayMatching
         lastChannelID = try? container.decode(String.self, forKey: .lastChannelID)
     }
 }

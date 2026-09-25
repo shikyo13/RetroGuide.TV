@@ -47,6 +47,10 @@ final class MPVPlaybackEngine: PlaybackEngine {
         generation += 1
         core?.stop()
     }
+
+    func setPrefersHDROutput(_ prefersHDROutput: Bool) {
+        core?.setHDROutput(prefersHDROutput)
+    }
 }
 
 /// A view whose backing layer is the Metal layer mpv renders into.
@@ -65,6 +69,10 @@ final class MPVRenderView: UIView {
         backgroundColor = .black
         metalLayer.framebufferOnly = true
         metalLayer.contentsScale = UIScreen.main.nativeScale
+        #if os(iOS)
+        // Lets HDR video use the display's extra brightness (EDR).
+        metalLayer.wantsExtendedDynamicRangeContent = true
+        #endif
     }
 
     /// CAMetalLayer does not track its view's size by itself; keep the drawable

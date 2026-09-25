@@ -47,12 +47,20 @@ final class MPVCore: @unchecked Sendable {
             ("terminal", "no"),
             ("audio-client-name", "RetroGuide.TV"),
         ]
+        /// Outputs HDR as HDR instead of tone mapping it to standard range.
+        static let colorspaceHint = "target-colorspace-hint"
         /// The Simulator's Metal driver rejects the large shared buffers libplacebo
         /// (vo=gpu-next) allocates when uploading software-decoded frames (AV1,
         /// MPEG-4, RealVideo…), aborting the app. The classic renderer uploads
         /// differently and works there. Devices keep gpu-next.
+        ///
+        /// iPhone and iPad show HDR on their own displays (EDR), so HDR is
+        /// always passed through there. Apple TV passes it through only while
+        /// the TV is in an HDR mode (see `setHDROutput`).
         #if targetEnvironment(simulator)
         static let platformValues: [(String, String)] = [("vo", "gpu")]
+        #elseif os(iOS)
+        static let platformValues: [(String, String)] = [(colorspaceHint, "yes")]
         #else
         static let platformValues: [(String, String)] = []
         #endif
@@ -127,6 +135,12 @@ final class MPVCore: @unchecked Sendable {
         command(["stop"])
     }
 
+    /// Passes HDR through to the display (`true`) or tone maps it to standard range.
+    func setHDROutput(_ enabled: Bool) {
+        guard let handle else { return }
+        mpv_set_property_string(handle, Option.colorspaceHint, enabled ? "yes" : "no")
+    }
+
     private func command(_ arguments: [String]) {
         guard let handle else { return }
         let cStrings = arguments.map { strdup($0) }
@@ -175,6 +189,9 @@ final class MPVCore: @unchecked Sendable {
                 Self.log(event.pointee)
                 if event.pointee.event_id == MPV_EVENT_FILE_LOADED {
                     applyPendingTracks(handle)
+                }
+                if event.pointee.event_id == MPV_EVENT_VIDEO_RECONFIG, let format = MPVVideoFormat.read(from: handle) {
+                    onEvent?(.format(format), generation)
                 }
                 if let mapped = Self.map(event.pointee) {
                     onEvent?(mapped, generation)

@@ -8,6 +8,8 @@ enum PlaybackEvent: Equatable, Sendable {
     /// The file finished before the schedule expected it to.
     case ended
     case failed(String)
+    /// The video's dynamic range and frame rate, once known.
+    case format(VideoFormat)
 }
 
 /// The video players RetroGuide can use.
@@ -48,6 +50,14 @@ protocol PlaybackEngine: AnyObject {
     /// Plays `request`, honoring the server's audio/subtitle selection when known.
     func play(_ request: StreamRequest, tracks: TrackSelection?)
     func stop()
+    /// Whether to output HDR as HDR (the display is in an HDR mode) rather
+    /// than converting it to standard range.
+    func setPrefersHDROutput(_ prefersHDROutput: Bool)
+}
+
+extension PlaybackEngine {
+    /// Engines that leave HDR handling to the system ignore this.
+    func setPrefersHDROutput(_ prefersHDROutput: Bool) {}
 }
 
 @MainActor

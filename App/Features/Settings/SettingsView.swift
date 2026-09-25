@@ -35,6 +35,13 @@ struct SettingsView: View {
                     } label: {
                         SettingsRowLabel(title: "Player", systemImage: "play.rectangle", value: app.preferences.playerEngine.displayName)
                     }
+                    #if os(tvOS)
+                    NavigationLink {
+                        DisplayMatchingPickerView()
+                    } label: {
+                        SettingsRowLabel(title: "Match TV mode", systemImage: "4k.tv", value: app.preferences.displayMatching.displayName)
+                    }
+                    #endif
                 }
                 SettingsSection("Channels") {
                     NavigationLink {
