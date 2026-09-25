@@ -5,7 +5,8 @@ public enum PlexConnectionError: Error, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case let .unreachable(name): "Couldn't reach \(name). Make sure the server is running and on the same network."
+        case let .unreachable(name):
+            "Couldn't reach \(name). If it's your server, make sure it's running. If someone shared it with you, they may need to turn on Remote Access in Plex's settings."
         }
     }
 }
