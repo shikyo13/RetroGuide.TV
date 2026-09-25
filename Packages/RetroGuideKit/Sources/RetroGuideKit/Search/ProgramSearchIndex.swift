@@ -64,13 +64,31 @@ public struct ProgramSearchIndex: Sendable {
         limit: Int = Defaults.resultLimit,
         horizon: TimeInterval = Defaults.horizon
     ) -> [SearchResult] {
-        let needle = TextNormalizer.key(query)
+        let needle = TextNormalizer.key(query).trimmingCharacters(in: .whitespaces)
         guard !needle.isEmpty else { return [] }
-        let prefixMatches = titles.filter { $0.id.hasPrefix(needle) }
-        let otherMatches = titles.filter { !$0.id.hasPrefix(needle) && $0.id.contains(needle) }
-        return (prefixMatches + otherMatches)
+        let ranked = titles
+            .compactMap { title in Self.rank(title.id, for: needle).map { (title, $0) } }
+            .sorted { $0.1 < $1.1 }
+        return ranked
             .prefix(limit)
-            .map { result(for: $0, at: now, horizon: horizon) }
+            .map { result(for: $0.0, at: now, horizon: horizon) }
+    }
+
+    /// Match quality, lower is better: the title starts with the query, then a
+    /// word in it does ("wire" → "The Wire"), then it appears anywhere.
+    private static func rank(_ title: String, for needle: String) -> Int? {
+        if title.hasPrefix(needle) { return MatchRank.titlePrefix }
+        let words = title.split(whereSeparator: { !$0.isLetter && !$0.isNumber })
+        if words.contains(where: { $0.hasPrefix(needle) }) || title.contains(" \(needle)") {
+            return MatchRank.wordPrefix
+        }
+        return title.contains(needle) ? MatchRank.substring : nil
+    }
+
+    private enum MatchRank {
+        static let titlePrefix = 0
+        static let wordPrefix = 1
+        static let substring = 2
     }
 
     private func result(for title: SearchableTitle, at now: Date, horizon: TimeInterval) -> SearchResult {

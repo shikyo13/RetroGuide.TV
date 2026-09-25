@@ -39,4 +39,11 @@ struct ProgramSearchTests {
         #expect(index.search("SEÍNFELD", at: now).count == 1)
         #expect(index.search("  ", at: now).isEmpty)
     }
+
+    @Test("Word starts rank above matches inside words")
+    func wordStartRanking() {
+        let index = ProgramSearchIndex(channels: channels)
+        // "wi": "The Wire" (word start) should rank above any mid-word match.
+        #expect(index.search("wi", at: now).first?.title.title == "The Wire")
+    }
 }

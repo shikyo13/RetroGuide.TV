@@ -39,8 +39,11 @@ struct SearchResultRow: View {
 
     private var airingText: String {
         let now = Date.now
-        guard let airing = result.airing, let channel = result.channel else {
-            return result.title.kind == .movie ? "Movie" : "Show"
+        guard let channel = result.channel else {
+            return result.title.kind.displayName
+        }
+        guard let airing = result.airing else {
+            return "On \(channel.name) · not scheduled in the next two days"
         }
         if airing.contains(now) {
             return "On now · \(channel.name) · \(ScheduleFormatting.remaining(in: airing, at: now))"
