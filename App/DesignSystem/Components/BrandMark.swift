@@ -12,7 +12,18 @@ struct BrandMark: View {
             case .large: Typography.display
             }
         }
+
+        /// Glyph width, proportional to the text size so both sizes look identical.
+        var glyphWidth: CGFloat {
+            switch self {
+            case .compact: Typography.Size.headline * BrandMark.glyphToTextRatio
+            case .large: Typography.Size.display * BrandMark.glyphToTextRatio
+            }
+        }
     }
+
+    /// Glyph width as a fraction of the font size (also used by the app icon generator).
+    static let glyphToTextRatio: CGFloat = 1.1
 
     var size: Size = .compact
 
@@ -20,8 +31,9 @@ struct BrandMark: View {
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.sm) {
-            Image(systemName: "tv.inset.filled")
-                .foregroundStyle(theme.accent)
+            TVGlyph()
+                .brandFill(theme.accent)
+                .frame(width: size.glyphWidth)
             Text(AppIdentity.Wordmark.name)
                 .foregroundStyle(theme.textPrimary)
             + Text(AppIdentity.Wordmark.suffix)

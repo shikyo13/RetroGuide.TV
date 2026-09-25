@@ -14,6 +14,7 @@
 		0F70EBE0D88DE0438F1BB070 /* AVPlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */; };
 		12BB1F6E80A0870792C3092B /* LibrarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E51AB4FCD7757EA704452150 /* LibrarySettingsView.swift */; };
 		1519C7C4A3D7CF0977B65BDB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187AFD75F0AE0640CC040E41 /* RootView.swift */; };
+		1621D2170E71F4484C39983B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C5C915609130F57A5F8D278 /* Assets.xcassets */; };
 		1653642F5EE272B581D64B87 /* PlayerChromeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0DF0549433E240368F45D75 /* PlayerChromeView.swift */; };
 		19B0BFE4E21F4DBCF6A284BC /* IntermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E4F8A44AB9B3798884A1DF /* IntermissionCard.swift */; };
 		1B22F184D9F92EA9941A6E64 /* RetroGuideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC46D819D23A297C0A6FE728 /* RetroGuideApp.swift */; };
@@ -75,6 +76,7 @@
 		D5D461E9FEB38D8A69634DAD /* ServerPickerStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D63AA8E86BF9C02B61AE1DCF /* ServerPickerStepView.swift */; };
 		D608B8A7C6DA16742A659FCD /* GuideRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 449ED99025C0286E7239069D /* GuideRowView.swift */; };
 		DF4C68D78AF1775762716641 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C26D1723E494C6278D25A4 /* SettingsView.swift */; };
+		E12FF8A63EA8CE4599227EF4 /* TVGlyph.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0C030AC68A93441288482 /* TVGlyph.swift */; };
 		E286AAA7E6C9A07DFF641E7E /* NoSignalCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B003E790A6BE3A71C2932FF5 /* NoSignalCard.swift */; };
 		E428E9102569104BF28B0219 /* OnboardingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651E3EB72BF671C9E1ABE5CA /* OnboardingModel.swift */; };
 		EE02E369366A08BA4AC32A34 /* GuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B746D8737282E49C370CF911 /* GuideView.swift */; };
@@ -84,6 +86,7 @@
 
 /* Begin PBXFileReference section */
 		0452ECDC6FD9A5997A83DE95 /* DebugBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugBootstrap.swift; sourceTree = "<group>"; };
+		07D0C030AC68A93441288482 /* TVGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVGlyph.swift; sourceTree = "<group>"; };
 		09B0843197AF6460B72A4027 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		106458C76CA02AA261456C9F /* LibraryPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPickerView.swift; sourceTree = "<group>"; };
 		112719CCB56AAAD12EECF35A /* ScanlineOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanlineOverlay.swift; sourceTree = "<group>"; };
@@ -121,6 +124,7 @@
 		56CFCF3C393427EE3A94F97A /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		56E191CE740931DEBCDB4A48 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
 		5C3ABF62769BA3CD53E6EB02 /* StaticNoiseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticNoiseView.swift; sourceTree = "<group>"; };
+		5C5C915609130F57A5F8D278 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5D86A861EAF73F92B9F472DD /* ThemePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePickerView.swift; sourceTree = "<group>"; };
 		5E7B1848B4217F5A58027419 /* PreferencesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesStore.swift; sourceTree = "<group>"; };
 		640A1EE370DC839D29A43C74 /* RetroRowButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroRowButtonStyle.swift; sourceTree = "<group>"; };
@@ -302,6 +306,7 @@
 		56090EB5B47FD09BA3392934 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5C5C915609130F57A5F8D278 /* Assets.xcassets */,
 				31FB9BE2708E52D814B10E36 /* Info.plist */,
 			);
 			path = Resources;
@@ -320,6 +325,7 @@
 				112719CCB56AAAD12EECF35A /* ScanlineOverlay.swift */,
 				5C3ABF62769BA3CD53E6EB02 /* StaticNoiseView.swift */,
 				B8E6421682822DF9EB4C7D65 /* Surfaces.swift */,
+				07D0C030AC68A93441288482 /* TVGlyph.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -452,6 +458,7 @@
 			buildConfigurationList = 70CE3E069CE871583F61BD22 /* Build configuration list for PBXNativeTarget "RetroGuide" */;
 			buildPhases = (
 				B3C65CD6D2A06C1BF07504F9 /* Sources */,
+				39F08EA703C560231C063BCC /* Resources */,
 				0C53D83939CFDE7F7AF06BE5 /* Frameworks */,
 			);
 			buildRules = (
@@ -503,6 +510,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		39F08EA703C560231C063BCC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1621D2170E71F4484C39983B /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B3C65CD6D2A06C1BF07504F9 /* Sources */ = {
@@ -573,6 +591,7 @@
 				A81E12379CDB78335D6E9042 /* SplashView.swift in Sources */,
 				344BBCFC8E4E7130D58A182A /* StaticNoiseView.swift in Sources */,
 				42D421BD47109060D3F3D77E /* Surfaces.swift in Sources */,
+				E12FF8A63EA8CE4599227EF4 /* TVGlyph.swift in Sources */,
 				A53DE4A20580BF67B4BBE9C5 /* Theme.swift in Sources */,
 				83B88E3EDCDB87872742AB45 /* ThemeCatalog.swift in Sources */,
 				F28C95A80322AA0D40CDF4EA /* ThemePickerView.swift in Sources */,
