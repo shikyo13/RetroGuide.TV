@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 /// Geometry of the live picture when it shrinks to picture-in-picture over menus.
 enum WatchLayout {
@@ -7,6 +8,19 @@ enum WatchLayout {
     static let pictureInPictureWidthFraction: CGFloat = 0.25
     static let portraitPictureInPictureWidthFraction: CGFloat = 0.34
     static let pictureInPictureAspectRatio: CGFloat = 16 / 9
+
+    /// The video engine's rendering surface: 16:9 at the display's long side.
+    ///
+    /// It depends only on the display, never on rotation or window size, so the
+    /// engine never has to resize (libmpv's Metal context only picks up a new
+    /// size when a file loads). The surface is scaled to fit instead. On Apple
+    /// TV this is exactly the screen.
+    @MainActor
+    static var videoSurfaceSize: CGSize {
+        let bounds = UIScreen.main.bounds
+        let longSide = max(bounds.width, bounds.height)
+        return CGSize(width: longSide, height: longSide / pictureInPictureAspectRatio)
+    }
     /// Distance from the screen edges: the tvOS overscan-safe margins, or a
     /// small gap inside the safe area on iPhone and iPad.
     static let pictureInPictureHorizontalInset = PlatformMetric.value(tv: CGFloat(80), touch: 16)
