@@ -122,7 +122,7 @@ Requirements: macOS with Xcode 26 or later.
 
 ```bash
 git clone https://github.com/shikyo13/RetroGuide.TV.git
-cd RetroGuide
+cd RetroGuide.TV
 open RetroGuide.xcodeproj
 ```
 
