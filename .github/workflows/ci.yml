@@ -19,8 +19,12 @@ jobs:
         run: swift test --package-path Packages/RetroGuideKit
 
   app-build:
-    name: tvOS app build
+    name: ${{ matrix.platform }} app build
     runs-on: macos-26
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [tvOS, iOS]
     steps:
       - uses: actions/checkout@v4
       - name: Cache Swift packages
@@ -28,8 +32,8 @@ jobs:
         with:
           path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
           key: spm-${{ hashFiles('project.yml') }}
-      - name: Build for the tvOS Simulator
+      - name: Build for the ${{ matrix.platform }} Simulator
         run: |
           xcodebuild -project RetroGuide.xcodeproj -scheme RetroGuide \
-            -destination 'generic/platform=tvOS Simulator' \
+            -destination 'generic/platform=${{ matrix.platform }} Simulator' \
             CODE_SIGNING_ALLOWED=NO build

@@ -4,6 +4,15 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project uses
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+
+- iPhone and iPad app with touch controls: swipe to change channels, tap for
+  the info banner and on-screen controls, a scrollable touch guide with time
+  paging, and layouts for portrait and landscape
+- "Open plex.tv/link" button when linking Plex on iPhone and iPad
+
 ## [0.1.0] - Unreleased
 
 First public beta.

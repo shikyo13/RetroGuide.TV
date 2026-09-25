@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Your media library, on the air.</strong><br>
-  A native Apple TV app that turns your Plex library into live TV channels with a classic program guide.
+  A native app for Apple TV, iPhone and iPad that turns your Plex library into live TV channels with a classic program guide.
 </p>
 
 ---
@@ -12,8 +12,8 @@
 RetroGuide.TV builds dozens of always-on channels from the shows and movies you
 already have: comedy, anime, sci-fi, 90s TV, 24/7 marathons of your favorite
 series, and more. Turn it on and something is already playing. Flip channels with
-the Siri Remote, drop into whatever's on mid-episode, and browse what's next in a
-cable-style guide.
+the Siri Remote or a swipe, drop into whatever's on mid-episode, and browse what's
+next in a cable-style guide.
 
 ## Features
 
@@ -33,8 +33,10 @@ cable-style guide.
 - **Program guide.** A focus-driven grid with a live preview, "now" line,
   rating colors, show logos and artwork, and search with live results.
 - **Channel surfing.** Swipe to change channels, with static between channels,
-  a glowing channel number and an info banner, and Play/Pause for the last
+  a glowing channel number and an info banner, and a button for the last
   channel.
+- **Apple TV, iPhone and iPad.** Built for the Siri Remote on Apple TV and for
+  touch on iPhone and iPad, in portrait or landscape.
 - **Direct play.** A bundled [libmpv](https://mpv.io) player plays MKV, HEVC,
   AV1, Dolby Vision, DTS, TrueHD and ASS subtitles directly, so your server
   doesn't have to transcode. Apple's player is available as a fallback.
@@ -49,7 +51,8 @@ cable-style guide.
 
 ## Requirements
 
-- Apple TV running tvOS 17 or later (Apple TV 4K recommended)
+- Apple TV with tvOS 17 or later (Apple TV 4K recommended), or iPhone or iPad
+  with iOS 17 or later
 - A Plex Media Server you own or that is shared with you. Servers outside your
   home must have Plex Remote Access enabled.
 
@@ -58,14 +61,15 @@ Jellyfin support is planned.
 ## Getting started
 
 1. Open RetroGuide.TV and choose **Connect Plex**.
-2. Go to [plex.tv/link](https://plex.tv/link) on your phone or computer (or scan
-   the QR code) and enter the code shown on screen.
+2. Go to [plex.tv/link](https://plex.tv/link) and enter the code shown on screen.
+   On Apple TV you can scan the QR code; on iPhone and iPad, tap
+   **Open plex.tv/link**.
 3. Pick a server and the libraries to include, then choose **Build My Channels**.
 
 Live TV starts as soon as your first server is indexed. Add more servers later in
 **Settings → Servers**.
 
-### Remote controls
+### Siri Remote
 
 | Where | Button | Action |
 | --- | --- | --- |
@@ -76,6 +80,18 @@ Live TV starts as soon as your first server is indexed. Add more servers later i
 | Guide | Click | Watch the highlighted channel |
 | Guide | Play/Pause | Jump to Search and Settings |
 | Anywhere | Menu | Back |
+
+### Touch (iPhone and iPad)
+
+| Where | Gesture | Action |
+| --- | --- | --- |
+| Watching | Swipe up / down | Channel up / down |
+| Watching | Swipe right / left | What's on now / next |
+| Watching | Tap | Show the info banner and controls (Guide, last channel, channel up / down) |
+| Guide | Tap a program | Preview it; tap again or press Watch to tune |
+| Guide | Tap a channel number | Watch that channel |
+| Guide | Swipe sideways, or ‹ Now › | Move through the schedule |
+| Search, Settings | Tap the corner picture | Back to full-screen TV |
 
 ## How it works
 
@@ -107,8 +123,8 @@ cd RetroGuide
 open RetroGuide.xcodeproj
 ```
 
-Choose the **RetroGuide** scheme and an Apple TV simulator, then run. To run on a
-device or archive, copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig`
+Choose the **RetroGuide** scheme and an Apple TV, iPhone or iPad simulator, then
+run. To run on a device or archive, copy `Config/Local.xcconfig.example` to `Config/Local.xcconfig`
 and set your Apple Developer Team ID (that file is git-ignored).
 
 The Xcode project is generated from `project.yml` with
@@ -124,7 +140,7 @@ swift test --package-path Packages/RetroGuideKit
 ### Project layout
 
 ```
-App/                      tvOS app (SwiftUI)
+App/                      App for tvOS, iOS and iPadOS (SwiftUI)
   Composition/            App state, servers, lineup building
   DesignSystem/           Tokens, themes and shared components
   Features/               Onboarding, Watch (player + guide), Search, Settings

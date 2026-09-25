@@ -5,7 +5,8 @@ RetroGuide.TV has two parts:
 - **`Packages/RetroGuideKit`**: a platform-independent Swift package with all of
   the logic that doesn't need UIKit. It builds and tests on macOS with
   `swift test`.
-- **`App/`**: the tvOS app: SwiftUI views, the playback engines and app state.
+- **`App/`**: the app for Apple TV, iPhone and iPad (one multiplatform target):
+  SwiftUI views, the playback engines and app state.
 
 ## RetroGuideKit
 
@@ -47,6 +48,22 @@ Add an entry to `Resources/curated-channels.json` with a unique `id` and a
 | `Services/Playback/` | `Tuner` (channel logic, schedule boundaries, retries) and the `PlaybackEngine`s: `MPVPlaybackEngine` (libmpv) and `AVPlaybackEngine`. |
 | `Features/Watch/` | The live picture, player chrome and the guide. The live picture is one full-screen surface that is scaled into the guide preview or picture-in-picture, so the video engine never resizes. |
 | `DesignSystem/` | `DesignTokens`, `Typography`, `Theme`/`ThemeCatalog` and shared components. Views use these rather than literal values. |
+
+### Apple TV and touch
+
+Most views are shared. What differs by platform is isolated:
+
+- **Sizes**: every token and layout constant has a TV value and a touch value
+  (`PlatformMetric.value(tv:touch:)`). Size classes add two layout checks,
+  `isNarrowLayout` (iPhone in portrait) and `isShortLayout` (iPhone in
+  landscape); both are always false on Apple TV.
+- **Input**: the player turns input into `PlayerCommand`s, from the Siri Remote
+  (`PlayerRemoteInput`) or from gestures and on-screen controls
+  (`PlayerTouchInput`). The guide has a remote view that treats the grid as one
+  focusable element (`GuideRemoteView`) and a touch view with a scrolling,
+  tappable grid (`GuideTouchView`); both share the header, preview panel and rows.
+- **Navigation**: Apple TV uses the Menu button; iPhone and iPad use the
+  navigation bar and Done/Close buttons.
 
 ### Conventions
 
