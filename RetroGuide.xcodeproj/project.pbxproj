@@ -92,6 +92,7 @@
 		C8C458DD7D2834B3706F210B /* PlexLinkStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08BDDF85EEA045DAB1751FA /* PlexLinkStepView.swift */; };
 		CDB14AEAB71D26F37081A975 /* BrandMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4866448AD788DB8689A527F /* BrandMark.swift */; };
 		CE1C01DE51D07F70A4F400D0 /* ChannelBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCCA6A01AE43CF824FF252E /* ChannelBanner.swift */; };
+		D40160AAAB3081C927CEEB87 /* DebugSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2592C4AE803F82DB05F07DAD /* DebugSnapshot.swift */; };
 		D46EB4BED536DEB50D89632D /* PlayerRemoteInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46AFD6BF836334C6863ACB29 /* PlayerRemoteInput.swift */; };
 		D5057DC36B780FD6CC587C05 /* ScheduleGridPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1228ACA50F43CD93B6C327B2 /* ScheduleGridPickerView.swift */; };
 		D5D461E9FEB38D8A69634DAD /* ServerPickerStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D63AA8E86BF9C02B61AE1DCF /* ServerPickerStepView.swift */; };
@@ -135,6 +136,7 @@
 		2342F75A3FFB608FE4032CE5 /* FacetPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacetPickerView.swift; sourceTree = "<group>"; };
 		2392974C3257F19F3ED847B4 /* SettingsComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsComponents.swift; sourceTree = "<group>"; };
 		23B7A168DBC98266CF79C967 /* TapAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapAction.swift; sourceTree = "<group>"; };
+		2592C4AE803F82DB05F07DAD /* DebugSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSnapshot.swift; sourceTree = "<group>"; };
 		25F0A33212F51B2036ADEA1E /* GuideModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideModel.swift; sourceTree = "<group>"; };
 		2760837DFDCC008C26DB6AD8 /* RatingChip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingChip.swift; sourceTree = "<group>"; };
 		277431B53EC9DD3EEEFDADB9 /* GuideGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideGridView.swift; sourceTree = "<group>"; };
@@ -502,6 +504,7 @@
 				DEBCBC697963B90B6FE85490 /* AppIdentity.swift */,
 				4256AEAB82EABD170AA2AEE3 /* AppModel.swift */,
 				0452ECDC6FD9A5997A83DE95 /* DebugBootstrap.swift */,
+				2592C4AE803F82DB05F07DAD /* DebugSnapshot.swift */,
 				9EE9E450D8C95F92B6095A95 /* LineupEngine.swift */,
 				A0DCB1FD20F3531CA7FE3D3E /* ServerLibrary.swift */,
 				14EBB550D625B329BE602117 /* ServerRegistry.swift */,
@@ -689,6 +692,7 @@
 				459009C3FD10B3FB413B3BA3 /* Color+Hex.swift in Sources */,
 				AF9BFFE61C5614EB130B7A8D /* ColumnWidth.swift in Sources */,
 				51BF916ECC3E1D006A623355 /* DebugBootstrap.swift in Sources */,
+				D40160AAAB3081C927CEEB87 /* DebugSnapshot.swift in Sources */,
 				6F616B19949D1E258B35617E /* DesignTokens.swift in Sources */,
 				4FF28030B8CFDC6C4600C3FB /* EngineVideoView.swift in Sources */,
 				8DBC9BF9907BF654E22B1C18 /* FacetPickerView.swift in Sources */,

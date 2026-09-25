@@ -8,6 +8,9 @@ struct RetroGuideApp: App {
 
     init() {
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+        #if DEBUG && os(iOS)
+        DebugSnapshot.install()
+        #endif
     }
 
     var body: some Scene {
