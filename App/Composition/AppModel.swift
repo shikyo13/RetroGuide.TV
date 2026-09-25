@@ -70,6 +70,7 @@ final class AppModel {
         tuner.onVideoFormatChanged = { [weak self] in
             self?.updateDisplayMode()
         }
+        tuner.languagePreferences = store.languagePreferences
     }
 
     // MARK: - Derived state
@@ -101,6 +102,7 @@ final class AppModel {
         customization = store.customization
         #endif
         await servers.restore()
+        Task { await refreshLanguagePreferences() }
         guard servers.hasServers else {
             phase = .onboarding
             return
@@ -197,6 +199,7 @@ final class AppModel {
                 }
             )
             lastRefreshed = .now
+            await refreshLanguagePreferences()
             refreshError = offlineServersMessage
             if hadFailures {
                 await rebuildIndexAndLineup()
@@ -364,5 +367,12 @@ final class AppModel {
         let prefersHDROutput = displayMode.update(format: tuner.videoFormat, matching: preferences.displayMatching)
         tuner.engine.setPrefersHDROutput(prefersHDROutput)
         #endif
+    }
+
+    /// Picks up changes to the account's language settings (made in Plex).
+    private func refreshLanguagePreferences() async {
+        guard let preferences = await servers.fetchLanguagePreferences() else { return }
+        store.languagePreferences = preferences
+        tuner.languagePreferences = preferences
     }
 }

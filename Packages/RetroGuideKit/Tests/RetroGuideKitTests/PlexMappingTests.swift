@@ -85,20 +85,20 @@ struct PlexTrackSelectionTests {
             stream(PlexAPI.StreamType.audio, index: 2, selected: nil),
             stream(PlexAPI.StreamType.subtitle, index: 3, selected: true),
         ]
-        let selection = PlexTrackSelectionMapper.selection(from: streams) { _ in nil }
+        let selection = PlexTrackSelectionMapper.selection(from: streams, preferences: nil) { _ in nil }
         #expect(selection == TrackSelection(audioStreamIndex: 1, subtitle: .embedded(streamIndex: 3)))
     }
 
     @Test("No selected subtitle means subtitles off")
     func subtitlesOff() {
         let streams = [stream(PlexAPI.StreamType.audio, index: 1, selected: true), stream(PlexAPI.StreamType.subtitle, index: 2, selected: nil)]
-        #expect(PlexTrackSelectionMapper.selection(from: streams) { _ in nil }.subtitle == .none)
+        #expect(PlexTrackSelectionMapper.selection(from: streams, preferences: nil) { _ in nil }.subtitle == .none)
     }
 
     @Test("Sidecar subtitles resolve to a URL")
     func external() throws {
         let url = try #require(URL(string: "https://server/library/streams/9"))
         let streams = [stream(PlexAPI.StreamType.subtitle, index: nil, key: "/library/streams/9", selected: true)]
-        #expect(PlexTrackSelectionMapper.selection(from: streams) { _ in url }.subtitle == .external(url))
+        #expect(PlexTrackSelectionMapper.selection(from: streams, preferences: nil) { _ in url }.subtitle == .external(url))
     }
 }

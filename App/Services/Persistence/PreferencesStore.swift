@@ -34,6 +34,7 @@ struct PreferencesStore {
         static let preferences = "preferences.v1"
         static let accounts = "accounts.v1"
         static let customization = "lineupCustomization.v1"
+        static let languagePreferences = "languagePreferences.v1"
         static let plexClientIdentifier = "plexClientIdentifier"
     }
 
@@ -53,6 +54,19 @@ struct PreferencesStore {
         nonmutating set { encode(newValue, forKey: Key.accounts) }
     }
 
+    /// The account's language settings as last fetched, so tracks are right
+    /// from the first channel after launch.
+    var languagePreferences: LanguagePreferences? {
+        get { decode(LanguagePreferences.self, forKey: Key.languagePreferences) }
+        nonmutating set {
+            if let newValue {
+                encode(newValue, forKey: Key.languagePreferences)
+            } else {
+                defaults.removeObject(forKey: Key.languagePreferences)
+            }
+        }
+    }
+
     var customization: LineupCustomization {
         get { decode(LineupCustomization.self, forKey: Key.customization) ?? LineupCustomization() }
         nonmutating set { encode(newValue, forKey: Key.customization) }
@@ -69,7 +83,7 @@ struct PreferencesStore {
     }
 
     func resetAll() {
-        [Key.preferences, Key.accounts, Key.customization].forEach(defaults.removeObject(forKey:))
+        [Key.preferences, Key.accounts, Key.customization, Key.languagePreferences].forEach(defaults.removeObject(forKey:))
     }
 
     private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {

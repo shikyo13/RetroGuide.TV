@@ -97,7 +97,7 @@ public struct PlexServerClient: MediaServerClient {
         )
     }
 
-    public func trackSelection(for item: MediaItem) async -> TrackSelection? {
+    public func trackSelection(for item: MediaItem, preferences: LanguagePreferences?) async -> TrackSelection? {
         let builder = RequestBuilder(
             baseURL: context.baseURL,
             headers: context.builder.headers,
@@ -107,7 +107,7 @@ public struct PlexServerClient: MediaServerClient {
               let page = try? await context.http.decode(PlexEnvelope<PlexMetadataPage>.self, for: request),
               let streams = page.mediaContainer.metadata?.first?.media?.first?.parts?.first?.streams
         else { return nil }
-        return PlexTrackSelectionMapper.selection(from: streams) { key in
+        return PlexTrackSelectionMapper.selection(from: streams, preferences: preferences) { key in
             try? context.builder.url(path: key, query: [URLQueryItem(name: PlexAPI.Header.token, value: context.token)])
         }
     }

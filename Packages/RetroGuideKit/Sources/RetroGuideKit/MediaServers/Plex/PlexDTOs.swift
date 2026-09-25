@@ -135,6 +135,22 @@ struct PlexStream: Decodable {
     let index: Int?
     let key: String?
     let selected: Bool?
+    /// BCP 47 tag ("en") and ISO 639-2 code ("eng"); either may be missing.
+    var languageTag: String?
+    var languageCode: String?
+    var forced: Bool?
+}
+
+/// The signed-in plex.tv user (only the language settings are read).
+struct PlexUser: Decodable {
+    let profile: PlexUserProfile?
+}
+
+struct PlexUserProfile: Decodable {
+    let defaultAudioLanguage: String?
+    let defaultSubtitleLanguage: String?
+    /// 0: manually selected, 1: shown with foreign audio, 2: always enabled.
+    let autoSelectSubtitle: Int?
 }
 
 struct PlexPin: Decodable {

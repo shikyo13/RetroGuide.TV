@@ -70,9 +70,10 @@ public protocol MediaServerClient: Sendable {
         capabilities: PlaybackCapabilities
     ) throws -> StreamRequest
 
-    /// The audio/subtitle tracks the server has selected for this viewer, or `nil`
+    /// The audio/subtitle tracks for this viewer: their choices for the item when
+    /// they made any, otherwise picked with their account's `preferences`. `nil`
     /// when unknown (the player then falls back to its own language rules).
-    func trackSelection(for item: MediaItem) async -> TrackSelection?
+    func trackSelection(for item: MediaItem, preferences: LanguagePreferences?) async -> TrackSelection?
 
     /// Tells the server a stream is no longer needed so it can free transcoder resources.
     func endStream(sessionID: String) async

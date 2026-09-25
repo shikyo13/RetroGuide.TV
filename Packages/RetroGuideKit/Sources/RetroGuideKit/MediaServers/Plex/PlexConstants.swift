@@ -10,6 +10,7 @@ public enum PlexAPI {
     enum Path {
         static let pins = "/api/v2/pins"
         static let resources = "/api/v2/resources"
+        static let user = "/api/v2/user"
         static let identity = "/identity"
         static let sections = "/library/sections"
         static func sectionItems(_ section: String) -> String { "/library/sections/\(section)/all" }

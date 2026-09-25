@@ -41,6 +41,8 @@ final class Tuner {
     /// Called with a server id when its streams keep failing, so reachability can be re-checked.
     @ObservationIgnored var onServerTrouble: ((String) -> Void)?
     @ObservationIgnored var onVideoFormatChanged: (() -> Void)?
+    /// The viewer's account language settings, for items they haven't chosen tracks for.
+    @ObservationIgnored var languagePreferences: LanguagePreferences?
 
     @ObservationIgnored private var channels: [Channel] = []
     @ObservationIgnored private var previousChannelID: String?
@@ -183,7 +185,7 @@ final class Tuner {
         // Every (re)start shows the tuning state until frames actually play.
         signal = .tuning
         let generation = tuneGeneration
-        let tracks = await client.trackSelection(for: program.item)
+        let tracks = await client.trackSelection(for: program.item, preferences: languagePreferences)
         // The viewer may have changed channel while the selection was loading.
         guard generation == tuneGeneration, !Task.isCancelled else { return }
         do {

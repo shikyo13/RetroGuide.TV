@@ -81,6 +81,30 @@ public struct PlexAccountService: Sendable {
             .sorted { ($0.isOwned ? 0 : 1, $0.name) < ($1.isOwned ? 0 : 1, $1.name) }
     }
 
+    /// The account's audio and subtitle language settings.
+    public func languagePreferences(accountToken: String) async throws -> LanguagePreferences {
+        let request = try builder.request(path: PlexAPI.Path.user, extraHeaders: [PlexAPI.Header.token: accountToken])
+        let profile = try await http.decode(PlexUser.self, for: request).profile
+        return LanguagePreferences(
+            audioLanguage: profile?.defaultAudioLanguage,
+            subtitleLanguage: profile?.defaultSubtitleLanguage,
+            subtitleMode: Self.subtitleMode(profile?.autoSelectSubtitle)
+        )
+    }
+
+    private enum AutoSelectSubtitle {
+        static let foreignAudio = 1
+        static let always = 2
+    }
+
+    private static func subtitleMode(_ value: Int?) -> SubtitleMode {
+        switch value {
+        case AutoSelectSubtitle.foreignAudio: .foreignAudio
+        case AutoSelectSubtitle.always: .always
+        default: .manual
+        }
+    }
+
     private static func candidate(from resource: PlexResource) -> PlexServerCandidate? {
         guard let token = resource.accessToken else { return nil }
         let connections = (resource.connections ?? []).compactMap { connection in

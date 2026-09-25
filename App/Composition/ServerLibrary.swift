@@ -47,6 +47,12 @@ final class ServerLibrary {
         keychain.token(for: KeychainAccount.plexAccount)
     }
 
+    /// The signed-in account's audio and subtitle settings, or `nil` if unavailable.
+    func fetchLanguagePreferences() async -> LanguagePreferences? {
+        guard let accountToken = plexAccountToken else { return nil }
+        return try? await PlexAccountService(identity: identity).languagePreferences(accountToken: accountToken)
+    }
+
     func client(for serverID: String) -> (any MediaServerClient)? {
         registry.client(for: serverID)
     }
