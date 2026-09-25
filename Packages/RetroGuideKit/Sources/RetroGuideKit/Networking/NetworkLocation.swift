@@ -4,7 +4,7 @@ import Foundation
 public enum NetworkLocation {
     private enum Pattern {
         static let localDomainSuffix = ".local"
-        /// Plex's secure addresses embed the IP: `10-10-1-25.<hash>.plex.direct`.
+        /// Plex's secure addresses embed the IP: `192-168-1-20.<hash>.plex.direct`.
         static let plexDirectSuffix = ".plex.direct"
         static let plexDirectSeparator: Character = "-"
         static let octetCount = 4

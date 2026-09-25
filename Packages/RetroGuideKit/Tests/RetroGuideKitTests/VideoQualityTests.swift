@@ -39,9 +39,9 @@ struct VideoQualityTests {
             let json = #"{"id":"s","kind":"plex","name":"S","baseURL":"\#(url)","selectedLibraryIDs":[]}"#
             return try JSONDecoder().decode(ServerAccount.self, from: Data(json.utf8))
         }
-        #expect(try decode("https://10-10-1-25.abc123.plex.direct:32400").playback == .local)
+        #expect(try decode("https://192-168-1-20.abc123.plex.direct:32400").playback == .local)
         #expect(try decode("http://192.168.1.20:32400").playback == .local)
         #expect(try decode("https://pserv.example.com:443").playback == .remote)
-        #expect(try decode("https://136-32-243-210.abc123.plex.direct:64800").playback == .remote)
+        #expect(try decode("https://203-0-113-7.abc123.plex.direct:32400").playback == .remote)
     }
 }

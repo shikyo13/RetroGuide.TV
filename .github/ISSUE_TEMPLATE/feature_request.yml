@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest an idea or a new built-in channel
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to do?
+      description: Describe the problem or idea rather than a specific solution.
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Anything else?

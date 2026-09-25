@@ -56,7 +56,7 @@ public struct LibraryIndex: Sendable {
             && candidateVersion != currentVersion
     }
 
-    /// Libraries with names made unique across servers ("Movies · Komputer").
+    /// Libraries with names made unique across servers ("Movies · Home").
     private static func displayLibraries(for snapshots: [LibrarySnapshot]) -> [MediaLibrary] {
         let titleCounts = Dictionary(grouping: snapshots.flatMap(\.libraries), by: \.title).mapValues(\.count)
         return snapshots.flatMap { snapshot in

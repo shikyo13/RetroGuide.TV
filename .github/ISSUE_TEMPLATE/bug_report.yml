@@ -1,0 +1,31 @@
+name: Bug report
+description: Something isn't working as expected
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Apple TV model and tvOS version
+      placeholder: Apple TV 4K (3rd generation), tvOS 26.5
+    validations:
+      required: true
+  - type: input
+    id: server
+    attributes:
+      label: Media server and version
+      placeholder: Plex Media Server 1.43
+  - type: textarea
+    id: playback
+    attributes:
+      label: For playback problems
+      description: The file's container and codecs (Plex "Get Info"), and whether the server is on your home network.
+  - type: markdown
+    attributes:
+      value: Please don't include server addresses, tokens or screenshots with account details.

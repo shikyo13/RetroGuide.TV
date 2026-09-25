@@ -238,7 +238,7 @@ final class ServerLibrary {
 }
 
 /// Combines per-server indexing progress into one overall value and one status
-/// line per server ("Komputer: Ready", "C-Limit: Reading TV Shows…").
+/// line per server ("Home: Ready", "Friend's Server: Reading TV Shows…").
 @MainActor
 private final class ProgressAggregator {
     private enum Status {

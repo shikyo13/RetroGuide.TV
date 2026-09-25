@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  kit-tests:
+    name: RetroGuideKit tests
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: swift test --package-path Packages/RetroGuideKit
+
+  app-build:
+    name: tvOS app build
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+          key: spm-${{ hashFiles('project.yml') }}
+      - name: Build for the tvOS Simulator
+        run: |
+          xcodebuild -project RetroGuide.xcodeproj -scheme RetroGuide \
+            -destination 'generic/platform=tvOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build
