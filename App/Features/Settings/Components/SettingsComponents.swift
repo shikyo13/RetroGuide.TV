@@ -1,12 +1,16 @@
 import SwiftUI
 
-/// Scrollable, centered settings page with a large title.
+/// Scrollable settings page with a large title. Content sits to the left so
+/// the picture-in-picture live picture has the bottom-right corner.
 private enum SettingsLayout {
-    static let contentWidth: CGFloat = 1_300
+    static let contentWidth: CGFloat = 1_150
 }
 
 struct SettingsPage<Content: View>: View {
     let title: String
+    /// Called when Menu is pressed on this page. Pages pushed inside Settings
+    /// leave it `nil` to simply go back one level.
+    var onExit: (() -> Void)?
     @ViewBuilder var content: () -> Content
 
     @Environment(\.theme) private var theme
@@ -22,14 +26,14 @@ struct SettingsPage<Content: View>: View {
             }
             .frame(width: SettingsLayout.contentWidth, alignment: .leading)
             .padding(.vertical, DesignTokens.Spacing.xl)
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .scrollClipDisabled()
         .screenBackground()
         .crtEffect()
         .toolbar(.hidden, for: .navigationBar)
-        // Menu goes back one level (pops, or closes Settings from the first page).
-        .onExitCommand { dismiss() }
+        // Menu goes back one level, or closes Settings from its first page.
+        .onExitCommand { (onExit ?? { dismiss() })() }
     }
 }
 

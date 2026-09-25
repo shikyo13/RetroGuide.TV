@@ -1,15 +1,17 @@
 import RetroGuideKit
 import SwiftUI
 
-/// Settings home. Presented full screen from the guide; Menu dismisses it.
+/// Settings home, layered over live TV (which shrinks to picture-in-picture).
 struct SettingsView: View {
+    let onClose: () -> Void
+
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     @State private var isConfirmingSignOut = false
 
     var body: some View {
         NavigationStack {
-            SettingsPage(title: "Settings") {
+            SettingsPage(title: "Settings", onExit: onClose) {
                 SettingsSection("Picture") {
                     NavigationLink {
                         ThemePickerView()

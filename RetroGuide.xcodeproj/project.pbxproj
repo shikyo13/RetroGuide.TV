@@ -87,6 +87,7 @@
 		F28C95A80322AA0D40CDF4EA /* ThemePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D86A861EAF73F92B9F472DD /* ThemePickerView.swift */; };
 		F94DC9CD3CA222C4774E154A /* LGPL-3.0.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8A5891962ED332144D11376D /* LGPL-3.0.txt */; };
 		FBD9B4A0858153289DA317B6 /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */; };
+		FCDEF2C219A775F3D0FF6855 /* WatchLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 837678E87635D37172F0F4C4 /* WatchLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -137,6 +138,7 @@
 		66CC706B5FDE0AED70647579 /* EngineVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineVideoView.swift; sourceTree = "<group>"; };
 		7DCAC7B46690CFA2F832866A /* ProgressTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTrack.swift; sourceTree = "<group>"; };
 		82759BC73311902FA6622798 /* GuidePreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePreviewPanel.swift; sourceTree = "<group>"; };
+		837678E87635D37172F0F4C4 /* WatchLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLayout.swift; sourceTree = "<group>"; };
 		860DC61A99571D86C2C8FBFD /* RetroGuideKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RetroGuideKit; path = Packages/RetroGuideKit; sourceTree = SOURCE_ROOT; };
 		882F8CA7ECA178E614F9241E /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchView.swift; sourceTree = "<group>"; };
 		8A5891962ED332144D11376D /* LGPL-3.0.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LGPL-3.0.txt"; sourceTree = "<group>"; };
@@ -419,6 +421,7 @@
 				2293A78F457C5CEF7EB0BF64 /* Guide */,
 				4A2372C81607C1D5DDB344C9 /* Player */,
 				9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */,
+				837678E87635D37172F0F4C4 /* WatchLayout.swift */,
 				882F8CA7ECA178E614F9241E /* WatchView.swift */,
 			);
 			path = Watch;
@@ -660,6 +663,7 @@
 				F28C95A80322AA0D40CDF4EA /* ThemePickerView.swift in Sources */,
 				764180AA7D4B3A82B264A860 /* Tuner.swift in Sources */,
 				273B01499313B7B6380E5DFE /* Typography.swift in Sources */,
+				FCDEF2C219A775F3D0FF6855 /* WatchLayout.swift in Sources */,
 				52F5E9A394A0412E44A1856B /* WatchView.swift in Sources */,
 				3E5BA758E31F9CB8D818F2B0 /* WelcomeStepView.swift in Sources */,
 			);

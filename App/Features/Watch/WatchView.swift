@@ -3,49 +3,61 @@ import SwiftUI
 
 /// The main experience: live TV with the guide and settings layered on top.
 ///
-/// The live picture is a single view that sits full screen behind the player
-/// chrome, or animates into the guide's preview window when the guide opens.
+/// The live picture is a single view: full screen behind the player chrome,
+/// inside the guide's preview window, or picture-in-picture over Settings.
 struct WatchView: View {
+    private enum Overlay: Equatable {
+        case none
+        case guide
+        case settings
+    }
+
     @Environment(AppModel.self) private var app
-    @State private var isGuideVisible = false
-    @State private var isSettingsPresented = false
+    @State private var overlay = Overlay.none
     @State private var previewFrame: CGRect?
 
     var body: some View {
         let tuner = app.tuner
         ZStack {
             Color.black.ignoresSafeArea()
-            if isGuideVisible {
+            switch overlay {
+            case .guide:
                 guide(tuner: tuner)
                     .transition(.opacity)
+            case .settings:
+                SettingsView(onClose: { overlay = .guide })
+                    .transition(.opacity)
+            case .none:
+                EmptyView()
             }
             liveVideo(tuner: tuner)
-            if !isGuideVisible {
-                PlayerChromeView(tuner: tuner, onOpenGuide: { isGuideVisible = true })
+            if overlay == .none {
+                PlayerChromeView(tuner: tuner, onOpenGuide: { overlay = .guide })
                     .transition(.opacity)
             }
         }
         .onPreferenceChange(LivePreviewFrameKey.self) { frame in
             previewFrame = frame
         }
-        .animation(DesignTokens.Motion.standardEase, value: isGuideVisible)
-        .animation(DesignTokens.Motion.standardEase, value: previewFrame)
-        .fullScreenCover(isPresented: $isSettingsPresented) {
-            SettingsView()
-        }
+        .animation(DesignTokens.Motion.pictureInPicture, value: overlay)
+        .animation(DesignTokens.Motion.pictureInPicture, value: previewFrame)
     }
 
-    /// Full screen, or the guide's preview window (reported in global coordinates).
+    /// Full screen, the guide's preview window, or PiP in the bottom-right corner over Settings.
     private func liveVideo(tuner: Tuner) -> some View {
         GeometryReader { screen in
-            let compactFrame = isGuideVisible ? previewFrame : nil
-            let frame = compactFrame ?? CGRect(origin: .zero, size: screen.size)
-            LiveVideoStack(tuner: tuner, isCompact: compactFrame != nil)
-                .frame(width: frame.width, height: frame.height)
-                .offset(x: frame.minX, y: frame.minY)
+            LiveVideoStack(tuner: tuner, window: frame(in: screen.size), screen: screen.size)
         }
         .ignoresSafeArea()
         .allowsHitTesting(false)
+    }
+
+    private func frame(in screen: CGSize) -> CGRect? {
+        switch overlay {
+        case .none: nil
+        case .guide: previewFrame
+        case .settings: WatchLayout.pictureInPictureFrame(in: screen)
+        }
     }
 
     private func guide(tuner: Tuner) -> some View {
@@ -54,10 +66,10 @@ struct WatchView: View {
             tuner: tuner,
             onTune: { channel in
                 tuner.tune(to: channel)
-                isGuideVisible = false
+                overlay = .none
             },
-            onClose: { isGuideVisible = false },
-            onOpenSettings: { isSettingsPresented = true }
+            onClose: { overlay = .none },
+            onOpenSettings: { overlay = .settings }
         )
     }
 }

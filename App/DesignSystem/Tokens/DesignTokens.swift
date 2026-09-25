@@ -50,7 +50,14 @@ enum DesignTokens {
         static let standard: Double = 0.25
         static let relaxed: Double = 0.45
 
+        /// Spring used when the live picture moves between full screen and a window.
+        static let pictureInPictureDuration: Double = 0.5
+        static let pictureInPictureBounce: Double = 0.12
+
         static var quickEase: Animation { .easeOut(duration: quick) }
+        static var pictureInPicture: Animation {
+            .spring(duration: pictureInPictureDuration, bounce: pictureInPictureBounce)
+        }
         static var standardEase: Animation { .easeInOut(duration: standard) }
         static var relaxedEase: Animation { .easeInOut(duration: relaxed) }
     }

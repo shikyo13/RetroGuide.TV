@@ -66,6 +66,14 @@ final class MPVRenderView: UIView {
         metalLayer.contentsScale = UIScreen.main.nativeScale
     }
 
+    /// CAMetalLayer does not track its view's size by itself; keep the drawable
+    /// matching the view so mpv renders at full resolution.
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let scale = metalLayer.contentsScale
+        metalLayer.drawableSize = CGSize(width: bounds.width * scale, height: bounds.height * scale)
+    }
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) is not supported")
