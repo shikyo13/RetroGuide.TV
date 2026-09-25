@@ -58,11 +58,6 @@ enum ScanlineSpec {
     static let alpha: CGFloat = 0.16
 }
 
-enum GlowSpec {
-    static let alpha: CGFloat = 0.14
-    static let radiusToHeight: CGFloat = 0.55
-}
-
 /// Output sizes in points; 2x variants are rendered for Apple TV 4K.
 enum Canvas {
     static let homeIcon = CGSize(width: 400, height: 240)
@@ -119,17 +114,6 @@ func drawBackground(_ context: CGContext, _ size: CGSize) {
     }
 }
 
-func drawGlow(_ context: CGContext, _ size: CGSize) {
-    let center = CGPoint(x: size.width / 2, y: size.height / 2)
-    let gradient = CGGradient(
-        colorsSpace: CGColorSpace(name: CGColorSpace.sRGB),
-        colors: [Palette.accent.copy(alpha: GlowSpec.alpha)!, Palette.accent.copy(alpha: 0)!] as CFArray,
-        locations: [0, 1]
-    )!
-    context.drawRadialGradient(gradient, startCenter: center, startRadius: 0, endCenter: center,
-                               endRadius: GlowSpec.radiusToHeight * size.height, options: [])
-}
-
 func glyphPath(in rect: CGRect) -> CGPath {
     let unit = rect.width
     let path = CGMutablePath()
@@ -184,7 +168,6 @@ func fittedWordmark(targetWidth: CGFloat) -> (width: CGFloat, height: CGFloat, f
 // MARK: - Layers
 
 let backLayer: Draw = { context, size in drawBackground(context, size) }
-let middleLayer: Draw = { context, size in drawGlow(context, size) }
 let frontLayer: Draw = { context, size in
     let mark = fittedWordmark(targetWidth: size.width * Canvas.iconWordmarkWidth)
     mark.draw(context, CGPoint(x: (size.width - mark.width) / 2, y: (size.height - mark.height) / 2))
@@ -192,7 +175,6 @@ let frontLayer: Draw = { context, size in
 
 let topShelf: Draw = { context, size in
     drawBackground(context, size)
-    drawGlow(context, size)
     let mark = fittedWordmark(targetWidth: size.width * Canvas.shelfWordmarkWidth)
     let taglineFont = roundedFont(size: mark.fontSize * Canvas.shelfTaglineToText, weight: .medium)
     let tagline = NSAttributedString(string: WordmarkSpec.tagline,
@@ -233,7 +215,7 @@ func writeImageSet(at directory: URL, size: CGSize, scales: [CGFloat], opaque: B
 func writeImageStack(named name: String, in brand: URL, size: CGSize, scales: [CGFloat]) {
     let stack = brand.appendingPathComponent("\(name).imagestack")
     let layers: [(name: String, draw: Draw, opaque: Bool)] = [
-        ("Front", frontLayer, false), ("Middle", middleLayer, false), ("Back", backLayer, true),
+        ("Front", frontLayer, false), ("Back", backLayer, true),
     ]
     for layer in layers {
         let directory = stack.appendingPathComponent("\(layer.name).imagestacklayer")

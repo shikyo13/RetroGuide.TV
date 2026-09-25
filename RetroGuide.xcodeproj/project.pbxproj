@@ -44,6 +44,7 @@
 		6F616B19949D1E258B35617E /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1576787E4500E23843801F06 /* DesignTokens.swift */; };
 		764180AA7D4B3A82B264A860 /* Tuner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16540AD44B0BC427225A94A4 /* Tuner.swift */; };
 		7682187C070D0105B5CC9127 /* LineupEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE9E450D8C95F92B6095A95 /* LineupEngine.swift */; };
+		7802EC1470B056226DFD541C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A77B0F3DA9D4FC1402E22BED /* PrivacyInfo.xcprivacy */; };
 		78F0A7BBD6035C1683AEA35D /* ChannelManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3933430448AF3B606CA85CF3 /* ChannelManagerView.swift */; };
 		7A97EC4C2488630574448B8A /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEBCBC697963B90B6FE85490 /* AppIdentity.swift */; };
 		83B88E3EDCDB87872742AB45 /* ThemeCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B23A277D13DDAB3F7138C0D /* ThemeCatalog.swift */; };
@@ -82,6 +83,8 @@
 		EE02E369366A08BA4AC32A34 /* GuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B746D8737282E49C370CF911 /* GuideView.swift */; };
 		EFD83E959D6D885EE2791FF4 /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B1848B4217F5A58027419 /* PreferencesStore.swift */; };
 		F28C95A80322AA0D40CDF4EA /* ThemePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D86A861EAF73F92B9F472DD /* ThemePickerView.swift */; };
+		F94DC9CD3CA222C4774E154A /* LGPL-3.0.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8A5891962ED332144D11376D /* LGPL-3.0.txt */; };
+		FBD9B4A0858153289DA317B6 /* AcknowledgementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -134,10 +137,13 @@
 		82759BC73311902FA6622798 /* GuidePreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePreviewPanel.swift; sourceTree = "<group>"; };
 		860DC61A99571D86C2C8FBFD /* RetroGuideKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RetroGuideKit; path = Packages/RetroGuideKit; sourceTree = SOURCE_ROOT; };
 		882F8CA7ECA178E614F9241E /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchView.swift; sourceTree = "<group>"; };
+		8A5891962ED332144D11376D /* LGPL-3.0.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LGPL-3.0.txt"; sourceTree = "<group>"; };
 		8F90413A593D82BD4A01F34C /* PlayerEnginePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerEnginePickerView.swift; sourceTree = "<group>"; };
 		9ACC72B3AD12BDB45141FB2F /* SignalOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalOverlay.swift; sourceTree = "<group>"; };
+		9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoStack.swift; sourceTree = "<group>"; };
 		9EE9E450D8C95F92B6095A95 /* LineupEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineupEngine.swift; sourceTree = "<group>"; };
+		A77B0F3DA9D4FC1402E22BED /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		ADCCA6A01AE43CF824FF252E /* ChannelBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelBanner.swift; sourceTree = "<group>"; };
 		AEF0DB268F4E64DD81622652 /* MPVCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVCore.swift; sourceTree = "<group>"; };
 		B003E790A6BE3A71C2932FF5 /* NoSignalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSignalCard.swift; sourceTree = "<group>"; };
@@ -147,6 +153,7 @@
 		B8E6421682822DF9EB4C7D65 /* Surfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Surfaces.swift; sourceTree = "<group>"; };
 		BC46D819D23A297C0A6FE728 /* RetroGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroGuideApp.swift; sourceTree = "<group>"; };
 		C08BDDF85EEA045DAB1751FA /* PlexLinkStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlexLinkStepView.swift; sourceTree = "<group>"; };
+		C374746B67B1B436DFBF5F5F /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		C4330477A2E3B67DFA76CF32 /* RetroGuide.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RetroGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C81F85483795CE27FA87CAD2 /* ScheduleFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormatting.swift; sourceTree = "<group>"; };
 		CBEB1593C43A740EC7B3A56C /* GuideTimeRuler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideTimeRuler.swift; sourceTree = "<group>"; };
@@ -194,6 +201,14 @@
 				16540AD44B0BC427225A94A4 /* Tuner.swift */,
 			);
 			path = Playback;
+			sourceTree = "<group>";
+		};
+		177F5EBEAD99AF7B8B1CA5D4 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				C374746B67B1B436DFBF5F5F /* Base.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		18989D79AA8E255FEA7890E3 /* Channels */ = {
@@ -306,8 +321,10 @@
 		56090EB5B47FD09BA3392934 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				6A321694709BD60095C98D30 /* Licenses */,
 				5C5C915609130F57A5F8D278 /* Assets.xcassets */,
 				31FB9BE2708E52D814B10E36 /* Info.plist */,
+				A77B0F3DA9D4FC1402E22BED /* PrivacyInfo.xcprivacy */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -334,9 +351,18 @@
 			isa = PBXGroup;
 			children = (
 				E49ED6F8D6A1463828EA8242 /* App */,
+				177F5EBEAD99AF7B8B1CA5D4 /* Config */,
 				C6F20942845302A0EDD1C038 /* Packages */,
 				55AA5BE5591890EB2224CF6C /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		6A321694709BD60095C98D30 /* Licenses */ = {
+			isa = PBXGroup;
+			children = (
+				8A5891962ED332144D11376D /* LGPL-3.0.txt */,
+			);
+			path = Licenses;
 			sourceTree = "<group>";
 		};
 		788D24AD881470383D14540B /* Services */ = {
@@ -428,6 +454,7 @@
 			children = (
 				18989D79AA8E255FEA7890E3 /* Channels */,
 				55C1F96817F655A80B4AF246 /* Components */,
+				9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */,
 				E51AB4FCD7757EA704452150 /* LibrarySettingsView.swift */,
 				8F90413A593D82BD4A01F34C /* PlayerEnginePickerView.swift */,
 				1228ACA50F43CD93B6C327B2 /* ScheduleGridPickerView.swift */,
@@ -484,6 +511,7 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					608C440DC434B32C2FBE8B3F = {
+						DevelopmentTeam = "";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -517,6 +545,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1621D2170E71F4484C39983B /* Assets.xcassets in Resources */,
+				F94DC9CD3CA222C4774E154A /* LGPL-3.0.txt in Resources */,
+				7802EC1470B056226DFD541C /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,6 +558,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F70EBE0D88DE0438F1BB070 /* AVPlaybackEngine.swift in Sources */,
+				FBD9B4A0858153289DA317B6 /* AcknowledgementsView.swift in Sources */,
 				7A97EC4C2488630574448B8A /* AppIdentity.swift in Sources */,
 				63BD91C1071983CC0EF685C4 /* AppModel.swift in Sources */,
 				ABCC8B222377612CB09D67DC /* ArtworkResolver.swift in Sources */,
@@ -607,6 +638,7 @@
 /* Begin XCBuildConfiguration section */
 		1382714E5D8916BD9E83C029 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C374746B67B1B436DFBF5F5F /* Base.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -686,6 +718,7 @@
 		};
 		9624FB8EA8627A13DCA2B906 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = C374746B67B1B436DFBF5F5F /* Base.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;

@@ -77,6 +77,13 @@ struct SettingsView: View {
                         SettingsRowLabel(title: "Sign out", systemImage: "rectangle.portrait.and.arrow.right", value: nil, accessory: nil)
                     }
                 }
+                SettingsSection("About") {
+                    NavigationLink {
+                        AcknowledgementsView()
+                    } label: {
+                        SettingsRowLabel(title: "Acknowledgements", systemImage: "doc.text", value: nil)
+                    }
+                }
                 Text("\(AppIdentity.productName) \(AppIdentity.version) (\(AppIdentity.build)) · Open source under the MIT License")
                     .font(Typography.caption)
                     .foregroundStyle(theme.textSecondary)

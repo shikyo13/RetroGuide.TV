@@ -1,0 +1,4 @@
+// Shared build settings. Signing is configured per developer in Local.xcconfig
+// (git-ignored). Copy Local.xcconfig.example to Local.xcconfig and set your team.
+DEVELOPMENT_TEAM =
+#include? "Local.xcconfig"

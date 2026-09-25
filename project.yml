@@ -20,6 +20,9 @@ packages:
   MPVKit:
     url: https://github.com/mpvkit/MPVKit
     exactVersion: 1.0.0
+configFiles:
+  Debug: Config/Base.xcconfig
+  Release: Config/Base.xcconfig
 targets:
   RetroGuide:
     type: application
@@ -43,6 +46,8 @@ targets:
         NSLocalNetworkUsageDescription: RetroGuide.TV connects to your media server on the local network.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
+        # Only standard HTTPS is used, which is exempt from export documentation.
+        ITSAppUsesNonExemptEncryption: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.adamhunt.retroguide
