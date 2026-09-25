@@ -3,9 +3,18 @@ import Foundation
 /// ``MediaServerClient`` implementation for Plex Media Server.
 public struct PlexServerClient: MediaServerClient {
     private let context: PlexRequestContext
+    private let playback: ServerPlaybackSettings
 
-    public init(serverID: String, baseURL: URL, token: String, identity: PlexClientIdentity, http: HTTPClient = HTTPClient()) {
+    public init(
+        serverID: String,
+        baseURL: URL,
+        token: String,
+        identity: PlexClientIdentity,
+        playback: ServerPlaybackSettings = .local,
+        http: HTTPClient = HTTPClient()
+    ) {
         context = PlexRequestContext(serverID: serverID, baseURL: baseURL, token: token, identity: identity, http: http)
+        self.playback = playback
     }
 
     public var serverID: String {
@@ -36,25 +45,33 @@ public struct PlexServerClient: MediaServerClient {
         startingAt position: TimeInterval,
         capabilities: PlaybackCapabilities
     ) throws -> StreamRequest {
-        if DirectPlayPolicy.canDirectPlay(item.playback, with: capabilities), let filePath = item.playback?.filePath {
+        let version = MediaVersionSelector.best(of: item.versions, for: playback.quality)
+        if DirectPlayPolicy.canDirectPlay(version, with: capabilities), let filePath = version?.filePath {
             return try directPlayRequest(filePath: filePath, position: position)
         }
-        return try directStreamRequest(for: item, position: position)
+        return try directStreamRequest(for: item, mediaIndex: version?.index ?? .zero, position: position)
     }
 
     /// The original file; the player seeks to the live position itself.
     private func directPlayRequest(filePath: String, position: TimeInterval) throws -> StreamRequest {
         let url = try context.builder.url(path: filePath, query: [URLQueryItem(name: PlexAPI.Header.token, value: context.token)])
-        return StreamRequest(url: url, startPosition: position, startsAtPosition: false, sessionID: UUID().uuidString, method: .directPlay)
+        return StreamRequest(
+            url: url,
+            startPosition: position,
+            startsAtPosition: false,
+            sessionID: UUID().uuidString,
+            method: .directPlay,
+            buffer: playback.bufferProfile
+        )
     }
 
     /// HLS from the universal transcoder in remux mode, starting at the live position.
-    private func directStreamRequest(for item: MediaItem, position: TimeInterval) throws -> StreamRequest {
+    private func directStreamRequest(for item: MediaItem, mediaIndex: Int, position: TimeInterval) throws -> StreamRequest {
         let sessionID = UUID().uuidString
         let offset = Int(position.rounded(.down))
         let query = context.identity.queryItems + [
             URLQueryItem(name: "path", value: PlexAPI.Path.metadata(item.itemKey)),
-            URLQueryItem(name: "mediaIndex", value: "0"),
+            URLQueryItem(name: "mediaIndex", value: String(mediaIndex)),
             URLQueryItem(name: "partIndex", value: "0"),
             URLQueryItem(name: "protocol", value: PlexAPI.Transcode.protocolHLS),
             URLQueryItem(name: "offset", value: String(offset)),
@@ -75,7 +92,8 @@ public struct PlexServerClient: MediaServerClient {
             startPosition: TimeInterval(offset),
             startsAtPosition: true,
             sessionID: sessionID,
-            method: .directStream
+            method: .directStream,
+            buffer: playback.bufferProfile
         )
     }
 

@@ -113,6 +113,18 @@ final class ServerLibrary {
         store.accounts = accounts
     }
 
+    func setPlayback(_ playback: ServerPlaybackSettings, serverID: String) {
+        guard let index = accounts.firstIndex(where: { $0.id == serverID }) else { return }
+        accounts[index].playback = playback
+        registry.refreshClient(for: accounts[index])
+        store.accounts = accounts
+    }
+
+    /// Each server's quality preference, used when choosing between duplicate copies.
+    var qualityByServer: [String: VideoQuality] {
+        Dictionary(accounts.map { ($0.id, $0.playback.quality) }, uniquingKeysWith: { first, _ in first })
+    }
+
     func removeAll() {
         accounts.map(\.id).forEach(remove(serverID:))
         keychain.removeToken(for: KeychainAccount.plexAccount)
@@ -120,12 +132,18 @@ final class ServerLibrary {
 
     // MARK: - Indexing
 
-    /// Re-indexes every server in parallel. A server that fails is marked
-    /// offline (its cached library, if any, is set aside); this only throws
-    /// when no server could be indexed at all.
-    func refreshAll(progress: @escaping @MainActor (LibraryLoadProgress) -> Void) async throws {
+    /// Re-indexes every server in parallel. `onServerReady` runs as each server
+    /// finishes, so the fastest (usually local) server can go on air before
+    /// slower remote ones are done. A server that fails is marked offline; this
+    /// only throws when no server could be indexed at all.
+    /// - Returns: whether any server failed.
+    @discardableResult
+    func refreshAll(
+        progress: @escaping @MainActor (LibraryLoadProgress) -> Void,
+        onServerReady: @escaping @MainActor () async -> Void
+    ) async throws -> Bool {
         let accounts = accounts
-        let aggregator = ProgressAggregator(serverCount: accounts.count, report: progress)
+        let aggregator = ProgressAggregator(servers: accounts, report: progress)
         var failures: [Error] = []
         await withTaskGroup(of: (ServerAccount, Result<LibrarySnapshot, Error>).self) { group in
             for account in accounts {
@@ -146,9 +164,12 @@ final class ServerLibrary {
                 case let .success(snapshot):
                     snapshots[account.id] = snapshot
                     status[account.id] = .online
+                    aggregator.finish(serverID: account.id, succeeded: true)
                     await snapshotStore.save(snapshot)
+                    await onServerReady()
                 case let .failure(error):
                     status[account.id] = .offline
+                    aggregator.finish(serverID: account.id, succeeded: false)
                     failures.append(error)
                 }
             }
@@ -156,6 +177,7 @@ final class ServerLibrary {
         if let failure = failures.first, failures.count == accounts.count {
             throw failure
         }
+        return !failures.isEmpty
     }
 
     private nonisolated static func download(
@@ -196,7 +218,7 @@ final class ServerLibrary {
         guard account.kind == .plex, let newURL = await relocatePlexServer(account.id) else { return false }
         var updated = account
         updated.baseURL = newURL
-        registry.updateAddress(of: updated)
+        registry.refreshClient(for: updated)
         artworkResolver = registry.artworkResolver
         if let index = accounts.firstIndex(where: { $0.id == account.id }) {
             accounts[index] = updated
@@ -215,21 +237,41 @@ final class ServerLibrary {
     }
 }
 
-/// Combines per-server indexing progress into one overall progress value.
+/// Combines per-server indexing progress into one overall value and one status
+/// line per server ("Komputer: Ready", "C-Limit: Reading TV Shows…").
 @MainActor
 private final class ProgressAggregator {
-    private let serverCount: Int
+    private enum Status {
+        static let waiting = "Waiting…"
+        static let ready = "Ready"
+        static let failed = "Couldn't connect"
+    }
+
+    private let servers: [ServerAccount]
     private let report: @MainActor (LibraryLoadProgress) -> Void
     private var fractions: [String: Double] = [:]
+    private var messages: [String: String] = [:]
 
-    init(serverCount: Int, report: @escaping @MainActor (LibraryLoadProgress) -> Void) {
-        self.serverCount = max(serverCount, 1)
+    init(servers: [ServerAccount], report: @escaping @MainActor (LibraryLoadProgress) -> Void) {
+        self.servers = servers
         self.report = report
     }
 
     func update(serverID: String, with progress: LibraryLoadProgress) {
         fractions[serverID] = progress.fraction
-        let overall = fractions.values.reduce(.zero, +) / Double(serverCount)
-        report(LibraryLoadProgress(fraction: overall, message: progress.message))
+        messages[serverID] = progress.message
+        publish()
+    }
+
+    func finish(serverID: String, succeeded: Bool) {
+        fractions[serverID] = 1
+        messages[serverID] = succeeded ? Status.ready : Status.failed
+        publish()
+    }
+
+    private func publish() {
+        let overall = fractions.values.reduce(.zero, +) / Double(max(servers.count, 1))
+        let lines = servers.map { "\($0.name): \(messages[$0.id] ?? Status.waiting)" }
+        report(LibraryLoadProgress(fraction: overall, message: lines.joined(separator: "\n")))
     }
 }

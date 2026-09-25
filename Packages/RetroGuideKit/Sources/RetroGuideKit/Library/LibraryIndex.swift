@@ -22,20 +22,38 @@ public struct LibraryIndex: Sendable {
         self.facets = LibraryFacets(items: sorted, attributes: attributes, libraries: libraries)
     }
 
-    /// Merges snapshots in priority order (first wins). The same title found on
-    /// several servers is kept once, from the highest-priority server.
-    public init(snapshots: [LibrarySnapshot]) {
-        var seenExternalIDs = Set<String>()
+    /// Merges snapshots in priority order. The same title found on several
+    /// servers is kept once, from the highest-priority server; when one server
+    /// has it more than once (say a 4K and a 1080p library), the copy that best
+    /// matches that server's quality setting wins.
+    public init(snapshots: [LibrarySnapshot], quality: [String: VideoQuality] = [:]) {
+        var chosen: [String: (priority: Int, item: MediaItem)] = [:]
         var items: [MediaItem] = []
-        for snapshot in snapshots {
+        for (priority, snapshot) in snapshots.enumerated() {
+            let preference = quality[snapshot.serverID] ?? .original
             for item in snapshot.items {
-                if let externalID = item.externalID, !seenExternalIDs.insert(externalID).inserted {
+                guard let externalID = item.externalID else {
+                    items.append(item)
                     continue
                 }
-                items.append(item)
+                if let existing = chosen[externalID] {
+                    guard existing.priority == priority,
+                          Self.isBetterFit(item, than: existing.item, for: preference)
+                    else { continue }
+                }
+                chosen[externalID] = (priority, item)
             }
         }
+        items.append(contentsOf: chosen.values.map(\.item))
         self.init(items: items, libraries: Self.displayLibraries(for: snapshots))
+    }
+
+    private static func isBetterFit(_ candidate: MediaItem, than current: MediaItem, for quality: VideoQuality) -> Bool {
+        guard let candidateVersion = MediaVersionSelector.best(of: candidate.versions, for: quality),
+              let currentVersion = MediaVersionSelector.best(of: current.versions, for: quality)
+        else { return false }
+        return MediaVersionSelector.best(of: [currentVersion, candidateVersion], for: quality) == candidateVersion
+            && candidateVersion != currentVersion
     }
 
     /// Libraries with names made unique across servers ("Movies · Komputer").

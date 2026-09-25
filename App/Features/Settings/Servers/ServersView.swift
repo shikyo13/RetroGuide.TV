@@ -19,7 +19,7 @@ struct ServersView: View {
                         SettingsRowLabel(
                             title: account.name,
                             systemImage: statusSymbol(for: account),
-                            value: "\(account.kind.displayName) · \(statusText(for: account))"
+                            value: "\(statusText(for: account)) · \(account.playback.quality.displayName)"
                         )
                     }
                 }

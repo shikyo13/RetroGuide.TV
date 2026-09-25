@@ -89,14 +89,18 @@ struct PlexMetadata: Decodable {
         images?.first { $0.type == PlexAPI.ImageType.clearLogo }?.url
     }
 
-    var playbackInfo: PlaybackInfo? {
-        guard let primary = media?.first else { return nil }
-        return PlaybackInfo(
-            container: primary.container,
-            videoCodec: primary.videoCodec,
-            audioCodec: primary.audioCodec,
-            filePath: primary.parts?.first?.key
-        )
+    var versions: [MediaVersion] {
+        (media ?? []).enumerated().map { index, media in
+            MediaVersion(
+                index: index,
+                container: media.container,
+                videoCodec: media.videoCodec,
+                audioCodec: media.audioCodec,
+                filePath: media.parts?.first?.key,
+                height: media.height,
+                bitrateKbps: media.bitrate
+            )
+        }
     }
 }
 
@@ -104,10 +108,12 @@ struct PlexMedia: Decodable {
     let container: String?
     let videoCodec: String?
     let audioCodec: String?
+    let height: Int?
+    let bitrate: Int?
     let parts: [PlexPart]?
 
     enum CodingKeys: String, CodingKey {
-        case container, videoCodec, audioCodec
+        case container, videoCodec, audioCodec, height, bitrate
         case parts = "Part"
     }
 }

@@ -50,6 +50,25 @@ public enum PlexAPI {
         static let subtitle = 3
     }
 
+    /// Response trimming. Plex returns cast, crew, markers and more by default;
+    /// indexing only needs a fraction of that, which matters over the internet.
+    enum Trim {
+        private static let excludeElements = "excludeElements"
+        private static let excludeFields = "excludeFields"
+
+        /// For full listings: keep genres, countries, images and media versions.
+        static let listing = [
+            URLQueryItem(name: excludeElements, value: "Role,Director,Writer,Producer,Similar,Label,Guid,UltraBlurColors,Marker,Chapter"),
+            URLQueryItem(name: excludeFields, value: "file,tagline"),
+        ]
+
+        /// For membership lookups, where only `ratingKey` is used.
+        static let keysOnly = [
+            URLQueryItem(name: excludeElements, value: "Media,Genre,Country,Collection,Role,Director,Writer,Producer,Similar,Label,Guid,Image,UltraBlurColors,Marker,Chapter"),
+            URLQueryItem(name: excludeFields, value: "summary,tagline,thumb,art,theme,file"),
+        ]
+    }
+
     enum SectionType {
         static let movie = "movie"
         static let show = "show"
@@ -68,7 +87,7 @@ public enum PlexAPI {
         /// Items requested per page when paging through a library.
         static let pageSize = 1_000
         /// Maximum simultaneous requests to one server while indexing.
-        static let maxConcurrentRequests = 6
+        static let maxConcurrentRequests = 10
         static let requestTimeout: TimeInterval = 30
         /// Short timeout used when probing which server address is reachable.
         static let probeTimeout: TimeInterval = 4

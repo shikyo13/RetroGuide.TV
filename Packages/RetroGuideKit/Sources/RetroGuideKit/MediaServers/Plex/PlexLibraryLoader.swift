@@ -22,7 +22,7 @@ struct PlexLibraryLoader: Sendable {
             case .unsupported: continue
             }
         }
-        progress(LibraryLoadProgress(fraction: 1, message: "Done"))
+        progress(LibraryLoadProgress(fraction: 1, message: "Finishing up…"))
         return items
     }
 
@@ -42,7 +42,7 @@ struct PlexLibraryLoader: Sendable {
         memberships.genres = try await membership(library, field: PlexAPI.FilterField.genre, type: .movie)
         memberships.collections = try await collectionMembership(library)
         report(MovieStage.tags, "Reading \(library.title) movies…")
-        let movies = try await context.allMetadata(path: PlexAPI.Path.sectionItems(library.key), query: typeQuery(.movie))
+        let movies = try await context.allMetadata(path: PlexAPI.Path.sectionItems(library.key), query: typeQuery(.movie) + PlexAPI.Trim.listing)
         report(MovieStage.movies, "Indexed \(movies.count) movies")
         return movies.compactMap { PlexItemMapper.movie($0, library: library, memberships: memberships) }
     }
@@ -60,7 +60,7 @@ struct PlexLibraryLoader: Sendable {
     ) async throws -> [MediaItem] {
         report(.zero, "Reading \(library.title)…")
         let path = PlexAPI.Path.sectionItems(library.key)
-        let shows = try await context.allMetadata(path: path, query: typeQuery(.show))
+        let shows = try await context.allMetadata(path: path, query: typeQuery(.show) + PlexAPI.Trim.listing)
         let showsByKey = Dictionary(shows.map { ($0.ratingKey, $0) }, uniquingKeysWith: { first, _ in first })
         report(ShowStage.shows, "Reading genres and networks in \(library.title)…")
 
@@ -70,7 +70,7 @@ struct PlexLibraryLoader: Sendable {
         memberships.collections = try await collectionMembership(library)
         report(ShowStage.tags, "Reading episodes in \(library.title)…")
 
-        let episodes = try await context.allMetadata(path: path, query: typeQuery(.episode))
+        let episodes = try await context.allMetadata(path: path, query: typeQuery(.episode) + PlexAPI.Trim.listing)
         report(1, "Indexed \(episodes.count) episodes from \(shows.count) shows")
         return episodes.compactMap { episode in
             PlexItemMapper.episode(
@@ -98,17 +98,23 @@ struct PlexLibraryLoader: Sendable {
         }
         let path = PlexAPI.Path.sectionItems(library.key)
         let pairs = try await tags.concurrentMap(limit: PlexAPI.Defaults.maxConcurrentRequests) { tag in
-            let query = typeQuery(type) + [URLQueryItem(name: field, value: tag.key)]
+            let query = typeQuery(type) + [URLQueryItem(name: field, value: tag.key)] + PlexAPI.Trim.keysOnly
             let members = try await context.allMetadata(path: path, query: query)
             return (tag.title, members.map(\.ratingKey))
         }
         return invert(pairs)
     }
 
+    /// Only collections large enough to become a channel are expanded; libraries
+    /// often hold hundreds of two- or three-film collections that never qualify.
     private func collectionMembership(_ library: MediaLibrary) async throws -> [String: [String]] {
         let collections = try await context.allMetadata(path: PlexAPI.Path.sectionCollections(library.key))
+            .filter { ($0.childCount ?? .zero) >= LineupOptions.Defaults.collectionMinimumItems }
         let pairs = try await collections.concurrentMap(limit: PlexAPI.Defaults.maxConcurrentRequests) { collection in
-            let children = try await context.allMetadata(path: PlexAPI.Path.collectionChildren(collection.ratingKey))
+            let children = try await context.allMetadata(
+                path: PlexAPI.Path.collectionChildren(collection.ratingKey),
+                query: PlexAPI.Trim.keysOnly
+            )
             return (collection.title, children.map(\.ratingKey))
         }
         return invert(pairs)

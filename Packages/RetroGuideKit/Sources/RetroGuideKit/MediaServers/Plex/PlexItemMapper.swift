@@ -38,7 +38,7 @@ enum PlexItemMapper {
                 logo: metadata.clearLogo,
                 thumbnail: metadata.thumb
             ),
-            playback: metadata.playbackInfo
+            versions: metadata.versions
         )
     }
 
@@ -81,7 +81,7 @@ enum PlexItemMapper {
                 logo: metadata.clearLogo ?? show?.clearLogo,
                 thumbnail: metadata.thumb
             ),
-            playback: metadata.playbackInfo
+            versions: metadata.versions
         )
     }
 

@@ -1,20 +1,37 @@
 import Foundation
 
-/// Technical details of an item's primary media file, used to pick the
-/// cheapest way to play it (see ``DirectPlayPolicy``).
-public struct PlaybackInfo: Codable, Sendable, Hashable {
+/// One playable file of an item. A title can have several versions on a server
+/// (for example a 4K and a 1080p copy, or a Plex "Optimized Version").
+public struct MediaVersion: Codable, Sendable, Hashable {
+    /// The server's index for this version (Plex `mediaIndex`).
+    public let index: Int
     /// File container, e.g. `"mkv"` or `"mp4"`.
     public let container: String?
     public let videoCodec: String?
     public let audioCodec: String?
     /// Server-relative path of the file itself (Plex part key).
     public let filePath: String?
+    /// Vertical resolution in pixels, when known.
+    public let height: Int?
+    /// Overall bitrate in kilobits per second, when known.
+    public let bitrateKbps: Int?
 
-    public init(container: String?, videoCodec: String?, audioCodec: String?, filePath: String?) {
+    public init(
+        index: Int = .zero,
+        container: String?,
+        videoCodec: String?,
+        audioCodec: String?,
+        filePath: String?,
+        height: Int? = nil,
+        bitrateKbps: Int? = nil
+    ) {
+        self.index = index
         self.container = container
         self.videoCodec = videoCodec
         self.audioCodec = audioCodec
         self.filePath = filePath
+        self.height = height
+        self.bitrateKbps = bitrateKbps
     }
 }
 
@@ -49,7 +66,7 @@ public enum DirectPlayPolicy {
     static let videoCodecs: Set<String> = ["h264", "hevc"]
     static let audioCodecs: Set<String> = ["aac", "ac3", "eac3", "alac", "mp3"]
 
-    public static func canDirectPlay(_ info: PlaybackInfo?, with capabilities: PlaybackCapabilities = .appleNative) -> Bool {
+    public static func canDirectPlay(_ info: MediaVersion?, with capabilities: PlaybackCapabilities = .appleNative) -> Bool {
         guard let info, info.filePath != nil else { return false }
         if capabilities.playsAnyFile {
             return true

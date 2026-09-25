@@ -47,10 +47,21 @@ final class MPVCore: @unchecked Sendable {
             ("terminal", "no"),
             ("audio-client-name", "RetroGuide.TV"),
         ]
+        /// The Simulator's Metal driver rejects the large shared buffers libplacebo
+        /// (vo=gpu-next) allocates when uploading software-decoded frames (AV1,
+        /// MPEG-4, RealVideo…), aborting the app. The classic renderer uploads
+        /// differently and works there. Devices keep gpu-next.
+        #if targetEnvironment(simulator)
+        static let platformValues: [(String, String)] = [("vo", "gpu")]
+        #else
+        static let platformValues: [(String, String)] = []
+        #endif
         static let startPositionProperty = "start"
         static let noStartPosition = "none"
         static let windowID = "wid"
         static let trackListProperty = "track-list"
+        static let maxBytesProperty = "demuxer-max-bytes"
+        static let readaheadProperty = "demuxer-readahead-secs"
         /// libmpv log verbosity forwarded to the unified log in debug builds.
         static let debugLogLevel = "info"
     }
@@ -71,7 +82,7 @@ final class MPVCore: @unchecked Sendable {
         self.handle = handle
         var windowID = Int64(Int(bitPattern: Unmanaged.passUnretained(layer).toOpaque()))
         mpv_set_option(handle, Option.windowID, MPV_FORMAT_INT64, &windowID)
-        for (name, value) in Option.values {
+        for (name, value) in Option.values + Option.platformValues {
             mpv_set_option_string(handle, name, value)
         }
         #if DEBUG
@@ -101,9 +112,12 @@ final class MPVCore: @unchecked Sendable {
 
     /// Loads `url`, optionally starting at `startPosition` seconds. When the server
     /// supplied a track selection it is applied as soon as the file has loaded.
-    func load(_ url: URL, startPosition: TimeInterval?, tracks: TrackSelection?, generation: Int) {
+    func load(_ url: URL, startPosition: TimeInterval?, tracks: TrackSelection?, buffer: BufferProfile, generation: Int) {
         guard let handle else { return }
         setGeneration(generation, tracks: tracks)
+        let cache = MPVBufferSettings(buffer)
+        mpv_set_property_string(handle, Option.maxBytesProperty, cache.maxBytes)
+        mpv_set_property_string(handle, Option.readaheadProperty, cache.readaheadSeconds)
         let start = startPosition.map { String(format: "%.1f", $0) } ?? Option.noStartPosition
         mpv_set_property_string(handle, Option.startPositionProperty, start)
         command(["loadfile", url.absoluteString, "replace"])
@@ -208,6 +222,24 @@ final class MPVCore: @unchecked Sendable {
             }
         default:
             return nil
+        }
+    }
+}
+
+/// Network cache sizes per ``BufferProfile``. Extended buffering reads far
+/// ahead to ride out slow or uneven connections to remote servers.
+struct MPVBufferSettings {
+    let maxBytes: String
+    let readaheadSeconds: String
+
+    init(_ profile: BufferProfile) {
+        switch profile {
+        case .standard:
+            maxBytes = "64MiB"
+            readaheadSeconds = "20"
+        case .extended:
+            maxBytes = "192MiB"
+            readaheadSeconds = "120"
         }
     }
 }

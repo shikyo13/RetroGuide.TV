@@ -43,6 +43,9 @@ final class AppModel {
     @ObservationIgnored private let store: PreferencesStore
     @ObservationIgnored private let engine = LineupEngine()
     @ObservationIgnored private var healthTask: Task<Void, Never>?
+    /// The channel to return to once a slower server brings it into the lineup,
+    /// and the tune it replaced (so we don't override a channel the viewer chose).
+    @ObservationIgnored private var pendingResume: (channelID: String, tuneGeneration: Int)?
 
     init(store: PreferencesStore = PreferencesStore(), snapshotStore: LibrarySnapshotStore = LibrarySnapshotStore()) {
         self.store = store
@@ -138,6 +141,15 @@ final class AppModel {
         await refreshLibrary()
     }
 
+    /// Applies a server's quality/buffering settings and rejoins the current channel.
+    func updatePlayback(_ playback: ServerPlaybackSettings, serverID: String) async {
+        servers.setPlayback(playback, serverID: serverID)
+        await rebuildIndexAndLineup()
+        if let channel = tuner.channel {
+            tuner.tune(to: channel)
+        }
+    }
+
     func signOut() {
         healthTask?.cancel()
         tuner.powerOff()
@@ -164,15 +176,21 @@ final class AppModel {
             phase = .indexing(LibraryLoadProgress(fraction: .zero, message: "Connecting…"))
         }
         do {
-            try await servers.refreshAll { [weak self] progress in
-                if showsProgress { self?.phase = .indexing(progress) }
-            }
+            let hadFailures = try await servers.refreshAll(
+                progress: { [weak self] progress in
+                    guard let self, showsProgress, phase != .ready else { return }
+                    phase = .indexing(progress)
+                },
+                onServerReady: { [weak self] in
+                    // Go on air as soon as any server is ready; others merge in as they finish.
+                    await self?.rebuildIndexAndLineup()
+                    self?.goOnAir()
+                }
+            )
             lastRefreshed = .now
             refreshError = offlineServersMessage
-            await rebuildIndexAndLineup()
-            if phase != .ready {
-                phase = .ready
-                turnOn()
+            if hadFailures {
+                await rebuildIndexAndLineup()
             }
         } catch {
             refreshError = error.localizedDescription
@@ -265,7 +283,7 @@ final class AppModel {
 
     private func rebuildIndexAndLineup() async {
         let snapshots = servers.activeSnapshots
-        libraryIndex = await engine.makeIndex(from: snapshots)
+        libraryIndex = await engine.makeIndex(from: snapshots, quality: servers.qualityByServer)
         await rebuildLineup()
         #if DEBUG
         let perServer = snapshots.map { "\($0.serverName)=\($0.items.count)" }.joined(separator: " ")
@@ -277,16 +295,38 @@ final class AppModel {
     private func rebuildLineup() async {
         lineup = await engine.makeLineup(index: libraryIndex, customization: customization, grid: preferences.scheduleGrid)
         tuner.setChannels(visibleChannels)
+        resumeLastChannelIfAvailable()
         searchIndex = await engine.makeSearchIndex(channels: lineup)
+    }
+
+    private func goOnAir() {
+        guard phase != .ready else { return }
+        phase = .ready
+        turnOn()
     }
 
     /// Powers the "TV" on to the last watched channel (or the first one).
     private func turnOn() {
         let channels = visibleChannels
         tuner.setChannels(channels)
-        guard tuner.channel == nil,
-              let channel = tuner.channel(withID: preferences.lastChannelID) ?? channels.first
-        else { return }
+        guard tuner.channel == nil else { return }
+        if let lastChannel = tuner.channel(withID: preferences.lastChannelID) {
+            tuner.tune(to: lastChannel)
+        } else if let first = channels.first {
+            let lastChannelID = preferences.lastChannelID
+            tuner.tune(to: first)
+            // The last channel may come from a server that is still indexing.
+            if let lastChannelID {
+                pendingResume = (lastChannelID, tuner.tuneGeneration)
+            }
+        }
+    }
+
+    private func resumeLastChannelIfAvailable() {
+        guard let pending = pendingResume, let channel = tuner.channel(withID: pending.channelID) else { return }
+        pendingResume = nil
+        // Only if the viewer hasn't changed channel since we tuned the fallback.
+        guard tuner.tuneGeneration == pending.tuneGeneration else { return }
         tuner.tune(to: channel)
     }
 

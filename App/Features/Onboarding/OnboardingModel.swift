@@ -125,8 +125,15 @@ final class OnboardingModel {
 
     private func connect(to server: PlexServerCandidate) async {
         do {
-            let baseURL = try await resolver.resolve(server)
-            let account = ServerAccount(id: server.id, kind: .plex, name: server.name, baseURL: baseURL)
+            let connection = try await resolver.resolveConnection(server)
+            let baseURL = connection.url
+            let account = ServerAccount(
+                id: server.id,
+                kind: .plex,
+                name: server.name,
+                baseURL: baseURL,
+                playback: connection.isLocal ? .local : .remote
+            )
             let client = PlexServerClient(serverID: server.id, baseURL: baseURL, token: server.accessToken, identity: identity)
             let libraries = try await client.fetchLibraries().filter(\.isSchedulable)
             step = .choosingLibraries(

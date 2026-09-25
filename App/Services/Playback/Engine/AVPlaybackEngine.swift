@@ -8,6 +8,7 @@ import UIKit
 final class AVPlaybackEngine: PlaybackEngine {
     private enum Tuning {
         static let forwardBufferSeconds: TimeInterval = 6
+        static let extendedForwardBufferSeconds: TimeInterval = 60
         static let seekTimescale: CMTimeScale = 600
     }
 
@@ -42,7 +43,9 @@ final class AVPlaybackEngine: PlaybackEngine {
     /// its own track selection, and direct-play MP4s use the file's defaults.
     func play(_ request: StreamRequest, tracks: TrackSelection?) {
         let item = AVPlayerItem(url: request.url)
-        item.preferredForwardBufferDuration = Tuning.forwardBufferSeconds
+        item.preferredForwardBufferDuration = request.buffer == .extended
+            ? Tuning.extendedForwardBufferSeconds
+            : Tuning.forwardBufferSeconds
         observe(item)
         player.replaceCurrentItem(with: item)
         if !request.startsAtPosition {

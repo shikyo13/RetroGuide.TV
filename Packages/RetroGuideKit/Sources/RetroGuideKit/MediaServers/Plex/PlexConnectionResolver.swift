@@ -22,6 +22,11 @@ public struct PlexConnectionResolver: Sendable {
     }
 
     public func resolve(_ server: PlexServerCandidate) async throws -> URL {
+        try await resolveConnection(server).url
+    }
+
+    /// The best reachable address and whether it is on the local network.
+    public func resolveConnection(_ server: PlexServerCandidate) async throws -> (url: URL, isLocal: Bool) {
         let reachable = await withTaskGroup(of: PlexConnectionCandidate?.self) { group in
             for connection in server.connections {
                 group.addTask { await isReachable(connection, token: server.accessToken) ? connection : nil }
@@ -35,7 +40,7 @@ public struct PlexConnectionResolver: Sendable {
         guard let best = reachable.min(by: { $0.preferenceRank < $1.preferenceRank }) else {
             throw PlexConnectionError.unreachable(serverName: server.name)
         }
-        return best.url
+        return (best.url, best.isLocal)
     }
 
     private func isReachable(_ connection: PlexConnectionCandidate, token: String) async -> Bool {

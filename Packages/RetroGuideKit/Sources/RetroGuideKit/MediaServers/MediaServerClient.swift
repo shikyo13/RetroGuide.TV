@@ -21,13 +21,22 @@ public struct StreamRequest: Sendable, Hashable {
     public let startsAtPosition: Bool
     public let sessionID: String
     public let method: StreamMethod
+    public let buffer: BufferProfile
 
-    public init(url: URL, startPosition: TimeInterval, startsAtPosition: Bool, sessionID: String, method: StreamMethod) {
+    public init(
+        url: URL,
+        startPosition: TimeInterval,
+        startsAtPosition: Bool,
+        sessionID: String,
+        method: StreamMethod,
+        buffer: BufferProfile = .standard
+    ) {
         self.url = url
         self.startPosition = startPosition
         self.startsAtPosition = startsAtPosition
         self.sessionID = sessionID
         self.method = method
+        self.buffer = buffer
     }
 
     /// Whether the server holds resources for this stream that must be released.

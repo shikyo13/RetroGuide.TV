@@ -18,6 +18,28 @@ struct ServerDetailView: View {
                     : "Connected at \(account.baseURL.host() ?? account.baseURL.absoluteString).")
                     .font(Typography.body)
                     .foregroundStyle(theme.textSecondary)
+                SettingsSection("Playback") {
+                    NavigationLink {
+                        VideoQualityPickerView(serverID: serverID)
+                    } label: {
+                        SettingsRowLabel(title: "Video quality", systemImage: "sparkles.tv", value: account.playback.quality.displayName)
+                    }
+                    Button {
+                        var playback = account.playback
+                        playback.extraBuffering.toggle()
+                        Task { await app.updatePlayback(playback, serverID: serverID) }
+                    } label: {
+                        SettingsRowLabel(
+                            title: "Extra buffering",
+                            systemImage: "gauge.with.dots.needle.33percent",
+                            value: account.playback.extraBuffering ? "On" : "Off",
+                            accessory: nil
+                        )
+                    }
+                    Text("Extra buffering reads further ahead so playback rides out slow or uneven internet. Turn it on for servers outside your home.")
+                        .font(Typography.caption)
+                        .foregroundStyle(theme.textSecondary)
+                }
                 SettingsSection("Server") {
                     NavigationLink {
                         LibrarySettingsView(account: account)

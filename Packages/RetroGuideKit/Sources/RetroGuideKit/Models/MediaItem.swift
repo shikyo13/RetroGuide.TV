@@ -28,7 +28,8 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     /// Production countries (show-level for episodes).
     public let countries: [String]
     public let artwork: Artwork
-    public let playback: PlaybackInfo?
+    /// Every version of the file on its server, in the server's order.
+    public let versions: [MediaVersion]
 
     public init(
         serverID: String,
@@ -48,7 +49,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         collections: [String] = [],
         countries: [String] = [],
         artwork: Artwork = Artwork(),
-        playback: PlaybackInfo? = nil
+        versions: [MediaVersion] = []
     ) {
         self.id = Self.makeID(serverID: serverID, itemKey: itemKey)
         self.serverID = serverID
@@ -68,7 +69,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.collections = collections
         self.countries = countries
         self.artwork = artwork
-        self.playback = playback
+        self.versions = versions
     }
 
     public static func makeID(serverID: String, itemKey: String) -> String {

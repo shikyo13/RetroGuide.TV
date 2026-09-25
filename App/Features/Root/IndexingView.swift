@@ -24,7 +24,7 @@ struct IndexingView: View {
                 Text(progress.message)
                     .font(Typography.callout)
                     .foregroundStyle(theme.textSecondary)
-                    .lineLimit(1)
+                    .multilineTextAlignment(.center)
             }
             .frame(width: Layout.contentWidth)
             .panel(padding: DesignTokens.Spacing.xl)

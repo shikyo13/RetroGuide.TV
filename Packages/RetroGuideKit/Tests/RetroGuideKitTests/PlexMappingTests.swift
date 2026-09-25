@@ -41,8 +41,8 @@ struct PlexMappingTests {
 
 @Suite("DirectPlayPolicy")
 struct DirectPlayPolicyTests {
-    private func info(_ container: String, _ video: String, _ audio: String?) -> PlaybackInfo {
-        PlaybackInfo(container: container, videoCodec: video, audioCodec: audio, filePath: "/library/parts/1/file")
+    private func info(_ container: String, _ video: String, _ audio: String?) -> MediaVersion {
+        MediaVersion(container: container, videoCodec: video, audioCodec: audio, filePath: "/library/parts/1/file")
     }
 
     @Test("MP4 with Apple-supported codecs plays directly")
@@ -64,10 +64,10 @@ struct DirectPlayPolicyTests {
 struct PlaybackCapabilitiesTests {
     @Test("A universal player direct plays any file with a path")
     func universalPlaysAnything() {
-        let mkv = PlaybackInfo(container: "mkv", videoCodec: "hevc", audioCodec: "dca", filePath: "/library/parts/1/file.mkv")
+        let mkv = MediaVersion(container: "mkv", videoCodec: "hevc", audioCodec: "dca", filePath: "/library/parts/1/file.mkv")
         #expect(DirectPlayPolicy.canDirectPlay(mkv, with: .universal))
         #expect(!DirectPlayPolicy.canDirectPlay(mkv, with: .appleNative))
-        let pathless = PlaybackInfo(container: "mkv", videoCodec: "h264", audioCodec: "aac", filePath: nil)
+        let pathless = MediaVersion(container: "mkv", videoCodec: "h264", audioCodec: "aac", filePath: nil)
         #expect(!DirectPlayPolicy.canDirectPlay(pathless, with: .universal))
     }
 }

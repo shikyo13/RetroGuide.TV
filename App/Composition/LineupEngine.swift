@@ -9,9 +9,9 @@ struct LineupEngine: Sendable {
         curated = (try? ChannelCatalog.curated()) ?? []
     }
 
-    func makeIndex(from snapshots: [LibrarySnapshot]) async -> LibraryIndex {
+    func makeIndex(from snapshots: [LibrarySnapshot], quality: [String: VideoQuality]) async -> LibraryIndex {
         await Task.detached(priority: .userInitiated) {
-            LibraryIndex(snapshots: snapshots)
+            LibraryIndex(snapshots: snapshots, quality: quality)
         }.value
     }
 

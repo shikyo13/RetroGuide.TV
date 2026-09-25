@@ -37,8 +37,8 @@ final class ServerRegistry {
         clients[account.id] = makeClient(for: account, token: token)
     }
 
-    /// Rebuilds a server's client after its address changed, reusing the stored token.
-    func updateAddress(of account: ServerAccount) {
+    /// Rebuilds a server's client after its address or settings changed, reusing the stored token.
+    func refreshClient(for account: ServerAccount) {
         guard let token = keychain.token(for: account.id) else { return }
         clients[account.id] = makeClient(for: account, token: token)
     }
@@ -59,7 +59,13 @@ final class ServerRegistry {
     private func makeClient(for account: ServerAccount, token: String) -> any MediaServerClient {
         switch account.kind {
         case .plex:
-            PlexServerClient(serverID: account.id, baseURL: account.baseURL, token: token, identity: plexIdentity)
+            PlexServerClient(
+                serverID: account.id,
+                baseURL: account.baseURL,
+                token: token,
+                identity: plexIdentity,
+                playback: account.playback
+            )
         }
     }
 }

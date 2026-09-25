@@ -41,6 +41,7 @@
 		51BF916ECC3E1D006A623355 /* DebugBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0452ECDC6FD9A5997A83DE95 /* DebugBootstrap.swift */; };
 		5252BA898645AA0FADA135DE /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2392974C3257F19F3ED847B4 /* SettingsComponents.swift */; };
 		52F5E9A394A0412E44A1856B /* WatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882F8CA7ECA178E614F9241E /* WatchView.swift */; };
+		6032F5ED0A46B737CD20A950 /* VideoQualityPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FF8EDDA9295A1E94B86BF8 /* VideoQualityPickerView.swift */; };
 		61B84956AE4E2BB297319733 /* RemoteImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C74D1D89B009950D0839113 /* RemoteImage.swift */; };
 		63BD91C1071983CC0EF685C4 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4256AEAB82EABD170AA2AEE3 /* AppModel.swift */; };
 		6B3A730C528D7D5468C49247 /* GuideModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F0A33212F51B2036ADEA1E /* GuideModel.swift */; };
@@ -149,6 +150,7 @@
 		66CC706B5FDE0AED70647579 /* EngineVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineVideoView.swift; sourceTree = "<group>"; };
 		7DCAC7B46690CFA2F832866A /* ProgressTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTrack.swift; sourceTree = "<group>"; };
 		82759BC73311902FA6622798 /* GuidePreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePreviewPanel.swift; sourceTree = "<group>"; };
+		82FF8EDDA9295A1E94B86BF8 /* VideoQualityPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoQualityPickerView.swift; sourceTree = "<group>"; };
 		837678E87635D37172F0F4C4 /* WatchLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLayout.swift; sourceTree = "<group>"; };
 		860DC61A99571D86C2C8FBFD /* RetroGuideKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RetroGuideKit; path = Packages/RetroGuideKit; sourceTree = SOURCE_ROOT; };
 		882F8CA7ECA178E614F9241E /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchView.swift; sourceTree = "<group>"; };
@@ -519,6 +521,7 @@
 				1E70EC001D86A5D672FE0DE6 /* LibrarySettingsView.swift */,
 				E91331A410DCC822983B10A3 /* ServerDetailView.swift */,
 				5E84E989B8E3C2B15E07A741 /* ServersView.swift */,
+				82FF8EDDA9295A1E94B86BF8 /* VideoQualityPickerView.swift */,
 			);
 			path = Servers;
 			sourceTree = "<group>";
@@ -707,6 +710,7 @@
 				F28C95A80322AA0D40CDF4EA /* ThemePickerView.swift in Sources */,
 				764180AA7D4B3A82B264A860 /* Tuner.swift in Sources */,
 				273B01499313B7B6380E5DFE /* Typography.swift in Sources */,
+				6032F5ED0A46B737CD20A950 /* VideoQualityPickerView.swift in Sources */,
 				FCDEF2C219A775F3D0FF6855 /* WatchLayout.swift in Sources */,
 				52F5E9A394A0412E44A1856B /* WatchView.swift in Sources */,
 				3E5BA758E31F9CB8D818F2B0 /* WelcomeStepView.swift in Sources */,

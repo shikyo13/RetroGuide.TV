@@ -38,6 +38,7 @@ final class MPVPlaybackEngine: PlaybackEngine {
             request.url,
             startPosition: request.startsAtPosition ? nil : request.startPosition,
             tracks: tracks,
+            buffer: request.buffer,
             generation: generation
         )
     }
