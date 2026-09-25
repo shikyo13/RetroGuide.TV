@@ -536,7 +536,7 @@
 				B3C65CD6D2A06C1BF07504F9 /* Sources */,
 				39F08EA703C560231C063BCC /* Resources */,
 				0C53D83939CFDE7F7AF06BE5 /* Frameworks */,
-				9706430B9F0D62379B778037 /* Fix embedded framework versions */,
+				3DC90C01512CAA3D0853878C /* Remove codeless framework stubs */,
 			);
 			buildRules = (
 			);
@@ -603,7 +603,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		9706430B9F0D62379B778037 /* Fix embedded framework versions */ = {
+		3DC90C01512CAA3D0853878C /* Remove codeless framework stubs */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -613,14 +613,14 @@
 			);
 			inputPaths = (
 			);
-			name = "Fix embedded framework versions";
+			name = "Remove codeless framework stubs";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Scripts/fix-embedded-framework-versions.sh\"";
+			shellScript = "\"${SRCROOT}/Scripts/remove-codeless-framework-stubs.sh\"";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -755,7 +755,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -836,7 +836,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
