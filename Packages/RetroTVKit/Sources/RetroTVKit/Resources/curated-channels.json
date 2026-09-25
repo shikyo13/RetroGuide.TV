@@ -1,0 +1,940 @@
+[
+  {
+    "id": "curated.sitcoms",
+    "number": 2,
+    "name": "Laugh Track",
+    "callSign": "LAFF",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Comedy"
+      ],
+      "excludedGenres": [
+        "Animation",
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.toons",
+    "number": 3,
+    "name": "Toon Town",
+    "callSign": "TOON",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Animation"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ],
+      "audiences": [
+        "kids",
+        "family"
+      ]
+    }
+  },
+  {
+    "id": "curated.adult-animation",
+    "number": 4,
+    "name": "Late Night Toons",
+    "callSign": "LNT",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Animation"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ],
+      "audiences": [
+        "teen",
+        "mature"
+      ]
+    }
+  },
+  {
+    "id": "curated.anime",
+    "number": 5,
+    "name": "Anime Block",
+    "callSign": "ANME",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.drama",
+    "number": 6,
+    "name": "Primetime Drama",
+    "callSign": "DRMA",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Drama"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.crime",
+    "number": 7,
+    "name": "Crime Time",
+    "callSign": "CRIM",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Crime",
+        "Mystery"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.scifi",
+    "number": 8,
+    "name": "Sci-Fi Zone",
+    "callSign": "SCFI",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Science Fiction",
+        "Sci-Fi & Fantasy"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.horror",
+    "number": 9,
+    "name": "Fright Night",
+    "callSign": "FRGT",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Horror"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.thriller",
+    "number": 10,
+    "name": "Edge of Your Seat",
+    "callSign": "EDGE",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Thriller",
+        "Suspense"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.action",
+    "number": 11,
+    "name": "Action Hour",
+    "callSign": "ACTN",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Action",
+        "Adventure"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.fantasy",
+    "number": 12,
+    "name": "Realms",
+    "callSign": "RLMS",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Fantasy"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.family",
+    "number": 13,
+    "name": "Family Room",
+    "callSign": "FAM",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Family"
+      ],
+      "audiences": [
+        "kids",
+        "family"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.kids",
+    "number": 14,
+    "name": "Kids Club",
+    "callSign": "KIDS",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "Children",
+        "Kids"
+      ],
+      "audiences": [
+        "kids",
+        "family"
+      ]
+    }
+  },
+  {
+    "id": "curated.docs",
+    "number": 15,
+    "name": "The Doc Channel",
+    "callSign": "DOCS",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Documentary"
+      ]
+    }
+  },
+  {
+    "id": "curated.history",
+    "number": 16,
+    "name": "History Hour",
+    "callSign": "HIST",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "History",
+        "Biography",
+        "War & Politics"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.reality",
+    "number": 17,
+    "name": "Reality Check",
+    "callSign": "REAL",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Reality"
+      ]
+    }
+  },
+  {
+    "id": "curated.game-shows",
+    "number": 18,
+    "name": "Game Night",
+    "callSign": "GAME",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Game Show"
+      ]
+    }
+  },
+  {
+    "id": "curated.talk",
+    "number": 19,
+    "name": "Late Night Talk",
+    "callSign": "TALK",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Talk",
+        "Talk Show"
+      ]
+    }
+  },
+  {
+    "id": "curated.food",
+    "number": 20,
+    "name": "The Kitchen",
+    "callSign": "FOOD",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "Food"
+      ]
+    }
+  },
+  {
+    "id": "curated.travel",
+    "number": 21,
+    "name": "Getaway",
+    "callSign": "TRVL",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "Travel"
+      ]
+    }
+  },
+  {
+    "id": "curated.sports",
+    "number": 22,
+    "name": "Sports Desk",
+    "callSign": "SPRT",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "Sport",
+        "Sports"
+      ]
+    }
+  },
+  {
+    "id": "curated.western",
+    "number": 23,
+    "name": "Wild West",
+    "callSign": "WEST",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "Western"
+      ]
+    }
+  },
+  {
+    "id": "curated.war",
+    "number": 24,
+    "name": "War Stories",
+    "callSign": "WAR",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "War",
+        "War & Politics"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.romance",
+    "number": 25,
+    "name": "Heartstrings",
+    "callSign": "LOVE",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "genres": [
+        "Romance"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.music",
+    "number": 26,
+    "name": "Music Box",
+    "callSign": "MUSC",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "Music",
+        "Musical"
+      ]
+    }
+  },
+  {
+    "id": "curated.martial-arts",
+    "number": 27,
+    "name": "Kung Fu Theater",
+    "callSign": "KUNG",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "Martial Arts"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.classic-tv",
+    "number": 30,
+    "name": "Classic TV",
+    "callSign": "CLSC",
+    "ordering": "syndication",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "decades": [
+        1950,
+        1960,
+        1970
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.tv-80s",
+    "number": 31,
+    "name": "Totally 80s TV",
+    "callSign": "TV80",
+    "ordering": "syndication",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "decades": [
+        1980
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.tv-90s",
+    "number": 32,
+    "name": "90s Rewind",
+    "callSign": "TV90",
+    "ordering": "syndication",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "decades": [
+        1990
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.tv-00s",
+    "number": 33,
+    "name": "Y2K TV",
+    "callSign": "Y2K",
+    "ordering": "syndication",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "decades": [
+        2000
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.tv-10s",
+    "number": 34,
+    "name": "2010s TV",
+    "callSign": "TV10",
+    "ordering": "syndication",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "decades": [
+        2010
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.tv-20s",
+    "number": 35,
+    "name": "Now on TV",
+    "callSign": "NOW",
+    "ordering": "blockShuffle",
+    "rule": {
+      "kinds": [
+        "episode"
+      ],
+      "decades": [
+        2020
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.movies",
+    "number": 40,
+    "name": "The Movie Channel",
+    "callSign": "MOVI",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ]
+    }
+  },
+  {
+    "id": "curated.blockbusters",
+    "number": 41,
+    "name": "Blockbusters",
+    "callSign": "BLCK",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Action",
+        "Adventure"
+      ]
+    }
+  },
+  {
+    "id": "curated.comedy-movies",
+    "number": 42,
+    "name": "Comedy Movies",
+    "callSign": "CMDY",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Comedy"
+      ]
+    }
+  },
+  {
+    "id": "curated.family-movies",
+    "number": 43,
+    "name": "Family Flix",
+    "callSign": "FLIX",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Family",
+        "Animation",
+        "Children"
+      ],
+      "audiences": [
+        "kids",
+        "family"
+      ]
+    }
+  },
+  {
+    "id": "curated.horror-movies",
+    "number": 44,
+    "name": "Scream Screen",
+    "callSign": "SCRM",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Horror"
+      ]
+    }
+  },
+  {
+    "id": "curated.scifi-movies",
+    "number": 45,
+    "name": "Sci-Fi Cinema",
+    "callSign": "SFMV",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Science Fiction"
+      ]
+    }
+  },
+  {
+    "id": "curated.drama-movies",
+    "number": 46,
+    "name": "Drama Theater",
+    "callSign": "DRMV",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Drama"
+      ]
+    }
+  },
+  {
+    "id": "curated.thriller-movies",
+    "number": 47,
+    "name": "Suspense Theater",
+    "callSign": "THRL",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Thriller",
+        "Mystery",
+        "Crime"
+      ]
+    }
+  },
+  {
+    "id": "curated.romance-movies",
+    "number": 48,
+    "name": "Date Night",
+    "callSign": "DATE",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Romance"
+      ]
+    }
+  },
+  {
+    "id": "curated.animated-movies",
+    "number": 49,
+    "name": "Animation Station",
+    "callSign": "ANIM",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Animation"
+      ]
+    }
+  },
+  {
+    "id": "curated.classic-movies",
+    "number": 50,
+    "name": "Classic Cinema",
+    "callSign": "CLSM",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "decades": [
+        1920,
+        1930,
+        1940,
+        1950,
+        1960,
+        1970
+      ]
+    }
+  },
+  {
+    "id": "curated.movies-80s",
+    "number": 51,
+    "name": "80s Movies",
+    "callSign": "MV80",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "decades": [
+        1980
+      ]
+    }
+  },
+  {
+    "id": "curated.movies-90s",
+    "number": 52,
+    "name": "90s Movies",
+    "callSign": "MV90",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "decades": [
+        1990
+      ]
+    }
+  },
+  {
+    "id": "curated.movies-00s",
+    "number": 53,
+    "name": "2000s Movies",
+    "callSign": "MV00",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "decades": [
+        2000
+      ]
+    }
+  },
+  {
+    "id": "curated.movies-10s",
+    "number": 54,
+    "name": "2010s Movies",
+    "callSign": "MV10",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "decades": [
+        2010
+      ]
+    }
+  },
+  {
+    "id": "curated.movies-20s",
+    "number": 55,
+    "name": "Now Showing",
+    "callSign": "NEW",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "decades": [
+        2020
+      ]
+    }
+  },
+  {
+    "id": "curated.doc-movies",
+    "number": 56,
+    "name": "Documentary Films",
+    "callSign": "DCMV",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Documentary"
+      ]
+    }
+  },
+  {
+    "id": "curated.anime-movies",
+    "number": 57,
+    "name": "Anime Cinema",
+    "callSign": "ANMV",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.fantasy-movies",
+    "number": 58,
+    "name": "Fantasy Films",
+    "callSign": "FANT",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Fantasy"
+      ]
+    }
+  },
+  {
+    "id": "curated.action-movies-mature",
+    "number": 59,
+    "name": "After Dark",
+    "callSign": "DARK",
+    "ordering": "shuffle",
+    "rule": {
+      "kinds": [
+        "movie"
+      ],
+      "genres": [
+        "Action",
+        "Thriller",
+        "Crime",
+        "Horror"
+      ],
+      "audiences": [
+        "mature"
+      ]
+    }
+  },
+  {
+    "id": "curated.saturday-morning",
+    "number": 60,
+    "name": "Saturday Morning",
+    "callSign": "SAT",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "Animation",
+        "Children",
+        "Family"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ],
+      "audiences": [
+        "kids"
+      ]
+    }
+  },
+  {
+    "id": "curated.mystery",
+    "number": 61,
+    "name": "Whodunit",
+    "callSign": "WHO",
+    "ordering": "shuffle",
+    "rule": {
+      "genres": [
+        "Mystery"
+      ],
+      "excludedGenres": [
+        "Anime"
+      ]
+    }
+  },
+  {
+    "id": "curated.superheroes",
+    "number": 62,
+    "name": "Heroes",
+    "callSign": "HERO",
+    "ordering": "shuffle",
+    "rule": {
+      "keywords": [
+        "batman",
+        "superman",
+        "spider-man",
+        "spider man",
+        "avengers",
+        "x-men",
+        "justice league",
+        "iron man",
+        "captain america",
+        "thor",
+        "wonder woman",
+        "flash"
+      ]
+    }
+  },
+  {
+    "id": "curated.holiday",
+    "number": 63,
+    "name": "Holiday Special",
+    "callSign": "HOLI",
+    "ordering": "shuffle",
+    "rule": {
+      "keywords": [
+        "christmas",
+        "holiday",
+        "halloween",
+        "thanksgiving",
+        "santa",
+        "xmas"
+      ]
+    }
+  }
+]

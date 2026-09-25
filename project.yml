@@ -1,0 +1,63 @@
+# XcodeGen spec. After editing, run `xcodegen generate` and commit the result.
+name: RetroTV
+options:
+  bundleIdPrefix: io.github.retrotv
+  deploymentTarget:
+    tvOS: "17.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_STRICT_CONCURRENCY: complete
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    DEAD_CODE_STRIPPING: YES
+packages:
+  RetroTVKit:
+    path: Packages/RetroTVKit
+  MPVKit:
+    url: https://github.com/mpvkit/MPVKit
+    exactVersion: 1.0.0
+targets:
+  RetroTV:
+    type: application
+    platform: tvOS
+    sources:
+      - path: App
+    dependencies:
+      - package: RetroTVKit
+      # LGPL build of libmpv (not the -GPL product); see NOTICE.
+      - package: MPVKit
+        product: MPVKit
+    info:
+      path: App/Resources/Info.plist
+      properties:
+        CFBundleDisplayName: RetroTV
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIUserInterfaceStyle: Dark
+        UIRequiredDeviceCapabilities: [arm64]
+        NSLocalNetworkUsageDescription: RetroTV connects to your media server on the local network.
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.retrotv.app
+        TARGETED_DEVICE_FAMILY: "3"
+        ASSETCATALOG_COMPILER_APPICON_NAME: App Icon & Top Shelf Image
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: NO
+schemes:
+  RetroTV:
+    build:
+      targets:
+        RetroTV: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    archive:
+      config: Release

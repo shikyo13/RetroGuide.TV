@@ -1,0 +1,32 @@
+{
+  "MediaContainer": {
+    "totalSize": 2,
+    "Metadata": [
+      {
+        "ratingKey": "1001",
+        "type": "episode",
+        "title": "Pilot",
+        "grandparentRatingKey": "900",
+        "grandparentTitle": "Example Show",
+        "parentIndex": 1,
+        "index": 1,
+        "year": 1994,
+        "duration": 1320000,
+        "summary": "The first episode.",
+        "contentRating": "TV-PG",
+        "thumb": "/library/metadata/1001/thumb/1",
+        "grandparentThumb": "/library/metadata/900/thumb/1",
+        "grandparentArt": "/library/metadata/900/art/1",
+        "Genre": [{ "tag": "Comedy" }],
+        "Image": [{ "type": "clearLogo", "url": "/library/metadata/900/clearLogo/1" }]
+      },
+      {
+        "ratingKey": "1002",
+        "type": "episode",
+        "title": "Untimed Extra",
+        "grandparentRatingKey": "900",
+        "grandparentTitle": "Example Show"
+      }
+    ]
+  }
+}

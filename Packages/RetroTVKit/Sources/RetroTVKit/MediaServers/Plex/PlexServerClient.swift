@@ -1,0 +1,103 @@
+import Foundation
+
+/// ``MediaServerClient`` implementation for Plex Media Server.
+public struct PlexServerClient: MediaServerClient {
+    private let context: PlexRequestContext
+
+    public init(serverID: String, baseURL: URL, token: String, identity: PlexClientIdentity, http: HTTPClient = HTTPClient()) {
+        context = PlexRequestContext(serverID: serverID, baseURL: baseURL, token: token, identity: identity, http: http)
+    }
+
+    public var serverID: String {
+        context.serverID
+    }
+
+    public func fetchLibraries() async throws -> [MediaLibrary] {
+        try await context.directories(path: PlexAPI.Path.sections).map { directory in
+            MediaLibrary(serverID: serverID, key: directory.key, title: directory.title, kind: Self.kind(of: directory.type))
+        }
+    }
+
+    public func fetchItems(
+        in libraries: [MediaLibrary],
+        progress: @escaping @Sendable (LibraryLoadProgress) -> Void
+    ) async throws -> [MediaItem] {
+        try await PlexLibraryLoader(context: context).load(libraries, progress: progress)
+    }
+
+    public func streamRequest(
+        for item: MediaItem,
+        startingAt position: TimeInterval,
+        capabilities: PlaybackCapabilities
+    ) throws -> StreamRequest {
+        if DirectPlayPolicy.canDirectPlay(item.playback, with: capabilities), let filePath = item.playback?.filePath {
+            return try directPlayRequest(filePath: filePath, position: position)
+        }
+        return try directStreamRequest(for: item, position: position)
+    }
+
+    /// The original file; the player seeks to the live position itself.
+    private func directPlayRequest(filePath: String, position: TimeInterval) throws -> StreamRequest {
+        let url = try context.builder.url(path: filePath, query: [URLQueryItem(name: PlexAPI.Header.token, value: context.token)])
+        return StreamRequest(url: url, startPosition: position, startsAtPosition: false, sessionID: UUID().uuidString, method: .directPlay)
+    }
+
+    /// HLS from the universal transcoder in remux mode, starting at the live position.
+    private func directStreamRequest(for item: MediaItem, position: TimeInterval) throws -> StreamRequest {
+        let sessionID = UUID().uuidString
+        let offset = Int(position.rounded(.down))
+        let query = context.identity.queryItems + [
+            URLQueryItem(name: "path", value: PlexAPI.Path.metadata(item.itemKey)),
+            URLQueryItem(name: "mediaIndex", value: "0"),
+            URLQueryItem(name: "partIndex", value: "0"),
+            URLQueryItem(name: "protocol", value: PlexAPI.Transcode.protocolHLS),
+            URLQueryItem(name: "offset", value: String(offset)),
+            URLQueryItem(name: "fastSeek", value: "1"),
+            URLQueryItem(name: "directPlay", value: "0"),
+            URLQueryItem(name: "directStream", value: "1"),
+            URLQueryItem(name: "directStreamAudio", value: "1"),
+            URLQueryItem(name: "videoResolution", value: PlexAPI.Transcode.videoResolution),
+            URLQueryItem(name: "maxVideoBitrate", value: String(PlexAPI.Transcode.maxVideoBitrateKbps)),
+            URLQueryItem(name: "location", value: "lan"),
+            URLQueryItem(name: "session", value: sessionID),
+            URLQueryItem(name: "X-Plex-Client-Profile-Extra", value: PlexAPI.Transcode.profileExtra),
+            URLQueryItem(name: PlexAPI.Header.token, value: context.token),
+        ]
+        let url = try context.builder.url(path: PlexAPI.Path.transcodeStart, query: query)
+        return StreamRequest(
+            url: url,
+            startPosition: TimeInterval(offset),
+            startsAtPosition: true,
+            sessionID: sessionID,
+            method: .directStream
+        )
+    }
+
+    public func endStream(sessionID: String) async {
+        let query = [URLQueryItem(name: "session", value: sessionID)]
+        guard let request = try? context.builder.request(path: PlexAPI.Path.transcodeStop, query: query) else { return }
+        _ = try? await context.http.data(for: request)
+    }
+
+    public func imageURL(for reference: String, size: ImageSize) -> URL? {
+        try? context.builder.url(
+            path: PlexAPI.Path.photoTranscode,
+            query: [
+                URLQueryItem(name: "width", value: String(size.width)),
+                URLQueryItem(name: "height", value: String(size.height)),
+                URLQueryItem(name: "minSize", value: "1"),
+                URLQueryItem(name: "upscale", value: "1"),
+                URLQueryItem(name: "url", value: reference),
+                URLQueryItem(name: PlexAPI.Header.token, value: context.token),
+            ]
+        )
+    }
+
+    private static func kind(of type: String?) -> MediaLibrary.Kind {
+        switch type {
+        case PlexAPI.SectionType.movie: .movies
+        case PlexAPI.SectionType.show: .shows
+        default: .unsupported
+        }
+    }
+}
