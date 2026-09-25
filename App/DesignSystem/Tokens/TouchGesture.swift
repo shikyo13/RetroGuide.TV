@@ -6,6 +6,9 @@ enum TouchGesture {
     static let minimumDistance: CGFloat = 24
     /// How far a drag must travel to count as a swipe.
     static let swipeDistance: CGFloat = 60
+    /// Drags starting this close to the top or bottom edge belong to the
+    /// system (Home, Notification Center, Control Center), not the app.
+    static let systemEdgeMargin: CGFloat = 44
 }
 
 /// The dominant direction of a finished drag, or `nil` if it was too short to be a swipe.

@@ -12,16 +12,23 @@ struct PlayerTouchInput: View {
     let onCommand: (PlayerCommand) -> Void
 
     var body: some View {
-        Color.clear
-            .contentShape(Rectangle())
-            .ignoresSafeArea()
-            .onTapGesture {
-                onCommand(isInfoVisible ? .hideInfo : .showNow)
-            }
-            .gesture(
-                DragGesture(minimumDistance: TouchGesture.minimumDistance)
-                    .onEnded { value in handleSwipe(value.translation) }
-            )
+        GeometryReader { proxy in
+            Color.clear
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    onCommand(isInfoVisible ? .hideInfo : .showNow)
+                }
+                .gesture(
+                    DragGesture(minimumDistance: TouchGesture.minimumDistance)
+                        .onEnded { value in
+                            // With the home indicator hidden, iOS hands the first edge
+                            // swipe to the app; leave those to the system.
+                            guard !Self.startsAtSystemEdge(value.startLocation, height: proxy.size.height) else { return }
+                            handleSwipe(value.translation)
+                        }
+                )
+        }
+        .ignoresSafeArea()
             .accessibilityElement()
             .accessibilityLabel("Live TV")
             .accessibilityHint("Double-tap for controls. Swipe up or down to change channel.")
@@ -35,6 +42,10 @@ struct PlayerTouchInput: View {
                 @unknown default: break
                 }
             }
+    }
+
+    private static func startsAtSystemEdge(_ location: CGPoint, height: CGFloat) -> Bool {
+        location.y < TouchGesture.systemEdgeMargin || location.y > height - TouchGesture.systemEdgeMargin
     }
 
     private func handleSwipe(_ translation: CGSize) {
