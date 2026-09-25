@@ -1,6 +1,6 @@
 import Foundation
 
-/// How RetroTV identifies itself to Plex. The client identifier must stay
+/// How RetroGuide identifies itself to Plex. The client identifier must stay
 /// stable per installation so Plex shows a single authorized device.
 public struct PlexClientIdentity: Sendable, Hashable {
     public let clientIdentifier: String

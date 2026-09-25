@@ -3,7 +3,7 @@ import Foundation
 /// A single schedulable piece of media (a movie or an episode) from any server.
 ///
 /// Items are value types that are cached to disk, so they only carry the
-/// metadata RetroTV needs for scheduling and display.
+/// metadata RetroGuide needs for scheduling and display.
 public struct MediaItem: Codable, Sendable, Identifiable {
     /// Globally unique identifier: `"<serverID>/<itemKey>"`.
     public let id: String

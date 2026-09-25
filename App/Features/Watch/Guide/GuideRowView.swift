@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// One channel row: the channel cell followed by its programs in the visible window.

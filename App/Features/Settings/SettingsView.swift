@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Settings home. Presented full screen from the guide; Menu dismisses it.

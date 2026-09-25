@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Visibility, ordering and (for custom channels) editing of a single channel.

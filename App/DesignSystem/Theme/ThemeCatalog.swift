@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// The built-in themes. Hex values here are the single source of truth for color.

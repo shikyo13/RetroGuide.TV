@@ -1,6 +1,6 @@
 import AVFoundation
 import Combine
-import RetroTVKit
+import RetroGuideKit
 import UIKit
 
 /// Apple's AVPlayer. Plays MP4/MOV directly and HLS from the server otherwise.

@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Full-screen progress while the library is indexed for the first time.

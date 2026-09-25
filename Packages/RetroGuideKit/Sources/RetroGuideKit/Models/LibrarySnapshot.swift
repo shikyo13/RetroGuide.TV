@@ -1,6 +1,6 @@
 import Foundation
 
-/// Everything RetroTV knows about one server's selected libraries at a point in time.
+/// Everything RetroGuide knows about one server's selected libraries at a point in time.
 /// Snapshots are cached to disk so the guide appears instantly on launch.
 public struct LibrarySnapshot: Codable, Sendable {
     /// Bump when the cached format changes so stale caches are discarded.

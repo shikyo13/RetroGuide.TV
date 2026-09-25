@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Bottom "info bar" showing the channel and what's on now (or next).

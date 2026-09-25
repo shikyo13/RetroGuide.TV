@@ -1,6 +1,6 @@
 import Foundation
 
-// Wire formats for the subset of the Plex API RetroTV uses. Every field is
+// Wire formats for the subset of the Plex API RetroGuide uses. Every field is
 // optional unless Plex always sends it, so partial metadata never breaks indexing.
 
 struct PlexEnvelope<Content: Decodable>: Decodable {

@@ -1,6 +1,6 @@
 import Foundation
 import Testing
-@testable import RetroTVKit
+@testable import RetroGuideKit
 
 @Suite("ChannelTimeline")
 struct ChannelTimelineTests {

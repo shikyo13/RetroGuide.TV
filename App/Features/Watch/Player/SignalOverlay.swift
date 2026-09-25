@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Full-screen states layered over the video: tuning static, intermission and no signal.

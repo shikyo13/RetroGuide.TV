@@ -1,6 +1,6 @@
 import CoreGraphics
 import Foundation
-import RetroTVKit
+import RetroGuideKit
 
 /// Dimensions and time scale of the program guide.
 enum GuideLayout {

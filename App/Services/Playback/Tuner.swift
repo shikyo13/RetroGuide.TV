@@ -1,5 +1,5 @@
 import Observation
-import RetroTVKit
+import RetroGuideKit
 import UIKit
 
 /// The "cable box": knows which channel is on, joins programs mid-stream,

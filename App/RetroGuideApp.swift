@@ -2,7 +2,7 @@ import AVFoundation
 import SwiftUI
 
 @main
-struct RetroTVApp: App {
+struct RetroGuideApp: App {
     @State private var model = AppModel()
     @Environment(\.scenePhase) private var scenePhase
 

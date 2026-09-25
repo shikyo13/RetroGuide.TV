@@ -1,5 +1,5 @@
 import Foundation
-import RetroTVKit
+import RetroGuideKit
 
 /// Caches library snapshots on disk so the guide is ready instantly at launch.
 ///

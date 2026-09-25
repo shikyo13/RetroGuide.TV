@@ -1,6 +1,6 @@
 import Foundation
 import Observation
-import RetroTVKit
+import RetroGuideKit
 
 /// Focus and scroll state of the program guide.
 ///

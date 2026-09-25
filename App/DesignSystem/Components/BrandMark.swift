@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The RetroTV wordmark with a small TV glyph.
+/// The RetroGuide.TV wordmark: a small TV glyph, "RetroGuide" and an accented ".TV".
 struct BrandMark: View {
     enum Size {
         case compact
@@ -22,9 +22,9 @@ struct BrandMark: View {
         HStack(spacing: DesignTokens.Spacing.sm) {
             Image(systemName: "tv.inset.filled")
                 .foregroundStyle(theme.accent)
-            Text("Retro")
+            Text(AppIdentity.Wordmark.name)
                 .foregroundStyle(theme.textPrimary)
-            + Text("TV")
+            + Text(AppIdentity.Wordmark.suffix)
                 .foregroundStyle(theme.accent)
         }
         .font(size.font)

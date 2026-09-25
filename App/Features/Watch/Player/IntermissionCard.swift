@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// "We'll be right back" card shown in the gap between aligned programs.

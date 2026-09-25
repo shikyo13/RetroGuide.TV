@@ -17,7 +17,7 @@ struct WelcomeStepView: View {
             Text("Your library, on the air.")
                 .font(Typography.display)
                 .foregroundStyle(theme.textPrimary)
-            Text("RetroTV turns your Plex library into live TV channels with a program guide. Flip through channels, drop into whatever is on, and let the schedule do the choosing.")
+            Text("RetroGuide.TV turns your Plex library into live TV channels with a program guide. Flip through channels, drop into whatever is on, and let the schedule do the choosing.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
                 .multilineTextAlignment(.center)

@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Time ruler plus the visible channel rows, with a "now" line across them.

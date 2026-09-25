@@ -5,7 +5,7 @@ public struct MediaLibrary: Codable, Sendable, Hashable, Identifiable {
     public enum Kind: String, Codable, Sendable {
         case movies
         case shows
-        /// Music, photos and other libraries RetroTV cannot schedule.
+        /// Music, photos and other libraries RetroGuide cannot schedule.
         case unsupported
     }
 

@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import UIKit
 
 /// Lifecycle events a playback engine reports for the stream it is playing.
@@ -10,7 +10,7 @@ enum PlaybackEvent: Equatable, Sendable {
     case failed(String)
 }
 
-/// The video players RetroTV can use.
+/// The video players RetroGuide can use.
 enum PlaybackEngineKind: String, Codable, CaseIterable, Identifiable, Sendable {
     /// Bundled libmpv: plays every file directly from the server.
     case universal
@@ -21,7 +21,7 @@ enum PlaybackEngineKind: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var displayName: String {
         switch self {
-        case .universal: "RetroTV Player"
+        case .universal: "RetroGuide Player"
         case .appleNative: "Apple Player"
         }
     }
@@ -34,7 +34,7 @@ enum PlaybackEngineKind: String, Codable, CaseIterable, Identifiable, Sendable {
     }
 }
 
-/// A video player that RetroTV's tuner can drive.
+/// A video player that RetroGuide's tuner can drive.
 ///
 /// Engines own a single rendering view; the UI moves that view between full
 /// screen and the guide's preview window rather than mirroring it.

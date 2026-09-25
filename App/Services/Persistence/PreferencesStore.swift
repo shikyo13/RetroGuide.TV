@@ -1,5 +1,5 @@
 import Foundation
-import RetroTVKit
+import RetroGuideKit
 
 /// User-facing settings. Small and Codable so it fits comfortably in UserDefaults
 /// (tvOS offers no guaranteed persistent file storage beyond that).

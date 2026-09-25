@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Builds or edits a custom channel from any combination of filters, with a live preview.

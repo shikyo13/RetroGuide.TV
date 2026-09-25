@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Chooses whether programs air back to back or start on a broadcast grid.

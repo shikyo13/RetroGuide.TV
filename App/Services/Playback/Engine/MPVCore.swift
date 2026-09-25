@@ -42,7 +42,7 @@ final class MPVCore: @unchecked Sendable {
             ("input-default-bindings", "no"),
             ("ytdl", "no"),
             ("terminal", "no"),
-            ("audio-client-name", "RetroTV"),
+            ("audio-client-name", "RetroGuide.TV"),
         ]
         static let startPositionProperty = "start"
         static let noStartPosition = "none"
@@ -51,12 +51,12 @@ final class MPVCore: @unchecked Sendable {
         static let debugLogLevel = "info"
     }
 
-    private static let logger = Logger(subsystem: "io.github.retrotv", category: "mpv")
+    private static let logger = Logger(subsystem: "com.adamhunt.retroguide", category: "mpv")
 
     var onEvent: EventHandler?
 
     private var handle: OpaquePointer?
-    private let queue = DispatchQueue(label: "io.github.retrotv.mpv", qos: .userInitiated)
+    private let queue = DispatchQueue(label: "com.adamhunt.retroguide.mpv", qos: .userInitiated)
     private var currentGeneration = 0
     private let generationLock = NSLock()
 

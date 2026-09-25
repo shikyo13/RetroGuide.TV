@@ -1,6 +1,6 @@
 import Foundation
 import Observation
-import RetroTVKit
+import RetroGuideKit
 
 /// Root application state: connected servers, the library index, the channel
 /// lineup, preferences and the tuner. Views observe it; features call its intents.

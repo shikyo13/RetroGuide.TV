@@ -1,5 +1,5 @@
 import Foundation
-import RetroTVKit
+import RetroGuideKit
 
 /// Cached formatters for times, ranges and durations shown in the guide and banners.
 @MainActor

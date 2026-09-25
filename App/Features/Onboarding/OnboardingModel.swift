@@ -1,6 +1,6 @@
 import Foundation
 import Observation
-import RetroTVKit
+import RetroGuideKit
 
 /// Drives first-run setup: link Plex → pick a server → pick libraries.
 @MainActor

@@ -1,5 +1,5 @@
 import Foundation
-import RetroTVKit
+import RetroGuideKit
 
 /// Builds and holds one `MediaServerClient` per connected server.
 @MainActor

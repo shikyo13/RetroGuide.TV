@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Upper half of the guide: the tuned channel's live picture and details of the focused program.

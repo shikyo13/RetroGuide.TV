@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Shows the link code and a QR shortcut while waiting for the user to approve.

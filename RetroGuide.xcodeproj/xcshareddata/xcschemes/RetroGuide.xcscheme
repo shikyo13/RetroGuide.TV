@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EBA33149686E9EDF7CF7D307"
-               BuildableName = "RetroTV.app"
-               BlueprintName = "RetroTV"
-               ReferencedContainer = "container:RetroTV.xcodeproj">
+               BlueprintIdentifier = "608C440DC434B32C2FBE8B3F"
+               BuildableName = "RetroGuide.app"
+               BlueprintName = "RetroGuide"
+               ReferencedContainer = "container:RetroGuide.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EBA33149686E9EDF7CF7D307"
-            BuildableName = "RetroTV.app"
-            BlueprintName = "RetroTV"
-            ReferencedContainer = "container:RetroTV.xcodeproj">
+            BlueprintIdentifier = "608C440DC434B32C2FBE8B3F"
+            BuildableName = "RetroGuide.app"
+            BlueprintName = "RetroGuide"
+            ReferencedContainer = "container:RetroGuide.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -57,10 +57,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EBA33149686E9EDF7CF7D307"
-            BuildableName = "RetroTV.app"
-            BlueprintName = "RetroTV"
-            ReferencedContainer = "container:RetroTV.xcodeproj">
+            BlueprintIdentifier = "608C440DC434B32C2FBE8B3F"
+            BuildableName = "RetroGuide.app"
+            BlueprintName = "RetroGuide"
+            ReferencedContainer = "container:RetroGuide.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -76,10 +76,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EBA33149686E9EDF7CF7D307"
-            BuildableName = "RetroTV.app"
-            BlueprintName = "RetroTV"
-            ReferencedContainer = "container:RetroTV.xcodeproj">
+            BlueprintIdentifier = "608C440DC434B32C2FBE8B3F"
+            BuildableName = "RetroGuide.app"
+            BlueprintName = "RetroGuide"
+            ReferencedContainer = "container:RetroGuide.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

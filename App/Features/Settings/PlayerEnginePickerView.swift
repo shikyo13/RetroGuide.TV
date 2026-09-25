@@ -7,7 +7,7 @@ struct PlayerEnginePickerView: View {
 
     var body: some View {
         SettingsPage(title: "Player") {
-            Text("RetroTV plays the original files from your server whenever it can, so your server doesn't have to convert video.")
+            Text("RetroGuide plays the original files from your server whenever it can, so your server doesn't have to convert video.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
             VStack(spacing: DesignTokens.Spacing.sm) {

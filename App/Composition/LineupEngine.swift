@@ -1,5 +1,5 @@
 import Foundation
-import RetroTVKit
+import RetroGuideKit
 
 /// Runs the CPU-heavy parts of lineup generation off the main actor.
 struct LineupEngine: Sendable {

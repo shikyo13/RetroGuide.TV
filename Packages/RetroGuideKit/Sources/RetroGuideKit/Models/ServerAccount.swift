@@ -1,6 +1,6 @@
 import Foundation
 
-/// The media server backends RetroTV can talk to.
+/// The media server backends RetroGuide can talk to.
 public enum ServerKind: String, Codable, Sendable, CaseIterable {
     case plex
 

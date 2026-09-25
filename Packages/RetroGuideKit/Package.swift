@@ -2,23 +2,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "RetroTVKit",
+    name: "RetroGuideKit",
     platforms: [
         .tvOS(.v17),
         .iOS(.v17),
         .macOS(.v14),
     ],
     products: [
-        .library(name: "RetroTVKit", targets: ["RetroTVKit"]),
+        .library(name: "RetroGuideKit", targets: ["RetroGuideKit"]),
     ],
     targets: [
         .target(
-            name: "RetroTVKit",
+            name: "RetroGuideKit",
             resources: [.process("Resources")]
         ),
         .testTarget(
-            name: "RetroTVKitTests",
-            dependencies: ["RetroTVKit"],
+            name: "RetroGuideKitTests",
+            dependencies: ["RetroGuideKit"],
             resources: [.copy("Fixtures")]
         ),
     ]

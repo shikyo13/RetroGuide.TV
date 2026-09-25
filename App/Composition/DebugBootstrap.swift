@@ -1,20 +1,20 @@
 #if DEBUG
 import Foundation
-import RetroTVKit
+import RetroGuideKit
 
 /// Development convenience: seeds a Plex account from environment variables so
 /// the simulator can be pointed at a server without going through onboarding.
 ///
 /// Variables (set in the Xcode scheme or by a launch script, never committed):
-/// `RETROTV_DEV_PLEX_URL`, `RETROTV_DEV_PLEX_TOKEN`, `RETROTV_DEV_PLEX_SERVER_ID`,
-/// `RETROTV_DEV_PLEX_SERVER_NAME`, and optionally `RETROTV_DEV_RESET=1`.
+/// `RETROGUIDE_DEV_PLEX_URL`, `RETROGUIDE_DEV_PLEX_TOKEN`, `RETROGUIDE_DEV_PLEX_SERVER_ID`,
+/// `RETROGUIDE_DEV_PLEX_SERVER_NAME`, and optionally `RETROGUIDE_DEV_RESET=1`.
 enum DebugBootstrap {
     private enum Variable {
-        static let url = "RETROTV_DEV_PLEX_URL"
-        static let token = "RETROTV_DEV_PLEX_TOKEN"
-        static let serverID = "RETROTV_DEV_PLEX_SERVER_ID"
-        static let serverName = "RETROTV_DEV_PLEX_SERVER_NAME"
-        static let reset = "RETROTV_DEV_RESET"
+        static let url = "RETROGUIDE_DEV_PLEX_URL"
+        static let token = "RETROGUIDE_DEV_PLEX_TOKEN"
+        static let serverID = "RETROGUIDE_DEV_PLEX_SERVER_ID"
+        static let serverName = "RETROGUIDE_DEV_PLEX_SERVER_NAME"
+        static let reset = "RETROGUIDE_DEV_RESET"
     }
 
     @MainActor

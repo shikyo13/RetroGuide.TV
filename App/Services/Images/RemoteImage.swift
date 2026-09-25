@@ -1,4 +1,4 @@
-import RetroTVKit
+import RetroGuideKit
 import SwiftUI
 
 /// Asynchronously loaded server artwork with a fade-in and a caller-provided placeholder.

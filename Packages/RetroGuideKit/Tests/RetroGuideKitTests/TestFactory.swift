@@ -1,5 +1,5 @@
 import Foundation
-@testable import RetroTVKit
+@testable import RetroGuideKit
 
 /// Builders for concise, readable test data.
 enum TestFactory {
