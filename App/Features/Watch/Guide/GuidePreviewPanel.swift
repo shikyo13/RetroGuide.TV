@@ -2,11 +2,12 @@ import RetroGuideKit
 import SwiftUI
 
 /// Upper half of the guide: the tuned channel's live picture and details of the focused program.
+/// On iPhone in portrait the picture sits above the details.
 struct GuidePreviewPanel: View {
     private enum Layout {
-        static let logoWidth: CGFloat = 520
-        static let logoHeight: CGFloat = 120
-        static let summaryLines = 3
+        static let logoWidth = PlatformMetric.value(tv: CGFloat(520), touch: 260)
+        static let logoHeight = PlatformMetric.value(tv: CGFloat(120), touch: 56)
+        static let summaryLines = PlatformMetric.value(tv: 3, touch: 2)
         static let backdropFadeStart: CGFloat = 0.1
         static let backdropFadeEnd: CGFloat = 0.9
     }
@@ -14,20 +15,40 @@ struct GuidePreviewPanel: View {
     let tuner: Tuner
     let channel: Channel?
     let program: ScheduledProgram?
+    /// Touch only: tunes to the focused channel.
+    var onWatch: (() -> Void)?
 
     @Environment(\.theme) private var theme
+    /// iPhone in portrait: too narrow to put details beside the picture.
+    @Environment(\.isNarrowLayout) private var isStacked
+    /// iPhone in landscape: short on height, so the panel shrinks and drops extras.
+    @Environment(\.isShortLayout) private var isShort
 
     var body: some View {
-        HStack(spacing: DesignTokens.Spacing.lg) {
-            livePicture
-            details
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(maxHeight: .infinity)
-                .background(alignment: .trailing) { backdrop }
-                .crtEffect(isFullScreen: false)
+        if isStacked {
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+                livePicture
+                details
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            // Full width at its natural 16:9 height; the grid below takes what's left.
+            .fixedSize(horizontal: false, vertical: true)
+        } else {
+            HStack(spacing: DesignTokens.Spacing.lg) {
+                livePicture
+                details
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(maxHeight: .infinity)
+                    .background(alignment: .trailing) { backdrop }
+                    .crtEffect(isFullScreen: false)
+            }
+            .frame(height: panelHeight)
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.large, style: .continuous))
         }
-        .frame(height: GuideLayout.previewHeight)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.large, style: .continuous))
+    }
+
+    private var panelHeight: CGFloat {
+        isShort ? GuideLayout.compactPreviewHeight : GuideLayout.previewHeight
     }
 
     /// A placeholder that tells ``WatchView`` where to place the live picture.
@@ -60,11 +81,17 @@ struct GuidePreviewPanel: View {
                 Text(timing(for: program))
                     .font(Typography.clock)
                     .foregroundStyle(theme.accent)
-                if let summary = program.item.summary {
+                if let summary = program.item.summary, !isShort {
                     Text(summary)
                         .font(Typography.caption)
                         .foregroundStyle(theme.textSecondary)
                         .lineLimit(Layout.summaryLines)
+                }
+                if let onWatch, !isShort {
+                    Button(action: onWatch) {
+                        Label("Watch channel \(channel.number)", systemImage: "play.fill")
+                    }
+                    .buttonStyle(.retroPrimary)
                 }
             }
             .id(program.id)

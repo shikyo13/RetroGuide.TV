@@ -16,6 +16,8 @@ struct WatchView: View {
     @Environment(AppModel.self) private var app
     @State private var overlay = Overlay.none
     @State private var previewFrame: CGRect?
+    @State private var screenSize = CGSize.zero
+    @State private var safeArea = EdgeInsets()
 
     var body: some View {
         let tuner = app.tuner
@@ -38,6 +40,11 @@ struct WatchView: View {
                 EmptyView()
             }
             liveVideo(tuner: tuner)
+            #if os(iOS)
+            if isPictureInPicture {
+                returnToFullScreenTarget
+            }
+            #endif
             if overlay == .none {
                 PlayerChromeView(tuner: tuner, onOpenGuide: { overlay = .guide })
                     .transition(.opacity)
@@ -46,6 +53,21 @@ struct WatchView: View {
         .onPreferenceChange(LivePreviewFrameKey.self) { frame in
             previewFrame = frame
         }
+        .background {
+            // Spans the whole screen, so it reports both the full size and the safe-area insets.
+            GeometryReader { _ in
+                Color.clear
+                    .onGeometryChange(for: CGSize.self) { $0.size } action: { screenSize = $0 }
+                    .onGeometryChange(for: EdgeInsets.self) { $0.safeAreaInsets } action: { safeArea = $0 }
+            }
+            .ignoresSafeArea()
+        }
+        .environment(\.pictureInPictureClearance, WatchLayout.pictureInPictureClearance(in: screenSize))
+        #if os(iOS)
+        .statusBarHidden(overlay == .none)
+        .persistentSystemOverlays(overlay == .none ? .hidden : .automatic)
+        .keepsScreenAwake()
+        #endif
         .animation(DesignTokens.Motion.pictureInPicture, value: overlay)
         .animation(DesignTokens.Motion.pictureInPicture, value: previewFrame)
     }
@@ -63,21 +85,51 @@ struct WatchView: View {
         switch overlay {
         case .none: nil
         case .guide: previewFrame
-        case .settings, .search: WatchLayout.pictureInPictureFrame(in: screen)
+        case .settings, .search: WatchLayout.pictureInPictureFrame(in: screen, safeArea: pictureInPictureSafeArea)
         }
     }
+
+    private var isPictureInPicture: Bool {
+        overlay == .settings || overlay == .search
+    }
+
+    /// Apple TV's PiP insets already account for overscan.
+    private var pictureInPictureSafeArea: EdgeInsets {
+        PlatformMetric.value(tv: EdgeInsets(), touch: safeArea)
+    }
+
+    #if os(iOS)
+    /// Tapping the PiP window goes back to watching full screen.
+    private var returnToFullScreenTarget: some View {
+        GeometryReader { screen in
+            let window = WatchLayout.pictureInPictureFrame(in: screen.size, safeArea: pictureInPictureSafeArea)
+            Button {
+                overlay = .none
+            } label: {
+                Color.clear
+            }
+            .buttonStyle(InvisibleButtonStyle())
+            .frame(width: window.width, height: window.height)
+            .offset(x: window.minX, y: window.minY)
+            .accessibilityLabel("Watch full screen")
+        }
+        .ignoresSafeArea()
+    }
+    #endif
 
     private func guide(tuner: Tuner) -> some View {
         GuideView(
             channels: app.visibleChannels,
             tuner: tuner,
-            onTune: { channel in
-                tuner.tune(to: channel)
-                overlay = .none
-            },
-            onClose: { overlay = .none },
-            onOpenSearch: { overlay = .search },
-            onOpenSettings: { overlay = .settings }
+            actions: GuideActions(
+                onTune: { channel in
+                    tuner.tune(to: channel)
+                    overlay = .none
+                },
+                onClose: { overlay = .none },
+                onOpenSearch: { overlay = .search },
+                onOpenSettings: { overlay = .settings }
+            )
         )
     }
 }

@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ServerPickerStepView: View {
     private enum Layout {
-        static let listWidth: CGFloat = 1_000
+        static let listWidth = PlatformMetric.value(tv: CGFloat(1_000), touch: 600)
     }
 
     let servers: [PlexServerCandidate]
@@ -36,6 +36,6 @@ struct ServerPickerStepView: View {
                 .padding(DesignTokens.Spacing.md)
             }
         }
-        .frame(width: Layout.listWidth)
+        .columnWidth(Layout.listWidth)
     }
 }

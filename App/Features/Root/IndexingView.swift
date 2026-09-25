@@ -4,8 +4,8 @@ import SwiftUI
 /// Full-screen progress while the library is indexed for the first time.
 struct IndexingView: View {
     private enum Layout {
-        static let contentWidth: CGFloat = 900
-        static let progressHeight: CGFloat = 14
+        static let contentWidth = PlatformMetric.value(tv: CGFloat(900), touch: 520)
+        static let progressHeight = PlatformMetric.value(tv: CGFloat(14), touch: 8)
     }
 
     let progress: LibraryLoadProgress
@@ -26,7 +26,7 @@ struct IndexingView: View {
                     .foregroundStyle(theme.textSecondary)
                     .multilineTextAlignment(.center)
             }
-            .frame(width: Layout.contentWidth)
+            .columnWidth(Layout.contentWidth)
             .panel(padding: DesignTokens.Spacing.xl)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

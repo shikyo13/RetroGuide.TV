@@ -1,16 +1,17 @@
 import SwiftUI
 
-/// The app's type scale, sized for viewing from a couch (10-foot UI).
+/// The app's type scale: sized for viewing from a couch on Apple TV (10-foot UI)
+/// and at standard reading sizes on iPhone and iPad.
 enum Typography {
     enum Size {
-        static let display: CGFloat = 76
-        static let title: CGFloat = 52
-        static let headline: CGFloat = 36
-        static let body: CGFloat = 29
-        static let callout: CGFloat = 25
-        static let caption: CGFloat = 22
-        static let micro: CGFloat = 19
-        static let osd: CGFloat = 96
+        static let display = PlatformMetric.value(tv: CGFloat(76), touch: 40)
+        static let title = PlatformMetric.value(tv: CGFloat(52), touch: 28)
+        static let headline = PlatformMetric.value(tv: CGFloat(36), touch: 20)
+        static let body = PlatformMetric.value(tv: CGFloat(29), touch: 17)
+        static let callout = PlatformMetric.value(tv: CGFloat(25), touch: 15)
+        static let caption = PlatformMetric.value(tv: CGFloat(22), touch: 13)
+        static let micro = PlatformMetric.value(tv: CGFloat(19), touch: 11)
+        static let osd = PlatformMetric.value(tv: CGFloat(96), touch: 56)
     }
 
     /// How far text may shrink to fit before truncating.

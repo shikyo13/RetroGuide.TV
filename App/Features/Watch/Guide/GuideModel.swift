@@ -4,9 +4,10 @@ import RetroGuideKit
 
 /// Focus and scroll state of the program guide.
 ///
-/// The grid is one focusable element; this model interprets remote moves the
-/// way a cable box does: up/down change channel rows, left/right step between
-/// programs, and the visible time window follows the focus.
+/// On Apple TV the grid is one focusable element; this model interprets remote
+/// moves the way a cable box does: up/down change channel rows, left/right step
+/// between programs, and the visible time window follows the focus. On iPhone
+/// and iPad the viewer selects programs by tapping and pages through time.
 @MainActor
 @Observable
 final class GuideModel {
@@ -16,6 +17,8 @@ final class GuideModel {
     private(set) var windowStart: Date
     /// The instant used to pick the focused program within the focused row.
     private(set) var focusAnchor: Date
+    /// How many guide slots fit across the grid.
+    private(set) var visibleSlots = GuideLayout.Time.visibleSlots
 
     init(channels: [Channel], focusedChannelID: String?, now: Date = .now) {
         self.channels = channels
@@ -29,7 +32,7 @@ final class GuideModel {
     // MARK: - Derived
 
     var windowEnd: Date {
-        windowStart.addingTimeInterval(GuideLayout.Time.window)
+        windowStart.addingTimeInterval(TimeInterval(visibleSlots) * GuideLayout.Time.slot)
     }
 
     var window: DateInterval {
@@ -102,6 +105,31 @@ final class GuideModel {
     func jumpToNow() {
         windowStart = GuideLayout.slotStart(containing: .now)
         focusAnchor = .now
+    }
+
+    // MARK: - Touch
+
+    /// Focuses `program` on `row`, as when it is tapped.
+    func select(row: Int, program: ScheduledProgram) {
+        guard channels.indices.contains(row) else { return }
+        focusedRow = row
+        focusAnchor = anchor(for: program)
+    }
+
+    /// Moves the visible window by whole slots, between now and the lookahead
+    /// limit, keeping focus on the same row at the start of the new window.
+    func shiftWindow(bySlots slots: Int) {
+        let earliest = GuideLayout.slotStart(containing: .now)
+        let latest = GuideLayout.slotStart(containing: Date.now.addingTimeInterval(GuideLayout.Time.lookahead))
+        let shifted = windowStart.addingTimeInterval(TimeInterval(slots) * GuideLayout.Time.slot)
+        windowStart = min(max(shifted, earliest), latest)
+        // Land on what's playing a little into the window, not a sliver at its edge.
+        focusAnchor = max(windowStart.addingTimeInterval(GuideLayout.Time.minimumVisible), .now)
+    }
+
+    /// Adapts the window to the screen width (for example on rotation).
+    func setVisibleSlots(_ slots: Int) {
+        visibleSlots = slots
     }
 
     // MARK: - Helpers

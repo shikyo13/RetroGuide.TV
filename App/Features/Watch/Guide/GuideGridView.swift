@@ -7,12 +7,14 @@ struct GuideGridView: View {
     let tunedChannelID: String?
     let showsFocus: Bool
 
+    @Environment(\.guideChannelColumnWidth) private var channelColumnWidth
+
     var body: some View {
         TimelineView(.periodic(from: .now, by: ScheduleConstants.secondsPerMinute)) { context in
             GeometryReader { proxy in
                 let scale = GuideTimeScale(
                     window: model.window,
-                    width: proxy.size.width - GuideLayout.channelColumnWidth - GuideLayout.cellSpacing
+                    width: proxy.size.width - channelColumnWidth - GuideLayout.cellSpacing
                 )
                 VStack(alignment: .leading, spacing: GuideLayout.rowSpacing) {
                     GuideTimeRuler(scale: scale)
@@ -64,18 +66,19 @@ struct GuideTimeScale {
 }
 
 /// The vertical line marking the current time.
-private struct NowLine: View {
+struct NowLine: View {
     let scale: GuideTimeScale
     let now: Date
 
     @Environment(\.theme) private var theme
+    @Environment(\.guideChannelColumnWidth) private var channelColumnWidth
 
     var body: some View {
         if scale.window.contains(now) {
             Rectangle()
                 .fill(theme.nowLine)
                 .frame(width: GuideLayout.nowLineWidth)
-                .offset(x: GuideLayout.channelColumnWidth + GuideLayout.cellSpacing + scale.x(for: now))
+                .offset(x: channelColumnWidth + GuideLayout.cellSpacing + scale.x(for: now))
                 .allowsHitTesting(false)
         }
     }

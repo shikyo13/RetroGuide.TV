@@ -22,8 +22,8 @@ struct ChannelBadge: View {
     }
 
     private enum Layout {
-        static let regularWidth: CGFloat = 104
-        static let largeWidth: CGFloat = 150
+        static let regularWidth = PlatformMetric.value(tv: CGFloat(104), touch: 64)
+        static let largeWidth = PlatformMetric.value(tv: CGFloat(150), touch: 88)
     }
 
     let number: Int

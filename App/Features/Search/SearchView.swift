@@ -5,7 +5,7 @@ import SwiftUI
 /// Live TV keeps playing picture-in-picture in the bottom-right corner.
 struct SearchView: View {
     private enum Layout {
-        static let resultsWidth: CGFloat = 1_150
+        static let resultsWidth = PlatformMetric.value(tv: CGFloat(1_150), touch: 720)
     }
 
     private enum Timing {
@@ -18,8 +18,10 @@ struct SearchView: View {
 
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
+    @Environment(\.pictureInPictureClearance) private var pictureInPictureClearance
     @State private var query = ""
     @State private var results: [SearchResult] = []
+    @State private var isSearchPresented = false
 
     var body: some View {
         NavigationStack {
@@ -39,20 +41,56 @@ struct SearchView: View {
                             .foregroundStyle(theme.textSecondary)
                     }
                 }
-                .frame(width: Layout.resultsWidth, alignment: .leading)
+                .columnWidth(Layout.resultsWidth, alignment: .leading)
                 .padding(.vertical, DesignTokens.Spacing.lg)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .scrollClipDisabled()
-            .searchable(text: $query, prompt: "Shows and movies")
+            .searchField(text: $query, isPresented: $isSearchPresented)
             .screenBackground()
             .crtEffect()
+            #if os(tvOS)
+            .scrollClipDisabled()
+            #else
+            .contentMargins(.horizontal, DesignTokens.Spacing.md, for: .scrollContent)
+            .contentMargins(.bottom, pictureInPictureClearance, for: .scrollContent)
+            .navigationTitle("Search")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Close", action: onClose)
+                }
+            }
+            #endif
         }
+        #if os(tvOS)
         .onExitCommand(perform: onClose)
+        #else
+        // Open ready to type; cancelling the search leaves Search altogether.
+        .onAppear { isSearchPresented = true }
+        .onChange(of: isSearchPresented) { wasPresented, isPresented in
+            if wasPresented, !isPresented { onClose() }
+        }
+        #endif
         .task(id: query) {
             try? await Task.sleep(for: Timing.debounce)
             guard !Task.isCancelled else { return }
             results = app.searchIndex.search(query, at: .now)
         }
+    }
+}
+
+private extension View {
+    /// The search field: the system placement on Apple TV; on iPhone and iPad
+    /// pinned to the top (clear of the picture-in-picture window) with no
+    /// autocorrection, since show titles aren't dictionary words.
+    @ViewBuilder
+    func searchField(text: Binding<String>, isPresented: Binding<Bool>) -> some View {
+        #if os(iOS)
+        searchable(text: text, isPresented: isPresented, placement: .navigationBarDrawer(displayMode: .always), prompt: "Shows and movies")
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+        #else
+        searchable(text: text, prompt: "Shows and movies")
+        #endif
     }
 }

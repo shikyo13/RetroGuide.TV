@@ -4,8 +4,8 @@ import SwiftUI
 /// A search result: poster, title, and when/where it airs next.
 struct SearchResultRow: View {
     private enum Layout {
-        static let posterWidth: CGFloat = 64
-        static let posterHeight: CGFloat = 96
+        static let posterWidth = PlatformMetric.value(tv: CGFloat(64), touch: 40)
+        static let posterHeight = PlatformMetric.value(tv: CGFloat(96), touch: 60)
     }
 
     let result: SearchResult

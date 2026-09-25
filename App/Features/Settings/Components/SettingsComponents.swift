@@ -3,37 +3,55 @@ import SwiftUI
 /// Scrollable settings page with a large title. Content sits to the left so
 /// the picture-in-picture live picture has the bottom-right corner.
 private enum SettingsLayout {
-    static let contentWidth: CGFloat = 1_150
+    static let contentWidth = PlatformMetric.value(tv: CGFloat(1_150), touch: 720)
 }
 
 struct SettingsPage<Content: View>: View {
     let title: String
-    /// Called when Menu is pressed on this page. Pages pushed inside Settings
-    /// leave it `nil` to simply go back one level.
+    /// Closes Settings from its first page (Menu on Apple TV, Done on iPhone
+    /// and iPad). Pages pushed inside Settings leave it `nil` to go back one level.
     var onExit: (() -> Void)?
     @ViewBuilder var content: () -> Content
 
     @Environment(\.theme) private var theme
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.pictureInPictureClearance) private var pictureInPictureClearance
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xl) {
+                #if os(tvOS)
                 Text(title)
                     .font(Typography.title)
                     .foregroundStyle(theme.textPrimary)
+                #endif
                 content()
             }
-            .frame(width: SettingsLayout.contentWidth, alignment: .leading)
+            .columnWidth(SettingsLayout.contentWidth, alignment: .leading)
             .padding(.vertical, DesignTokens.Spacing.xl)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .scrollClipDisabled()
         .screenBackground()
         .crtEffect()
+        #if os(tvOS)
+        // Focused rows grow slightly; let them draw past the scroll edges.
+        .scrollClipDisabled()
         .toolbar(.hidden, for: .navigationBar)
         // Menu goes back one level, or closes Settings from its first page.
         .onExitCommand { (onExit ?? { dismiss() })() }
+        #else
+        .contentMargins(.horizontal, DesignTokens.Spacing.md, for: .scrollContent)
+        .contentMargins(.bottom, pictureInPictureClearance, for: .scrollContent)
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            if let onExit {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done", action: onExit)
+                }
+            }
+        }
+        #endif
     }
 }
 
@@ -95,18 +113,35 @@ struct CheckmarkRow: View {
     let isSelected: Bool
     let action: () -> Void
 
+    /// iPhone in portrait: the detail goes under the title so neither is squeezed.
+    @Environment(\.isNarrowLayout) private var isNarrowLayout
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: DesignTokens.Spacing.md) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                Text(title)
-                    .lineLimit(1)
-                Spacer(minLength: DesignTokens.Spacing.md)
-                if let detail {
-                    Text(detail).secondaryText()
+                if isNarrowLayout {
+                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.hairline) {
+                        titleText
+                        if let detail {
+                            Text(detail).secondaryText()
+                        }
+                    }
+                    Spacer(minLength: .zero)
+                } else {
+                    titleText
+                    Spacer(minLength: DesignTokens.Spacing.md)
+                    if let detail {
+                        Text(detail).secondaryText()
+                    }
                 }
             }
         }
         .buttonStyle(.retroRow)
+    }
+
+    private var titleText: some View {
+        Text(title)
+            .lineLimit(1)
     }
 }

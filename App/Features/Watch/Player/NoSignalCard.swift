@@ -3,7 +3,7 @@ import SwiftUI
 /// Classic color bars with a "No Signal" slate, shown when a stream fails.
 struct NoSignalCard: View {
     private enum Layout {
-        static let slateWidth: CGFloat = 1_100
+        static let slateWidth = PlatformMetric.value(tv: CGFloat(1_100), touch: 520)
         static let mainBarsFraction: CGFloat = 0.67
     }
 
@@ -43,7 +43,7 @@ struct NoSignalCard: View {
                     .font(Typography.caption)
                     .foregroundStyle(theme.textSecondary)
             }
-            .frame(width: Layout.slateWidth)
+            .columnWidth(Layout.slateWidth)
             .panel(padding: DesignTokens.Spacing.xl)
             .background(Color.black.opacity(DesignTokens.Opacity.scrim), in: RoundedRectangle(cornerRadius: DesignTokens.Radius.large))
         }

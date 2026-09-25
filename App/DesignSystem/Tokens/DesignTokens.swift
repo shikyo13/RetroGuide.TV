@@ -1,29 +1,30 @@
 import SwiftUI
 
 /// Layout, shape and motion constants shared by every screen.
-/// Views must use these instead of literal numbers.
+/// Views must use these instead of literal numbers. Sizes have an Apple TV
+/// value and a smaller touch value for iPhone and iPad (see ``PlatformMetric``).
 enum DesignTokens {
     enum Spacing {
-        static let hairline: CGFloat = 2
-        static let xxs: CGFloat = 4
-        static let xs: CGFloat = 8
-        static let sm: CGFloat = 12
-        static let md: CGFloat = 20
-        static let lg: CGFloat = 32
-        static let xl: CGFloat = 48
-        static let xxl: CGFloat = 72
+        static let hairline = PlatformMetric.value(tv: CGFloat(2), touch: 1)
+        static let xxs = PlatformMetric.value(tv: CGFloat(4), touch: 2)
+        static let xs = PlatformMetric.value(tv: CGFloat(8), touch: 6)
+        static let sm = PlatformMetric.value(tv: CGFloat(12), touch: 8)
+        static let md = PlatformMetric.value(tv: CGFloat(20), touch: 12)
+        static let lg = PlatformMetric.value(tv: CGFloat(32), touch: 20)
+        static let xl = PlatformMetric.value(tv: CGFloat(48), touch: 28)
+        static let xxl = PlatformMetric.value(tv: CGFloat(72), touch: 40)
     }
 
     enum Radius {
-        static let small: CGFloat = 8
-        static let medium: CGFloat = 14
-        static let large: CGFloat = 24
+        static let small = PlatformMetric.value(tv: CGFloat(8), touch: 6)
+        static let medium = PlatformMetric.value(tv: CGFloat(14), touch: 10)
+        static let large = PlatformMetric.value(tv: CGFloat(24), touch: 16)
         static let pill: CGFloat = 999
     }
 
     enum Stroke {
-        static let thin: CGFloat = 2
-        static let focus: CGFloat = 4
+        static let thin = PlatformMetric.value(tv: CGFloat(2), touch: 1)
+        static let focus = PlatformMetric.value(tv: CGFloat(4), touch: 2)
     }
 
     enum Opacity {
@@ -35,8 +36,8 @@ enum DesignTokens {
     }
 
     enum Shadow {
-        static let radius: CGFloat = 18
-        static let offsetY: CGFloat = 8
+        static let radius = PlatformMetric.value(tv: CGFloat(18), touch: 10)
+        static let offsetY = PlatformMetric.value(tv: CGFloat(8), touch: 4)
         static let opacity: Double = 0.45
     }
 

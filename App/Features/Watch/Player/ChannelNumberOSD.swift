@@ -3,7 +3,7 @@ import SwiftUI
 /// The big glowing channel number in the corner, like an old TV's on-screen display.
 struct ChannelNumberOSD: View {
     private enum Style {
-        static let glowRadius: CGFloat = 12
+        static let glowRadius = PlatformMetric.value(tv: CGFloat(12), touch: 7)
         static let outlineRadius: CGFloat = 2
     }
 

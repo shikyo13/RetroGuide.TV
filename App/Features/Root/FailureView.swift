@@ -3,7 +3,7 @@ import SwiftUI
 /// A recoverable, full-screen error with a retry action.
 struct FailureView: View {
     private enum Layout {
-        static let contentWidth: CGFloat = 1_000
+        static let contentWidth = PlatformMetric.value(tv: CGFloat(1_000), touch: 560)
     }
 
     let message: String
@@ -27,7 +27,7 @@ struct FailureView: View {
             Button("Try Again", action: retry)
                 .buttonStyle(.retroPrimary)
         }
-        .frame(width: Layout.contentWidth)
+        .columnWidth(Layout.contentWidth)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .screenBackground()
         .crtEffect()

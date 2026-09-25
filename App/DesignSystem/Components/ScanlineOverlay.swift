@@ -8,8 +8,8 @@ struct ScanlineOverlay: View {
         static let lineThickness: CGFloat = 1.5
         static let lineOpacity: Double = 0.16
         static let vignetteOpacity: Double = 0.55
-        static let vignetteStartRadius: CGFloat = 500
-        static let vignetteEndRadius: CGFloat = 1_300
+        static let vignetteStartRadius = PlatformMetric.value(tv: CGFloat(500), touch: 260)
+        static let vignetteEndRadius = PlatformMetric.value(tv: CGFloat(1_300), touch: 680)
     }
 
     var includesVignette = true

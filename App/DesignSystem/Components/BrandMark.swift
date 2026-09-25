@@ -23,7 +23,7 @@ struct BrandMark: View {
     }
 
     /// Glyph width as a fraction of the font size (also used by the app icon generator).
-    static let glyphToTextRatio: CGFloat = 1.1
+    nonisolated static let glyphToTextRatio: CGFloat = 1.1
 
     var size: Size = .compact
 

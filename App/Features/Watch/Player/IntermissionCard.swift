@@ -4,8 +4,8 @@ import SwiftUI
 /// "We'll be right back" card shown in the gap between aligned programs.
 struct IntermissionCard: View {
     private enum Layout {
-        static let posterWidth: CGFloat = 280
-        static let posterHeight: CGFloat = 420
+        static let posterWidth = PlatformMetric.value(tv: CGFloat(280), touch: 110)
+        static let posterHeight = PlatformMetric.value(tv: CGFloat(420), touch: 165)
     }
 
     let channel: Channel

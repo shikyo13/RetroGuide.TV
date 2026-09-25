@@ -33,20 +33,39 @@ struct ChannelRowLabel: View {
 
     @Environment(\.theme) private var theme
     @Environment(\.rowIsFocused) private var rowIsFocused
+    /// iPhone in portrait: the size goes under the name so the name isn't cut off.
+    @Environment(\.isNarrowLayout) private var isNarrowLayout
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
             Text(String(channel.number))
                 .font(Typography.channelNumber)
                 .frame(width: DesignTokens.Spacing.xxl, alignment: .trailing)
-            Text(channel.name)
-                .lineLimit(1)
-            Spacer(minLength: DesignTokens.Spacing.md)
-            Text("\(channel.items.count) programs · \(ScheduleFormatting.hours(channel.totalRuntime))")
-                .secondaryText()
+            if isNarrowLayout {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.hairline) {
+                    name
+                    size
+                }
+                Spacer(minLength: DesignTokens.Spacing.md)
+            } else {
+                name
+                Spacer(minLength: DesignTokens.Spacing.md)
+                size
+            }
             Image(systemName: channel.isHidden ? "eye.slash" : "eye")
                 .secondaryText()
         }
         .opacity(channel.isHidden && !rowIsFocused ? DesignTokens.Opacity.muted : 1)
+    }
+
+    private var name: some View {
+        Text(channel.name)
+            .lineLimit(1)
+    }
+
+    private var size: some View {
+        Text("\(channel.items.count) programs · \(ScheduleFormatting.hours(channel.totalRuntime))")
+            .secondaryText()
+            .lineLimit(1)
     }
 }

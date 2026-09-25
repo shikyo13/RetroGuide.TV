@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WelcomeStepView: View {
     private enum Layout {
-        static let textWidth: CGFloat = 1_100
+        static let textWidth = PlatformMetric.value(tv: CGFloat(1_100), touch: 560)
     }
 
     let onStart: () -> Void
@@ -17,11 +17,12 @@ struct WelcomeStepView: View {
             Text("Your library, on the air.")
                 .font(Typography.display)
                 .foregroundStyle(theme.textPrimary)
+                .multilineTextAlignment(.center)
             Text("RetroGuide.TV turns your Plex library into live TV channels with a program guide. Flip through channels, drop into whatever is on, and let the schedule do the choosing.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
                 .multilineTextAlignment(.center)
-                .frame(width: Layout.textWidth)
+                .columnWidth(Layout.textWidth)
             Button(action: onStart) {
                 Label("Connect Plex", systemImage: "link")
             }

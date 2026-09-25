@@ -4,7 +4,7 @@ import SwiftUI
 /// Multi-select list of libraries. Used in onboarding and in Settings.
 struct LibraryPickerView: View {
     private enum Layout {
-        static let listWidth: CGFloat = 1_000
+        static let listWidth = PlatformMetric.value(tv: CGFloat(1_000), touch: 600)
     }
 
     let libraries: [MediaLibrary]
@@ -50,7 +50,7 @@ struct LibraryPickerView: View {
             .buttonStyle(.retroPrimary)
             .disabled(selection.isEmpty)
         }
-        .frame(width: Layout.listWidth)
+        .columnWidth(Layout.listWidth)
     }
 
     private func toggle(_ id: String) {
