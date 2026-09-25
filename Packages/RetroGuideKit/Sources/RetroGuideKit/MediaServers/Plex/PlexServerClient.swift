@@ -73,6 +73,21 @@ public struct PlexServerClient: MediaServerClient {
         )
     }
 
+    public func trackSelection(for item: MediaItem) async -> TrackSelection? {
+        let builder = RequestBuilder(
+            baseURL: context.baseURL,
+            headers: context.builder.headers,
+            timeout: PlexAPI.Defaults.trackSelectionTimeout
+        )
+        guard let request = try? builder.request(path: PlexAPI.Path.metadata(item.itemKey)),
+              let page = try? await context.http.decode(PlexEnvelope<PlexMetadataPage>.self, for: request),
+              let streams = page.mediaContainer.metadata?.first?.media?.first?.parts?.first?.streams
+        else { return nil }
+        return PlexTrackSelectionMapper.selection(from: streams) { key in
+            try? context.builder.url(path: key, query: [URLQueryItem(name: PlexAPI.Header.token, value: context.token)])
+        }
+    }
+
     public func endStream(sessionID: String) async {
         let query = [URLQueryItem(name: "session", value: sessionID)]
         guard let request = try? context.builder.request(path: PlexAPI.Path.transcodeStop, query: query) else { return }

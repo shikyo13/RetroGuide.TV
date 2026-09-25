@@ -45,7 +45,8 @@ protocol PlaybackEngine: AnyObject {
     var videoView: UIView { get }
     var onEvent: ((PlaybackEvent) -> Void)? { get set }
 
-    func play(_ request: StreamRequest)
+    /// Plays `request`, honoring the server's audio/subtitle selection when known.
+    func play(_ request: StreamRequest, tracks: TrackSelection?)
     func stop()
 }
 

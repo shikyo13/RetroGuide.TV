@@ -70,6 +70,7 @@
 		C0F9BCB17F46A8FD75224803 /* MPVCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF0DB268F4E64DD81622652 /* MPVCore.swift */; };
 		C172B2FB3CFE05F74645CD57 /* GuideGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277431B53EC9DD3EEEFDADB9 /* GuideGridView.swift */; };
 		C1EA2922B2E0452CFF105621 /* ChannelDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE95A2421FA0C633DD728E8 /* ChannelDetailView.swift */; };
+		C556E4646D07A253F94E3258 /* MPVTrackSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B881830F35AE894929CE47 /* MPVTrackSelector.swift */; };
 		C8C458DD7D2834B3706F210B /* PlexLinkStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C08BDDF85EEA045DAB1751FA /* PlexLinkStepView.swift */; };
 		CDB14AEAB71D26F37081A975 /* BrandMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4866448AD788DB8689A527F /* BrandMark.swift */; };
 		CE1C01DE51D07F70A4F400D0 /* ChannelBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCCA6A01AE43CF824FF252E /* ChannelBanner.swift */; };
@@ -156,6 +157,7 @@
 		C374746B67B1B436DFBF5F5F /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		C4330477A2E3B67DFA76CF32 /* RetroGuide.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RetroGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C81F85483795CE27FA87CAD2 /* ScheduleFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormatting.swift; sourceTree = "<group>"; };
+		C9B881830F35AE894929CE47 /* MPVTrackSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVTrackSelector.swift; sourceTree = "<group>"; };
 		CBEB1593C43A740EC7B3A56C /* GuideTimeRuler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideTimeRuler.swift; sourceTree = "<group>"; };
 		D0121D6DF72DF1DCF481F2F7 /* ArtworkResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkResolver.swift; sourceTree = "<group>"; };
 		D0C26D1723E494C6278D25A4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -381,6 +383,7 @@
 				DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */,
 				AEF0DB268F4E64DD81622652 /* MPVCore.swift */,
 				B588766984AE2C0AD5684E00 /* MPVPlaybackEngine.swift */,
+				C9B881830F35AE894929CE47 /* MPVTrackSelector.swift */,
 				D9306874686ECBC895ABC543 /* PlaybackEngine.swift */,
 			);
 			path = Engine;
@@ -619,6 +622,7 @@
 				96EFAD1FAC58EE6D40D218C2 /* LiveVideoStack.swift in Sources */,
 				C0F9BCB17F46A8FD75224803 /* MPVCore.swift in Sources */,
 				B320FC43F4B0A7A00F3941AA /* MPVPlaybackEngine.swift in Sources */,
+				C556E4646D07A253F94E3258 /* MPVTrackSelector.swift in Sources */,
 				E286AAA7E6C9A07DFF641E7E /* NoSignalCard.swift in Sources */,
 				0982F4C63893AE7898CF9C5A /* OnboardingFlowView.swift in Sources */,
 				E428E9102569104BF28B0219 /* OnboardingModel.swift in Sources */,

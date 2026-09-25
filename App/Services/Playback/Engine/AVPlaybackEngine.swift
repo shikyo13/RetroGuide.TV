@@ -38,7 +38,9 @@ final class AVPlaybackEngine: PlaybackEngine {
             }
     }
 
-    func play(_ request: StreamRequest) {
+    /// `tracks` is not needed here: when the server repackages a stream it applies
+    /// its own track selection, and direct-play MP4s use the file's defaults.
+    func play(_ request: StreamRequest, tracks: TrackSelection?) {
         let item = AVPlayerItem(url: request.url)
         item.preferredForwardBufferDuration = Tuning.forwardBufferSeconds
         observe(item)

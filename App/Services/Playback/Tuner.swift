@@ -109,7 +109,7 @@ final class Tuner {
                 try? await Task.sleep(for: Timing.surfSettle)
             }
             guard !Task.isCancelled else { return }
-            self?.startPlayback()
+            await self?.startPlayback()
         }
     }
 
@@ -156,7 +156,7 @@ final class Tuner {
         tune(to: channels[nextIndex], surfing: true)
     }
 
-    private func startPlayback() {
+    private func startPlayback() async {
         guard let channel, let program = channel.timeline.program(at: .now) else {
             signal = .noSignal("Nothing is scheduled on this channel.")
             return
@@ -175,6 +175,10 @@ final class Tuner {
         }
         // Every (re)start shows the tuning state until frames actually play.
         signal = .tuning
+        let generation = tuneGeneration
+        let tracks = await client.trackSelection(for: program.item)
+        // The viewer may have changed channel while the selection was loading.
+        guard generation == tuneGeneration, !Task.isCancelled else { return }
         do {
             let request = try client.streamRequest(
                 for: program.item,
@@ -184,7 +188,7 @@ final class Tuner {
             if request.needsTeardown {
                 activeStream = ActiveStream(client: client, sessionID: request.sessionID)
             }
-            engine.play(request)
+            engine.play(request, tracks: tracks)
             UIApplication.shared.isIdleTimerDisabled = true
             scheduleBoundary(at: program.contentEnd)
         } catch {
@@ -226,7 +230,7 @@ final class Tuner {
                 enterIntermission(until: program.slotEnd)
             } else {
                 signal = .tuning
-                startPlayback()
+                await startPlayback()
             }
         }
     }
@@ -247,7 +251,7 @@ final class Tuner {
         boundaryTask = Task { [weak self] in
             try? await Task.sleep(for: delay)
             guard !Task.isCancelled else { return }
-            self?.startPlayback()
+            await self?.startPlayback()
         }
     }
 

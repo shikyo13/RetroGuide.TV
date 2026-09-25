@@ -28,13 +28,18 @@ final class MPVPlaybackEngine: PlaybackEngine {
         }
     }
 
-    func play(_ request: StreamRequest) {
+    func play(_ request: StreamRequest, tracks: TrackSelection?) {
         guard let core else {
             onEvent?(.failed("The video player could not be started."))
             return
         }
         generation += 1
-        core.load(request.url, startPosition: request.startsAtPosition ? nil : request.startPosition, generation: generation)
+        core.load(
+            request.url,
+            startPosition: request.startsAtPosition ? nil : request.startPosition,
+            tracks: tracks,
+            generation: generation
+        )
     }
 
     func stop() {

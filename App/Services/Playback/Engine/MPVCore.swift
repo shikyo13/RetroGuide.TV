@@ -2,6 +2,7 @@ import Foundation
 import Libmpv
 import OSLog
 import QuartzCore
+import RetroGuideKit
 
 /// Owns one libmpv instance: configuration, commands and the event loop.
 ///
@@ -28,7 +29,9 @@ final class MPVCore: @unchecked Sendable {
             ("demuxer-max-bytes", "64MiB"),
             ("demuxer-max-back-bytes", "16MiB"),
             ("network-timeout", "20"),
-            // Subtitles like broadcast TV / Plex "shown with foreign audio": subtitles in
+            // Fallback only: the server's per-user track selection (see MPVTrackSelector)
+            // overrides these once the file loads. Without it, behave like Plex's
+            // "shown with foreign audio": subtitles in
             // the viewer's language appear when the audio is in another language; when the
             // audio already matches, only forced subtitles (signs, foreign dialogue) show.
             // A file's default track in some other language is never picked.
@@ -47,6 +50,7 @@ final class MPVCore: @unchecked Sendable {
         static let startPositionProperty = "start"
         static let noStartPosition = "none"
         static let windowID = "wid"
+        static let trackListProperty = "track-list"
         /// libmpv log verbosity forwarded to the unified log in debug builds.
         static let debugLogLevel = "info"
     }
@@ -58,6 +62,8 @@ final class MPVCore: @unchecked Sendable {
     private var handle: OpaquePointer?
     private let queue = DispatchQueue(label: "com.adamhunt.retroguide.mpv", qos: .userInitiated)
     private var currentGeneration = 0
+    /// Track selection to apply once the file for `currentGeneration` has loaded.
+    private var pendingTracks: TrackSelection?
     private let generationLock = NSLock()
 
     init?(layer: CAMetalLayer) {
@@ -93,10 +99,11 @@ final class MPVCore: @unchecked Sendable {
 
     // MARK: - Commands
 
-    /// Loads `url`, optionally starting at `startPosition` seconds.
-    func load(_ url: URL, startPosition: TimeInterval?, generation: Int) {
+    /// Loads `url`, optionally starting at `startPosition` seconds. When the server
+    /// supplied a track selection it is applied as soon as the file has loaded.
+    func load(_ url: URL, startPosition: TimeInterval?, tracks: TrackSelection?, generation: Int) {
         guard let handle else { return }
-        setGeneration(generation)
+        setGeneration(generation, tracks: tracks)
         let start = startPosition.map { String(format: "%.1f", $0) } ?? Option.noStartPosition
         mpv_set_property_string(handle, Option.startPositionProperty, start)
         command(["loadfile", url.absoluteString, "replace"])
@@ -116,10 +123,29 @@ final class MPVCore: @unchecked Sendable {
 
     // MARK: - Events
 
-    private func setGeneration(_ generation: Int) {
+    private func setGeneration(_ generation: Int, tracks: TrackSelection?) {
         generationLock.lock()
         currentGeneration = generation
+        pendingTracks = tracks
         generationLock.unlock()
+    }
+
+    private func takePendingTracks() -> TrackSelection? {
+        generationLock.lock()
+        defer { generationLock.unlock() }
+        let tracks = pendingTracks
+        pendingTracks = nil
+        return tracks
+    }
+
+    /// Selects the server's audio/subtitle tracks for the file that just loaded.
+    private func applyPendingTracks(_ handle: OpaquePointer) {
+        guard let tracks = takePendingTracks(),
+              let rawTrackList = mpv_get_property_string(handle, Option.trackListProperty)
+        else { return }
+        let trackList = String(cString: rawTrackList)
+        mpv_free(rawTrackList)
+        MPVTrackSelector.commands(for: tracks, trackListJSON: trackList).forEach(command)
     }
 
     private var generation: Int {
@@ -133,6 +159,9 @@ final class MPVCore: @unchecked Sendable {
             guard let self, let handle = self.handle else { return }
             while let event = mpv_wait_event(handle, .zero), event.pointee.event_id != MPV_EVENT_NONE {
                 Self.log(event.pointee)
+                if event.pointee.event_id == MPV_EVENT_FILE_LOADED {
+                    applyPendingTracks(handle)
+                }
                 if let mapped = Self.map(event.pointee) {
                     onEvent?(mapped, generation)
                 }

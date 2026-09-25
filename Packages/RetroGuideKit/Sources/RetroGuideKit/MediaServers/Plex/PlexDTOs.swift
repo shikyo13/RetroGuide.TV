@@ -105,6 +105,21 @@ struct PlexMedia: Decodable {
 
 struct PlexPart: Decodable {
     let key: String?
+    let streams: [PlexStream]?
+
+    enum CodingKeys: String, CodingKey {
+        case key
+        case streams = "Stream"
+    }
+}
+
+/// One audio, video or subtitle stream of a media part. `selected` reflects the
+/// requesting user's language preferences and per-item choices.
+struct PlexStream: Decodable {
+    let streamType: Int
+    let index: Int?
+    let key: String?
+    let selected: Bool?
 }
 
 struct PlexPin: Decodable {

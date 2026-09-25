@@ -42,6 +42,12 @@ public enum PlexAPI {
         case episode = 4
     }
 
+    /// Plex `streamType` values.
+    enum StreamType {
+        static let audio = 2
+        static let subtitle = 3
+    }
+
     enum SectionType {
         static let movie = "movie"
         static let show = "show"
@@ -64,6 +70,8 @@ public enum PlexAPI {
         static let requestTimeout: TimeInterval = 30
         /// Short timeout used when probing which server address is reachable.
         static let probeTimeout: TimeInterval = 4
+        /// Track selection is fetched while tuning, so it must never hold up playback for long.
+        static let trackSelectionTimeout: TimeInterval = 2
         /// How often to poll plex.tv while waiting for the user to enter a link code.
         public static let pinPollInterval: Duration = .seconds(2)
         static let millisecondsPerSecond: TimeInterval = 1_000
