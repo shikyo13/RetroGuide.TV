@@ -4,6 +4,7 @@ options:
   bundleIdPrefix: com.adamhunt
   deploymentTarget:
     tvOS: "17.0"
+    iOS: "17.0"
   createIntermediateGroups: true
   groupSortPosition: top
 settings:
@@ -26,7 +27,8 @@ configFiles:
 targets:
   RetroGuide:
     type: application
-    platform: tvOS
+    # One app for Apple TV, iPhone and iPad (same bundle ID, one App Store listing).
+    supportedDestinations: [tvOS, iOS]
     sources:
       - path: App
     dependencies:
@@ -48,6 +50,10 @@ targets:
         UILaunchScreen: {}
         UIUserInterfaceStyle: Dark
         UIRequiredDeviceCapabilities: [arm64]
+        # iPhone and iPad; ignored on tvOS.
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UIApplicationSupportsIndirectInputEvents: true
         NSLocalNetworkUsageDescription: RetroGuide.TV connects to your media server on the local network.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
@@ -56,11 +62,11 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.adamhunt.retroguide
-        TARGETED_DEVICE_FAMILY: "3"
-        ASSETCATALOG_COMPILER_APPICON_NAME: App Icon & Top Shelf Image
+        ASSETCATALOG_COMPILER_APPICON_NAME[sdk=appletv*]: App Icon & Top Shelf Image
+        ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphone*]: AppIcon
         CODE_SIGN_STYLE: Automatic
         GENERATE_INFOPLIST_FILE: NO
-        # The framework version fix-up script edits the app bundle in place.
+        # The post-build script removes empty framework bundles from the built app.
         ENABLE_USER_SCRIPT_SANDBOXING: NO
 schemes:
   RetroGuide:

@@ -64,11 +64,16 @@ enum Canvas {
     static let appStoreIcon = CGSize(width: 1280, height: 768)
     static let topShelf = CGSize(width: 1920, height: 720)
     static let topShelfWide = CGSize(width: 2320, height: 720)
+    static let touchIcon = CGSize(width: 1024, height: 1024)
     /// Wordmark width as a fraction of the canvas: inside the icon's parallax safe zone.
     static let iconWordmarkWidth: CGFloat = 0.8
     static let shelfWordmarkWidth: CGFloat = 0.5
     static let shelfTaglineToText: CGFloat = 0.36
     static let shelfTaglineGapToText: CGFloat = 0.35
+    /// Square iPhone/iPad icon: a large TV glyph above the wordmark text.
+    static let touchGlyphWidth: CGFloat = 0.5
+    static let touchWordmarkWidth: CGFloat = 0.78
+    static let touchGapToGlyph: CGFloat = 0.14
 }
 
 // MARK: - Rendering
@@ -137,31 +142,34 @@ func roundedFont(size: CGFloat, weight: NSFont.Weight) -> NSFont {
 }
 
 /// Lays out the wordmark at `fontSize` and returns its width plus a drawing closure.
-func wordmark(fontSize: CGFloat) -> (width: CGFloat, height: CGFloat, draw: (CGContext, CGPoint) -> Void) {
+/// Without the glyph, only the "RetroGuide.TV" text is drawn.
+func wordmark(fontSize: CGFloat, includesGlyph: Bool = true) -> (width: CGFloat, height: CGFloat, draw: (CGContext, CGPoint) -> Void) {
     let font = roundedFont(size: fontSize, weight: WordmarkSpec.fontWeight)
     let text = NSMutableAttributedString(string: WordmarkSpec.name, attributes: [.font: font, .foregroundColor: NSColor(cgColor: Palette.text)!])
     text.append(NSAttributedString(string: WordmarkSpec.suffix, attributes: [.font: font, .foregroundColor: NSColor(cgColor: Palette.accent)!]))
     let textSize = text.size()
-    let glyphWidth = fontSize * WordmarkSpec.glyphToTextRatio
+    let glyphWidth = includesGlyph ? fontSize * WordmarkSpec.glyphToTextRatio : 0
     let glyphHeight = glyphWidth / GlyphGeometry.aspectRatio
-    let spacing = fontSize * WordmarkSpec.spacingToTextRatio
+    let spacing = includesGlyph ? fontSize * WordmarkSpec.spacingToTextRatio : 0
     let width = glyphWidth + spacing + textSize.width
     let height = max(glyphHeight, textSize.height)
     return (width, height, { context, origin in
-        let glyphRect = CGRect(x: origin.x, y: origin.y + (height - glyphHeight) / 2, width: glyphWidth, height: glyphHeight)
-        context.addPath(glyphPath(in: glyphRect))
-        context.setFillColor(Palette.accent)
-        context.fillPath(using: .evenOdd)
+        if includesGlyph {
+            let glyphRect = CGRect(x: origin.x, y: origin.y + (height - glyphHeight) / 2, width: glyphWidth, height: glyphHeight)
+            context.addPath(glyphPath(in: glyphRect))
+            context.setFillColor(Palette.accent)
+            context.fillPath(using: .evenOdd)
+        }
         text.draw(at: CGPoint(x: origin.x + glyphWidth + spacing, y: origin.y + (height - textSize.height) / 2))
     })
 }
 
 /// Largest wordmark that fits `targetWidth`.
-func fittedWordmark(targetWidth: CGFloat) -> (width: CGFloat, height: CGFloat, fontSize: CGFloat, draw: (CGContext, CGPoint) -> Void) {
+func fittedWordmark(targetWidth: CGFloat, includesGlyph: Bool = true) -> (width: CGFloat, height: CGFloat, fontSize: CGFloat, draw: (CGContext, CGPoint) -> Void) {
     let probeSize: CGFloat = 100
-    let probe = wordmark(fontSize: probeSize)
+    let probe = wordmark(fontSize: probeSize, includesGlyph: includesGlyph)
     let fontSize = probeSize * targetWidth / probe.width
-    let fitted = wordmark(fontSize: fontSize)
+    let fitted = wordmark(fontSize: fontSize, includesGlyph: includesGlyph)
     return (fitted.width, fitted.height, fontSize, fitted.draw)
 }
 
@@ -186,6 +194,21 @@ let topShelf: Draw = { context, size in
     tagline.draw(at: CGPoint(x: (size.width - taglineSize.width) / 2, y: top + mark.height + gap))
 }
 
+/// The square icon: the glyph can't be read inside a full-width wordmark at
+/// home-screen size, so it is drawn large with the wordmark text underneath.
+let touchIcon: Draw = { context, size in
+    drawBackground(context, size)
+    let glyphWidth = size.width * Canvas.touchGlyphWidth
+    let glyphHeight = glyphWidth / GlyphGeometry.aspectRatio
+    let gap = glyphHeight * Canvas.touchGapToGlyph
+    let mark = fittedWordmark(targetWidth: size.width * Canvas.touchWordmarkWidth, includesGlyph: false)
+    let top = (size.height - glyphHeight - gap - mark.height) / 2
+    context.addPath(glyphPath(in: CGRect(x: (size.width - glyphWidth) / 2, y: top, width: glyphWidth, height: glyphHeight)))
+    context.setFillColor(Palette.accent)
+    context.fillPath(using: .evenOdd)
+    mark.draw(context, CGPoint(x: (size.width - mark.width) / 2, y: top + glyphHeight + gap))
+}
+
 // MARK: - Asset catalog output
 
 guard CommandLine.arguments.count == 2 else {
@@ -202,12 +225,12 @@ func writeContents(_ object: [String: Any], to directory: URL) {
     try! data.write(to: directory.appendingPathComponent("Contents.json"))
 }
 
-func writeImageSet(at directory: URL, size: CGSize, scales: [CGFloat], opaque: Bool, draw: Draw) {
+func writeImageSet(at directory: URL, size: CGSize, scales: [CGFloat], opaque: Bool, idiom: String = "tv", draw: Draw) {
     try! fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
     let images: [[String: Any]] = scales.map { scale in
         let name = scale == 1 ? "image.png" : "image@\(Int(scale))x.png"
         try! render(size, scale: scale, opaque: opaque, draw).write(to: directory.appendingPathComponent(name))
-        return ["filename": name, "idiom": "tv", "scale": "\(Int(scale))x"]
+        return ["filename": name, "idiom": idiom, "scale": "\(Int(scale))x"]
     }
     writeContents(["images": images, "info": info], to: directory)
 }
@@ -240,4 +263,13 @@ writeContents([
     ],
     "info": info,
 ], to: brand)
+
+// iPhone and iPad: one 1024 pt image; Xcode derives the other sizes.
+let appIcon = catalog.appendingPathComponent("AppIcon.appiconset")
+try! fileManager.createDirectory(at: appIcon, withIntermediateDirectories: true)
+try! render(Canvas.touchIcon, scale: 1, opaque: true, touchIcon).write(to: appIcon.appendingPathComponent("icon-1024.png"))
+writeContents([
+    "images": [["filename": "icon-1024.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"]],
+    "info": info,
+], to: appIcon)
 print("Wrote brand assets to \(catalog.path)")
