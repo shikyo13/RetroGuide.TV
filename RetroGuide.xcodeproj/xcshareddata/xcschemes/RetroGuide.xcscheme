@@ -89,5 +89,23 @@
    <ArchiveAction
       buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
+      <PostActions>
+         <ExecutionAction
+            ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
+            <ActionContent
+               title = "Remove codeless framework stubs"
+               scriptText = "&quot;${SRCROOT}/Scripts/remove-codeless-framework-stubs.sh&quot; &quot;${ARCHIVE_PATH}&quot;">
+               <EnvironmentBuildable>
+                  <BuildableReference
+                     BuildableIdentifier = "primary"
+                     BlueprintIdentifier = "608C440DC434B32C2FBE8B3F"
+                     BuildableName = "RetroGuide.app"
+                     BlueprintName = "RetroGuide"
+                     ReferencedContainer = "container:RetroGuide.xcodeproj">
+                  </BuildableReference>
+               </EnvironmentBuildable>
+            </ActionContent>
+         </ExecutionAction>
+      </PostActions>
    </ArchiveAction>
 </Scheme>
