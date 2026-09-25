@@ -4,7 +4,7 @@ import Foundation
 /// Snapshots are cached to disk so the guide appears instantly on launch.
 public struct LibrarySnapshot: Codable, Sendable {
     /// Bump when the cached format changes so stale caches are discarded.
-    public static let formatVersion = 2
+    public static let formatVersion = 3
 
     public let formatVersion: Int
     public let serverID: String

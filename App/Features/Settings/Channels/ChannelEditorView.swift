@@ -37,7 +37,7 @@ struct ChannelEditorView: View {
                         draft.rule.kinds.formSymmetricDifference([kind])
                     }
                 }
-                filterLink("Genres", systemImage: "theatermasks", options: facets.genres.map(FacetOption.init), selection: $draft.rule.genres)
+                filterLink("Genres", systemImage: "theatermasks", options: facets.categories.map(FacetOption.init), selection: categorySelection)
                 filterLink("Shows", systemImage: "tv", options: facets.series.map(FacetOption.init), selection: $draft.rule.seriesIDs)
                 filterLink("Networks", systemImage: "antenna.radiowaves.left.and.right", options: facets.networks.map(FacetOption.init), selection: $draft.rule.networks)
                 filterLink("Collections", systemImage: "square.stack", options: facets.collections.map(FacetOption.init), selection: $draft.rule.collections)
@@ -128,6 +128,14 @@ struct ChannelEditorView: View {
         Binding(
             get: { Set(draft.rule.audiences.map(\.rawValue)) },
             set: { draft.rule.audiences = Set($0.compactMap(Audience.init(rawValue:))) }
+        )
+    }
+
+    /// Genres are chosen from canonical categories so every server's spellings match.
+    private var categorySelection: Binding<Set<String>> {
+        Binding(
+            get: { Set(draft.rule.categories.map(\.rawValue)) },
+            set: { draft.rule.categories = Set($0.compactMap(GenreCategory.init(rawValue:))) }
         )
     }
 

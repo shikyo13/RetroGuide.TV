@@ -70,6 +70,6 @@ struct ChannelCatalogTests {
         #expect(Set(catalog.map(\.id)).count == catalog.count)
         #expect(Set(catalog.map(\.number)).count == catalog.count)
         #expect(catalog.allSatisfy { $0.number < ChannelNumbering.libraries.lowerBound })
-        #expect(catalog.allSatisfy { $0.source == .curated })
+        #expect(catalog.allSatisfy { [.curated, .decade].contains($0.source) })
     }
 }

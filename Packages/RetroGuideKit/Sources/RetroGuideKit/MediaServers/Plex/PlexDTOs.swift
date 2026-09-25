@@ -64,6 +64,7 @@ struct PlexMetadata: Decodable {
     let grandparentArt: String?
     let childCount: Int?
     let genres: [PlexTag]?
+    let countries: [PlexTag]?
     let images: [PlexImage]?
     let media: [PlexMedia]?
 
@@ -72,6 +73,7 @@ struct PlexMetadata: Decodable {
         case parentIndex, index, year, duration, summary, contentRating, contentRatingAge
         case studio, thumb, art, grandparentThumb, grandparentArt, childCount
         case genres = "Genre"
+        case countries = "Country"
         case images = "Image"
         case media = "Media"
     }

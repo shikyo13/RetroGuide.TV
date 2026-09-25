@@ -2,6 +2,8 @@ import Foundation
 
 /// Resolves channel definitions against the library into the final lineup.
 public struct LineupBuilder: Sendable {
+    private typealias Resolved = (definition: ChannelDefinition, items: [MediaItem])
+
     public let curated: [ChannelDefinition]
     public let options: LineupOptions
 
@@ -16,9 +18,10 @@ public struct LineupBuilder: Sendable {
     public func build(index: LibraryIndex, customization: LineupCustomization) -> [Channel] {
         let automatic = curated + DynamicChannelFactory.definitions(for: index.facets, options: options)
         var seenContent = Set<Int>()
-        var resolved: [(definition: ChannelDefinition, items: [MediaItem])] = []
+        var resolved: [Resolved] = []
 
         for var definition in automatic.sorted(by: { $0.number < $1.number }) {
+            guard !customization.disabledSources.contains(definition.source) else { continue }
             if let override = customization.orderingOverrides[definition.id] {
                 definition.ordering = override
             }
@@ -27,6 +30,8 @@ public struct LineupBuilder: Sendable {
             guard seenContent.insert(contentFingerprint(items)).inserted else { continue }
             resolved.append((definition, items))
         }
+
+        resolved = capped(resolved)
 
         for definition in customization.customChannels {
             let items = schedulableItems(for: definition.rule, in: index)
@@ -44,6 +49,32 @@ public struct LineupBuilder: Sendable {
             }
     }
 
+    /// Drops the least essential automatic channels beyond ``LineupOptions/maximumChannels``:
+    /// collections first, then networks, marathons and libraries, smallest first.
+    private func capped(_ channels: [Resolved]) -> [Resolved] {
+        let excess = channels.count - options.maximumChannels
+        guard excess > .zero else { return channels }
+        let dropped = channels
+            .filter { Self.dropPriority[$0.definition.source] != nil }
+            .sorted { lhs, rhs in
+                let left = Self.dropPriority[lhs.definition.source] ?? .zero
+                let right = Self.dropPriority[rhs.definition.source] ?? .zero
+                if left != right { return left > right }
+                return runtime(lhs.items) < runtime(rhs.items)
+            }
+            .prefix(excess)
+            .map(\.definition.id)
+        let droppedIDs = Set(dropped)
+        return channels.filter { !droppedIDs.contains($0.definition.id) }
+    }
+
+    /// Higher drops first; sources not listed (curated, decades, custom) are never dropped.
+    private static let dropPriority: [ChannelSource: Int] = [.collection: 4, .network: 3, .series: 2, .library: 1]
+
+    private func runtime(_ items: [MediaItem]) -> TimeInterval {
+        items.reduce(.zero) { $0 + $1.duration }
+    }
+
     /// Items a rule would air, for live previews in the channel editor.
     public func preview(rule: ChannelRule, in index: LibraryIndex) -> [MediaItem] {
         schedulableItems(for: rule, in: index)
@@ -55,7 +86,7 @@ public struct LineupBuilder: Sendable {
 
     private func isSubstantial(_ items: [MediaItem]) -> Bool {
         items.count >= options.minimumChannelItems
-            && items.reduce(.zero) { $0 + $1.duration } >= options.minimumChannelRuntime
+            && runtime(items) >= options.minimumChannelRuntime
     }
 
     private func contentFingerprint(_ items: [MediaItem]) -> Int {

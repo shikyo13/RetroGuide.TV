@@ -13,6 +13,8 @@ public struct FacetValue: Sendable, Hashable, Identifiable {
 
 /// Aggregated metadata used to generate dynamic channels and to populate the channel editor.
 public struct LibraryFacets: Sendable {
+    /// Canonical genre categories (ids are ``GenreCategory`` raw values).
+    public let categories: [FacetValue]
     public let genres: [FacetValue]
     public let networks: [FacetValue]
     public let collections: [FacetValue]
@@ -20,7 +22,11 @@ public struct LibraryFacets: Sendable {
     public let decades: [FacetValue]
     public let libraries: [FacetValue]
 
-    init(items: [MediaItem], libraries sourceLibraries: [MediaLibrary]) {
+    init(items: [MediaItem], attributes: [NormalizedAttributes], libraries sourceLibraries: [MediaLibrary]) {
+        let categoriesByItem = Dictionary(zip(items.map(\.id), attributes.map(\.categories)), uniquingKeysWith: { first, _ in first })
+        categories = Self.aggregate(items) { item in
+            (categoriesByItem[item.id] ?? []).map { ($0.rawValue, $0.displayName) }
+        }
         let libraryTitles = Dictionary(sourceLibraries.map { ($0.id, $0.title) }, uniquingKeysWith: { first, _ in first })
         genres = Self.aggregate(items) { $0.genres.map { ($0, $0) } }
         networks = Self.aggregate(items) { $0.networks.map { ($0, $0) } }

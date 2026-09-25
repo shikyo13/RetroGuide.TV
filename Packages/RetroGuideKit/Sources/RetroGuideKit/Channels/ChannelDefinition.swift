@@ -2,8 +2,10 @@ import Foundation
 
 /// Where a channel came from. Determines numbering range and editability.
 public enum ChannelSource: String, Codable, Sendable, CaseIterable, Hashable {
-    /// From the bundled curated catalog.
+    /// Genre and format channels from the bundled catalog.
     case curated
+    /// Decade channels from the bundled catalog.
+    case decade
     /// One channel per selected library.
     case library
     /// One channel per TV network found in the library.
@@ -18,6 +20,7 @@ public enum ChannelSource: String, Codable, Sendable, CaseIterable, Hashable {
     public var displayName: String {
         switch self {
         case .curated: "Featured"
+        case .decade: "Decades"
         case .library: "Libraries"
         case .network: "Networks"
         case .collection: "Collections"

@@ -16,7 +16,7 @@ struct LineupEngine: Sendable {
     }
 
     func makeLineup(index: LibraryIndex, customization: LineupCustomization, grid: ScheduleGrid) async -> [Channel] {
-        let builder = LineupBuilder(curated: curated, options: LineupOptions(grid: grid))
+        let builder = LineupBuilder(curated: curated, options: LineupOptions.adapted(to: index, grid: grid))
         return await Task.detached(priority: .userInitiated) {
             builder.build(index: index, customization: customization)
         }.value

@@ -8,6 +8,10 @@ import Foundation
 public struct ChannelRule: Codable, Sendable, Hashable {
     public var kinds: Set<MediaKind>
     public var libraryIDs: Set<String>
+    /// Canonical genre categories: work across servers, agents and languages.
+    public var categories: Set<GenreCategory>
+    public var excludedCategories: Set<GenreCategory>
+    /// Raw genre names exactly as the server reports them.
     public var genres: Set<String>
     public var excludedGenres: Set<String>
     public var networks: Set<String>
@@ -20,6 +24,8 @@ public struct ChannelRule: Codable, Sendable, Hashable {
     public init(
         kinds: Set<MediaKind> = [],
         libraryIDs: Set<String> = [],
+        categories: Set<GenreCategory> = [],
+        excludedCategories: Set<GenreCategory> = [],
         genres: Set<String> = [],
         excludedGenres: Set<String> = [],
         networks: Set<String> = [],
@@ -31,6 +37,8 @@ public struct ChannelRule: Codable, Sendable, Hashable {
     ) {
         self.kinds = kinds
         self.libraryIDs = libraryIDs
+        self.categories = categories
+        self.excludedCategories = excludedCategories
         self.genres = genres
         self.excludedGenres = excludedGenres
         self.networks = networks
@@ -47,6 +55,8 @@ public struct ChannelRule: Codable, Sendable, Hashable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         kinds = try container.decodeIfPresent(Set<MediaKind>.self, forKey: .kinds) ?? []
         libraryIDs = try container.decodeIfPresent(Set<String>.self, forKey: .libraryIDs) ?? []
+        categories = try container.decodeIfPresent(Set<GenreCategory>.self, forKey: .categories) ?? []
+        excludedCategories = try container.decodeIfPresent(Set<GenreCategory>.self, forKey: .excludedCategories) ?? []
         genres = try container.decodeIfPresent(Set<String>.self, forKey: .genres) ?? []
         excludedGenres = try container.decodeIfPresent(Set<String>.self, forKey: .excludedGenres) ?? []
         networks = try container.decodeIfPresent(Set<String>.self, forKey: .networks) ?? []
@@ -97,6 +107,8 @@ struct CompiledRule {
         guard rule.kinds.isEmpty || rule.kinds.contains(item.kind) else { return false }
         guard rule.libraryIDs.isEmpty || rule.libraryIDs.contains(item.libraryID) else { return false }
         guard rule.audiences.isEmpty || rule.audiences.contains(item.audience) else { return false }
+        guard rule.categories.isEmpty || !rule.categories.isDisjoint(with: attributes.categories) else { return false }
+        guard rule.excludedCategories.isDisjoint(with: attributes.categories) else { return false }
         guard genres.isEmpty || !genres.isDisjoint(with: attributes.genres) else { return false }
         guard excludedGenres.isDisjoint(with: attributes.genres) else { return false }
         guard networks.isEmpty || !networks.isDisjoint(with: attributes.networks) else { return false }

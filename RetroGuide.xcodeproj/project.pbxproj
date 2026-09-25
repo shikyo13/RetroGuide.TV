@@ -26,6 +26,7 @@
 		2F0FA427ABBBA20B53DE90AD /* GuideTimeRuler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBEB1593C43A740EC7B3A56C /* GuideTimeRuler.swift */; };
 		344BBCFC8E4E7130D58A182A /* StaticNoiseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3ABF62769BA3CD53E6EB02 /* StaticNoiseView.swift */; };
 		384BCEA4777AF7B0E252D274 /* RetroGuideKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8A2FF2DB065BDB40E543B3C7 /* RetroGuideKit */; };
+		3BB6BFA4A4E73A7C3BA33D35 /* ChannelGroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9510907E446131660CB70046 /* ChannelGroupsView.swift */; };
 		3E5BA758E31F9CB8D818F2B0 /* WelcomeStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F65DFF726E08D9C5D9CAD1 /* WelcomeStepView.swift */; };
 		42D421BD47109060D3F3D77E /* Surfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E6421682822DF9EB4C7D65 /* Surfaces.swift */; };
 		430F3085BE5B93B77B57D980 /* GuideLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CD3575816B5CC85380E1B80 /* GuideLayout.swift */; };
@@ -140,6 +141,7 @@
 		882F8CA7ECA178E614F9241E /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchView.swift; sourceTree = "<group>"; };
 		8A5891962ED332144D11376D /* LGPL-3.0.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LGPL-3.0.txt"; sourceTree = "<group>"; };
 		8F90413A593D82BD4A01F34C /* PlayerEnginePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerEnginePickerView.swift; sourceTree = "<group>"; };
+		9510907E446131660CB70046 /* ChannelGroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelGroupsView.swift; sourceTree = "<group>"; };
 		9ACC72B3AD12BDB45141FB2F /* SignalOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalOverlay.swift; sourceTree = "<group>"; };
 		9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoStack.swift; sourceTree = "<group>"; };
@@ -458,6 +460,7 @@
 				18989D79AA8E255FEA7890E3 /* Channels */,
 				55C1F96817F655A80B4AF246 /* Components */,
 				9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */,
+				9510907E446131660CB70046 /* ChannelGroupsView.swift */,
 				E51AB4FCD7757EA704452150 /* LibrarySettingsView.swift */,
 				8F90413A593D82BD4A01F34C /* PlayerEnginePickerView.swift */,
 				1228ACA50F43CD93B6C327B2 /* ScheduleGridPickerView.swift */,
@@ -594,6 +597,7 @@
 				CE1C01DE51D07F70A4F400D0 /* ChannelBanner.swift in Sources */,
 				C1EA2922B2E0452CFF105621 /* ChannelDetailView.swift in Sources */,
 				8B5CE523D5B7BA7DA1292AF0 /* ChannelEditorView.swift in Sources */,
+				3BB6BFA4A4E73A7C3BA33D35 /* ChannelGroupsView.swift in Sources */,
 				78F0A7BBD6035C1683AEA35D /* ChannelManagerView.swift in Sources */,
 				4D5209A82EB9E90DDAA807CF /* ChannelNumberOSD.swift in Sources */,
 				459009C3FD10B3FB413B3BA3 /* Color+Hex.swift in Sources */,

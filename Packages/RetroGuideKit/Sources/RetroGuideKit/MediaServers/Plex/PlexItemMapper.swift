@@ -30,6 +30,7 @@ enum PlexItemMapper {
             genres: merged(memberships.genres[metadata.ratingKey], metadata.genres),
             networks: [],
             collections: memberships.collections[metadata.ratingKey] ?? [],
+            countries: (metadata.countries ?? []).map(\.tag),
             artwork: Artwork(
                 poster: metadata.thumb,
                 backdrop: metadata.art,
@@ -71,6 +72,7 @@ enum PlexItemMapper {
             genres: merged(memberships.genres[showKey], show?.genres),
             networks: memberships.networks[showKey] ?? [],
             collections: Array(Set(collections)).sorted(),
+            countries: (show?.countries ?? metadata.countries ?? []).map(\.tag),
             artwork: Artwork(
                 poster: metadata.grandparentThumb ?? show?.thumb,
                 backdrop: metadata.grandparentArt ?? show?.art ?? metadata.art,

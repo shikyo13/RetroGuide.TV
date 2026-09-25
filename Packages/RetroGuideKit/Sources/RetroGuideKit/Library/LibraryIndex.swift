@@ -12,13 +12,14 @@ public struct LibraryIndex: Sendable {
 
     public init(items: [MediaItem], libraries: [MediaLibrary] = []) {
         let sorted = items.sorted { $0.id < $1.id }
+        let libraryTitles = Dictionary(libraries.map { ($0.id, $0.title) }, uniquingKeysWith: { first, _ in first })
         self.items = sorted
-        self.attributes = sorted.map(NormalizedAttributes.init)
+        self.attributes = sorted.map { NormalizedAttributes($0, libraryTitle: libraryTitles[$0.libraryID]) }
         self.positionsByID = Dictionary(
             sorted.enumerated().map { ($1.id, $0) },
             uniquingKeysWith: { first, _ in first }
         )
-        self.facets = LibraryFacets(items: sorted, libraries: libraries)
+        self.facets = LibraryFacets(items: sorted, attributes: attributes, libraries: libraries)
     }
 
     public init(snapshots: [LibrarySnapshot]) {
@@ -39,13 +40,19 @@ public struct LibraryIndex: Sendable {
 /// Pre-normalized lookup keys for one item.
 struct NormalizedAttributes: Sendable {
     let genres: Set<String>
+    let categories: Set<GenreCategory>
     let networks: Set<String>
     let collections: Set<String>
     let searchableText: String
     let decade: Int?
 
-    init(_ item: MediaItem) {
+    init(_ item: MediaItem, libraryTitle: String?, taxonomy: GenreTaxonomy = .shared) {
         genres = TextNormalizer.keys(item.genres)
+        var categories = taxonomy.categories(for: item.genres)
+        if AnimeDetector.isAnime(categories: categories, countries: item.countries, libraryTitle: libraryTitle) {
+            categories.formUnion([.anime, .animation])
+        }
+        self.categories = categories
         networks = TextNormalizer.keys(item.networks)
         collections = TextNormalizer.keys(item.collections)
         searchableText = TextNormalizer.key([item.series?.title, item.title].compactMap { $0 }.joined(separator: " "))

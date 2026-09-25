@@ -22,6 +22,8 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     public let genres: [String]
     public let networks: [String]
     public let collections: [String]
+    /// Production countries (show-level for episodes).
+    public let countries: [String]
     public let artwork: Artwork
     public let playback: PlaybackInfo?
 
@@ -40,6 +42,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         genres: [String] = [],
         networks: [String] = [],
         collections: [String] = [],
+        countries: [String] = [],
         artwork: Artwork = Artwork(),
         playback: PlaybackInfo? = nil
     ) {
@@ -58,6 +61,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.genres = genres
         self.networks = networks
         self.collections = collections
+        self.countries = countries
         self.artwork = artwork
         self.playback = playback
     }

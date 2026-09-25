@@ -1,0 +1,271 @@
+{
+  "categories": {
+    "action": [
+      "action",
+      "action adventure",
+      "accion",
+      "azione",
+      "acao",
+      "actie",
+      "aktion",
+      "martial arts action"
+    ],
+    "adventure": [
+      "adventure",
+      "aventure",
+      "abenteuer",
+      "aventura",
+      "avventura",
+      "avontuur",
+      "action adventure"
+    ],
+    "animation": [
+      "animation",
+      "animated",
+      "cartoon",
+      "cartoons",
+      "animacion",
+      "animazione",
+      "animacao",
+      "animatie",
+      "zeichentrick",
+      "anime"
+    ],
+    "anime": [
+      "anime",
+      "japanese animation",
+      "japanimation"
+    ],
+    "biography": [
+      "biography",
+      "biographie",
+      "biografia",
+      "biografie",
+      "biopic"
+    ],
+    "children": [
+      "children",
+      "kids",
+      "childrens",
+      "kinder",
+      "enfants",
+      "infantil",
+      "bambini",
+      "kinderen",
+      "jeugd",
+      "preschool"
+    ],
+    "comedy": [
+      "comedy",
+      "sitcom",
+      "comedie",
+      "komodie",
+      "comedia",
+      "commedia",
+      "komedie",
+      "stand up",
+      "standup",
+      "sketch comedy",
+      "parody"
+    ],
+    "crime": [
+      "crime",
+      "krimi",
+      "policier",
+      "crimen",
+      "crimine",
+      "misdaad",
+      "true crime",
+      "police"
+    ],
+    "documentary": [
+      "documentary",
+      "documentaire",
+      "dokumentation",
+      "dokumentarfilm",
+      "documental",
+      "documentario",
+      "documentaria",
+      "docuseries",
+      "docu"
+    ],
+    "drama": [
+      "drama",
+      "drame",
+      "dramma",
+      "melodrama"
+    ],
+    "family": [
+      "family",
+      "famille",
+      "familie",
+      "familia",
+      "famiglia",
+      "familienfilm"
+    ],
+    "fantasy": [
+      "fantasy",
+      "fantastique",
+      "fantasia",
+      "fantastico",
+      "sci fi fantasy",
+      "sci fi and fantasy"
+    ],
+    "food": [
+      "food",
+      "cooking",
+      "cuisine",
+      "kochen",
+      "cocina",
+      "cucina",
+      "culinary"
+    ],
+    "gameShow": [
+      "game show",
+      "gameshow",
+      "quiz",
+      "quiz show",
+      "competition",
+      "jeu",
+      "spielshow",
+      "concurso"
+    ],
+    "history": [
+      "history",
+      "historical",
+      "histoire",
+      "historie",
+      "geschichte",
+      "historia",
+      "storia",
+      "geschiedenis",
+      "war politics",
+      "war and politics"
+    ],
+    "horror": [
+      "horror",
+      "horreur",
+      "terror",
+      "orrore",
+      "griezel",
+      "slasher"
+    ],
+    "martialArts": [
+      "martial arts",
+      "kung fu",
+      "arts martiaux",
+      "kampfsport",
+      "artes marciales",
+      "wuxia"
+    ],
+    "music": [
+      "music",
+      "musique",
+      "musik",
+      "musica",
+      "muziek",
+      "concert"
+    ],
+    "musical": [
+      "musical",
+      "musicals",
+      "comedie musicale"
+    ],
+    "mystery": [
+      "mystery",
+      "mystere",
+      "mysterium",
+      "misterio",
+      "mistero",
+      "whodunit",
+      "detective"
+    ],
+    "news": [
+      "news",
+      "nachrichten",
+      "informations",
+      "noticias",
+      "notizie",
+      "nieuws"
+    ],
+    "reality": [
+      "reality",
+      "reality tv",
+      "tele realite",
+      "realityshow",
+      "reality show"
+    ],
+    "romance": [
+      "romance",
+      "romantic",
+      "romantik",
+      "romantique",
+      "romantico",
+      "romantiek",
+      "liebesfilm"
+    ],
+    "sciFi": [
+      "science fiction",
+      "sci fi",
+      "scifi",
+      "sf",
+      "sci fi fantasy",
+      "sci fi and fantasy",
+      "science fiction fantasy",
+      "ciencia ficcion",
+      "fantascienza",
+      "ficcao cientifica",
+      "sciencefiction"
+    ],
+    "soap": [
+      "soap",
+      "soap opera",
+      "telenovela",
+      "seifenoper"
+    ],
+    "sport": [
+      "sport",
+      "sports",
+      "deportes",
+      "esporte",
+      "wrestling",
+      "motorsport"
+    ],
+    "talk": [
+      "talk",
+      "talk show",
+      "late night",
+      "talkshow"
+    ],
+    "thriller": [
+      "thriller",
+      "suspense",
+      "spannung",
+      "suspenso"
+    ],
+    "travel": [
+      "travel",
+      "voyage",
+      "reise",
+      "reisen",
+      "viajes",
+      "viaggi",
+      "reizen",
+      "adventure travel"
+    ],
+    "war": [
+      "war",
+      "guerre",
+      "krieg",
+      "guerra",
+      "oorlog",
+      "war politics",
+      "war and politics",
+      "military"
+    ],
+    "western": [
+      "western",
+      "westerns"
+    ]
+  }
+}

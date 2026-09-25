@@ -41,6 +41,11 @@ struct SettingsView: View {
                         SettingsRowLabel(title: "Manage channels", systemImage: "list.number", value: channelSummary)
                     }
                     NavigationLink {
+                        ChannelGroupsView()
+                    } label: {
+                        SettingsRowLabel(title: "Channel groups", systemImage: "square.grid.2x2", value: nil)
+                    }
+                    NavigationLink {
                         ChannelEditorView(existing: nil)
                     } label: {
                         SettingsRowLabel(title: "Create a channel", systemImage: "plus.rectangle.on.rectangle", value: nil)

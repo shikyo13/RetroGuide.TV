@@ -224,6 +224,16 @@ final class AppModel {
         }
     }
 
+    func setSource(_ source: ChannelSource, enabled: Bool) {
+        updateCustomization { customization in
+            if enabled {
+                customization.disabledSources.remove(source)
+            } else {
+                customization.disabledSources.insert(source)
+            }
+        }
+    }
+
     func setOrdering(_ ordering: ScheduleOrdering, for definition: ChannelDefinition) {
         updateCustomization { customization in
             if let index = customization.customChannels.firstIndex(where: { $0.id == definition.id }) {
