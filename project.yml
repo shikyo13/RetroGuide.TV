@@ -34,6 +34,10 @@ targets:
       # LGPL build of libmpv (not the -GPL product); see NOTICE.
       - package: MPVKit
         product: MPVKit
+    postBuildScripts:
+      - name: Fix embedded framework versions
+        script: '"${SRCROOT}/Scripts/fix-embedded-framework-versions.sh"'
+        basedOnDependencyAnalysis: false
     info:
       path: App/Resources/Info.plist
       properties:
@@ -55,6 +59,8 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: App Icon & Top Shelf Image
         CODE_SIGN_STYLE: Automatic
         GENERATE_INFOPLIST_FILE: NO
+        # The framework version fix-up script edits the app bundle in place.
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
 schemes:
   RetroGuide:
     build:
