@@ -40,6 +40,9 @@ next in a cable-style guide.
 - **Direct play.** A bundled [libmpv](https://mpv.io) player plays MKV, HEVC,
   AV1, Dolby Vision, DTS, TrueHD and ASS subtitles directly, so your server
   doesn't have to transcode. Apple's player is available as a fallback.
+- **HDR.** HDR10, HLG and Dolby Vision play in HDR on HDR iPhones and iPads. On
+  Apple TV, **Match TV mode** switches the TV into HDR (and optionally to each
+  program's frame rate) when Match Content is on in the Apple TV's settings.
 - **Respects your Plex settings.** Audio and subtitle tracks follow your Plex
   account's language preferences and per-show choices.
 - **Multiple servers.** Mix your own server with ones shared with you. The same

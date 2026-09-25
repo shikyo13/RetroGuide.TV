@@ -12,6 +12,8 @@ All notable changes to this project are documented here. The format is based on
   the info banner and on-screen controls, a scrollable touch guide with time
   paging, and layouts for portrait and landscape
 - "Open plex.tv/link" button when linking Plex on iPhone and iPad
+- HDR output on HDR iPhones and iPads, and a Match TV mode setting on Apple TV
+  that switches the TV to HDR and, optionally, each program's frame rate
 
 ## [0.1.0] - Unreleased
 
