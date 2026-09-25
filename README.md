@@ -102,7 +102,7 @@ servers. Access tokens are stored in the Apple TV keychain.
 Requirements: macOS with Xcode 26 or later.
 
 ```bash
-git clone <this repository>
+git clone https://github.com/shikyo13/RetroGuide.TV.git
 cd RetroGuide
 open RetroGuide.xcodeproj
 ```
