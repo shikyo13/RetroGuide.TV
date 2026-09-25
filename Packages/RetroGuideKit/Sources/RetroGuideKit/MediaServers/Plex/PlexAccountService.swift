@@ -4,8 +4,8 @@ import Foundation
 public struct PlexLinkCode: Sendable, Hashable {
     public let id: Int
     public let code: String
-    /// Opens Plex's approval page with the code pre-filled; ideal for a QR code.
-    public let approvalURL: URL
+    /// The page where the user types `code` (also encoded as the QR code).
+    public let linkURL: URL
 }
 
 /// A Plex Media Server the signed-in account can access.
@@ -45,7 +45,7 @@ public struct PlexAccountService: Sendable {
         )
     }
 
-    /// Requests a new 4-character link code.
+    /// Requests a new four-character link code for `plex.tv/link`.
     public func createLinkCode() async throws -> PlexLinkCode {
         let request = try builder.request(
             path: PlexAPI.Path.pins,
@@ -53,7 +53,7 @@ public struct PlexAccountService: Sendable {
             query: [URLQueryItem(name: "strong", value: "false")]
         )
         let pin = try await http.decode(PlexPin.self, for: request)
-        return PlexLinkCode(id: pin.id, code: pin.code, approvalURL: approvalURL(for: pin.code))
+        return PlexLinkCode(id: pin.id, code: pin.code, linkURL: PlexAPI.linkPageURL)
     }
 
     /// Returns the account token once the user has entered the code, otherwise `nil`.
@@ -96,16 +96,5 @@ public struct PlexAccountService: Sendable {
             accessToken: token,
             connections: connections
         )
-    }
-
-    private func approvalURL(for code: String) -> URL {
-        var components = URLComponents()
-        components.queryItems = [
-            URLQueryItem(name: "clientID", value: identity.clientIdentifier),
-            URLQueryItem(name: "code", value: code),
-            URLQueryItem(name: "context[device][product]", value: identity.product),
-        ]
-        let fragmentQuery = components.percentEncodedQuery ?? ""
-        return URL(string: "\(PlexAPI.authAppURL)?\(fragmentQuery)") ?? PlexAPI.linkPageURL
     }
 }

@@ -16,7 +16,7 @@ public enum ScheduleOrdering: String, Codable, Sendable, CaseIterable, Hashable 
         switch self {
         case .shuffle: "Shuffle"
         case .blockShuffle: "Block Shuffle"
-        case .syndication: "Syndication"
+        case .syndication: "Show Rotation"
         case .marathon: "Marathon"
         }
     }

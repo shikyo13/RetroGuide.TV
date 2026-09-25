@@ -68,7 +68,7 @@ struct PlexLinkStepView: View {
         VStack(spacing: DesignTokens.Spacing.md) {
             Group {
                 if let code {
-                    QRCodeView(url: code.approvalURL)
+                    QRCodeView(url: code.linkURL)
                 } else {
                     Color.clear
                 }
@@ -76,7 +76,7 @@ struct PlexLinkStepView: View {
             .frame(width: Layout.qrSize, height: Layout.qrSize)
             .padding(Layout.qrPadding)
             .background(Color.white, in: RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-            Text("Or scan to approve")
+            Text("Scan to open Plex link")
                 .font(Typography.caption)
                 .foregroundStyle(theme.textSecondary)
         }

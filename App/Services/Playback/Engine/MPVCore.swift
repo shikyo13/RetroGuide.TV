@@ -108,7 +108,7 @@ final class MPVCore: @unchecked Sendable {
 
     private func command(_ arguments: [String]) {
         guard let handle else { return }
-        var cStrings = arguments.map { strdup($0) }
+        let cStrings = arguments.map { strdup($0) }
         defer { cStrings.forEach { free($0) } }
         var pointers = cStrings.map { UnsafePointer<CChar>($0) } + [nil]
         mpv_command_async(handle, .zero, &pointers)

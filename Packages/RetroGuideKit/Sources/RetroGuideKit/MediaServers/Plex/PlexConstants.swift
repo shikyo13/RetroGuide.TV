@@ -4,7 +4,6 @@ import Foundation
 public enum PlexAPI {
     public static let accountBaseURL = URL(string: "https://plex.tv")!
     public static let linkPageURL = URL(string: "https://plex.tv/link")!
-    public static let authAppURL = "https://app.plex.tv/auth#"
 
     enum Path {
         static let pins = "/api/v2/pins"
