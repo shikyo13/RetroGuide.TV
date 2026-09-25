@@ -38,6 +38,7 @@ targets:
       - name: Fix embedded framework versions
         script: '"${SRCROOT}/Scripts/fix-embedded-framework-versions.sh"'
         basedOnDependencyAnalysis: false
+        showEnvVars: false
     info:
       path: App/Resources/Info.plist
       properties:
