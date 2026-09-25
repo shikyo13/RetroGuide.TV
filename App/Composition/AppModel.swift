@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import OSLog
 import RetroGuideKit
 
 /// Root application state: the channel lineup, preferences and the tuner.
@@ -263,8 +264,14 @@ final class AppModel {
     }
 
     private func rebuildIndexAndLineup() async {
-        libraryIndex = await engine.makeIndex(from: servers.activeSnapshots)
+        let snapshots = servers.activeSnapshots
+        libraryIndex = await engine.makeIndex(from: snapshots)
         await rebuildLineup()
+        #if DEBUG
+        let perServer = snapshots.map { "\($0.serverName)=\($0.items.count)" }.joined(separator: " ")
+        Logger(subsystem: AppIdentity.bundleIdentifier, category: "library")
+            .notice("index: \(perServer, privacy: .public) merged=\(self.libraryIndex.items.count) channels=\(self.lineup.count)")
+        #endif
     }
 
     private func rebuildLineup() async {

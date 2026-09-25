@@ -13,7 +13,7 @@ final class ServerLibrary {
         case offline
     }
 
-    private enum KeychainAccount {
+    enum KeychainAccount {
         /// The Plex account token, kept so more servers can be added without re-linking.
         static let plexAccount = "plex.account"
     }

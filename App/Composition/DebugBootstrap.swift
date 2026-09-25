@@ -7,13 +7,15 @@ import RetroGuideKit
 ///
 /// Variables (set in the Xcode scheme or by a launch script, never committed):
 /// `RETROGUIDE_DEV_PLEX_URL`, `RETROGUIDE_DEV_PLEX_TOKEN`, `RETROGUIDE_DEV_PLEX_SERVER_ID`,
-/// `RETROGUIDE_DEV_PLEX_SERVER_NAME`, and optionally `RETROGUIDE_DEV_RESET=1`.
+/// `RETROGUIDE_DEV_PLEX_SERVER_NAME`, optionally `RETROGUIDE_DEV_PLEX_ACCOUNT_TOKEN`
+/// (enables "Add a server" without linking) and `RETROGUIDE_DEV_RESET=1`.
 enum DebugBootstrap {
     private enum Variable {
         static let url = "RETROGUIDE_DEV_PLEX_URL"
         static let token = "RETROGUIDE_DEV_PLEX_TOKEN"
         static let serverID = "RETROGUIDE_DEV_PLEX_SERVER_ID"
         static let serverName = "RETROGUIDE_DEV_PLEX_SERVER_NAME"
+        static let accountToken = "RETROGUIDE_DEV_PLEX_ACCOUNT_TOKEN"
         static let reset = "RETROGUIDE_DEV_RESET"
     }
 
@@ -23,6 +25,10 @@ enum DebugBootstrap {
         if environment[Variable.reset] == "1" {
             store.accounts.forEach { keychain.removeToken(for: $0.id) }
             store.resetAll()
+            keychain.removeToken(for: ServerLibrary.KeychainAccount.plexAccount)
+        }
+        if let accountToken = environment[Variable.accountToken], keychain.token(for: ServerLibrary.KeychainAccount.plexAccount) == nil {
+            keychain.setToken(accountToken, for: ServerLibrary.KeychainAccount.plexAccount)
         }
         guard store.accounts.isEmpty,
               let urlString = environment[Variable.url], let url = URL(string: urlString),

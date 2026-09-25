@@ -11,6 +11,7 @@ enum AppIdentity {
         static let name = "RetroGuide"
         static let suffix = ".TV"
     }
+    static let bundleIdentifier = "com.adamhunt.retroguide"
     static let keychainService = "com.adamhunt.retroguide.tokens"
     static let cacheFolderName = "RetroGuide"
 
