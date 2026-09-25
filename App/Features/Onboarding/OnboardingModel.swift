@@ -2,7 +2,8 @@ import Foundation
 import Observation
 import RetroGuideKit
 
-/// Drives first-run setup: link Plex → pick a server → pick libraries.
+/// Drives server setup: link Plex (unless an account token is already known)
+/// → pick a server → pick libraries. Used for onboarding and "Add a server".
 @MainActor
 @Observable
 final class OnboardingModel {
@@ -19,6 +20,7 @@ final class OnboardingModel {
     struct PendingServer: Equatable {
         let account: ServerAccount
         let token: String
+        let accountToken: String?
         let libraries: [MediaLibrary]
     }
 
@@ -33,18 +35,32 @@ final class OnboardingModel {
     @ObservationIgnored private let resolver: PlexConnectionResolver
     @ObservationIgnored private let identity: PlexClientIdentity
     @ObservationIgnored private var accountToken: String?
+    @ObservationIgnored private let excludedServerIDs: Set<String>
     @ObservationIgnored private var linkTask: Task<Void, Never>?
 
-    init(identity: PlexClientIdentity) {
+    /// - Parameters:
+    ///   - accountToken: A saved Plex account token; when present, linking is skipped.
+    ///   - excludedServerIDs: Servers already added, hidden from the picker.
+    init(identity: PlexClientIdentity, accountToken: String? = nil, excludedServerIDs: Set<String> = []) {
         self.identity = identity
+        self.accountToken = accountToken
+        self.excludedServerIDs = excludedServerIDs
         self.accountService = PlexAccountService(identity: identity)
         self.resolver = PlexConnectionResolver(identity: identity)
     }
 
     // MARK: - Intents
 
-    func beginPlexLink() {
+    /// Starts setup: lists servers straight away with a saved account, otherwise links first.
+    func begin() {
         linkTask?.cancel()
+        if let accountToken {
+            step = .connecting(serverName: "your Plex account")
+            linkTask = Task { [weak self] in
+                await self?.showServers(accountToken: accountToken)
+            }
+            return
+        }
         step = .linking(nil)
         linkTask = Task { [weak self] in
             await self?.runLinkLoop()
@@ -72,10 +88,7 @@ final class OnboardingModel {
                 step = .linking(code)
                 if let token = try await waitForApproval(of: code) {
                     accountToken = token
-                    let servers = try await accountService.servers(accountToken: token)
-                    step = servers.isEmpty
-                        ? .failed("No Plex Media Servers were found on this account.")
-                        : .choosingServer(servers)
+                    await showServers(accountToken: token)
                     return
                 }
             } catch {
@@ -83,6 +96,18 @@ final class OnboardingModel {
                 step = .failed(error.localizedDescription)
                 return
             }
+        }
+    }
+
+    private func showServers(accountToken: String) async {
+        do {
+            let servers = try await accountService.servers(accountToken: accountToken)
+                .filter { !excludedServerIDs.contains($0.id) }
+            step = servers.isEmpty
+                ? .failed("There are no more Plex Media Servers on this account to add.")
+                : .choosingServer(servers)
+        } catch {
+            step = .failed(error.localizedDescription)
         }
     }
 
@@ -104,7 +129,9 @@ final class OnboardingModel {
             let account = ServerAccount(id: server.id, kind: .plex, name: server.name, baseURL: baseURL)
             let client = PlexServerClient(serverID: server.id, baseURL: baseURL, token: server.accessToken, identity: identity)
             let libraries = try await client.fetchLibraries().filter(\.isSchedulable)
-            step = .choosingLibraries(PendingServer(account: account, token: server.accessToken, libraries: libraries))
+            step = .choosingLibraries(
+                PendingServer(account: account, token: server.accessToken, accountToken: accountToken, libraries: libraries)
+            )
         } catch {
             step = .failed(error.localizedDescription)
         }

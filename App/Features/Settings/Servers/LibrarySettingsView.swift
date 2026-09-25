@@ -32,7 +32,7 @@ struct LibrarySettingsView: View {
         }
         .task {
             do {
-                libraries = try await app.libraries(forServer: account.id)
+                libraries = try await app.servers.libraries(forServer: account.id)
             } catch {
                 errorMessage = error.localizedDescription
             }

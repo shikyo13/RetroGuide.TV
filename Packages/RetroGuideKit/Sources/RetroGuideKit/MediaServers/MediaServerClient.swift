@@ -43,6 +43,9 @@ public struct StreamRequest: Sendable, Hashable {
 public protocol MediaServerClient: Sendable {
     var serverID: String { get }
 
+    /// A quick check that the server answers at its current address.
+    func isReachable() async -> Bool
+
     func fetchLibraries() async throws -> [MediaLibrary]
 
     func fetchItems(

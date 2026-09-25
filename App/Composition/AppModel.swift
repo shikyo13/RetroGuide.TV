@@ -2,8 +2,8 @@ import Foundation
 import Observation
 import RetroGuideKit
 
-/// Root application state: connected servers, the library index, the channel
-/// lineup, preferences and the tuner. Views observe it; features call its intents.
+/// Root application state: the channel lineup, preferences and the tuner.
+/// Servers and their libraries are managed by ``ServerLibrary``.
 @MainActor
 @Observable
 final class AppModel {
@@ -18,45 +18,47 @@ final class AppModel {
     private enum Refresh {
         /// Re-index automatically in the background when the cache is older than this.
         static let staleAfter: TimeInterval = 6 * ScheduleConstants.secondsPerHour
+        /// How often server reachability is re-checked while the app is open.
+        static let healthCheckInterval: Duration = .seconds(10 * 60)
     }
 
     private(set) var phase: Phase = .launching
-    private(set) var accounts: [ServerAccount] = []
     private(set) var lineup: [Channel] = []
     private(set) var libraryIndex = LibraryIndex.empty
-    private(set) var artworkResolver = ArtworkResolver.unavailable
     private(set) var isRefreshing = false
     private(set) var lastRefreshed: Date?
     private(set) var refreshError: String?
     private(set) var customization: LineupCustomization
+    private(set) var searchIndex = ProgramSearchIndex.empty
 
     var preferences: UserPreferences {
         didSet { preferencesChanged(from: oldValue) }
     }
 
     let tuner: Tuner
+    let servers: ServerLibrary
     let plexIdentity: PlexClientIdentity
 
     @ObservationIgnored private let store: PreferencesStore
-    @ObservationIgnored private let snapshotStore: LibrarySnapshotStore
-    @ObservationIgnored private let registry: ServerRegistry
     @ObservationIgnored private let engine = LineupEngine()
-    @ObservationIgnored private var snapshots: [String: LibrarySnapshot] = [:]
+    @ObservationIgnored private var healthTask: Task<Void, Never>?
 
     init(store: PreferencesStore = PreferencesStore(), snapshotStore: LibrarySnapshotStore = LibrarySnapshotStore()) {
         self.store = store
-        self.snapshotStore = snapshotStore
         self.preferences = store.preferences
         self.customization = store.customization
         let identity = AppIdentity.plexIdentity(clientIdentifier: store.plexClientIdentifier)
         self.plexIdentity = identity
-        let registry = ServerRegistry(keychain: KeychainStore(), plexIdentity: identity)
-        self.registry = registry
-        self.tuner = Tuner(engineKind: store.preferences.playerEngine) { [registry] serverID in
-            registry.client(for: serverID)
+        let servers = ServerLibrary(store: store, snapshotStore: snapshotStore, keychain: KeychainStore(), identity: identity)
+        self.servers = servers
+        self.tuner = Tuner(engineKind: store.preferences.playerEngine) { [servers] serverID in
+            servers.client(for: serverID)
         }
         tuner.onChannelChanged = { [weak self] channelID in
             self?.preferences.lastChannelID = channelID
+        }
+        tuner.onServerTrouble = { [weak self] _ in
+            Task { await self?.recheckServers() }
         }
     }
 
@@ -70,8 +72,8 @@ final class AppModel {
         ThemeCatalog.theme(for: preferences.themeID)
     }
 
-    func client(for serverID: String) -> (any MediaServerClient)? {
-        registry.client(for: serverID)
+    var artworkResolver: ArtworkResolver {
+        servers.artworkResolver
     }
 
     func previewItems(for rule: ChannelRule) -> [MediaItem] {
@@ -84,26 +86,22 @@ final class AppModel {
         guard phase == .launching else { return }
         #if DEBUG
         await DebugBootstrap.seedAccountIfRequested(store: store, keychain: KeychainStore(), identity: plexIdentity)
+        // The bootstrap may have reset stored settings.
+        preferences = store.preferences
+        customization = store.customization
         #endif
-        accounts = store.accounts
-        let missingTokens = registry.connect(accounts)
-        accounts.removeAll { account in missingTokens.contains { $0.id == account.id } }
-        artworkResolver = registry.artworkResolver
-        guard !accounts.isEmpty else {
+        await servers.restore()
+        guard servers.hasServers else {
             phase = .onboarding
             return
         }
-        for account in accounts {
-            if let snapshot = await snapshotStore.load(serverID: account.id) {
-                snapshots[account.id] = snapshot
-            }
-        }
-        if snapshots.count == accounts.count {
-            lastRefreshed = snapshots.values.map(\.refreshedAt).min()
+        startHealthChecks()
+        if let cachedAt = servers.oldestRefresh {
+            lastRefreshed = cachedAt
             await rebuildIndexAndLineup()
             phase = .ready
             turnOn()
-            if let lastRefreshed, Date.now.timeIntervalSince(lastRefreshed) > Refresh.staleAfter {
+            if Date.now.timeIntervalSince(cachedAt) > Refresh.staleAfter {
                 await refreshLibrary()
             }
         } else {
@@ -111,51 +109,50 @@ final class AppModel {
         }
     }
 
+    func retryAfterFailure() async {
+        phase = .launching
+        await start()
+    }
+
     // MARK: - Servers
 
-    /// Called by onboarding once the user has signed in and chosen libraries.
-    func addServer(_ account: ServerAccount, token: String) async {
-        registry.add(account, token: token)
-        artworkResolver = registry.artworkResolver
-        accounts.removeAll { $0.id == account.id }
-        accounts.append(account)
-        store.accounts = accounts
+    /// Adds a server chosen during onboarding or from Settings, then indexes it.
+    func addServer(_ account: ServerAccount, token: String, accountToken: String?) async {
+        servers.add(account, token: token, accountToken: accountToken)
+        startHealthChecks()
         await refreshLibrary()
+    }
+
+    func removeServer(id: String) async {
+        servers.remove(serverID: id)
+        guard servers.hasServers else {
+            signOut()
+            return
+        }
+        await rebuildIndexAndLineup()
     }
 
     func updateLibrarySelection(serverID: String, libraryIDs: Set<String>) async {
-        guard let index = accounts.firstIndex(where: { $0.id == serverID }) else { return }
-        accounts[index].selectedLibraryIDs = libraryIDs
-        store.accounts = accounts
+        servers.setSelectedLibraries(libraryIDs, serverID: serverID)
         await refreshLibrary()
     }
 
-    func libraries(forServer serverID: String) async throws -> [MediaLibrary] {
-        guard let client = registry.client(for: serverID) else { return [] }
-        return try await client.fetchLibraries().filter(\.isSchedulable)
-    }
-
     func signOut() {
+        healthTask?.cancel()
         tuner.powerOff()
-        for account in accounts {
-            registry.remove(serverID: account.id)
-            snapshotStore.remove(serverID: account.id)
-        }
+        servers.removeAll()
         store.resetAll()
-        accounts = []
-        snapshots = [:]
         lineup = []
         libraryIndex = .empty
         customization = LineupCustomization()
         preferences = UserPreferences()
-        artworkResolver = registry.artworkResolver
         phase = .onboarding
     }
 
     // MARK: - Library
 
-    /// Re-downloads every server's library. Shows full-screen progress only when
-    /// there is nothing to watch yet; otherwise refreshes quietly.
+    /// Re-indexes every server. Shows full-screen progress only when there is
+    /// nothing to watch yet; otherwise refreshes quietly.
     func refreshLibrary() async {
         guard !isRefreshing else { return }
         isRefreshing = true
@@ -166,10 +163,11 @@ final class AppModel {
             phase = .indexing(LibraryLoadProgress(fraction: .zero, message: "Connecting…"))
         }
         do {
-            for account in accounts {
-                snapshots[account.id] = try await downloadSnapshot(for: account, showsProgress: showsProgress)
+            try await servers.refreshAll { [weak self] progress in
+                if showsProgress { self?.phase = .indexing(progress) }
             }
             lastRefreshed = .now
+            refreshError = offlineServersMessage
             await rebuildIndexAndLineup()
             if phase != .ready {
                 phase = .ready
@@ -183,27 +181,29 @@ final class AppModel {
         }
     }
 
-    func retryAfterFailure() async {
-        phase = .launching
-        await start()
+    private var offlineServersMessage: String? {
+        let offline = servers.accounts.filter { servers.status[$0.id] == .offline }.map(\.name)
+        return offline.isEmpty ? nil : "Offline: \(offline.joined(separator: ", "))"
     }
 
-    private func downloadSnapshot(for account: ServerAccount, showsProgress: Bool) async throws -> LibrarySnapshot {
-        guard let client = registry.client(for: account.id) else {
-            throw HTTPError.unauthorized
-        }
-        let libraries = try await client.fetchLibraries().filter {
-            $0.isSchedulable && (account.selectedLibraryIDs.isEmpty || account.selectedLibraryIDs.contains($0.id))
-        }
-        let items = try await client.fetchItems(in: libraries) { [weak self] progress in
-            guard showsProgress else { return }
-            Task { @MainActor in
-                self?.phase = .indexing(progress)
+    // MARK: - Reachability
+
+    private func startHealthChecks() {
+        healthTask?.cancel()
+        healthTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: Refresh.healthCheckInterval)
+                await self?.recheckServers()
             }
         }
-        let snapshot = LibrarySnapshot(serverID: account.id, libraries: libraries, items: items)
-        await snapshotStore.save(snapshot)
-        return snapshot
+    }
+
+    /// Re-probes servers; if one went offline or came back, the lineup is rebuilt
+    /// so channels only air content that can actually play.
+    private func recheckServers() async {
+        guard await servers.checkReachability() else { return }
+        refreshError = offlineServersMessage
+        await rebuildIndexAndLineup()
     }
 
     // MARK: - Lineup
@@ -263,13 +263,14 @@ final class AppModel {
     }
 
     private func rebuildIndexAndLineup() async {
-        libraryIndex = await engine.makeIndex(from: Array(snapshots.values))
+        libraryIndex = await engine.makeIndex(from: servers.activeSnapshots)
         await rebuildLineup()
     }
 
     private func rebuildLineup() async {
         lineup = await engine.makeLineup(index: libraryIndex, customization: customization, grid: preferences.scheduleGrid)
         tuner.setChannels(visibleChannels)
+        searchIndex = await engine.makeSearchIndex(channels: lineup)
     }
 
     /// Powers the "TV" on to the last watched channel (or the first one).

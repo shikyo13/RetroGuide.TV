@@ -63,12 +63,10 @@ struct SettingsView: View {
                     }
                 }
                 SettingsSection("Library") {
-                    ForEach(app.accounts) { account in
-                        NavigationLink {
-                            LibrarySettingsView(account: account)
-                        } label: {
-                            SettingsRowLabel(title: account.name, systemImage: "server.rack", value: "\(account.kind.displayName) · Libraries")
-                        }
+                    NavigationLink {
+                        ServersView()
+                    } label: {
+                        SettingsRowLabel(title: "Servers", systemImage: "server.rack", value: serversSummary)
                     }
                     Button {
                         Task { await app.refreshLibrary() }
@@ -106,6 +104,11 @@ struct SettingsView: View {
         let hidden = app.lineup.filter(\.isHidden).count
         let total = "\(app.lineup.count) channels"
         return hidden > .zero ? "\(total), \(hidden) hidden" : total
+    }
+
+    private var serversSummary: String {
+        let count = app.servers.accounts.count
+        return count == 1 ? app.servers.accounts[0].name : "\(count) servers"
     }
 
     private var refreshSummary: String {

@@ -10,6 +10,9 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     public let serverID: String
     /// The server's native identifier for the item (Plex `ratingKey`).
     public let itemKey: String
+    /// A server-independent identifier (e.g. Plex's `plex://episode/…` guid) used to
+    /// recognize the same title on different servers. `nil` when only local ids exist.
+    public let externalID: String?
     public let libraryID: String
     public let kind: MediaKind
     public let title: String
@@ -30,6 +33,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     public init(
         serverID: String,
         itemKey: String,
+        externalID: String? = nil,
         libraryID: String,
         kind: MediaKind,
         title: String,
@@ -49,6 +53,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.id = Self.makeID(serverID: serverID, itemKey: itemKey)
         self.serverID = serverID
         self.itemKey = itemKey
+        self.externalID = externalID
         self.libraryID = libraryID
         self.kind = kind
         self.title = title

@@ -19,6 +19,7 @@ enum PlexItemMapper {
         return MediaItem(
             serverID: library.serverID,
             itemKey: metadata.ratingKey,
+            externalID: metadata.globalGuid,
             libraryID: library.id,
             kind: .movie,
             title: metadata.title,
@@ -55,6 +56,7 @@ enum PlexItemMapper {
         return MediaItem(
             serverID: library.serverID,
             itemKey: metadata.ratingKey,
+            externalID: metadata.globalGuid,
             libraryID: library.id,
             kind: .episode,
             title: metadata.title,

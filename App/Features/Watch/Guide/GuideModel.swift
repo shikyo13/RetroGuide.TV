@@ -67,12 +67,6 @@ final class GuideModel {
         return true
     }
 
-    /// Jumps a full page of channels, wrapping back to the top at the end.
-    func pageDown() {
-        let next = focusedRow + GuideLayout.visibleRows
-        setRow(next < channels.count ? next : .zero)
-    }
-
     func moveRight() {
         guard let timeline = focusedChannel?.timeline,
               let current = focusedProgram,

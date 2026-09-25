@@ -22,6 +22,12 @@ struct LineupEngine: Sendable {
         }.value
     }
 
+    func makeSearchIndex(channels: [Channel]) async -> ProgramSearchIndex {
+        await Task.detached(priority: .utility) {
+            ProgramSearchIndex(channels: channels)
+        }.value
+    }
+
     func preview(rule: ChannelRule, in index: LibraryIndex) -> [MediaItem] {
         LineupBuilder(curated: []).preview(rule: rule, in: index)
     }

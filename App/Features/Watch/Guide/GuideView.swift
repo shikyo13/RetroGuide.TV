@@ -3,30 +3,28 @@ import SwiftUI
 
 /// The full-screen program guide: header, preview panel and channel grid.
 struct GuideView: View {
-    private enum FocusTarget: Hashable {
-        case grid
-        case header
-    }
-
     let tuner: Tuner
     let onTune: (Channel) -> Void
     let onClose: () -> Void
+    let onOpenSearch: () -> Void
     let onOpenSettings: () -> Void
 
     @State private var model: GuideModel
     @State private var isHeaderFocusable = false
-    @FocusState private var focus: FocusTarget?
+    @FocusState private var focus: GuideFocus?
 
     init(
         channels: [Channel],
         tuner: Tuner,
         onTune: @escaping (Channel) -> Void,
         onClose: @escaping () -> Void,
+        onOpenSearch: @escaping () -> Void,
         onOpenSettings: @escaping () -> Void
     ) {
         self.tuner = tuner
         self.onTune = onTune
         self.onClose = onClose
+        self.onOpenSearch = onOpenSearch
         self.onOpenSettings = onOpenSettings
         _model = State(initialValue: GuideModel(channels: channels, focusedChannelID: tuner.channel?.id))
     }
@@ -36,10 +34,11 @@ struct GuideView: View {
             GuideHeader(
                 isShowingNow: model.isShowingNow,
                 windowStart: model.windowStart,
+                focus: $focus,
+                onOpenSearch: onOpenSearch,
                 onOpenSettings: onOpenSettings
             )
             .crtEffect(isFullScreen: false)
-            .focused($focus, equals: .header)
             .disabled(!isHeaderFocusable)
             .onMoveCommand { direction in
                 if direction == .down { focusGrid() }
@@ -56,7 +55,8 @@ struct GuideView: View {
             .crtEffect(isFullScreen: false)
             .focused($focus, equals: .grid)
             .onMoveCommand(perform: handleGridMove)
-            .onPlayPauseCommand(perform: model.pageDown)
+            // Play/Pause is the shortcut to Search and Settings from any row.
+            .onPlayPauseCommand(perform: focusHeader)
         }
         .screenBackground()
         .onExitCommand(perform: onClose)
@@ -82,7 +82,7 @@ struct GuideView: View {
     private func focusHeader() {
         isHeaderFocusable = true
         Task { @MainActor in
-            focus = .header
+            focus = .search
         }
     }
 

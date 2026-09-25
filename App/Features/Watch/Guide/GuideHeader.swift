@@ -1,10 +1,20 @@
 import RetroGuideKit
 import SwiftUI
 
-/// Top bar: brand, date, clock and the Settings button.
+/// Where focus is inside the guide.
+enum GuideFocus: Hashable {
+    case grid
+    case search
+    case settings
+}
+
+/// Top bar: brand, date, clock, and the Search and Settings buttons.
+/// Play/Pause jumps here from anywhere in the grid.
 struct GuideHeader: View {
     let isShowingNow: Bool
     let windowStart: Date
+    let focus: FocusState<GuideFocus?>.Binding
+    let onOpenSearch: () -> Void
     let onOpenSettings: () -> Void
 
     @Environment(\.theme) private var theme
@@ -22,10 +32,20 @@ struct GuideHeader: View {
                 }
                 .font(Typography.clock)
             }
+            Label("Play/Pause", systemImage: "playpause")
+                .font(Typography.micro)
+                .foregroundStyle(theme.textSecondary)
+                .accessibilityHidden(true)
+            Button(action: onOpenSearch) {
+                Label("Search", systemImage: "magnifyingglass")
+            }
+            .buttonStyle(.retro)
+            .focused(focus, equals: .search)
             Button(action: onOpenSettings) {
                 Label("Settings", systemImage: "gearshape.fill")
             }
             .buttonStyle(.retro)
+            .focused(focus, equals: .settings)
         }
     }
 }

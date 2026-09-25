@@ -12,6 +12,12 @@ public struct PlexServerClient: MediaServerClient {
         context.serverID
     }
 
+    public func isReachable() async -> Bool {
+        let builder = RequestBuilder(baseURL: context.baseURL, headers: context.builder.headers, timeout: PlexAPI.Defaults.probeTimeout)
+        guard let request = try? builder.request(path: PlexAPI.Path.identity) else { return false }
+        return (try? await context.http.data(for: request)) != nil
+    }
+
     public func fetchLibraries() async throws -> [MediaLibrary] {
         try await context.directories(path: PlexAPI.Path.sections).map { directory in
             MediaLibrary(serverID: serverID, key: directory.key, title: directory.title, kind: Self.kind(of: directory.type))

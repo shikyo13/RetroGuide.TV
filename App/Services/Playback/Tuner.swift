@@ -35,6 +35,8 @@ final class Tuner {
     private(set) var engine: any PlaybackEngine
 
     @ObservationIgnored var onChannelChanged: ((String) -> Void)?
+    /// Called with a server id when its streams keep failing, so reachability can be re-checked.
+    @ObservationIgnored var onServerTrouble: ((String) -> Void)?
 
     @ObservationIgnored private var channels: [Channel] = []
     @ObservationIgnored private var previousChannelID: String?
@@ -246,6 +248,9 @@ final class Tuner {
         } else {
             delay = Timing.retryDelay
             signal = .noSignal(message)
+            if let serverID = program?.item.serverID {
+                onServerTrouble?(serverID)
+            }
         }
         failedAttempts += 1
         boundaryTask = Task { [weak self] in

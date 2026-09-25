@@ -9,6 +9,7 @@ struct WatchView: View {
     private enum Overlay: Equatable {
         case none
         case guide
+        case search
         case settings
     }
 
@@ -27,6 +28,12 @@ struct WatchView: View {
             case .settings:
                 SettingsView(onClose: { overlay = .guide })
                     .transition(.opacity)
+            case .search:
+                SearchView(onClose: { overlay = .guide }) { channel in
+                    tuner.tune(to: channel)
+                    overlay = .none
+                }
+                .transition(.opacity)
             case .none:
                 EmptyView()
             }
@@ -56,7 +63,7 @@ struct WatchView: View {
         switch overlay {
         case .none: nil
         case .guide: previewFrame
-        case .settings: WatchLayout.pictureInPictureFrame(in: screen)
+        case .settings, .search: WatchLayout.pictureInPictureFrame(in: screen)
         }
     }
 
@@ -69,6 +76,7 @@ struct WatchView: View {
                 overlay = .none
             },
             onClose: { overlay = .none },
+            onOpenSearch: { overlay = .search },
             onOpenSettings: { overlay = .settings }
         )
     }

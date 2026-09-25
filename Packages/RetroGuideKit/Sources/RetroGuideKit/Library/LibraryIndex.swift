@@ -22,8 +22,36 @@ public struct LibraryIndex: Sendable {
         self.facets = LibraryFacets(items: sorted, attributes: attributes, libraries: libraries)
     }
 
+    /// Merges snapshots in priority order (first wins). The same title found on
+    /// several servers is kept once, from the highest-priority server.
     public init(snapshots: [LibrarySnapshot]) {
-        self.init(items: snapshots.flatMap(\.items), libraries: snapshots.flatMap(\.libraries))
+        var seenExternalIDs = Set<String>()
+        var items: [MediaItem] = []
+        for snapshot in snapshots {
+            for item in snapshot.items {
+                if let externalID = item.externalID, !seenExternalIDs.insert(externalID).inserted {
+                    continue
+                }
+                items.append(item)
+            }
+        }
+        self.init(items: items, libraries: Self.displayLibraries(for: snapshots))
+    }
+
+    /// Libraries with names made unique across servers ("Movies · Komputer").
+    private static func displayLibraries(for snapshots: [LibrarySnapshot]) -> [MediaLibrary] {
+        let titleCounts = Dictionary(grouping: snapshots.flatMap(\.libraries), by: \.title).mapValues(\.count)
+        return snapshots.flatMap { snapshot in
+            snapshot.libraries.map { library in
+                guard titleCounts[library.title, default: .zero] > 1 else { return library }
+                return MediaLibrary(
+                    serverID: library.serverID,
+                    key: library.key,
+                    title: "\(library.title) · \(snapshot.serverName)",
+                    kind: library.kind
+                )
+            }
+        }
     }
 
     public static let empty = LibraryIndex(items: [])

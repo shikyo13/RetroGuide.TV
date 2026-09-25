@@ -4,6 +4,8 @@ import Foundation
 public enum PlexAPI {
     public static let accountBaseURL = URL(string: "https://plex.tv")!
     public static let linkPageURL = URL(string: "https://plex.tv/link")!
+    /// Guids from Plex's online agents; identical across servers.
+    static let globalGuidPrefix = "plex://"
 
     enum Path {
         static let pins = "/api/v2/pins"

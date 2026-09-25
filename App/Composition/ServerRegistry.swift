@@ -37,6 +37,12 @@ final class ServerRegistry {
         clients[account.id] = makeClient(for: account, token: token)
     }
 
+    /// Rebuilds a server's client after its address changed, reusing the stored token.
+    func updateAddress(of account: ServerAccount) {
+        guard let token = keychain.token(for: account.id) else { return }
+        clients[account.id] = makeClient(for: account, token: token)
+    }
+
     func remove(serverID: String) {
         keychain.removeToken(for: serverID)
         clients[serverID] = nil

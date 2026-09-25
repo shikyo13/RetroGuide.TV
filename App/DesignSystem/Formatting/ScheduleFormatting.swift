@@ -39,6 +39,14 @@ enum ScheduleFormatting {
         "\(time(program.start)) – \(time(program.slotEnd))"
     }
 
+    /// "3:30 PM", "Tomorrow 9:00 AM" or "Sat, Sep 27 9:00 AM".
+    static func dayAndTime(_ date: Date) -> String {
+        let calendar = Calendar.current
+        if calendar.isDateInToday(date) { return time(date) }
+        if calendar.isDateInTomorrow(date) { return "Tomorrow \(time(date))" }
+        return "\(dayAndDate.string(from: date)) \(time(date))"
+    }
+
     static func day(_ date: Date) -> String {
         dayAndDate.string(from: date)
     }
