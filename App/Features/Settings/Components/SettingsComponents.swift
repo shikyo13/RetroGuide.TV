@@ -4,6 +4,9 @@ import SwiftUI
 /// the picture-in-picture live picture has the bottom-right corner.
 private enum SettingsLayout {
     static let contentWidth = PlatformMetric.value(tv: CGFloat(1_150), touch: 720)
+    /// Left on Apple TV, beside the picture-in-picture window; centered on
+    /// iPhone and iPad, where the window sits below or beside the content.
+    static let columnAlignment = PlatformMetric.value(tv: Alignment.leading, touch: .center)
 }
 
 struct SettingsPage<Content: View>: View {
@@ -29,7 +32,7 @@ struct SettingsPage<Content: View>: View {
             }
             .columnWidth(SettingsLayout.contentWidth, alignment: .leading)
             .padding(.vertical, DesignTokens.Spacing.xl)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: SettingsLayout.columnAlignment)
         }
         .screenBackground()
         .crtEffect()
@@ -40,8 +43,9 @@ struct SettingsPage<Content: View>: View {
         // Menu goes back one level, or closes Settings from its first page.
         .onExitCommand { (onExit ?? { dismiss() })() }
         #else
-        .contentMargins(.horizontal, DesignTokens.Spacing.md, for: .scrollContent)
-        .contentMargins(.bottom, pictureInPictureClearance, for: .scrollContent)
+        .contentMargins(.leading, DesignTokens.Spacing.md, for: .scrollContent)
+        .contentMargins(.trailing, DesignTokens.Spacing.md + pictureInPictureClearance.trailing, for: .scrollContent)
+        .contentMargins(.bottom, pictureInPictureClearance.bottom, for: .scrollContent)
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {

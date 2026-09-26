@@ -6,6 +6,8 @@ import SwiftUI
 struct SearchView: View {
     private enum Layout {
         static let resultsWidth = PlatformMetric.value(tv: CGFloat(1_150), touch: 720)
+        /// Left on Apple TV beside the picture-in-picture window; centered on touch screens.
+        static let columnAlignment = PlatformMetric.value(tv: Alignment.leading, touch: .center)
     }
 
     private enum Timing {
@@ -43,7 +45,7 @@ struct SearchView: View {
                 }
                 .columnWidth(Layout.resultsWidth, alignment: .leading)
                 .padding(.vertical, DesignTokens.Spacing.lg)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: Layout.columnAlignment)
             }
             .searchField(text: $query, isPresented: $isSearchPresented)
             .screenBackground()
@@ -51,8 +53,9 @@ struct SearchView: View {
             #if os(tvOS)
             .scrollClipDisabled()
             #else
-            .contentMargins(.horizontal, DesignTokens.Spacing.md, for: .scrollContent)
-            .contentMargins(.bottom, pictureInPictureClearance, for: .scrollContent)
+            .contentMargins(.leading, DesignTokens.Spacing.md, for: .scrollContent)
+            .contentMargins(.trailing, DesignTokens.Spacing.md + pictureInPictureClearance.trailing, for: .scrollContent)
+            .contentMargins(.bottom, pictureInPictureClearance.bottom, for: .scrollContent)
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

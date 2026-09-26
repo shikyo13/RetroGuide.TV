@@ -4,7 +4,7 @@ import SwiftUI
 
 /// Dimensions and time scale of the program guide.
 enum GuideLayout {
-    static let channelColumnWidth = PlatformMetric.value(tv: CGFloat(300), touch: 132)
+    static let channelColumnWidth = PlatformMetric.value(tv: CGFloat(300), touch: 176)
     /// iPhone in portrait: the channel column shows only the number badge.
     static let narrowChannelColumnWidth: CGFloat = 96
     static let rowHeight = PlatformMetric.value(tv: CGFloat(78), touch: 54)

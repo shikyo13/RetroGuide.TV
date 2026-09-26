@@ -74,6 +74,16 @@ struct WatchView: View {
             }
             .ignoresSafeArea()
         }
+        #if os(iOS)
+        .background {
+            // Ignores only the container safe area, so its bottom inset is the keyboard.
+            GeometryReader { _ in
+                Color.clear
+                    .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: { keyboardHeight = $0 }
+            }
+            .ignoresSafeArea(.container)
+        }
+        #endif
         .environment(\.pictureInPictureClearance, WatchLayout.pictureInPictureClearance(in: screenSize))
         #if os(iOS)
         .statusBarHidden(overlay == .none)
@@ -105,9 +115,12 @@ struct WatchView: View {
         overlay == .settings || overlay == .search
     }
 
-    /// Apple TV's PiP insets already account for overscan.
+    /// Apple TV's PiP insets already account for overscan. On iPhone and iPad
+    /// the window also moves up above the on-screen keyboard.
     private var pictureInPictureSafeArea: EdgeInsets {
-        PlatformMetric.value(tv: EdgeInsets(), touch: safeArea)
+        var insets = PlatformMetric.value(tv: EdgeInsets(), touch: safeArea)
+        insets.bottom = max(insets.bottom, keyboardHeight)
+        return insets
     }
 
     #if os(iOS)
