@@ -31,6 +31,7 @@ public enum PlexAPI {
         static let clientIdentifier = "X-Plex-Client-Identifier"
         static let sessionIdentifier = "X-Plex-Session-Identifier"
         static let clientProfileExtra = "X-Plex-Client-Profile-Extra"
+        static let clientProfileName = "X-Plex-Client-Profile-Name"
         static let platform = "X-Plex-Platform"
         static let platformVersion = "X-Plex-Platform-Version"
         static let device = "X-Plex-Device"
@@ -109,6 +110,10 @@ public enum PlexAPI {
     /// and to transcode only what the Apple TV cannot decode.
     /// Playback decisions: the server authorizes a session to play a file directly.
     enum Decision {
+        /// Plex's built-in profiles for Apple platforms describe Apple's own player
+        /// (for example stereo only, or at most 1080p), which would reject files
+        /// the bundled player handles. The generic profile has no such limits.
+        static let genericProfile = "Generic"
         /// Tells the server this client plays any container and codec itself.
         static let directPlayAnythingProfile =
             "add-direct-play-profile(type=videoProfile&protocol=http&container=*&videoCodec=*&audioCodec=*&subtitleCodec=*)"

@@ -8,7 +8,7 @@ import Foundation
 enum PlexPlaybackDecision: Equatable {
     /// Playable as is; request the file at `partKey` with the same session.
     case directPlay(partKey: String)
-    /// The server can't play this version (for example its file was deleted).
+    /// The server declined this version (for example its file was deleted).
     case unavailable
     /// No answer (network trouble); the version may still play.
     case unknown
@@ -58,6 +58,7 @@ extension PlexServerClient {
         ]
         let headers = [
             PlexAPI.Header.sessionIdentifier: sessionID,
+            PlexAPI.Header.clientProfileName: PlexAPI.Decision.genericProfile,
             PlexAPI.Header.clientProfileExtra: PlexAPI.Decision.directPlayAnythingProfile,
         ]
         guard let request = try? builder.request(path: PlexAPI.Path.playbackDecision, query: query, extraHeaders: headers),

@@ -46,8 +46,10 @@ public struct PlexServerClient: MediaServerClient {
         capabilities: PlaybackCapabilities
     ) async throws -> StreamRequest {
         let versions = MediaVersionSelector.ranked(item.versions, for: playback.quality)
-        // The preferred copy the player can open that the server will actually serve.
-        for version in versions where DirectPlayPolicy.canDirectPlay(version, with: capabilities) {
+        let playable = versions.filter { DirectPlayPolicy.canDirectPlay($0, with: capabilities) }
+        // The preferred copy the server authorizes, skipping ones it declines
+        // (such as copies whose files were deleted).
+        for version in playable {
             let sessionID = UUID().uuidString
             switch await playbackDecision(for: item, mediaIndex: version.index, sessionID: sessionID) {
             case let .directPlay(partKey):
@@ -60,7 +62,12 @@ public struct PlexServerClient: MediaServerClient {
                 return try directPlayRequest(filePath: filePath, sessionID: sessionID, position: position)
             }
         }
-        if capabilities.playsAnyFile, !versions.isEmpty {
+        // The server declined every copy. A decision is only a server opinion, so
+        // still try the preferred file rather than giving up.
+        if let filePath = playable.first?.filePath {
+            return try directPlayRequest(filePath: filePath, sessionID: UUID().uuidString, position: position)
+        }
+        if capabilities.playsAnyFile {
             throw StreamError.noPlayableVersion
         }
         return try directStreamRequest(for: item, mediaIndex: versions.first?.index ?? .zero, position: position)
