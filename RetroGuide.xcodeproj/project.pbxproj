@@ -17,6 +17,7 @@
 		1653642F5EE272B581D64B87 /* PlayerChromeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0DF0549433E240368F45D75 /* PlayerChromeView.swift */; };
 		19B0BFE4E21F4DBCF6A284BC /* IntermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E4F8A44AB9B3798884A1DF /* IntermissionCard.swift */; };
 		1B22F184D9F92EA9941A6E64 /* RetroGuideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC46D819D23A297C0A6FE728 /* RetroGuideApp.swift */; };
+		1B6773FFF15B1E26D255A775 /* DebugLaunchOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96343D6443D2CBC02C9A967 /* DebugLaunchOptions.swift */; };
 		1DCEFF3ED55554777BEC0F68 /* ChannelBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E2FADE8D0D4FF56F141FCB /* ChannelBadge.swift */; };
 		1DF9E74DCE9B167CED109160 /* AddServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FB6B1A4149A228D3D71A1B8 /* AddServerView.swift */; };
 		20766AA11246762B2EB2089D /* TapAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23B7A168DBC98266CF79C967 /* TapAction.swift */; };
@@ -207,6 +208,7 @@
 		B588766984AE2C0AD5684E00 /* MPVPlaybackEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVPlaybackEngine.swift; sourceTree = "<group>"; };
 		B746D8737282E49C370CF911 /* GuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideView.swift; sourceTree = "<group>"; };
 		B8E6421682822DF9EB4C7D65 /* Surfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Surfaces.swift; sourceTree = "<group>"; };
+		B96343D6443D2CBC02C9A967 /* DebugLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLaunchOptions.swift; sourceTree = "<group>"; };
 		BC46D819D23A297C0A6FE728 /* RetroGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroGuideApp.swift; sourceTree = "<group>"; };
 		C08BDDF85EEA045DAB1751FA /* PlexLinkStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlexLinkStepView.swift; sourceTree = "<group>"; };
 		C374746B67B1B436DFBF5F5F /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
@@ -532,6 +534,7 @@
 				DEBCBC697963B90B6FE85490 /* AppIdentity.swift */,
 				4256AEAB82EABD170AA2AEE3 /* AppModel.swift */,
 				0452ECDC6FD9A5997A83DE95 /* DebugBootstrap.swift */,
+				B96343D6443D2CBC02C9A967 /* DebugLaunchOptions.swift */,
 				2592C4AE803F82DB05F07DAD /* DebugSnapshot.swift */,
 				9EE9E450D8C95F92B6095A95 /* LineupEngine.swift */,
 				A0DCB1FD20F3531CA7FE3D3E /* ServerLibrary.swift */,
@@ -697,6 +700,7 @@
 				459009C3FD10B3FB413B3BA3 /* Color+Hex.swift in Sources */,
 				AF9BFFE61C5614EB130B7A8D /* ColumnWidth.swift in Sources */,
 				51BF916ECC3E1D006A623355 /* DebugBootstrap.swift in Sources */,
+				1B6773FFF15B1E26D255A775 /* DebugLaunchOptions.swift in Sources */,
 				D40160AAAB3081C927CEEB87 /* DebugSnapshot.swift in Sources */,
 				6F616B19949D1E258B35617E /* DesignTokens.swift in Sources */,
 				DFED066DCAD7DCA8839FD68E /* DisplayMatchingPickerView.swift in Sources */,

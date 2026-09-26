@@ -19,7 +19,7 @@ struct SearchView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     @Environment(\.pictureInPictureClearance) private var pictureInPictureClearance
-    @State private var query = ""
+    @State private var query = DebugLaunchOptions.searchText
     @State private var results: [SearchResult] = []
     @State private var isSearchPresented = false
 

@@ -11,13 +11,25 @@ struct WatchView: View {
         case guide
         case search
         case settings
+
+        /// Full-screen TV, unless a development launch option asks for a menu.
+        static var initial: Overlay {
+            switch DebugLaunchOptions.overlay {
+            case .guide: .guide
+            case .search: .search
+            case .settings: .settings
+            case nil: .none
+            }
+        }
     }
 
     @Environment(AppModel.self) private var app
-    @State private var overlay = Overlay.none
+    @State private var overlay = Overlay.initial
     @State private var previewFrame: CGRect?
     @State private var screenSize = CGSize.zero
     @State private var safeArea = EdgeInsets()
+    /// Height of the on-screen keyboard (iPhone and iPad), so the PiP window stays above it.
+    @State private var keyboardHeight: CGFloat = .zero
 
     var body: some View {
         let tuner = app.tuner

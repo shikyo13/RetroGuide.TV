@@ -16,6 +16,9 @@ struct RetroGuideApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                #if os(iOS)
+                .debugLaunchOrientation()
+                #endif
                 .environment(model)
                 .environment(\.theme, model.theme)
                 .environment(\.artworkResolver, model.artworkResolver)
