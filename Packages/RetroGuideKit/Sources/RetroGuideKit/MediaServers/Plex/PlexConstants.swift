@@ -18,6 +18,7 @@ public enum PlexAPI {
         static func sectionCollections(_ section: String) -> String { "/library/sections/\(section)/collections" }
         static func collectionChildren(_ key: String) -> String { "/library/collections/\(key)/children" }
         static let transcodeStart = "/video/:/transcode/universal/start.m3u8"
+        static let playbackDecision = "/video/:/transcode/universal/decision"
         static let transcodeStop = "/video/:/transcode/universal/stop"
         static let photoTranscode = "/photo/:/transcode"
         static func metadata(_ key: String) -> String { "/library/metadata/\(key)" }
@@ -28,6 +29,8 @@ public enum PlexAPI {
         static let product = "X-Plex-Product"
         static let version = "X-Plex-Version"
         static let clientIdentifier = "X-Plex-Client-Identifier"
+        static let sessionIdentifier = "X-Plex-Session-Identifier"
+        static let clientProfileExtra = "X-Plex-Client-Profile-Extra"
         static let platform = "X-Plex-Platform"
         static let platformVersion = "X-Plex-Platform-Version"
         static let device = "X-Plex-Device"
@@ -94,6 +97,8 @@ public enum PlexAPI {
         static let probeTimeout: TimeInterval = 4
         /// Track selection is fetched while tuning, so it must never hold up playback for long.
         static let trackSelectionTimeout: TimeInterval = 2
+        /// Asking the server for permission to play a file directly.
+        static let playbackDecisionTimeout: TimeInterval = 5
         /// How often to poll plex.tv while waiting for the user to enter a link code.
         public static let pinPollInterval: Duration = .seconds(2)
         static let millisecondsPerSecond: TimeInterval = 1_000
@@ -102,6 +107,16 @@ public enum PlexAPI {
     /// Parameters for the universal transcoder. The client profile extra asks
     /// the server to remux into HLS whenever the video/audio can be copied,
     /// and to transcode only what the Apple TV cannot decode.
+    /// Playback decisions: the server authorizes a session to play a file directly.
+    enum Decision {
+        /// Tells the server this client plays any container and codec itself.
+        static let directPlayAnythingProfile =
+            "add-direct-play-profile(type=videoProfile&protocol=http&container=*&videoCodec=*&audioCodec=*&subtitleCodec=*)"
+        static let protocolHTTP = "http"
+        /// `generalDecisionCode` when the file can be played as is.
+        static let directPlayOK = 1000
+    }
+
     enum Transcode {
         static let protocolHLS = "hls"
         static let maxVideoBitrateKbps = 40_000

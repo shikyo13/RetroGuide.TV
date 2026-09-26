@@ -189,7 +189,7 @@ final class Tuner {
         // The viewer may have changed channel while the selection was loading.
         guard generation == tuneGeneration, !Task.isCancelled else { return }
         do {
-            let request = try client.streamRequest(
+            let request = try await client.streamRequest(
                 for: program.item,
                 startingAt: program.elapsed(at: now),
                 capabilities: engine.capabilities

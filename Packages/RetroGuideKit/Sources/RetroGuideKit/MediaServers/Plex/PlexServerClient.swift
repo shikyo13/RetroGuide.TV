@@ -2,7 +2,7 @@ import Foundation
 
 /// ``MediaServerClient`` implementation for Plex Media Server.
 public struct PlexServerClient: MediaServerClient {
-    private let context: PlexRequestContext
+    let context: PlexRequestContext
     private let playback: ServerPlaybackSettings
 
     public init(
@@ -44,22 +44,41 @@ public struct PlexServerClient: MediaServerClient {
         for item: MediaItem,
         startingAt position: TimeInterval,
         capabilities: PlaybackCapabilities
-    ) throws -> StreamRequest {
-        let version = MediaVersionSelector.best(of: item.versions, for: playback.quality)
-        if DirectPlayPolicy.canDirectPlay(version, with: capabilities), let filePath = version?.filePath {
-            return try directPlayRequest(filePath: filePath, position: position)
+    ) async throws -> StreamRequest {
+        let versions = MediaVersionSelector.ranked(item.versions, for: playback.quality)
+        // The preferred copy the player can open that the server will actually serve.
+        for version in versions where DirectPlayPolicy.canDirectPlay(version, with: capabilities) {
+            let sessionID = UUID().uuidString
+            switch await playbackDecision(for: item, mediaIndex: version.index, sessionID: sessionID) {
+            case let .directPlay(partKey):
+                return try directPlayRequest(filePath: partKey, sessionID: sessionID, position: position)
+            case .unavailable:
+                continue
+            case .unknown:
+                // No answer from the server: try the file anyway (smaller files don't need a decision).
+                guard let filePath = version.filePath else { continue }
+                return try directPlayRequest(filePath: filePath, sessionID: sessionID, position: position)
+            }
         }
-        return try directStreamRequest(for: item, mediaIndex: version?.index ?? .zero, position: position)
+        if capabilities.playsAnyFile, !versions.isEmpty {
+            throw StreamError.noPlayableVersion
+        }
+        return try directStreamRequest(for: item, mediaIndex: versions.first?.index ?? .zero, position: position)
     }
 
-    /// The original file; the player seeks to the live position itself.
-    private func directPlayRequest(filePath: String, position: TimeInterval) throws -> StreamRequest {
-        let url = try context.builder.url(path: filePath, query: [URLQueryItem(name: PlexAPI.Header.token, value: context.token)])
+    /// The original file; the player seeks to the live position itself. The
+    /// session identifier carries the server's permission to play it directly.
+    private func directPlayRequest(filePath: String, sessionID: String, position: TimeInterval) throws -> StreamRequest {
+        let url = try context.builder.url(path: filePath, query: [
+            URLQueryItem(name: PlexAPI.Header.token, value: context.token),
+            URLQueryItem(name: PlexAPI.Header.sessionIdentifier, value: sessionID),
+            URLQueryItem(name: PlexAPI.Header.clientIdentifier, value: context.identity.clientIdentifier),
+        ])
         return StreamRequest(
             url: url,
             startPosition: position,
             startsAtPosition: false,
-            sessionID: UUID().uuidString,
+            sessionID: sessionID,
             method: .directPlay,
             buffer: playback.bufferProfile
         )

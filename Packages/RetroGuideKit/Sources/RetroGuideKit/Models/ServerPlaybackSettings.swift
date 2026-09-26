@@ -77,15 +77,25 @@ public struct ServerPlaybackSettings: Codable, Sendable, Hashable {
 /// Picks which version of a title to play for a quality preference.
 public enum MediaVersionSelector {
     public static func best(of versions: [MediaVersion], for quality: VideoQuality) -> MediaVersion? {
-        let ordered = versions.sorted { ($0.height ?? .zero, $0.bitrateKbps ?? .zero) < ($1.height ?? .zero, $1.bitrateKbps ?? .zero) }
+        ranked(versions, for: quality).first
+    }
+
+    /// Every version, most preferred first, so playback can fall back when the
+    /// preferred copy is unavailable (for example deleted from the server's disk).
+    public static func ranked(_ versions: [MediaVersion], for quality: VideoQuality) -> [MediaVersion] {
+        let ascending = versions.sorted { ($0.height ?? .zero, $0.bitrateKbps ?? .zero) < ($1.height ?? .zero, $1.bitrateKbps ?? .zero) }
         switch quality {
         case .original:
-            return ordered.last
+            return ascending.reversed()
         case .smallest:
-            return ordered.first
+            return ascending
         case .upTo1080p, .upTo720p:
+            // The best copy within the limit first, then smaller ones, then the
+            // smallest copies above the limit.
             let limit = quality.maximumHeight ?? .max
-            return ordered.last { ($0.height ?? .zero) <= limit } ?? ordered.first
+            let withinLimit = ascending.filter { ($0.height ?? .zero) <= limit }
+            let aboveLimit = ascending.filter { ($0.height ?? .zero) > limit }
+            return withinLimit.reversed() + aboveLimit
         }
     }
 }
