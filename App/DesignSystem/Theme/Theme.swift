@@ -4,13 +4,24 @@ import SwiftUI
 /// Identifiers for the built-in themes, persisted in preferences.
 enum ThemeID: String, Codable, CaseIterable, Identifiable, Sendable {
     case classicCable
+    case localForecast
+    case saturdayMorning
+    case payPerView
+    case woodPanel
+    case vhs
+    case synthwave
     case midnight
     case crtGreen
     case amber
-    case synthwave
+    case teletext
     case mono
 
     var id: String { rawValue }
+
+    /// The free version includes Classic Cable; every other theme is RetroGuide Pro.
+    var isIncludedFree: Bool {
+        self == .classicCable
+    }
 }
 
 /// A complete color palette. Every color in the UI comes from the active theme.
