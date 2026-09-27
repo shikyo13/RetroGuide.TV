@@ -21,6 +21,9 @@ final class MPVCore: @unchecked Sendable {
             ("gpu-api", "vulkan"),
             ("gpu-context", "moltenvk"),
             ("hwdec", "videotoolbox"),
+            // Don't register as mixable audio: Control Center only routes (HomePod,
+            // AirPlay) the Now Playing app's audio, and mixable audio never is.
+            ("audio-exclusive", "yes"),
             ("video-rotate", "no"),
             // Per-frame HDR peak analysis is expensive; static metadata is good enough on TV.
             ("hdr-compute-peak", "no"),
@@ -72,6 +75,10 @@ final class MPVCore: @unchecked Sendable {
         static let readaheadProperty = "demuxer-readahead-secs"
         /// libmpv log verbosity forwarded to the unified log in debug builds.
         static let debugLogLevel = "info"
+        static let logFile = "log-file"
+        static let logFileName = "mpv.log"
+        /// Where a debug play-URL override starts, well inside any episode.
+        static let debugOverrideStart = "60"
     }
 
     private static let logger = Logger(subsystem: "com.adamhunt.retroguide", category: "mpv")
@@ -94,6 +101,10 @@ final class MPVCore: @unchecked Sendable {
             mpv_set_option_string(handle, name, value)
         }
         #if DEBUG
+        if DebugLaunchOptions.probesAudio,
+           let folder = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
+            mpv_set_option_string(handle, Option.logFile, folder.appending(path: Option.logFileName).path)
+        }
         mpv_request_log_messages(handle, Option.debugLogLevel)
         for property in Diagnostics.observedProperties {
             mpv_observe_property(handle, .zero, property, MPV_FORMAT_INT64)
@@ -126,9 +137,12 @@ final class MPVCore: @unchecked Sendable {
         let cache = MPVBufferSettings(buffer)
         mpv_set_property_string(handle, Option.maxBytesProperty, cache.maxBytes)
         mpv_set_property_string(handle, Option.readaheadProperty, cache.readaheadSeconds)
-        let start = startPosition.map { String(format: "%.1f", $0) } ?? Option.noStartPosition
+        var start = startPosition.map { String(format: "%.1f", $0) } ?? Option.noStartPosition
+        if DebugLaunchOptions.playURLOverride != nil {
+            start = Option.debugOverrideStart
+        }
         mpv_set_property_string(handle, Option.startPositionProperty, start)
-        command(["loadfile", url.absoluteString, "replace"])
+        command(["loadfile", (DebugLaunchOptions.playURLOverride ?? url).absoluteString, "replace"])
     }
 
     func stop() {

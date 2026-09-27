@@ -36,6 +36,7 @@
 		344BBCFC8E4E7130D58A182A /* StaticNoiseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C3ABF62769BA3CD53E6EB02 /* StaticNoiseView.swift */; };
 		346E73890827CD5921DC9ED9 /* ServersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E84E989B8E3C2B15E07A741 /* ServersView.swift */; };
 		384BCEA4777AF7B0E252D274 /* RetroGuideKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8A2FF2DB065BDB40E543B3C7 /* RetroGuideKit */; };
+		394408F1C1EF09054C97D6E8 /* NowPlayingPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620DCE679A3B505A014F908A /* NowPlayingPublisher.swift */; };
 		3BB6BFA4A4E73A7C3BA33D35 /* ChannelGroupsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9510907E446131660CB70046 /* ChannelGroupsView.swift */; };
 		3D8929C0A4F7F1BD7B745C12 /* PresentingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ECA29AE15FAC6521C26C473 /* PresentingViewController.swift */; };
 		3E5BA758E31F9CB8D818F2B0 /* WelcomeStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F65DFF726E08D9C5D9CAD1 /* WelcomeStepView.swift */; };
@@ -110,6 +111,7 @@
 		B320FC43F4B0A7A00F3941AA /* MPVPlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588766984AE2C0AD5684E00 /* MPVPlaybackEngine.swift */; };
 		B9282DBA728F082BB3ECED5E /* FailureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9DDD4AB63AB0D2F04F3DC1 /* FailureView.swift */; };
 		B9806FFA4BFBED302C2FFDF2 /* IndexingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 400321D38B8063B8C8749040 /* IndexingView.swift */; };
+		BD7728AE191FFDAE0A5009B3 /* AudioRouteProbe.swift in Sources */ = {isa = PBXBuildFile; fileRef = 621AFFAB0C64F158C012ABC0 /* AudioRouteProbe.swift */; };
 		C036F0275C3DEA5D8AB693A9 /* ServerSetupStepsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529E54D5CBE1128C70DF51E6 /* ServerSetupStepsView.swift */; };
 		C0F9BCB17F46A8FD75224803 /* MPVCore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEF0DB268F4E64DD81622652 /* MPVCore.swift */; };
 		C172B2FB3CFE05F74645CD57 /* GuideGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277431B53EC9DD3EEEFDADB9 /* GuideGridView.swift */; };
@@ -218,6 +220,8 @@
 		5E84E989B8E3C2B15E07A741 /* ServersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServersView.swift; sourceTree = "<group>"; };
 		5FFCAFE97BE39E7BD3554DF6 /* BannerAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerAdView.swift; sourceTree = "<group>"; };
 		604801F13D23463BECF5C12F /* TouchGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchGesture.swift; sourceTree = "<group>"; };
+		620DCE679A3B505A014F908A /* NowPlayingPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingPublisher.swift; sourceTree = "<group>"; };
+		621AFFAB0C64F158C012ABC0 /* AudioRouteProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouteProbe.swift; sourceTree = "<group>"; };
 		640A1EE370DC839D29A43C74 /* RetroRowButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroRowButtonStyle.swift; sourceTree = "<group>"; };
 		651E3EB72BF671C9E1ABE5CA /* OnboardingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
 		66CC706B5FDE0AED70647579 /* EngineVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineVideoView.swift; sourceTree = "<group>"; };
@@ -315,6 +319,7 @@
 			isa = PBXGroup;
 			children = (
 				7D6EFF0D26E1F0940918D2A8 /* Engine */,
+				620DCE679A3B505A014F908A /* NowPlayingPublisher.swift */,
 				16540AD44B0BC427225A94A4 /* Tuner.swift */,
 			);
 			path = Playback;
@@ -552,6 +557,7 @@
 		7D6EFF0D26E1F0940918D2A8 /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				621AFFAB0C64F158C012ABC0 /* AudioRouteProbe.swift */,
 				DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */,
 				AEF0DB268F4E64DD81622652 /* MPVCore.swift */,
 				B588766984AE2C0AD5684E00 /* MPVPlaybackEngine.swift */,
@@ -816,6 +822,7 @@
 				7A97EC4C2488630574448B8A /* AppIdentity.swift in Sources */,
 				63BD91C1071983CC0EF685C4 /* AppModel.swift in Sources */,
 				ABCC8B222377612CB09D67DC /* ArtworkResolver.swift in Sources */,
+				BD7728AE191FFDAE0A5009B3 /* AudioRouteProbe.swift in Sources */,
 				DDEDF921EAA3FF540E68EE87 /* BannerAdView.swift in Sources */,
 				CDB14AEAB71D26F37081A975 /* BrandMark.swift in Sources */,
 				1DCEFF3ED55554777BEC0F68 /* ChannelBadge.swift in Sources */,
@@ -872,6 +879,7 @@
 				C7B14A870865E72A2F960EC3 /* MPVVideoFormat.swift in Sources */,
 				45D22ED9DFDC553FDE6FD3D6 /* NetworkChangeMonitor.swift in Sources */,
 				E286AAA7E6C9A07DFF641E7E /* NoSignalCard.swift in Sources */,
+				394408F1C1EF09054C97D6E8 /* NowPlayingPublisher.swift in Sources */,
 				0982F4C63893AE7898CF9C5A /* OnboardingFlowView.swift in Sources */,
 				E428E9102569104BF28B0219 /* OnboardingModel.swift in Sources */,
 				A5ED6B0B3D3D5CF9F874BE34 /* PlatformMetric.swift in Sources */,

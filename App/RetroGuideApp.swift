@@ -10,7 +10,12 @@ struct RetroGuideApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        #if os(iOS)
+        // Follow the output other video apps use (AirPlay, HomePod) when the system routes there.
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback, policy: .longFormVideo)
+        #else
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+        #endif
         #if DEBUG && os(iOS)
         DebugSnapshot.install()
         #endif

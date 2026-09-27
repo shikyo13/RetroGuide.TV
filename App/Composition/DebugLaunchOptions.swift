@@ -13,6 +13,10 @@ import SwiftUI
 ///   tuning (for screenshots, so it's still showing once video starts).
 /// - `RETROGUIDE_DEV_AUTOTUNE`: seconds after launch to tune the next channel
 ///   from the guide, as if it had been picked (for testing that path).
+/// - `RETROGUIDE_DEV_PLAY_URL`: plays this URL whenever a channel is tuned
+///   (RetroGuide Player only), to test specific files on a device.
+/// - `RETROGUIDE_DEV_AUDIO_PROBE`: `1` to record the audio route at launch and
+///   write libmpv's log to Library/Caches (see ``AudioRouteProbe``).
 ///
 /// Release builds always return the defaults.
 enum DebugLaunchOptions {
@@ -36,6 +40,8 @@ enum DebugLaunchOptions {
         static let autoTune = "RETROGUIDE_DEV_AUTOTUNE"
         static let settingsPage = "RETROGUIDE_DEV_SETTINGS_PAGE"
         static let bannerSeconds = "RETROGUIDE_DEV_BANNER_SECONDS"
+        static let audioProbe = "RETROGUIDE_DEV_AUDIO_PROBE"
+        static let playURL = "RETROGUIDE_DEV_PLAY_URL"
     }
 
     private static let landscape = "landscape"
@@ -68,6 +74,14 @@ enum DebugLaunchOptions {
 
     static var autoTuneDelay: Duration? {
         value(for: Variable.autoTune).flatMap(Double.init).map { .seconds($0) }
+    }
+
+    static var playURLOverride: URL? {
+        value(for: Variable.playURL).flatMap(URL.init(string:))
+    }
+
+    static var probesAudio: Bool {
+        value(for: Variable.audioProbe) == enabled
     }
 
     static var forcesPro: Bool {

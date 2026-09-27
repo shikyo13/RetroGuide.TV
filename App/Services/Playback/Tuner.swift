@@ -29,7 +29,13 @@ final class Tuner {
 
     private(set) var channel: Channel?
     private(set) var program: ScheduledProgram?
-    private(set) var signal: Signal = .off
+    private(set) var signal: Signal = .off {
+        didSet {
+            if signal != oldValue {
+                onSignalChanged?()
+            }
+        }
+    }
     /// Increments on every tune so overlays can re-appear even on the same channel.
     private(set) var tuneGeneration = 0
     /// The playing video's dynamic range and frame rate. Kept while surfing
@@ -41,6 +47,8 @@ final class Tuner {
     /// Called with a server id when its streams keep failing, so reachability can be re-checked.
     @ObservationIgnored var onServerTrouble: ((String) -> Void)?
     @ObservationIgnored var onVideoFormatChanged: (() -> Void)?
+    /// Called whenever ``signal`` changes (tuning, live, off…).
+    @ObservationIgnored var onSignalChanged: (() -> Void)?
     /// The viewer's account language settings, for items they haven't chosen tracks for.
     @ObservationIgnored var languagePreferences: LanguagePreferences?
 

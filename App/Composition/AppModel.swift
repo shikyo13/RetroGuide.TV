@@ -38,6 +38,7 @@ final class AppModel {
 
     let tuner: Tuner
     let servers: ServerLibrary
+    @ObservationIgnored private var nowPlaying: NowPlayingPublisher?
     let pro = ProStore()
     let plexIdentity: PlexClientIdentity
 
@@ -73,6 +74,16 @@ final class AppModel {
         tuner.onVideoFormatChanged = { [weak self] in
             self?.updateDisplayMode()
         }
+        nowPlaying = NowPlayingPublisher(actions: .init(
+            play: { [weak self] in self?.tuner.resume() },
+            pause: { [weak self] in self?.tuner.suspend() },
+            channelUp: { [weak self] in self?.tuner.channelUp() },
+            channelDown: { [weak self] in self?.tuner.channelDown() }
+        ))
+        tuner.onSignalChanged = { [weak self] in
+            guard let self else { return }
+            nowPlaying?.update(channel: tuner.channel, program: tuner.program, isPlaying: tuner.signal == .live)
+        }
         tuner.languagePreferences = store.languagePreferences
     }
 
@@ -102,6 +113,13 @@ final class AppModel {
         guard phase == .launching else { return }
         #if DEBUG
         await DebugBootstrap.seedAccountIfRequested(store: store, keychain: KeychainStore(), identity: plexIdentity)
+        if DebugLaunchOptions.probesAudio {
+            AudioRouteProbe.run()
+            Task {
+                try? await Task.sleep(for: AudioRouteProbe.playbackCheckDelay)
+                AudioRouteProbe.recordPlaybackState()
+            }
+        }
         // The bootstrap may have reset stored settings.
         preferences = store.preferences
         customization = store.customization
