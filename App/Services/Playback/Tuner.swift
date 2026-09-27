@@ -257,15 +257,18 @@ final class Tuner {
         endActiveStream()
         boundaryTask?.cancel()
         let delay: Duration
-        if Timing.quickRetryDelays.indices.contains(failedAttempts) {
+        let isQuickRetry = Timing.quickRetryDelays.indices.contains(failedAttempts)
+        if isQuickRetry {
             delay = Timing.quickRetryDelays[failedAttempts]
             signal = .tuning
         } else {
             delay = Timing.retryDelay
             signal = .noSignal(message)
-            if let serverID = program?.item.serverID {
-                onServerTrouble?(serverID)
-            }
+        }
+        // Check the server's address on the first failure (the viewer may have
+        // left home), so the quick retries can already use the new address.
+        if failedAttempts == .zero || !isQuickRetry, let serverID = program?.item.serverID {
+            onServerTrouble?(serverID)
         }
         failedAttempts += 1
         boundaryTask = Task { [weak self] in

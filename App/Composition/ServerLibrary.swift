@@ -201,8 +201,9 @@ final class ServerLibrary {
     // MARK: - Reachability
 
     /// Probes every server. Unreachable Plex servers are re-located through the
-    /// Plex account (their address may have changed). Returns whether any
-    /// server's availability changed.
+    /// Plex account (their address may have changed, or the viewer left home),
+    /// and servers reached remotely switch back to their home address when it
+    /// answers again. Returns whether any server's availability changed.
     @discardableResult
     func checkReachability() async -> Bool {
         var changed = false
@@ -218,10 +219,15 @@ final class ServerLibrary {
     }
 
     private func isReachable(_ account: ServerAccount) async -> Bool {
-        if let client = registry.client(for: account.id), await client.isReachable() {
+        let currentWorks = await registry.client(for: account.id)?.isReachable() ?? false
+        if currentWorks, NetworkLocation.isLikelyLocal(account.baseURL) {
             return true
         }
-        guard account.kind == .plex, let newURL = await relocatePlexServer(account.id) else { return false }
+        guard account.kind == .plex, let newURL = await relocatePlexServer(account.id) else { return currentWorks }
+        // A working remote address is only replaced by a home one.
+        if currentWorks, !NetworkLocation.isLikelyLocal(newURL) || newURL == account.baseURL {
+            return true
+        }
         var updated = account
         updated.baseURL = newURL
         registry.refreshClient(for: updated)

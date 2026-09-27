@@ -36,7 +36,11 @@ struct RetroGuideApp: App {
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .background: model.tuner.suspend()
-            case .active: if model.phase == .ready { model.tuner.resume() }
+            case .active:
+                if model.phase == .ready {
+                    model.tuner.resume()
+                    Task { await model.refreshConnections() }
+                }
             default: break
             }
         }

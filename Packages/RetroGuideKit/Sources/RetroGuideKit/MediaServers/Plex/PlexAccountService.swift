@@ -15,6 +15,9 @@ public struct PlexServerCandidate: Sendable, Hashable, Identifiable {
     public let isOwned: Bool
     public let accessToken: String
     let connections: [PlexConnectionCandidate]
+    /// plex.tv's view of whether this device is on the server's network
+    /// (same public address); `nil` when unknown.
+    var isOnSameNetwork: Bool? = nil
 }
 
 struct PlexConnectionCandidate: Sendable, Hashable {
@@ -118,7 +121,8 @@ public struct PlexAccountService: Sendable {
             name: resource.name,
             isOwned: resource.owned ?? false,
             accessToken: token,
-            connections: connections
+            connections: connections,
+            isOnSameNetwork: resource.publicAddressMatches
         )
     }
 }

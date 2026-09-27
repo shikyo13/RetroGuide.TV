@@ -166,6 +166,8 @@ struct PlexResource: Decodable {
     let provides: String
     let owned: Bool?
     let accessToken: String?
+    /// Whether this device and the server share a public address (same network).
+    let publicAddressMatches: Bool?
     let connections: [PlexConnection]?
 }
 

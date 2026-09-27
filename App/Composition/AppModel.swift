@@ -44,6 +44,8 @@ final class AppModel {
     @ObservationIgnored private let store: PreferencesStore
     @ObservationIgnored private let engine = LineupEngine()
     @ObservationIgnored private var healthTask: Task<Void, Never>?
+    @ObservationIgnored private var isRecheckingServers = false
+    @ObservationIgnored private let networkMonitor = NetworkChangeMonitor()
     /// The channel to return to once a slower server brings it into the lineup,
     /// and the tune it replaced (so we don't override a channel the viewer chose).
     @ObservationIgnored private var pendingResume: (channelID: String, tuneGeneration: Int)?
@@ -112,6 +114,9 @@ final class AppModel {
             return
         }
         startHealthChecks()
+        networkMonitor.start { [weak self] in
+            Task { await self?.refreshConnections() }
+        }
         if let cachedAt = servers.oldestRefresh {
             lastRefreshed = cachedAt
             await rebuildIndexAndLineup()
@@ -123,6 +128,14 @@ final class AppModel {
         } else {
             await refreshLibrary()
         }
+        await refreshConnections()
+    }
+
+    /// Re-checks server addresses right away, e.g. when the app comes back to the
+    /// foreground on a different network, instead of waiting for playback to fail.
+    func refreshConnections() async {
+        guard phase == .ready else { return }
+        await recheckServers()
     }
 
     func retryAfterFailure() async {
@@ -236,6 +249,9 @@ final class AppModel {
     /// Re-probes servers; if one went offline or came back, the lineup is rebuilt
     /// so channels only air content that can actually play.
     private func recheckServers() async {
+        guard !isRecheckingServers else { return }
+        isRecheckingServers = true
+        defer { isRecheckingServers = false }
         guard await servers.checkReachability() else { return }
         refreshError = offlineServersMessage
         await rebuildIndexAndLineup()

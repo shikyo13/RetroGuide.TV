@@ -11,8 +11,11 @@ public enum PlexConnectionError: Error, LocalizedError {
     }
 }
 
-/// Probes every advertised address of a server in parallel and picks the best
-/// reachable one (local beats remote beats relay).
+/// Probes a server's advertised addresses and picks the best reachable one
+/// (local beats remote beats relay). When plex.tv says the device is away from
+/// the server's network, remote addresses are tried first so a home address
+/// that can't answer doesn't hold things up; home addresses are still tried
+/// afterwards for devices that reach home over a VPN.
 public struct PlexConnectionResolver: Sendable {
     private let identity: PlexClientIdentity
     private let session: URLSession
@@ -28,9 +31,28 @@ public struct PlexConnectionResolver: Sendable {
 
     /// The best reachable address and whether it is on the local network.
     public func resolveConnection(_ server: PlexServerCandidate) async throws -> (url: URL, isLocal: Bool) {
-        let reachable = await withTaskGroup(of: PlexConnectionCandidate?.self) { group in
-            for connection in server.connections {
-                group.addTask { await isReachable(connection, token: server.accessToken) ? connection : nil }
+        for group in Self.probeGroups(server) {
+            let reachable = await reachableConnections(group, token: server.accessToken)
+            if let best = reachable.min(by: { $0.preferenceRank < $1.preferenceRank }) {
+                return (best.url, best.isLocal)
+            }
+        }
+        throw PlexConnectionError.unreachable(serverName: server.name)
+    }
+
+    /// Addresses to probe, in rounds: everything at once, or remote before home
+    /// when the device is known to be away from the server's network.
+    static func probeGroups(_ server: PlexServerCandidate) -> [[PlexConnectionCandidate]] {
+        guard server.isOnSameNetwork == false else { return [server.connections] }
+        let remote = server.connections.filter { !$0.isLocal }
+        let home = server.connections.filter(\.isLocal)
+        return [remote, home].filter { !$0.isEmpty }
+    }
+
+    private func reachableConnections(_ connections: [PlexConnectionCandidate], token: String) async -> [PlexConnectionCandidate] {
+        await withTaskGroup(of: PlexConnectionCandidate?.self) { group in
+            for connection in connections {
+                group.addTask { await isReachable(connection, token: token) ? connection : nil }
             }
             var results: [PlexConnectionCandidate] = []
             for await result in group {
@@ -38,10 +60,6 @@ public struct PlexConnectionResolver: Sendable {
             }
             return results
         }
-        guard let best = reachable.min(by: { $0.preferenceRank < $1.preferenceRank }) else {
-            throw PlexConnectionError.unreachable(serverName: server.name)
-        }
-        return (best.url, best.isLocal)
     }
 
     private func isReachable(_ connection: PlexConnectionCandidate, token: String) async -> Bool {
