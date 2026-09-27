@@ -1,10 +1,10 @@
 // AdMob identifiers for the free version on iPhone and iPad.
 // Debug builds always use Google's demo IDs, which serve test ads only.
-// Release builds use the app's own IDs; until they are set these are the demo IDs too.
+// Release builds use RetroGuide.TV's own AdMob app and ad units.
 ADMOB_DEMO_APP_ID = ca-app-pub-3940256099942544~1458002511
 ADMOB_DEMO_BANNER_UNIT_ID = ca-app-pub-3940256099942544/2934735716
 ADMOB_DEMO_INTERSTITIAL_UNIT_ID = ca-app-pub-3940256099942544/4411468910
 
-ADMOB_RELEASE_APP_ID = $(ADMOB_DEMO_APP_ID)
-ADMOB_RELEASE_BANNER_UNIT_ID = $(ADMOB_DEMO_BANNER_UNIT_ID)
-ADMOB_RELEASE_INTERSTITIAL_UNIT_ID = $(ADMOB_DEMO_INTERSTITIAL_UNIT_ID)
+ADMOB_RELEASE_APP_ID = ca-app-pub-2076228418126301~4624561661
+ADMOB_RELEASE_BANNER_UNIT_ID = ca-app-pub-2076228418126301/8028705779
+ADMOB_RELEASE_INTERSTITIAL_UNIT_ID = ca-app-pub-2076228418126301/4201141403
