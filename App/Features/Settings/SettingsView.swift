@@ -8,6 +8,9 @@ struct SettingsView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     @State private var isConfirmingSignOut = false
+    #if DEBUG
+    @State private var debugPage = DebugLaunchOptions.settingsPage
+    #endif
 
     var body: some View {
         NavigationStack {
@@ -122,6 +125,14 @@ struct SettingsView: View {
                     .font(Typography.caption)
                     .foregroundStyle(theme.textSecondary)
             }
+            #if DEBUG
+            .navigationDestination(item: $debugPage) { page in
+                switch page {
+                case .theme: ThemePickerView()
+                case .pro: ProUpgradeView()
+                }
+            }
+            #endif
         }
         .confirmationDialog("Sign out and remove all channels from this Apple TV?", isPresented: $isConfirmingSignOut) {
             Button("Sign Out", role: .destructive) { app.signOut() }

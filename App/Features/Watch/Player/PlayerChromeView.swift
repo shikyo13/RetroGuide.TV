@@ -36,7 +36,7 @@ struct PlayerChromeView: View {
             isOSDVisible = false
         }
         .task(id: BannerTrigger(generation: tuner.tuneGeneration, request: bannerRequest)) {
-            try? await Task.sleep(for: Timing.bannerDuration)
+            try? await Task.sleep(for: DebugLaunchOptions.bannerDuration ?? Timing.bannerDuration)
             guard !Task.isCancelled else { return }
             isBannerVisible = false
         }

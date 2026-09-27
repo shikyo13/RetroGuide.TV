@@ -7,6 +7,10 @@ import SwiftUI
 /// - `RETROGUIDE_DEV_SEARCH`: text to search for when Search opens.
 /// - `RETROGUIDE_DEV_ORIENTATION`: `landscape` or `portrait` to start that way (iPhone).
 /// - `RETROGUIDE_DEV_PRO`: `1` to act as if RetroGuide Pro were purchased.
+/// - `RETROGUIDE_DEV_SETTINGS_PAGE`: `theme` or `pro` to open that page when
+///   Settings opens (with `RETROGUIDE_DEV_OVERLAY=settings`).
+/// - `RETROGUIDE_DEV_BANNER_SECONDS`: how long the info banner stays up after
+///   tuning (for screenshots, so it's still showing once video starts).
 /// - `RETROGUIDE_DEV_AUTOTUNE`: seconds after launch to tune the next channel
 ///   from the guide, as if it had been picked (for testing that path).
 ///
@@ -18,12 +22,19 @@ enum DebugLaunchOptions {
         case settings
     }
 
+    enum SettingsPage: String {
+        case theme
+        case pro
+    }
+
     private enum Variable {
         static let overlay = "RETROGUIDE_DEV_OVERLAY"
         static let search = "RETROGUIDE_DEV_SEARCH"
         static let orientation = "RETROGUIDE_DEV_ORIENTATION"
         static let pro = "RETROGUIDE_DEV_PRO"
         static let autoTune = "RETROGUIDE_DEV_AUTOTUNE"
+        static let settingsPage = "RETROGUIDE_DEV_SETTINGS_PAGE"
+        static let bannerSeconds = "RETROGUIDE_DEV_BANNER_SECONDS"
     }
 
     private static let landscape = "landscape"
@@ -44,6 +55,14 @@ enum DebugLaunchOptions {
 
     static var startsInPortrait: Bool {
         value(for: Variable.orientation) == portrait
+    }
+
+    static var bannerDuration: Duration? {
+        value(for: Variable.bannerSeconds).flatMap(Double.init).map { .seconds($0) }
+    }
+
+    static var settingsPage: SettingsPage? {
+        value(for: Variable.settingsPage).flatMap(SettingsPage.init(rawValue:))
     }
 
     static var autoTuneDelay: Duration? {
