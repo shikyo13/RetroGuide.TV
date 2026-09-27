@@ -97,7 +97,22 @@ struct WatchView: View {
         #endif
         .animation(DesignTokens.Motion.pictureInPicture, value: overlay)
         .animation(DesignTokens.Motion.pictureInPicture, value: previewFrame)
+        #if DEBUG
+        .task { await debugAutoTune(tuner: tuner) }
+        #endif
     }
+
+    #if DEBUG
+    /// Picks the next channel from the guide after a delay (``DebugLaunchOptions/autoTuneDelay``).
+    private func debugAutoTune(tuner: Tuner) async {
+        guard let delay = DebugLaunchOptions.autoTuneDelay else { return }
+        try? await Task.sleep(for: delay)
+        let channels = app.visibleChannels
+        guard let current = channels.firstIndex(where: { $0.id == tuner.channel?.id }) else { return }
+        tuner.tune(to: channels[(current + 1) % channels.count])
+        overlay = .none
+    }
+    #endif
 
     /// Full screen, the guide's preview window, or PiP in the bottom-right corner over Settings.
     private func liveVideo(tuner: Tuner) -> some View {

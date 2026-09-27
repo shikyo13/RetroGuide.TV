@@ -7,6 +7,8 @@ import SwiftUI
 /// - `RETROGUIDE_DEV_SEARCH`: text to search for when Search opens.
 /// - `RETROGUIDE_DEV_ORIENTATION`: `landscape` or `portrait` to start that way (iPhone).
 /// - `RETROGUIDE_DEV_PRO`: `1` to act as if RetroGuide Pro were purchased.
+/// - `RETROGUIDE_DEV_AUTOTUNE`: seconds after launch to tune the next channel
+///   from the guide, as if it had been picked (for testing that path).
 ///
 /// Release builds always return the defaults.
 enum DebugLaunchOptions {
@@ -21,6 +23,7 @@ enum DebugLaunchOptions {
         static let search = "RETROGUIDE_DEV_SEARCH"
         static let orientation = "RETROGUIDE_DEV_ORIENTATION"
         static let pro = "RETROGUIDE_DEV_PRO"
+        static let autoTune = "RETROGUIDE_DEV_AUTOTUNE"
     }
 
     private static let landscape = "landscape"
@@ -41,6 +44,10 @@ enum DebugLaunchOptions {
 
     static var startsInPortrait: Bool {
         value(for: Variable.orientation) == portrait
+    }
+
+    static var autoTuneDelay: Duration? {
+        value(for: Variable.autoTune).flatMap(Double.init).map { .seconds($0) }
     }
 
     static var forcesPro: Bool {
