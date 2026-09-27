@@ -38,6 +38,7 @@ final class AppModel {
 
     let tuner: Tuner
     let servers: ServerLibrary
+    let pro = ProStore()
     let plexIdentity: PlexClientIdentity
 
     @ObservationIgnored private let store: PreferencesStore
@@ -79,8 +80,10 @@ final class AppModel {
         lineup.filter { !$0.isHidden }
     }
 
+    /// The chosen theme, or Classic Cable when a Pro theme is chosen without Pro.
     var theme: Theme {
-        ThemeCatalog.theme(for: preferences.themeID)
+        let chosen = preferences.themeID
+        return ThemeCatalog.theme(for: chosen.isIncludedFree || pro.isPro ? chosen : .classicCable)
     }
 
     var artworkResolver: ArtworkResolver {
@@ -102,6 +105,7 @@ final class AppModel {
         customization = store.customization
         #endif
         await servers.restore()
+        Task { await pro.start() }
         Task { await refreshLanguagePreferences() }
         guard servers.hasServers else {
             phase = .onboarding

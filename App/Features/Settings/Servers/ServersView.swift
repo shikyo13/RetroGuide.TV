@@ -23,10 +23,14 @@ struct ServersView: View {
                         )
                     }
                 }
-                NavigationLink {
-                    AddServerView()
-                } label: {
-                    SettingsRowLabel(title: "Add a server", systemImage: "plus.circle", value: nil)
+                if app.pro.access.canAddServer(connectedCount: app.servers.accounts.count) {
+                    NavigationLink {
+                        AddServerView()
+                    } label: {
+                        SettingsRowLabel(title: "Add a server", systemImage: "plus.circle", value: nil)
+                    }
+                } else {
+                    ProLockedRow(title: "Add another server", systemImage: "plus.circle")
                 }
             }
         }

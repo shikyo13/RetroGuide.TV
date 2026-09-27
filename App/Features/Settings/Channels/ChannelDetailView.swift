@@ -31,16 +31,8 @@ struct ChannelDetailView: View {
                         )
                     }
                 }
-                SettingsSection("Schedule order") {
-                    ForEach(ScheduleOrdering.allCases, id: \.self) { ordering in
-                        CheckmarkRow(
-                            title: ordering.displayName,
-                            detail: ordering.explanation,
-                            isSelected: channel.definition.ordering == ordering
-                        ) {
-                            app.setOrdering(ordering, for: channel.definition)
-                        }
-                    }
+                ScheduleOrderSection(selection: channel.definition.ordering) { ordering in
+                    app.setOrdering(ordering, for: channel.definition)
                 }
                 if channel.definition.source == .custom {
                     SettingsSection("Custom channel") {

@@ -4,6 +4,9 @@ import SwiftUI
 @main
 struct RetroGuideApp: App {
     @State private var model = AppModel()
+    #if os(iOS)
+    @State private var ads = AdsController()
+    #endif
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
@@ -20,6 +23,9 @@ struct RetroGuideApp: App {
                 .debugLaunchOrientation()
                 #endif
                 .environment(model)
+                #if os(iOS)
+                .environment(ads)
+                #endif
                 .environment(\.theme, model.theme)
                 .environment(\.artworkResolver, model.artworkResolver)
                 .environment(\.showsScanlines, model.preferences.showsScanlines)

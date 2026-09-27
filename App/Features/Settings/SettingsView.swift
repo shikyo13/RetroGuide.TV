@@ -12,6 +12,17 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             SettingsPage(title: "Settings", onExit: onClose) {
+                SettingsSection("RetroGuide Pro") {
+                    NavigationLink {
+                        ProUpgradeView()
+                    } label: {
+                        SettingsRowLabel(
+                            title: app.pro.isPro ? "RetroGuide Pro" : "Upgrade to Pro",
+                            systemImage: "star.circle",
+                            value: proSummary
+                        )
+                    }
+                }
                 SettingsSection("Picture") {
                     NavigationLink {
                         ThemePickerView()
@@ -54,19 +65,27 @@ struct SettingsView: View {
                     } label: {
                         SettingsRowLabel(title: "Channel groups", systemImage: "square.grid.2x2", value: nil)
                     }
-                    NavigationLink {
-                        ChannelEditorView(existing: nil)
-                    } label: {
-                        SettingsRowLabel(title: "Create a channel", systemImage: "plus.rectangle.on.rectangle", value: nil)
+                    if app.pro.access.canCreateCustomChannel(existingCount: app.customization.customChannels.count) {
+                        NavigationLink {
+                            ChannelEditorView(existing: nil)
+                        } label: {
+                            SettingsRowLabel(title: "Create a channel", systemImage: "plus.rectangle.on.rectangle", value: nil)
+                        }
+                    } else {
+                        ProLockedRow(title: "Create another channel", systemImage: "plus.rectangle.on.rectangle")
                     }
-                    NavigationLink {
-                        ScheduleGridPickerView()
-                    } label: {
-                        SettingsRowLabel(
-                            title: "Program start times",
-                            systemImage: "clock",
-                            value: app.preferences.scheduleGrid.displayName
-                        )
+                    if app.pro.access.canChangeScheduling {
+                        NavigationLink {
+                            ScheduleGridPickerView()
+                        } label: {
+                            SettingsRowLabel(
+                                title: "Program start times",
+                                systemImage: "clock",
+                                value: app.preferences.scheduleGrid.displayName
+                            )
+                        }
+                    } else {
+                        ProLockedRow(title: "Program start times", systemImage: "clock")
                     }
                 }
                 SettingsSection("Library") {
@@ -90,6 +109,9 @@ struct SettingsView: View {
                     }
                 }
                 SettingsSection("About") {
+                    #if os(iOS)
+                    PrivacyChoicesRow()
+                    #endif
                     NavigationLink {
                         AcknowledgementsView()
                     } label: {
@@ -105,6 +127,11 @@ struct SettingsView: View {
             Button("Sign Out", role: .destructive) { app.signOut() }
             Button("Cancel", role: .cancel) {}
         }
+    }
+
+    private var proSummary: String {
+        if app.pro.isPro { return "Active" }
+        return app.pro.product?.displayPrice ?? ProLockedRow.badge
     }
 
     private var channelSummary: String {

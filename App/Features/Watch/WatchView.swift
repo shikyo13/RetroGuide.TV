@@ -30,6 +30,8 @@ struct WatchView: View {
     @State private var safeArea = EdgeInsets()
     /// Height of the on-screen keyboard (iPhone and iPad), so the PiP window stays above it.
     @State private var keyboardHeight: CGFloat = .zero
+    /// Height of the free version's ad banner under the menus (iPhone and iPad).
+    @State private var bannerHeight: CGFloat = .zero
 
     var body: some View {
         let tuner = app.tuner
@@ -62,6 +64,9 @@ struct WatchView: View {
                     .transition(.opacity)
             }
         }
+        #if os(iOS)
+        .freeVersionAds(isWatchingFullScreen: overlay == .none, tuner: tuner, bannerHeight: $bannerHeight)
+        #endif
         .onPreferenceChange(LivePreviewFrameKey.self) { frame in
             previewFrame = frame
         }
@@ -119,7 +124,7 @@ struct WatchView: View {
     /// the window also moves up above the on-screen keyboard.
     private var pictureInPictureSafeArea: EdgeInsets {
         var insets = PlatformMetric.value(tv: EdgeInsets(), touch: safeArea)
-        insets.bottom = max(insets.bottom, keyboardHeight)
+        insets.bottom = max(insets.bottom + bannerHeight, keyboardHeight)
         return insets
     }
 

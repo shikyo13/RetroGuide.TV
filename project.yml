@@ -10,8 +10,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "0.1.0"
-    CURRENT_PROJECT_VERSION: "3"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "4"
     SWIFT_STRICT_CONCURRENCY: complete
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
@@ -21,6 +21,13 @@ packages:
   MPVKit:
     url: https://github.com/mpvkit/MPVKit
     exactVersion: 1.0.0
+  # Ads in the free version on iPhone and iPad (not Apple TV); includes Google's consent SDK.
+  GoogleMobileAds:
+    url: https://github.com/googleads/swift-package-manager-google-mobile-ads
+    from: 13.10.0
+  GoogleUserMessagingPlatform:
+    url: https://github.com/googleads/swift-package-manager-google-user-messaging-platform
+    from: 3.1.0
 configFiles:
   Debug: Config/Base.xcconfig
   Release: Config/Base.xcconfig
@@ -39,6 +46,12 @@ targets:
       # Linked explicitly: the display-mode API is an AVKit category on UIWindow,
       # which references no symbols, so automatic linking would drop it.
       - sdk: AVKit.framework
+      - package: GoogleMobileAds
+        product: GoogleMobileAds
+        destinationFilters: [iOS]
+      - package: GoogleUserMessagingPlatform
+        product: GoogleUserMessagingPlatform
+        destinationFilters: [iOS]
     info:
       path: App/Resources/Info.plist
       properties:
@@ -57,6 +70,12 @@ targets:
           NSAllowsLocalNetworking: true
         # Only standard HTTPS is used, which is exempt from export documentation.
         ITSAppUsesNonExemptEncryption: false
+        # AdMob (iPhone and iPad free version). IDs come from Config/Ads.xcconfig.
+        GADApplicationIdentifier: $(ADMOB_APP_ID)
+        RetroGuideAdMobBannerUnitID: $(ADMOB_BANNER_UNIT_ID)
+        RetroGuideAdMobInterstitialUnitID: $(ADMOB_INTERSTITIAL_UNIT_ID)
+        SKAdNetworkItems:
+          - SKAdNetworkIdentifier: cstr6suwn9.skadnetwork
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.adamhunt.retroguide
@@ -64,6 +83,15 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphone*]: AppIcon
         CODE_SIGN_STYLE: Automatic
         GENERATE_INFOPLIST_FILE: NO
+      configs:
+        Debug:
+          ADMOB_APP_ID: $(ADMOB_DEMO_APP_ID)
+          ADMOB_BANNER_UNIT_ID: $(ADMOB_DEMO_BANNER_UNIT_ID)
+          ADMOB_INTERSTITIAL_UNIT_ID: $(ADMOB_DEMO_INTERSTITIAL_UNIT_ID)
+        Release:
+          ADMOB_APP_ID: $(ADMOB_RELEASE_APP_ID)
+          ADMOB_BANNER_UNIT_ID: $(ADMOB_RELEASE_BANNER_UNIT_ID)
+          ADMOB_INTERSTITIAL_UNIT_ID: $(ADMOB_RELEASE_INTERSTITIAL_UNIT_ID)
 schemes:
   RetroGuide:
     build:

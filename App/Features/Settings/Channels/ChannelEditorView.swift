@@ -45,13 +45,7 @@ struct ChannelEditorView: View {
                 filterLink("Audience", systemImage: "person.2", options: audienceOptions, selection: audienceSelection)
                 filterLink("Libraries", systemImage: "books.vertical", options: facets.libraries.map(FacetOption.init), selection: $draft.rule.libraryIDs)
             }
-            SettingsSection("Schedule order") {
-                ForEach(ScheduleOrdering.allCases, id: \.self) { ordering in
-                    CheckmarkRow(title: ordering.displayName, detail: ordering.explanation, isSelected: draft.ordering == ordering) {
-                        draft.ordering = ordering
-                    }
-                }
-            }
+            ScheduleOrderSection(selection: draft.ordering) { draft.ordering = $0 }
             previewSummary
             Button(isNew ? "Create Channel" : "Save Changes", action: save)
                 .buttonStyle(.retroPrimary)

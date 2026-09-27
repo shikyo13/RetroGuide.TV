@@ -5,7 +5,8 @@ import SwiftUI
 ///
 /// - `RETROGUIDE_DEV_OVERLAY`: open on `guide`, `search` or `settings`.
 /// - `RETROGUIDE_DEV_SEARCH`: text to search for when Search opens.
-/// - `RETROGUIDE_DEV_ORIENTATION`: `landscape` to start in landscape (iPhone and iPad).
+/// - `RETROGUIDE_DEV_ORIENTATION`: `landscape` or `portrait` to start that way (iPhone).
+/// - `RETROGUIDE_DEV_PRO`: `1` to act as if RetroGuide Pro were purchased.
 ///
 /// Release builds always return the defaults.
 enum DebugLaunchOptions {
@@ -19,9 +20,12 @@ enum DebugLaunchOptions {
         static let overlay = "RETROGUIDE_DEV_OVERLAY"
         static let search = "RETROGUIDE_DEV_SEARCH"
         static let orientation = "RETROGUIDE_DEV_ORIENTATION"
+        static let pro = "RETROGUIDE_DEV_PRO"
     }
 
     private static let landscape = "landscape"
+    private static let portrait = "portrait"
+    private static let enabled = "1"
 
     static var overlay: Overlay? {
         value(for: Variable.overlay).flatMap(Overlay.init(rawValue:))
@@ -35,6 +39,14 @@ enum DebugLaunchOptions {
         value(for: Variable.orientation) == landscape
     }
 
+    static var startsInPortrait: Bool {
+        value(for: Variable.orientation) == portrait
+    }
+
+    static var forcesPro: Bool {
+        value(for: Variable.pro) == enabled
+    }
+
     private static func value(for variable: String) -> String? {
         #if DEBUG
         ProcessInfo.processInfo.environment[variable]
@@ -46,13 +58,14 @@ enum DebugLaunchOptions {
 
 #if os(iOS)
 extension View {
-    /// Rotates to landscape once at launch when ``DebugLaunchOptions`` asks for it.
+    /// Rotates once at launch when ``DebugLaunchOptions`` asks for an orientation.
     func debugLaunchOrientation() -> some View {
         onAppear {
-            guard DebugLaunchOptions.startsInLandscape,
-                  let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene
-            else { return }
-            scene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeRight))
+            let orientations: UIInterfaceOrientationMask? =
+                DebugLaunchOptions.startsInLandscape ? .landscapeRight :
+                DebugLaunchOptions.startsInPortrait ? .portrait : nil
+            guard let orientations, let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+            scene.requestGeometryUpdate(.iOS(interfaceOrientations: orientations))
         }
     }
 }
