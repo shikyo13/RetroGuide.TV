@@ -15,6 +15,7 @@
 		1519C7C4A3D7CF0977B65BDB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187AFD75F0AE0640CC040E41 /* RootView.swift */; };
 		1621D2170E71F4484C39983B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C5C915609130F57A5F8D278 /* Assets.xcassets */; };
 		1653642F5EE272B581D64B87 /* PlayerChromeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0DF0549433E240368F45D75 /* PlayerChromeView.swift */; };
+		174AB9455C6C50FAA739E0F2 /* DemoCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF3B69A97C06359C34C23DE /* DemoCatalog.swift */; };
 		19B0BFE4E21F4DBCF6A284BC /* IntermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E4F8A44AB9B3798884A1DF /* IntermissionCard.swift */; };
 		1B22F184D9F92EA9941A6E64 /* RetroGuideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC46D819D23A297C0A6FE728 /* RetroGuideApp.swift */; };
 		1B6773FFF15B1E26D255A775 /* DebugLaunchOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96343D6443D2CBC02C9A967 /* DebugLaunchOptions.swift */; };
@@ -67,6 +68,7 @@
 		8ABC3DEFA77E0F7A23FD7F6A /* RetroRowButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 640A1EE370DC839D29A43C74 /* RetroRowButtonStyle.swift */; };
 		8B5CE523D5B7BA7DA1292AF0 /* ChannelEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0AE37025797A6FA461DDEB /* ChannelEditorView.swift */; };
 		8BE594286CAE810DA1E67E62 /* ServerRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EBB550D625B329BE602117 /* ServerRegistry.swift */; };
+		8D00E4D917C2281DC0F6A532 /* DemoServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5637EF46BF1F9602655380 /* DemoServerClient.swift */; };
 		8DBC9BF9907BF654E22B1C18 /* FacetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2342F75A3FFB608FE4032CE5 /* FacetPickerView.swift */; };
 		8FF5A5B693EF76B5DF1F280F /* MPVKit in Frameworks */ = {isa = PBXBuildFile; productRef = AF7766867AB8515623736C48 /* MPVKit */; };
 		96EFAD1FAC58EE6D40D218C2 /* LiveVideoStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */; };
@@ -200,6 +202,7 @@
 		9ACC72B3AD12BDB45141FB2F /* SignalOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalOverlay.swift; sourceTree = "<group>"; };
 		9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoStack.swift; sourceTree = "<group>"; };
+		9E5637EF46BF1F9602655380 /* DemoServerClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoServerClient.swift; sourceTree = "<group>"; };
 		9EE9E450D8C95F92B6095A95 /* LineupEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LineupEngine.swift; sourceTree = "<group>"; };
 		A0DCB1FD20F3531CA7FE3D3E /* ServerLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerLibrary.swift; sourceTree = "<group>"; };
 		A77B0F3DA9D4FC1402E22BED /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -212,6 +215,7 @@
 		B8E6421682822DF9EB4C7D65 /* Surfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Surfaces.swift; sourceTree = "<group>"; };
 		B96343D6443D2CBC02C9A967 /* DebugLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLaunchOptions.swift; sourceTree = "<group>"; };
 		BC46D819D23A297C0A6FE728 /* RetroGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroGuideApp.swift; sourceTree = "<group>"; };
+		BDF3B69A97C06359C34C23DE /* DemoCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoCatalog.swift; sourceTree = "<group>"; };
 		C08BDDF85EEA045DAB1751FA /* PlexLinkStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlexLinkStepView.swift; sourceTree = "<group>"; };
 		C374746B67B1B436DFBF5F5F /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
 		C4330477A2E3B67DFA76CF32 /* RetroGuide.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RetroGuide.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -499,6 +503,15 @@
 			path = Features;
 			sourceTree = "<group>";
 		};
+		A0C8EE30FAC3D7258B89BF03 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				BDF3B69A97C06359C34C23DE /* DemoCatalog.swift */,
+				9E5637EF46BF1F9602655380 /* DemoServerClient.swift */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
 		A6B9F6D1E74560269DF69DA1 /* DesignSystem */ = {
 			isa = PBXGroup;
 			children = (
@@ -534,6 +547,7 @@
 		C41496444486C4DB5A3D3B75 /* Composition */ = {
 			isa = PBXGroup;
 			children = (
+				A0C8EE30FAC3D7258B89BF03 /* Demo */,
 				DEBCBC697963B90B6FE85490 /* AppIdentity.swift */,
 				4256AEAB82EABD170AA2AEE3 /* AppModel.swift */,
 				0452ECDC6FD9A5997A83DE95 /* DebugBootstrap.swift */,
@@ -705,6 +719,8 @@
 				51BF916ECC3E1D006A623355 /* DebugBootstrap.swift in Sources */,
 				1B6773FFF15B1E26D255A775 /* DebugLaunchOptions.swift in Sources */,
 				D40160AAAB3081C927CEEB87 /* DebugSnapshot.swift in Sources */,
+				174AB9455C6C50FAA739E0F2 /* DemoCatalog.swift in Sources */,
+				8D00E4D917C2281DC0F6A532 /* DemoServerClient.swift in Sources */,
 				6F616B19949D1E258B35617E /* DesignTokens.swift in Sources */,
 				DFED066DCAD7DCA8839FD68E /* DisplayMatchingPickerView.swift in Sources */,
 				5C4C2056C7C14376617BA45D /* DisplayModeController.swift in Sources */,
@@ -831,7 +847,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -846,7 +862,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -918,7 +934,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 3;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -939,7 +955,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

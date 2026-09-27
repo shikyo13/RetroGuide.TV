@@ -57,7 +57,12 @@ final class ServerRegistry {
     }
 
     private func makeClient(for account: ServerAccount, token: String) -> any MediaServerClient {
-        switch account.kind {
+        #if DEBUG
+        if let demo = DebugBootstrap.demoClient(for: account) {
+            return demo
+        }
+        #endif
+        return switch account.kind {
         case .plex:
             PlexServerClient(
                 serverID: account.id,
