@@ -17,6 +17,9 @@ struct PlayerChromeView: View {
     @State private var isBannerVisible = false
     @State private var showsNext = false
     @State private var bannerRequest = 0
+    /// iPhone in landscape: the banner can't be tapped, so it may sit over the
+    /// home indicator's area, close to the bottom edge.
+    @Environment(\.isShortLayout) private var isShortLayout
 
     var body: some View {
         ZStack {
@@ -73,6 +76,7 @@ struct PlayerChromeView: View {
         }
         .padding(PlatformMetric.value(tv: .zero, touch: DesignTokens.Spacing.md))
         .landscapeTopClearance()
+        .ignoresSafeArea(.container, edges: isShortLayout ? .bottom : [])
     }
 
     private var bannerProgram: ScheduledProgram? {
