@@ -19,12 +19,20 @@ struct GuideHeader: View {
 
     @Environment(\.theme) private var theme
     @Environment(\.isNarrowLayout) private var isNarrowLayout
+    @Environment(\.showsGuideHeaderAd) private var showsGuideHeaderAd
+    @State private var width: CGFloat = .zero
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.lg) {
             BrandMark()
                 .fixedSize()
             Spacer(minLength: DesignTokens.Spacing.sm)
+            #if os(iOS)
+            if showsAd {
+                GuideHeaderAd()
+                Spacer(minLength: DesignTokens.Spacing.sm)
+            }
+            #endif
             if showsClock {
                 clock
             }
@@ -55,12 +63,22 @@ struct GuideHeader: View {
             .buttonStyle(.retroIcon)
             #endif
         }
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
     }
+
+    #if os(iOS)
+    /// The banner replaces the clock when the header is wide enough for it.
+    private var showsAd: Bool {
+        showsGuideHeaderAd && width >= GuideHeaderAd.minimumHeaderWidth
+    }
+    #else
+    private let showsAd = false
+    #endif
 
     /// Phones in portrait have no room for the clock; the status bar and the
     /// guide's time ruler show the time instead.
     private var showsClock: Bool {
-        !isNarrowLayout
+        !isNarrowLayout && !showsAd
     }
 
     private var clock: some View {

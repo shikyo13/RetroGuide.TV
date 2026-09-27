@@ -65,7 +65,7 @@ struct WatchView: View {
             }
         }
         #if os(iOS)
-        .freeVersionAds(isWatchingFullScreen: overlay == .none, tuner: tuner, bannerHeight: $bannerHeight)
+        .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)
         #endif
         .onPreferenceChange(LivePreviewFrameKey.self) { frame in
             previewFrame = frame

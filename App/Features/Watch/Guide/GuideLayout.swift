@@ -13,8 +13,8 @@ enum GuideLayout {
     static let visibleRows = 6
     static let rulerHeight = PlatformMetric.value(tv: CGFloat(44), touch: 36)
     static let previewHeight = PlatformMetric.value(tv: CGFloat(340), touch: 190)
-    /// Preview height on phones in landscape, where vertical space is scarce.
-    static let compactPreviewHeight: CGFloat = 120
+    /// Preview height on phones, where vertical space belongs to the channel grid.
+    static let compactPreviewHeight: CGFloat = 110
     static let previewAspectRatio: CGFloat = 16 / 9
     static let audienceStripeWidth = PlatformMetric.value(tv: CGFloat(5), touch: 3)
     static let nowLineWidth = PlatformMetric.value(tv: CGFloat(3), touch: 2)
