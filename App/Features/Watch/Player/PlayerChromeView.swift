@@ -72,6 +72,7 @@ struct PlayerChromeView: View {
             }
         }
         .padding(PlatformMetric.value(tv: .zero, touch: DesignTokens.Spacing.md))
+        .landscapeTopClearance()
     }
 
     private var bannerProgram: ScheduledProgram? {

@@ -35,6 +35,7 @@
 		42D421BD47109060D3F3D77E /* Surfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E6421682822DF9EB4C7D65 /* Surfaces.swift */; };
 		430F3085BE5B93B77B57D980 /* GuideLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CD3575816B5CC85380E1B80 /* GuideLayout.swift */; };
 		45708E76648A578EB5677018 /* ServerLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0DCB1FD20F3531CA7FE3D3E /* ServerLibrary.swift */; };
+		457253C3C48823A92D9752F8 /* LandscapeTopClearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BC6B7BA73B48F700F7F3282 /* LandscapeTopClearance.swift */; };
 		459009C3FD10B3FB413B3BA3 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B3620D1BDA643D8841A03F /* Color+Hex.swift */; };
 		49FD9D86BD76811388D62CF6 /* KeepsScreenAwake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A571995B69258A623DBF644 /* KeepsScreenAwake.swift */; };
 		4A061578F61E2DF5BA0B5B61 /* LayoutClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB034C814453DA907E192358 /* LayoutClass.swift */; };
@@ -172,6 +173,7 @@
 		54B3620D1BDA643D8841A03F /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		56CFCF3C393427EE3A94F97A /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
 		56E191CE740931DEBCDB4A48 /* Typography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Typography.swift; sourceTree = "<group>"; };
+		5BC6B7BA73B48F700F7F3282 /* LandscapeTopClearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandscapeTopClearance.swift; sourceTree = "<group>"; };
 		5C3ABF62769BA3CD53E6EB02 /* StaticNoiseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticNoiseView.swift; sourceTree = "<group>"; };
 		5C5C915609130F57A5F8D278 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5D86A861EAF73F92B9F472DD /* ThemePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePickerView.swift; sourceTree = "<group>"; };
@@ -418,6 +420,7 @@
 				38E2FADE8D0D4FF56F141FCB /* ChannelBadge.swift */,
 				922045A46943D0123F6F2AC5 /* ColumnWidth.swift */,
 				0F3C239C0108B6C983C2CA9B /* InvisibleButtonStyle.swift */,
+				5BC6B7BA73B48F700F7F3282 /* LandscapeTopClearance.swift */,
 				7DCAC7B46690CFA2F832866A /* ProgressTrack.swift */,
 				56CFCF3C393427EE3A94F97A /* QRCodeView.swift */,
 				2760837DFDCC008C26DB6AD8 /* RatingChip.swift */,
@@ -726,6 +729,7 @@
 				F5F63DECAB948A03D4E59491 /* InvisibleButtonStyle.swift in Sources */,
 				49FD9D86BD76811388D62CF6 /* KeepsScreenAwake.swift in Sources */,
 				08DD0FA98D8F7CA781A327D0 /* KeychainStore.swift in Sources */,
+				457253C3C48823A92D9752F8 /* LandscapeTopClearance.swift in Sources */,
 				4A061578F61E2DF5BA0B5B61 /* LayoutClass.swift in Sources */,
 				86CF56BC970F2BABE026FD0E /* LibraryPickerView.swift in Sources */,
 				805EA4139AAEA890B5977374 /* LibrarySettingsView.swift in Sources */,
@@ -827,7 +831,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -842,7 +846,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -914,7 +918,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -935,7 +939,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
