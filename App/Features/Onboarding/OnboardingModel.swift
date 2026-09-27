@@ -125,7 +125,7 @@ final class OnboardingModel {
 
     private func connect(to server: PlexServerCandidate) async {
         do {
-            let connection = try await resolver.resolveConnection(server)
+            let connection = try await resolver.resolveConnection(server, isVPNActive: VPNStatus.isActive)
             let baseURL = connection.url
             let account = ServerAccount(
                 id: server.id,

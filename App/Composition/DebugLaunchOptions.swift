@@ -25,6 +25,7 @@ enum DebugLaunchOptions {
     enum SettingsPage: String {
         case theme
         case pro
+        case connection
     }
 
     private enum Variable {

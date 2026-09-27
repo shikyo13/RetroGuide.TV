@@ -175,6 +175,16 @@ final class AppModel {
         }
     }
 
+    /// Changes how a server is connected to and re-tunes onto the new address.
+    func updateConnection(_ connection: ServerConnectionSettings, serverID: String) async {
+        await servers.setConnection(connection, serverID: serverID)
+        refreshError = offlineServersMessage
+        await rebuildIndexAndLineup()
+        if let channel = tuner.channel {
+            tuner.tune(to: channel)
+        }
+    }
+
     func signOut() {
         healthTask?.cancel()
         tuner.powerOff()

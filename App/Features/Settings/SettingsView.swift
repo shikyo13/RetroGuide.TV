@@ -130,6 +130,7 @@ struct SettingsView: View {
                 switch page {
                 case .theme: ThemePickerView()
                 case .pro: ProUpgradeView()
+                case .connection: ServerConnectionView(serverID: app.servers.accounts.first?.id ?? "")
                 }
             }
             #endif

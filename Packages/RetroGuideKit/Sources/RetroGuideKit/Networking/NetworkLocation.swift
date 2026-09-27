@@ -9,6 +9,10 @@ public enum NetworkLocation {
         static let plexDirectSeparator: Character = "-"
         static let octetCount = 4
         static let privateSecondOctets172 = 16...31
+        /// Carrier-grade NAT range (100.64.0.0/10), used by Tailscale.
+        static let sharedAddressFirstOctet = 100
+        static let sharedAddressSecondOctets = 64...127
+        static let tailscaleDomainSuffix = ".ts.net"
     }
 
     public static func isLikelyLocal(_ url: URL) -> Bool {
@@ -20,6 +24,17 @@ public enum NetworkLocation {
             return isPrivate(ip)
         }
         return false
+    }
+
+    /// Addresses reached through a VPN such as Tailscale (its 100.64.0.0/10
+    /// addresses and MagicDNS names).
+    public static func isLikelyVPN(_ url: URL) -> Bool {
+        guard let host = url.host()?.lowercased() else { return false }
+        if host.hasSuffix(Pattern.tailscaleDomainSuffix) {
+            return true
+        }
+        guard let ip = ipv4Octets(from: host) else { return false }
+        return ip[0] == Pattern.sharedAddressFirstOctet && Pattern.sharedAddressSecondOctets.contains(ip[1])
     }
 
     private static func ipv4Octets(from host: String) -> [Int]? {

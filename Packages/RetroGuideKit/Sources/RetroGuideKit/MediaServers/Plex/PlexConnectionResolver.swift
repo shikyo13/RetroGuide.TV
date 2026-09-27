@@ -11,11 +11,9 @@ public enum PlexConnectionError: Error, LocalizedError {
     }
 }
 
-/// Probes a server's advertised addresses and picks the best reachable one
-/// (local beats remote beats relay). When plex.tv says the device is away from
-/// the server's network, remote addresses are tried first so a home address
-/// that can't answer doesn't hold things up; home addresses are still tried
-/// afterwards for devices that reach home over a VPN.
+/// Probes a server's addresses and picks the best reachable one (custom, then
+/// home or VPN, then remote, then relay). See ``probeGroups(_:settings:isVPNActive:)``
+/// for the order addresses are tried in.
 public struct PlexConnectionResolver: Sendable {
     private let identity: PlexClientIdentity
     private let session: URLSession
@@ -30,8 +28,12 @@ public struct PlexConnectionResolver: Sendable {
     }
 
     /// The best reachable address and whether it is on the local network.
-    public func resolveConnection(_ server: PlexServerCandidate) async throws -> (url: URL, isLocal: Bool) {
-        for group in Self.probeGroups(server) {
+    public func resolveConnection(
+        _ server: PlexServerCandidate,
+        settings: ServerConnectionSettings = .automatic,
+        isVPNActive: Bool = false
+    ) async throws -> (url: URL, isLocal: Bool) {
+        for group in Self.probeGroups(server, settings: settings, isVPNActive: isVPNActive) {
             let reachable = await reachableConnections(group, token: server.accessToken)
             if let best = reachable.min(by: { $0.preferenceRank < $1.preferenceRank }) {
                 return (best.url, best.isLocal)
@@ -40,13 +42,51 @@ public struct PlexConnectionResolver: Sendable {
         throw PlexConnectionError.unreachable(serverName: server.name)
     }
 
-    /// Addresses to probe, in rounds: everything at once, or remote before home
-    /// when the device is known to be away from the server's network.
-    static func probeGroups(_ server: PlexServerCandidate) -> [[PlexConnectionCandidate]] {
-        guard server.isOnSameNetwork == false else { return [server.connections] }
-        let remote = server.connections.filter { !$0.isLocal }
+    /// Addresses to probe, in rounds; the first round with a reachable address wins.
+    ///
+    /// - A custom address is always tried on its own first.
+    /// - "Prefer home" tries home addresses before any others.
+    /// - Automatic probes everything at once (home wins), except when plex.tv
+    ///   says the device is away and no VPN is up: then remote goes first so a
+    ///   home address that can't answer doesn't hold things up.
+    static func probeGroups(
+        _ server: PlexServerCandidate,
+        settings: ServerConnectionSettings = .automatic,
+        isVPNActive: Bool = false
+    ) -> [[PlexConnectionCandidate]] {
         let home = server.connections.filter(\.isLocal)
-        return [remote, home].filter { !$0.isEmpty }
+        let remote = server.connections.filter { !$0.isLocal }
+        var groups: [[PlexConnectionCandidate]]
+        switch settings.preference {
+        case .preferHome:
+            groups = [home, remote]
+        case .automatic, .custom:
+            groups = server.isOnSameNetwork == false && !isVPNActive ? [remote, home] : [server.connections]
+        }
+        if let custom = settings.activeCustomAddress {
+            let isNearby = NetworkLocation.isLikelyLocal(custom) || NetworkLocation.isLikelyVPN(custom)
+            groups.insert([PlexConnectionCandidate(url: custom, isLocal: isNearby, isRelay: false)], at: .zero)
+        }
+        return groups.filter { !$0.isEmpty }
+    }
+
+    /// How good an address is under `settings`; lower is better. Used to decide
+    /// whether a working address should give way to a newly found one.
+    public static func rank(of url: URL, settings: ServerConnectionSettings) -> Int {
+        if let custom = settings.activeCustomAddress, custom == url { return Rank.custom }
+        if NetworkLocation.isLikelyLocal(url) || NetworkLocation.isLikelyVPN(url) { return Rank.nearby }
+        return Rank.internet
+    }
+
+    /// The best rank an address can have under `settings`.
+    public static func bestPossibleRank(for settings: ServerConnectionSettings) -> Int {
+        settings.activeCustomAddress == nil ? Rank.nearby : Rank.custom
+    }
+
+    private enum Rank {
+        static let custom = 0
+        static let nearby = 1
+        static let internet = 2
     }
 
     private func reachableConnections(_ connections: [PlexConnectionCandidate], token: String) async -> [PlexConnectionCandidate] {

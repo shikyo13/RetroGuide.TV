@@ -126,6 +126,30 @@ final class ServerLibrary {
         store.accounts = accounts
     }
 
+    /// Saves how a server should be connected to, then switches to the best
+    /// address under the new settings. Returns whether the server is reachable.
+    @discardableResult
+    func setConnection(_ connection: ServerConnectionSettings, serverID: String) async -> Bool {
+        guard let index = accounts.firstIndex(where: { $0.id == serverID }) else { return false }
+        accounts[index].connection = connection
+        store.accounts = accounts
+        let account = accounts[index]
+        if account.kind == .plex, let newURL = await relocatePlexServer(account), newURL != account.baseURL {
+            apply(newURL, to: account)
+        }
+        let reachable = await registry.client(for: serverID)?.isReachable() ?? false
+        status[serverID] = reachable ? .online : .offline
+        return reachable
+    }
+
+    /// Saves connection settings without switching addresses yet (for example
+    /// "Custom address" chosen before an address is typed).
+    func saveConnectionWithoutReconnecting(_ connection: ServerConnectionSettings, serverID: String) {
+        guard let index = accounts.firstIndex(where: { $0.id == serverID }) else { return }
+        accounts[index].connection = connection
+        store.accounts = accounts
+    }
+
     /// Each server's quality preference, used when choosing between duplicate copies.
     var qualityByServer: [String: VideoQuality] {
         Dictionary(accounts.map { ($0.id, $0.playback.quality) }, uniquingKeysWith: { first, _ in first })
@@ -202,8 +226,9 @@ final class ServerLibrary {
 
     /// Probes every server. Unreachable Plex servers are re-located through the
     /// Plex account (their address may have changed, or the viewer left home),
-    /// and servers reached remotely switch back to their home address when it
-    /// answers again. Returns whether any server's availability changed.
+    /// and servers reached through a worse address (internet rather than home
+    /// or VPN, or anything other than a chosen custom address) switch back when
+    /// the better one answers again. Returns whether any server's availability changed.
     @discardableResult
     func checkReachability() async -> Bool {
         var changed = false
@@ -220,32 +245,40 @@ final class ServerLibrary {
 
     private func isReachable(_ account: ServerAccount) async -> Bool {
         let currentWorks = await registry.client(for: account.id)?.isReachable() ?? false
-        if currentWorks, NetworkLocation.isLikelyLocal(account.baseURL) {
+        let currentRank = PlexConnectionResolver.rank(of: account.baseURL, settings: account.connection)
+        if currentWorks, currentRank <= PlexConnectionResolver.bestPossibleRank(for: account.connection) {
             return true
         }
-        guard account.kind == .plex, let newURL = await relocatePlexServer(account.id) else { return currentWorks }
-        // A working remote address is only replaced by a home one.
-        if currentWorks, !NetworkLocation.isLikelyLocal(newURL) || newURL == account.baseURL {
+        guard account.kind == .plex, let newURL = await relocatePlexServer(account) else { return currentWorks }
+        // A working address is only replaced by a better one.
+        let isBetter = PlexConnectionResolver.rank(of: newURL, settings: account.connection) < currentRank
+        if currentWorks, !isBetter || newURL == account.baseURL {
             return true
         }
+        apply(newURL, to: account)
+        return await registry.client(for: account.id)?.isReachable() ?? false
+    }
+
+    private func apply(_ baseURL: URL, to account: ServerAccount) {
         var updated = account
-        updated.baseURL = newURL
+        updated.baseURL = baseURL
         registry.refreshClient(for: updated)
         artworkResolver = registry.artworkResolver
         if let index = accounts.firstIndex(where: { $0.id == account.id }) {
             accounts[index] = updated
             store.accounts = accounts
         }
-        return await registry.client(for: account.id)?.isReachable() ?? false
     }
 
-    private func relocatePlexServer(_ serverID: String) async -> URL? {
+    private func relocatePlexServer(_ account: ServerAccount) async -> URL? {
         guard let accountToken = plexAccountToken,
               let candidate = try? await PlexAccountService(identity: identity)
                   .servers(accountToken: accountToken)
-                  .first(where: { $0.id == serverID })
+                  .first(where: { $0.id == account.id })
         else { return nil }
-        return try? await PlexConnectionResolver(identity: identity).resolve(candidate)
+        return try? await PlexConnectionResolver(identity: identity)
+            .resolveConnection(candidate, settings: account.connection, isVPNActive: VPNStatus.isActive)
+            .url
     }
 }
 
