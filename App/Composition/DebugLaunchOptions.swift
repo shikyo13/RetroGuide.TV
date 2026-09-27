@@ -15,6 +15,7 @@ import SwiftUI
 ///   from the guide, as if it had been picked (for testing that path).
 /// - `RETROGUIDE_DEV_PLAY_URL`: plays this URL whenever a channel is tuned
 ///   (RetroGuide Player only), to test specific files on a device.
+/// - `RETROGUIDE_DEV_PLAY_START`: seconds into that file to start (default 60).
 /// - `RETROGUIDE_DEV_AUDIO_PROBE`: `1` to record the audio route at launch and
 ///   write libmpv's log to Library/Caches (see ``AudioRouteProbe``).
 ///
@@ -42,6 +43,7 @@ enum DebugLaunchOptions {
         static let bannerSeconds = "RETROGUIDE_DEV_BANNER_SECONDS"
         static let audioProbe = "RETROGUIDE_DEV_AUDIO_PROBE"
         static let playURL = "RETROGUIDE_DEV_PLAY_URL"
+        static let playStart = "RETROGUIDE_DEV_PLAY_START"
     }
 
     private static let landscape = "landscape"
@@ -78,6 +80,10 @@ enum DebugLaunchOptions {
 
     static var playURLOverride: URL? {
         value(for: Variable.playURL).flatMap(URL.init(string:))
+    }
+
+    static var playStartOverride: String? {
+        value(for: Variable.playStart).flatMap(Double.init).map { String($0) }
     }
 
     static var probesAudio: Bool {

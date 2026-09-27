@@ -25,8 +25,9 @@ final class MPVCore: @unchecked Sendable {
             // AirPlay) the Now Playing app's audio, and mixable audio never is.
             ("audio-exclusive", "yes"),
             ("video-rotate", "no"),
-            // Per-frame HDR peak analysis is expensive; static metadata is good enough on TV.
-            ("hdr-compute-peak", "no"),
+            // Measure each scene's real brightness when tone mapping HDR to SDR. Static
+            // metadata (mastered for 1000–4000 nits) makes most scenes far too dark.
+            ("hdr-compute-peak", "yes"),
             // Bounded network cache keeps memory predictable on Apple TV.
             ("cache", "yes"),
             ("demuxer-max-bytes", "64MiB"),
@@ -52,6 +53,21 @@ final class MPVCore: @unchecked Sendable {
         ]
         /// Outputs HDR as HDR instead of tone mapping it to standard range.
         static let colorspaceHint = "target-colorspace-hint"
+        static let targetPrimaries = "target-prim"
+        static let targetTransfer = "target-trc"
+        static let referenceWhite = "hdr-reference-white"
+        enum TargetColorspace {
+            case display
+            case standardRange
+
+            /// Rec. 709 colors with a TV's standard gamma, or whatever the display reports.
+            var primaries: String { self == .standardRange ? "bt.709" : "auto" }
+            var transfer: String { self == .standardRange ? "bt.1886" : "auto" }
+            /// The HDR brightness (nits) shown as SDR white. mpv's default (203) leaves
+            /// most scenes flat and dim on an SDR TV; 120 lifts faces and highlights
+            /// without clipping (measured on Dolby Vision and HDR10 test frames).
+            var referenceWhite: String { self == .standardRange ? "120" : "auto" }
+        }
         /// The Simulator's Metal driver rejects the large shared buffers libplacebo
         /// (vo=gpu-next) allocates when uploading software-decoded frames (AV1,
         /// MPEG-4, RealVideo…), aborting the app. The classic renderer uploads
@@ -139,7 +155,7 @@ final class MPVCore: @unchecked Sendable {
         mpv_set_property_string(handle, Option.readaheadProperty, cache.readaheadSeconds)
         var start = startPosition.map { String(format: "%.1f", $0) } ?? Option.noStartPosition
         if DebugLaunchOptions.playURLOverride != nil {
-            start = Option.debugOverrideStart
+            start = DebugLaunchOptions.playStartOverride ?? Option.debugOverrideStart
         }
         mpv_set_property_string(handle, Option.startPositionProperty, start)
         command(["loadfile", (DebugLaunchOptions.playURLOverride ?? url).absoluteString, "replace"])
@@ -150,9 +166,16 @@ final class MPVCore: @unchecked Sendable {
     }
 
     /// Passes HDR through to the display (`true`) or tone maps it to standard range.
+    /// For standard range the target is stated explicitly: left to guess from the
+    /// Metal layer, mpv outputs wide-gamut HDR values that look dark and washed out
+    /// on an SDR TV (Dolby Vision profile 5 especially).
     func setHDROutput(_ enabled: Bool) {
         guard let handle else { return }
         mpv_set_property_string(handle, Option.colorspaceHint, enabled ? "yes" : "no")
+        let target = enabled ? Option.TargetColorspace.display : Option.TargetColorspace.standardRange
+        mpv_set_property_string(handle, Option.targetPrimaries, target.primaries)
+        mpv_set_property_string(handle, Option.targetTransfer, target.transfer)
+        mpv_set_property_string(handle, Option.referenceWhite, target.referenceWhite)
     }
 
     private func command(_ arguments: [String]) {
