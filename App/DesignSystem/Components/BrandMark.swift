@@ -26,6 +26,8 @@ struct BrandMark: View {
     nonisolated static let glyphToTextRatio: CGFloat = 1.1
 
     var size: Size = .compact
+    /// `false` shows only the TV glyph, where the full wordmark doesn't fit.
+    var showsWordmark = true
 
     @Environment(\.theme) private var theme
 
@@ -34,10 +36,12 @@ struct BrandMark: View {
             TVGlyph()
                 .brandFill(theme.accent)
                 .frame(width: size.glyphWidth)
-            Text(AppIdentity.Wordmark.name)
-                .foregroundStyle(theme.textPrimary)
-            + Text(AppIdentity.Wordmark.suffix)
-                .foregroundStyle(theme.accent)
+            if showsWordmark {
+                Text(AppIdentity.Wordmark.name)
+                    .foregroundStyle(theme.textPrimary)
+                + Text(AppIdentity.Wordmark.suffix)
+                    .foregroundStyle(theme.accent)
+            }
         }
         .font(size.font)
         .accessibilityElement(children: .combine)

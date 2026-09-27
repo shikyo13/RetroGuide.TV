@@ -7,14 +7,16 @@ enum GuideLayout {
     static let channelColumnWidth = PlatformMetric.value(tv: CGFloat(300), touch: 176)
     /// iPhone in portrait: the channel column shows only the number badge.
     static let narrowChannelColumnWidth: CGFloat = 96
-    static let rowHeight = PlatformMetric.value(tv: CGFloat(78), touch: 54)
+    static let rowHeight = PlatformMetric.value(tv: CGFloat(78), touch: 50)
     static let rowSpacing = PlatformMetric.value(tv: CGFloat(6), touch: 4)
     static let cellSpacing = PlatformMetric.value(tv: CGFloat(4), touch: 2)
     static let visibleRows = 6
-    static let rulerHeight = PlatformMetric.value(tv: CGFloat(44), touch: 36)
+    static let rulerHeight = PlatformMetric.value(tv: CGFloat(44), touch: 30)
     static let previewHeight = PlatformMetric.value(tv: CGFloat(340), touch: 190)
     /// Preview height on phones, where vertical space belongs to the channel grid.
     static let compactPreviewHeight: CGFloat = 110
+    /// Preview height on phones in landscape, the shortest layout.
+    static let shortPreviewHeight: CGFloat = 90
     static let previewAspectRatio: CGFloat = 16 / 9
     static let audienceStripeWidth = PlatformMetric.value(tv: CGFloat(5), touch: 3)
     static let nowLineWidth = PlatformMetric.value(tv: CGFloat(3), touch: 2)

@@ -24,7 +24,7 @@ struct GuideHeader: View {
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.lg) {
-            BrandMark()
+            BrandMark(showsWordmark: showsWordmark)
                 .fixedSize()
             Spacer(minLength: DesignTokens.Spacing.sm)
             #if os(iOS)
@@ -71,8 +71,14 @@ struct GuideHeader: View {
     private var showsAd: Bool {
         showsGuideHeaderAd && width >= GuideHeaderAd.minimumHeaderWidth
     }
+
+    /// With the banner in the header, narrower phones (or Display Zoom) show only the TV glyph.
+    private var showsWordmark: Bool {
+        !showsAd || width >= GuideHeaderAd.wordmarkHeaderWidth
+    }
     #else
     private let showsAd = false
+    private let showsWordmark = true
     #endif
 
     /// Phones in portrait have no room for the clock; the status bar and the

@@ -40,7 +40,6 @@ struct GuideTouchView: View {
         }
         .padding(.horizontal, DesignTokens.Spacing.md)
         .padding(.top, DesignTokens.Spacing.xs)
-        .landscapeTopClearance()
         .screenBackground()
         .onAppear(perform: fitWindowToWidth)
         .onChange(of: isNarrowLayout) { fitWindowToWidth() }

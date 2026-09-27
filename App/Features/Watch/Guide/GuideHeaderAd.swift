@@ -11,8 +11,10 @@ import GoogleMobileAds
 
 /// The standard 320×50 banner, sized to sit in the guide header.
 struct GuideHeaderAd: View {
-    /// Header width needed for the brand, the banner and the buttons side by side.
-    static let minimumHeaderWidth: CGFloat = 700
+    /// Header width needed for the TV glyph, the banner and the buttons side by side.
+    static let minimumHeaderWidth: CGFloat = 600
+    /// Header width that also fits the full wordmark next to the banner.
+    static let wordmarkHeaderWidth: CGFloat = 760
 
     var body: some View {
         let size = cgSize(for: AdSizeBanner)

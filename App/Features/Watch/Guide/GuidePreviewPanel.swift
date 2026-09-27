@@ -38,8 +38,13 @@ struct GuidePreviewPanel: View {
                 .background(alignment: .trailing) { backdrop }
                 .crtEffect(isFullScreen: false)
         }
-        .frame(height: isCompact ? GuideLayout.compactPreviewHeight : GuideLayout.previewHeight)
+        .frame(height: panelHeight)
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.large, style: .continuous))
+    }
+
+    private var panelHeight: CGFloat {
+        if isShort { return GuideLayout.shortPreviewHeight }
+        return isNarrow ? GuideLayout.compactPreviewHeight : GuideLayout.previewHeight
     }
 
     /// A placeholder that tells ``WatchView`` where to place the live picture.
@@ -63,12 +68,9 @@ struct GuidePreviewPanel: View {
     private var details: some View {
         if let program, let channel {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-                HStack(spacing: DesignTokens.Spacing.sm) {
-                    Text("\(channel.number) · \(channel.name)")
-                        .font(Typography.callout)
-                        .foregroundStyle(theme.accentSecondary)
-                        .lineLimit(1)
-                    RatingChip(rating: program.item.contentRating, audience: program.item.audience)
+                // Landscape phones: the picture's channel badge and the grid already name the channel.
+                if !isShort {
+                    channelLine(channel, program: program)
                 }
                 title(for: program)
                 if let subheadline = program.item.subheadline {
@@ -97,6 +99,16 @@ struct GuidePreviewPanel: View {
             }
             .id(program.id)
             .transition(.opacity)
+        }
+    }
+
+    private func channelLine(_ channel: Channel, program: ScheduledProgram) -> some View {
+        HStack(spacing: DesignTokens.Spacing.sm) {
+            Text("\(channel.number) · \(channel.name)")
+                .font(Typography.callout)
+                .foregroundStyle(theme.accentSecondary)
+                .lineLimit(1)
+            RatingChip(rating: program.item.contentRating, audience: program.item.audience)
         }
     }
 
