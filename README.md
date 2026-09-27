@@ -49,8 +49,17 @@ next in a cable-style guide.
   title on several servers is kept once, offline servers drop out of the guide
   until they're back, and each server has its own quality and buffering
   settings for playback over the internet.
-- **Themes.** Six themes (Classic Cable, Midnight, CRT Green, Amber Terminal,
-  Synthwave, Mono) and optional CRT scanlines on menus.
+- **Themes.** Twelve themes, from Classic Cable and Local Forecast to VHS and
+  Teletext, and optional CRT scanlines on menus.
+
+## Free and Pro
+
+The App Store version is free with ads on iPhone and iPad (Apple TV has no
+ads): a standard banner under the menus and, at most once per 90 minutes of
+watching, a full-screen ad at a natural break. RetroGuide Pro is a one-time
+purchase that removes ads and adds multiple servers, unlimited custom
+channels, every theme, and schedule controls. One purchase covers iPhone, iPad
+and Apple TV.
 
 ## Requirements
 
@@ -112,9 +121,11 @@ Live TV starts as soon as your first server is indexed. Add more servers later i
 
 ## Privacy
 
-RetroGuide.TV has no accounts, analytics or ads, and collects no data. It talks
-only to plex.tv (to link your account and find your servers) and to your media
-servers. Access tokens are stored in the Apple TV keychain.
+RetroGuide.TV has no accounts or analytics of its own. It talks to plex.tv (to
+link your account and find your servers) and to your media servers, and access
+tokens are stored in the device keychain. On iPhone and iPad the free version
+shows non-personalized ads from Google AdMob, after Google's consent prompt
+where one is required; Apple TV and RetroGuide Pro show no ads.
 
 ## Building from source
 

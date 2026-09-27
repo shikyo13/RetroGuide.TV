@@ -14,6 +14,13 @@ All notable changes to this project are documented here. The format is based on
 - "Open plex.tv/link" button when linking Plex on iPhone and iPad
 - HDR output on HDR iPhones and iPads, and a Match TV mode setting on Apple TV
   that switches the TV to HDR and, optionally, each program's frame rate
+- RetroGuide Pro, a one-time purchase for iPhone, iPad and Apple TV: multiple
+  servers, unlimited custom channels, every theme, schedule order and program
+  start times, and no ads
+- Non-personalized ads in the free version on iPhone and iPad
+- Six new themes: Local Forecast, Saturday Morning, Pay-Per-View, Wood
+  Paneling, VHS and Teletext
+- A compact guide on iPhone that leaves more room for the channel grid
 
 ## [0.1.0] - Unreleased
 
