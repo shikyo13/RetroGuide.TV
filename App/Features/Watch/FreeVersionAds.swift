@@ -55,6 +55,10 @@ private struct FreeVersionAds: ViewModifier {
                         .clipped()
                         .frame(maxWidth: .infinity)
                         .background(theme.surface)
+                        // The ad view must never be resized frame by frame: the SDK
+                        // slows down with every resize and animating it freezes the app.
+                        .transition(.identity)
+                        .transaction { $0.animation = nil }
                 }
             }
             .onChange(of: showsBanner, initial: true) { _, shown in
