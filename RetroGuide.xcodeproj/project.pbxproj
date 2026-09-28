@@ -781,7 +781,7 @@
 			packageReferences = (
 				21C257FAD1C8182231952268 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				AEF89B6E5D11B2F32DE71BA8 /* XCRemoteSwiftPackageReference "swift-package-manager-google-user-messaging-platform" */,
-				1614E9C3F67C56BF03CB4218 /* XCRemoteSwiftPackageReference "MPVKit" */,
+				E65C01B5A967077D75EA1889 /* XCRemoteSwiftPackageReference "MPVKit" */,
 				1D91BE0E4BADFED720D0A306 /* XCLocalSwiftPackageReference "Packages/RetroGuideKit" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -983,7 +983,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1073,7 +1073,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1166,14 +1166,6 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		1614E9C3F67C56BF03CB4218 /* XCRemoteSwiftPackageReference "MPVKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/mpvkit/MPVKit";
-			requirement = {
-				kind = exactVersion;
-				version = 1.0.0;
-			};
-		};
 		21C257FAD1C8182231952268 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads";
@@ -1190,6 +1182,14 @@
 				minimumVersion = 3.1.0;
 			};
 		};
+		E65C01B5A967077D75EA1889 /* XCRemoteSwiftPackageReference "MPVKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/shikyo13/MPVKit";
+			requirement = {
+				kind = exactVersion;
+				version = "1.0.0-retroguide.1";
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1199,7 +1199,7 @@
 		};
 		AF7766867AB8515623736C48 /* MPVKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1614E9C3F67C56BF03CB4218 /* XCRemoteSwiftPackageReference "MPVKit" */;
+			package = E65C01B5A967077D75EA1889 /* XCRemoteSwiftPackageReference "MPVKit" */;
 			productName = MPVKit;
 		};
 		E4AF18330116601BE9905148 /* GoogleMobileAds */ = {
