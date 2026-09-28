@@ -1187,7 +1187,7 @@
 			repositoryURL = "https://github.com/shikyo13/MPVKit";
 			requirement = {
 				kind = exactVersion;
-				version = "1.0.0-retroguide.1";
+				version = "1.0.0-retroguide.2";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

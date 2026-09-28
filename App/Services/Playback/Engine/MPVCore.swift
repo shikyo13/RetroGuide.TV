@@ -21,8 +21,13 @@ final class MPVCore: @unchecked Sendable {
             ("gpu-api", "vulkan"),
             ("gpu-context", "moltenvk"),
             ("hwdec", "videotoolbox"),
-            // Don't register as mixable audio: Control Center only routes (HomePod,
-            // AirPlay) the Now Playing app's audio, and mixable audio never is.
+            // Audio through AVSampleBufferAudioRenderer: it's what Control Center's speaker
+            // picker (HomePod, AirPlay) can route, and it follows route changes. Our libmpv
+            // patch paces it and accounts for the route's latency. The AudioUnit output
+            // (also patched to survive route changes) is the fallback.
+            ("ao", "avfoundation,audiounit"),
+            // Don't register as mixable audio: Control Center only routes the Now Playing
+            // app's audio, and mixable audio never is.
             ("audio-exclusive", "yes"),
             ("video-rotate", "no"),
             // Measure each scene's real brightness when tone mapping HDR to SDR. Static

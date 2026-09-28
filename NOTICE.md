@@ -6,9 +6,10 @@ the following third-party software.
 ## MPVKit (libmpv, FFmpeg and bundled dependencies)
 
 - Source: https://github.com/shikyo13/MPVKit, a fork of https://github.com/mpvkit/MPVKit
-  (version pinned in `project.yml`). The fork rebuilds libmpv with one patch,
-  `Sources/BuildScripts/patch/libmpv/0004-audiounit-survive-route-changes.patch`,
-  so audio route changes can't crash playback; all other binaries are MPVKit's own.
+  (version pinned in `project.yml`). The fork rebuilds libmpv with two patches in
+  `Sources/BuildScripts/patch/libmpv/` (0004: audio route changes can't crash the
+  AudioUnit output; 0005: the AVFoundation output is paced and respects output
+  latency); all other binaries are MPVKit's own.
 - License: GNU Lesser General Public License v3.0 (`LICENSES/LGPL-3.0.txt`)
 - Upstream projects: mpv (https://mpv.io), FFmpeg (https://ffmpeg.org)
 

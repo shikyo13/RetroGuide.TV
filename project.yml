@@ -18,11 +18,11 @@ settings:
 packages:
   RetroGuideKit:
     path: Packages/RetroGuideKit
-  # MPVKit 1.0.0 with libmpv patched so audio route changes can't crash playback
-  # (see the fork's README and patch).
+  # MPVKit 1.0.0 with libmpv patched: audio route changes can't crash playback, and the
+  # AVFoundation audio output (routable from Control Center) is paced (see the fork's README).
   MPVKit:
     url: https://github.com/shikyo13/MPVKit
-    exactVersion: 1.0.0-retroguide.1
+    exactVersion: 1.0.0-retroguide.2
   # Ads in the free version on iPhone and iPad (not Apple TV); includes Google's consent SDK.
   GoogleMobileAds:
     url: https://github.com/googleads/swift-package-manager-google-mobile-ads
