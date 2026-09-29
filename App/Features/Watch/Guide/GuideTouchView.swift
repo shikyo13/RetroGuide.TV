@@ -12,7 +12,12 @@ struct GuideTouchView: View {
     @FocusState private var focus: GuideFocus?
     @Environment(\.isNarrowLayout) private var isNarrowLayout
 
-    init(channels: [Channel], tuner: Tuner, actions: GuideActions) {
+    let channels: [Channel]
+    let lineupRevision: Int
+
+    init(channels: [Channel], lineupRevision: Int, tuner: Tuner, actions: GuideActions) {
+        self.channels = channels
+        self.lineupRevision = lineupRevision
         self.tuner = tuner
         self.actions = actions
         _model = State(initialValue: GuideModel(channels: channels, focusedChannelID: tuner.channel?.id))
@@ -43,6 +48,7 @@ struct GuideTouchView: View {
         .screenBackground()
         .onAppear(perform: fitWindowToWidth)
         .onChange(of: isNarrowLayout) { fitWindowToWidth() }
+        .onChange(of: lineupRevision) { model.replaceChannels(channels) }
         .animation(DesignTokens.Motion.quickEase, value: model.windowStart)
         .animation(DesignTokens.Motion.quickEase, value: model.focusAnchor)
     }

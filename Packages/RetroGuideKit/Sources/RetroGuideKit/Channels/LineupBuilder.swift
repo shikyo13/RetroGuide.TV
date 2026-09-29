@@ -23,22 +23,25 @@ public struct LineupBuilder: Sendable {
     public func build(index: LibraryIndex, customization: LineupCustomization) -> [Channel] {
         let automatic = curated.sorted { $0.number < $1.number }
             + DynamicChannelFactory.definitions(for: index.facets, options: options)
+        let enabled = automatic.filter { !customization.disabledSources.contains($0.source) }
         var seenContent = Set<Int>()
         var resolved: [Resolved] = []
-        for var definition in automatic {
-            guard !customization.disabledSources.contains(definition.source) else { continue }
-            if let ordering = customization.orderingOverrides[definition.id] ?? customization.defaultOrdering {
-                definition.ordering = ordering
-            }
+        var formerIDs: [String: Set<String>] = [:]
+        for definition in enabled {
             let items = schedulableItems(for: definition.rule, in: index)
             guard isSubstantial(items), seenContent.insert(contentFingerprint(items)).inserted else { continue }
-            resolved.append((definition, items))
+            formerIDs[definition.id] = Self.formerIDs(of: definition, items: items, index: index)
+            resolved.append((customized(definition, formerIDs: formerIDs[definition.id] ?? [], customization), items))
         }
-        // However small the library, something should be on.
-        if resolved.isEmpty, let fallback = automatic.first(where: { $0.rule.isUnconstrained && !customization.disabledSources.contains($0.source) }) {
-            let items = schedulableItems(for: fallback.rule, in: index)
-            if !items.isEmpty {
-                resolved.append((fallback, items))
+        // However small the library, something should be on: the broadest
+        // enabled channel with anything to air.
+        if resolved.isEmpty {
+            let broadestFirst = enabled.filter(\.rule.isUnconstrained) + enabled.filter { !$0.rule.isUnconstrained }
+            for definition in broadestFirst {
+                let items = schedulableItems(for: definition.rule, in: index)
+                guard !items.isEmpty else { continue }
+                resolved.append((customized(definition, formerIDs: [], customization), items))
+                break
             }
         }
         let marathons = resolved.filter { $0.definition.source == .series }
@@ -56,14 +59,37 @@ public struct LineupBuilder: Sendable {
             resolved.append((definition, items))
         }
 
-        return schedule(resolved, customization: customization).sorted { $0.number < $1.number }
+        return schedule(resolved, formerIDs: formerIDs, customization: customization).sorted { $0.number < $1.number }
+    }
+
+    /// The definition with the viewer's schedule order applied.
+    private func customized(_ definition: ChannelDefinition, formerIDs: Set<String>, _ customization: LineupCustomization) -> ChannelDefinition {
+        var definition = definition
+        let override = customization.orderingOverrides[definition.id]
+            ?? formerIDs.sorted().lazy.compactMap { customization.orderingOverrides[$0] }.first
+        if let ordering = override ?? customization.defaultOrdering {
+            definition.ordering = ordering
+        }
+        return definition
+    }
+
+    /// Ids a 24/7 channel had before shows were identified across servers
+    /// (`series.<server>/<key>`), so hidden channels, schedule orders and
+    /// the last watched channel carry over.
+    private static func formerIDs(of definition: ChannelDefinition, items: [MediaItem], index: LibraryIndex) -> Set<String> {
+        guard definition.source == .series, let showID = definition.rule.seriesIDs.first else { return [] }
+        let natives = Set(items.compactMap(\.seriesID)).union(index.showAliases.filter { $0.value == showID }.keys)
+        return Set(natives.map { "series.\($0)" }).subtracting([definition.id])
     }
 
     /// Visible channels share one schedule that keeps any show from airing on
     /// more than ``LineupCustomization/simulcastLimit`` of them at once; 24/7,
     /// custom and hidden channels run on their own.
-    private func schedule(_ resolved: [Resolved], customization: LineupCustomization) -> [Channel] {
-        let isHidden = { (definition: ChannelDefinition) in customization.hiddenChannelIDs.contains(definition.id) }
+    private func schedule(_ resolved: [Resolved], formerIDs: [String: Set<String>], customization: LineupCustomization) -> [Channel] {
+        let isHidden = { (definition: ChannelDefinition) in
+            customization.hiddenChannelIDs.contains(definition.id)
+                || !customization.hiddenChannelIDs.isDisjoint(with: formerIDs[definition.id] ?? [])
+        }
         let shared = customization.simulcastLimit.channels.map { _ in
             resolved.indices.filter { !Self.exemptSources.contains(resolved[$0].definition.source) && !isHidden(resolved[$0].definition) }
                 .sorted { resolved[$0].definition.id < resolved[$1].definition.id }
@@ -84,7 +110,8 @@ public struct LineupBuilder: Sendable {
                 definition: definition,
                 items: items,
                 isHidden: isHidden(definition),
-                timeline: timelines[position] ?? Channel.schedule(for: definition, items: items, grid: options.grid)
+                timeline: timelines[position] ?? Channel.schedule(for: definition, items: items, grid: options.grid),
+                formerIDs: formerIDs[definition.id] ?? []
             )
         }
     }

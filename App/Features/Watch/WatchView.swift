@@ -165,6 +165,7 @@ struct WatchView: View {
     private func guide(tuner: Tuner) -> some View {
         GuideView(
             channels: app.visibleChannels,
+            lineupRevision: app.lineupRevision,
             tuner: tuner,
             actions: GuideActions(
                 onTune: { channel in

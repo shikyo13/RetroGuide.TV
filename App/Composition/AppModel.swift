@@ -28,6 +28,12 @@ final class AppModel {
     /// True while channel schedules are being rebuilt (seconds with a large library).
     var isRebuildingLineup: Bool { pendingLineupRebuilds > .zero }
     private var pendingLineupRebuilds = 0
+    /// Bumped by every index or lineup rebuild (and sign-out), so a slow
+    /// rebuild that finishes after a newer one doesn't overwrite it.
+    private var indexGeneration = 0
+    private var lineupGeneration = 0
+    /// Bumped whenever a new lineup is published, so open views can refresh.
+    private(set) var lineupRevision = 0
     private(set) var libraryIndex = LibraryIndex.empty
     private(set) var isRefreshing = false
     private(set) var lastRefreshed: Date?
@@ -52,7 +58,7 @@ final class AppModel {
     @ObservationIgnored private let networkMonitor = NetworkChangeMonitor()
     /// The channel to return to once a slower server brings it into the lineup,
     /// and the tune it replaced (so we don't override a channel the viewer chose).
-    @ObservationIgnored private var pendingResume: (channelID: String, tuneGeneration: Int)?
+    @ObservationIgnored private var pendingResume: (channelID: String, viewerTuneCount: Int)?
     #if os(tvOS)
     @ObservationIgnored private let displayMode = DisplayModeController()
     #endif
@@ -192,7 +198,7 @@ final class AppModel {
         servers.setPlayback(playback, serverID: serverID)
         await rebuildIndexAndLineup()
         if let channel = tuner.channel {
-            tuner.tune(to: channel)
+            tuner.tune(to: channel, isAutomatic: true)
         }
     }
 
@@ -202,7 +208,7 @@ final class AppModel {
         refreshError = offlineServersMessage
         await rebuildIndexAndLineup()
         if let channel = tuner.channel {
-            tuner.tune(to: channel)
+            tuner.tune(to: channel, isAutomatic: true)
         }
     }
 
@@ -211,8 +217,12 @@ final class AppModel {
         tuner.powerOff()
         servers.removeAll()
         store.resetAll()
+        indexGeneration += 1
+        lineupGeneration += 1
         lineup = []
+        lineupRevision += 1
         libraryIndex = .empty
+        searchIndex = .empty
         customization = LineupCustomization()
         preferences = UserPreferences()
         #if os(tvOS)
@@ -297,11 +307,14 @@ final class AppModel {
     }
 
     func setHidden(_ isHidden: Bool, channelID: String) {
+        let formerIDs = lineup.first { $0.id == channelID }?.formerIDs ?? []
         updateCustomization { customization in
             if isHidden {
                 customization.hiddenChannelIDs.insert(channelID)
             } else {
+                // A channel hidden under an earlier id is shown again too.
                 customization.hiddenChannelIDs.remove(channelID)
+                customization.hiddenChannelIDs.subtract(formerIDs)
             }
         }
     }
@@ -354,8 +367,12 @@ final class AppModel {
     }
 
     private func rebuildIndexAndLineup() async {
+        indexGeneration += 1
+        let generation = indexGeneration
         let snapshots = servers.activeSnapshots
-        libraryIndex = await engine.makeIndex(from: snapshots, quality: servers.qualityByServer)
+        let index = await engine.makeIndex(from: snapshots, quality: servers.qualityByServer)
+        guard generation == indexGeneration else { return }
+        libraryIndex = index
         await rebuildLineup()
         #if DEBUG
         let perServer = snapshots.map { "\($0.serverName)=\($0.items.count)" }.joined(separator: " ")
@@ -365,12 +382,19 @@ final class AppModel {
     }
 
     private func rebuildLineup() async {
+        lineupGeneration += 1
+        let generation = lineupGeneration
         pendingLineupRebuilds += 1
         defer { pendingLineupRebuilds -= 1 }
-        lineup = await engine.makeLineup(index: libraryIndex, customization: customization, grid: preferences.scheduleGrid)
+        let built = await engine.makeLineup(index: libraryIndex, customization: customization, grid: preferences.scheduleGrid)
+        guard generation == lineupGeneration else { return }
+        lineup = built
+        lineupRevision += 1
         tuner.setChannels(visibleChannels)
         resumeLastChannelIfAvailable()
-        searchIndex = await engine.makeSearchIndex(channels: lineup)
+        let search = await engine.makeSearchIndex(channels: built)
+        guard generation == lineupGeneration else { return }
+        searchIndex = search
     }
 
     private func goOnAir() {
@@ -385,13 +409,13 @@ final class AppModel {
         tuner.setChannels(channels)
         guard tuner.channel == nil else { return }
         if let lastChannel = tuner.channel(withID: preferences.lastChannelID) {
-            tuner.tune(to: lastChannel)
+            tuner.tune(to: lastChannel, isAutomatic: true)
         } else if let first = channels.first {
             let lastChannelID = preferences.lastChannelID
-            tuner.tune(to: first)
+            tuner.tune(to: first, isAutomatic: true)
             // The last channel may come from a server that is still indexing.
             if let lastChannelID {
-                pendingResume = (lastChannelID, tuner.tuneGeneration)
+                pendingResume = (lastChannelID, tuner.viewerTuneCount)
             }
         }
     }
@@ -400,8 +424,8 @@ final class AppModel {
         guard let pending = pendingResume, let channel = tuner.channel(withID: pending.channelID) else { return }
         pendingResume = nil
         // Only if the viewer hasn't changed channel since we tuned the fallback.
-        guard tuner.tuneGeneration == pending.tuneGeneration else { return }
-        tuner.tune(to: channel)
+        guard tuner.viewerTuneCount == pending.viewerTuneCount else { return }
+        tuner.tune(to: channel, isAutomatic: true)
     }
 
     private func preferencesChanged(from old: UserPreferences) {
@@ -416,7 +440,7 @@ final class AppModel {
             Task {
                 await rebuildLineup()
                 if let channel = tuner.channel {
-                    tuner.tune(to: channel)
+                    tuner.tune(to: channel, isAutomatic: true)
                 }
             }
         }

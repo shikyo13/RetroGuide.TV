@@ -6,16 +6,24 @@ public struct Channel: Sendable, Identifiable, Hashable {
     public let items: [MediaItem]
     public let isHidden: Bool
     public let timeline: any ChannelSchedule
+    /// Ids this channel had in earlier versions, so saved references still find it.
+    public let formerIDs: Set<String>
 
     public init(definition: ChannelDefinition, items: [MediaItem], isHidden: Bool, grid: ScheduleGrid) {
         self.init(definition: definition, items: items, isHidden: isHidden, timeline: Self.schedule(for: definition, items: items, grid: grid))
     }
 
-    init(definition: ChannelDefinition, items: [MediaItem], isHidden: Bool, timeline: any ChannelSchedule) {
+    init(definition: ChannelDefinition, items: [MediaItem], isHidden: Bool, timeline: any ChannelSchedule, formerIDs: Set<String> = []) {
         self.definition = definition
         self.items = items
         self.isHidden = isHidden
         self.timeline = timeline
+        self.formerIDs = formerIDs
+    }
+
+    /// Whether `id` names this channel, now or in an earlier version.
+    public func isIdentified(by id: String) -> Bool {
+        id == definition.id || formerIDs.contains(id)
     }
 
     /// A schedule for a channel on its own (see ``ChannelPicker``). Channels

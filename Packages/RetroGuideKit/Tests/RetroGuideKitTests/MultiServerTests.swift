@@ -66,7 +66,8 @@ struct MultiServerTests {
             snapshot("home", [episode(server: "home", key: "h1", show: "10", showGuid: guid, number: 1)]),
             snapshot("friend", [episode(server: "friend", key: "f2", show: "77", showGuid: guid, number: 2)]),
         ])
-        #expect(ChannelRule(seriesIDs: ["home/10"]).matchingItems(in: index).count == 1)
+        // Either server's id names the whole show.
+        #expect(ChannelRule(seriesIDs: ["home/10"]).matchingItems(in: index).count == 2)
         #expect(ChannelRule(seriesIDs: [guid]).matchingItems(in: index).count == 2)
     }
 

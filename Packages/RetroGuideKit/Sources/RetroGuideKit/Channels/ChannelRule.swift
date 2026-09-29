@@ -85,7 +85,7 @@ public struct ChannelRule: Codable, Sendable, Hashable {
 extension ChannelRule {
     /// Returns the ids of every item in `index` that satisfies the rule.
     public func matchingItems(in index: LibraryIndex) -> [MediaItem] {
-        let compiled = CompiledRule(self)
+        let compiled = CompiledRule(self, showAliases: index.showAliases)
         return zip(index.items, index.attributes)
             .filter { compiled.matches($0, $1) }
             .map(\.0)
@@ -100,9 +100,12 @@ struct CompiledRule {
     private let networks: Set<String>
     private let collections: Set<String>
     private let keywords: [String]
+    /// The rule's shows under both their server-specific and shared ids.
+    private let seriesIDs: Set<String>
 
-    init(_ rule: ChannelRule) {
+    init(_ rule: ChannelRule, showAliases: [String: String] = [:]) {
         self.rule = rule
+        seriesIDs = rule.seriesIDs.union(rule.seriesIDs.compactMap { showAliases[$0] })
         genres = TextNormalizer.keys(rule.genres)
         excludedGenres = TextNormalizer.keys(rule.excludedGenres)
         networks = TextNormalizer.keys(rule.networks)
@@ -123,7 +126,7 @@ struct CompiledRule {
         guard rule.decades.isEmpty || attributes.decade.map(rule.decades.contains) == true else { return false }
         if !rule.seriesIDs.isEmpty {
             // Saved rules may name a show by its server-specific id or its global one.
-            guard let seriesID = item.seriesID, rule.seriesIDs.contains(seriesID) || rule.seriesIDs.contains(item.showID) else { return false }
+            guard let seriesID = item.seriesID, seriesIDs.contains(seriesID) || seriesIDs.contains(item.showID) else { return false }
         }
         if !keywords.isEmpty {
             guard keywords.contains(where: attributes.searchableText.contains) else { return false }

@@ -43,6 +43,9 @@ final class SimulcastCoordinator: @unchecked Sendable {
         /// Show each channel is airing (-1: none yet), and how many channels air each show.
         var airing: [Int]
         var airingCount: [Int]
+        /// Advances with every group of channels starting together, to rotate
+        /// which of equally constrained channels picks first.
+        var startGroups = 0
     }
 
     /// Programs starting within one chunk, per channel.
@@ -174,11 +177,16 @@ final class SimulcastCoordinator: @unchecked Sendable {
                     state.airing[channel] = -1
                 }
             }
-            // Channels starting together take turns choosing first, so none
-            // always gets first pick of a popular show.
-            let first = Int((earliest / ScheduleConstants.secondsPerMinute).rounded(.down)) % due.count
-            for turn in due.indices {
-                let channel = due[(first + turn) % due.count]
+            // Of channels starting together, those with the fewest shows to
+            // choose from pick first (a channel carrying A and B can step
+            // aside for one carrying only A); equals take turns going first.
+            state.startGroups += 1
+            let rotation = state.startGroups
+            due.sort { lhs, rhs in
+                let left = contexts[lhs].shows.count, right = contexts[rhs].shows.count
+                return left != right ? left < right : (lhs + rotation) % contexts.count < (rhs + rotation) % contexts.count
+            }
+            for channel in due {
                 let context = contexts[channel]
                 let shows = globalShow[channel]
                 // Moved out while it runs, so its arrays aren't copied.

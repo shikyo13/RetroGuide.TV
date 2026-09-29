@@ -72,12 +72,14 @@ enum DynamicChannelFactory {
         }
     }
 
-    /// Assigns consecutive numbers from `range`, dropping values that do not fit.
+    /// Numbers consecutively from the start of `range`. The numbers only order
+    /// channels within the lineup (which renumbers them), so none are dropped
+    /// when there are more values than the range holds.
     private static func numbered(
         _ values: [FacetValue],
         in range: Range<Int>,
         make: (FacetValue, Int) -> ChannelDefinition
     ) -> [ChannelDefinition] {
-        zip(values, range).map(make)
+        values.enumerated().map { make($1, range.lowerBound + $0) }
     }
 }

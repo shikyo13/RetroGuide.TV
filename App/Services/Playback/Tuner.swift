@@ -38,6 +38,10 @@ final class Tuner {
     }
     /// Increments on every tune so overlays can re-appear even on the same channel.
     private(set) var tuneGeneration = 0
+    /// Channel changes the viewer made (not automatic retunes after a lineup
+    /// rebuild), so a pending "return to the last channel" knows whether the
+    /// viewer has moved on.
+    private(set) var viewerTuneCount = 0
     /// The playing video's dynamic range and frame rate. Kept while surfing
     /// until the next video reports its own, so the TV doesn't switch modes in between.
     private(set) var videoFormat: VideoFormat?
@@ -97,29 +101,45 @@ final class Tuner {
         guard let current = channel else { return }
         if let updated = channels.first(where: { $0.id == current.id }) {
             channel = updated
-            // A rebuilt lineup can change what's on; rejoin live if it did.
-            let airing = updated.timeline.program(at: .now)
-            if let program, airing?.item.id != program.item.id || airing?.start != program.start {
-                tune(to: updated)
-            } else {
-                program = airing
-            }
+            refreshProgram(on: updated)
         } else if let first = channels.first {
-            tune(to: first)
+            tune(to: first, isAutomatic: true)
         } else {
             powerOff()
         }
     }
 
+    /// A rebuilt lineup can change what's on: rejoin live if the program
+    /// changed, or follow its new end if only that moved. While suspended the
+    /// next ``resume()`` tunes in anyway.
+    private func refreshProgram(on channel: Channel) {
+        let airing = channel.timeline.program(at: .now)
+        let previous = program
+        program = airing
+        guard signal != .off, let previous, let airing else { return }
+        if airing.item.id != previous.item.id || airing.start != previous.start {
+            tune(to: channel, isAutomatic: true)
+        } else if airing.contentEnd != previous.contentEnd || airing.slotEnd != previous.slotEnd {
+            scheduleBoundary(at: signal == .intermission ? airing.slotEnd : airing.contentEnd)
+        }
+    }
+
+    /// The channel with `id`, including ids it had in earlier versions.
     func channel(withID id: String?) -> Channel? {
-        channels.first { $0.id == id }
+        guard let id else { return nil }
+        return channels.first { $0.isIdentified(by: id) }
     }
 
     // MARK: - Remote actions
 
-    func tune(to channel: Channel, surfing: Bool = false) {
+    /// `isAutomatic`: the app retuned (a rebuilt lineup, a reconnected server),
+    /// not the viewer.
+    func tune(to channel: Channel, surfing: Bool = false, isAutomatic: Bool = false) {
         if channel.id != self.channel?.id {
             previousChannelID = self.channel?.id
+        }
+        if !isAutomatic {
+            viewerTuneCount += 1
         }
         self.channel = channel
         program = channel.timeline.program(at: .now)
@@ -209,6 +229,13 @@ final class Tuner {
                 startingAt: program.elapsed(at: now),
                 capabilities: engine.capabilities
             )
+            // A newer tune started while the stream was being prepared.
+            guard generation == tuneGeneration, !Task.isCancelled else {
+                if request.needsTeardown {
+                    Task { await client.endStream(sessionID: request.sessionID) }
+                }
+                return
+            }
             if request.needsTeardown {
                 activeStream = ActiveStream(client: client, sessionID: request.sessionID)
             }
@@ -216,6 +243,7 @@ final class Tuner {
             UIApplication.shared.isIdleTimerDisabled = true
             scheduleBoundary(at: program.contentEnd)
         } catch {
+            guard generation == tuneGeneration, !Task.isCancelled else { return }
             fail(with: error.localizedDescription)
         }
     }

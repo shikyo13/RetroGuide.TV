@@ -14,7 +14,12 @@ struct GuideRemoteView: View {
     @State private var isHeaderFocusable = false
     @FocusState private var focus: GuideFocus?
 
-    init(channels: [Channel], tuner: Tuner, actions: GuideActions) {
+    let channels: [Channel]
+    let lineupRevision: Int
+
+    init(channels: [Channel], lineupRevision: Int, tuner: Tuner, actions: GuideActions) {
+        self.channels = channels
+        self.lineupRevision = lineupRevision
         self.tuner = tuner
         self.actions = actions
         _model = State(initialValue: GuideModel(channels: channels, focusedChannelID: tuner.channel?.id))
@@ -51,6 +56,7 @@ struct GuideRemoteView: View {
         .screenBackground()
         .onExitCommand(perform: handleBack)
         .onAppear { focus = .grid }
+        .onChange(of: lineupRevision) { model.replaceChannels(channels) }
         .onChange(of: focus) { _, newFocus in
             if newFocus == .grid { isHeaderFocusable = false }
         }

@@ -9,8 +9,15 @@ public struct LibraryIndex: Sendable {
     public let facets: LibraryFacets
     let attributes: [NormalizedAttributes]
     private let positionsByID: [String: Int]
+    /// Server-specific show ids → the shared show id (see ``CrossServerMerge``).
+    let showAliases: [String: String]
 
     public init(items: [MediaItem], libraries: [MediaLibrary] = []) {
+        self.init(items: items, libraries: libraries, showAliases: [:])
+    }
+
+    init(items: [MediaItem], libraries: [MediaLibrary], showAliases: [String: String]) {
+        self.showAliases = showAliases
         let sorted = items.sorted { $0.id < $1.id }
         self.items = sorted
         self.attributes = sorted.map { NormalizedAttributes($0) }
@@ -21,38 +28,10 @@ public struct LibraryIndex: Sendable {
         self.facets = LibraryFacets(items: sorted, attributes: attributes, libraries: libraries)
     }
 
-    /// Merges snapshots in priority order. The same title found on several
-    /// servers is kept once, from the highest-priority server; when one server
-    /// has it more than once (say a 4K and a 1080p library), the copy that best
-    /// matches that server's quality setting wins.
+    /// Merges snapshots in priority order (see ``CrossServerMerge``).
     public init(snapshots: [LibrarySnapshot], quality: [String: VideoQuality] = [:]) {
-        var chosen: [String: (priority: Int, item: MediaItem)] = [:]
-        var items: [MediaItem] = []
-        for (priority, snapshot) in snapshots.enumerated() {
-            let preference = quality[snapshot.serverID] ?? .original
-            for item in snapshot.items {
-                guard let key = item.duplicateKey else {
-                    items.append(item)
-                    continue
-                }
-                if let existing = chosen[key] {
-                    guard existing.priority == priority,
-                          Self.isBetterFit(item, than: existing.item, for: preference)
-                    else { continue }
-                }
-                chosen[key] = (priority, item)
-            }
-        }
-        items.append(contentsOf: chosen.values.map(\.item))
-        self.init(items: items, libraries: Self.displayLibraries(for: snapshots))
-    }
-
-    private static func isBetterFit(_ candidate: MediaItem, than current: MediaItem, for quality: VideoQuality) -> Bool {
-        guard let candidateVersion = MediaVersionSelector.best(of: candidate.versions, for: quality),
-              let currentVersion = MediaVersionSelector.best(of: current.versions, for: quality)
-        else { return false }
-        return MediaVersionSelector.best(of: [currentVersion, candidateVersion], for: quality) == candidateVersion
-            && candidateVersion != currentVersion
+        let merged = CrossServerMerge(snapshots: snapshots, quality: quality)
+        self.init(items: merged.items, libraries: Self.displayLibraries(for: snapshots), showAliases: merged.showAliases)
     }
 
     /// Libraries with names made unique across servers ("Movies · Home").

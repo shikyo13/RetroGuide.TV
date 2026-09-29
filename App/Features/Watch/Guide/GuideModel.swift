@@ -127,6 +127,17 @@ final class GuideModel {
         focusAnchor = max(windowStart.addingTimeInterval(GuideLayout.Time.minimumVisible), .now)
     }
 
+    /// Takes a rebuilt lineup, staying on the same channel (or the nearest
+    /// row if it's gone) and time window.
+    func replaceChannels(_ newChannels: [Channel]) {
+        let focusedID = focusedChannel?.id
+        channels = newChannels
+        let row = newChannels.firstIndex { $0.id == focusedID } ?? min(focusedRow, max(newChannels.count - 1, .zero))
+        focusedRow = row
+        firstVisibleRow = min(firstVisibleRow, max(newChannels.count - GuideLayout.visibleRows, .zero))
+        setRow(row)
+    }
+
     /// Adapts the window to the screen width (for example on rotation).
     func setVisibleSlots(_ slots: Int) {
         visibleSlots = slots

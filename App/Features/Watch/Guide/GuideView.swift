@@ -13,14 +13,17 @@ struct GuideActions {
 /// driven by the Siri Remote on Apple TV and by touch on iPhone and iPad.
 struct GuideView: View {
     let channels: [Channel]
+    /// Changes whenever the lineup is rebuilt (schedules can change even when
+    /// the channels don't), so an open guide picks up the new one.
+    let lineupRevision: Int
     let tuner: Tuner
     let actions: GuideActions
 
     var body: some View {
         #if os(tvOS)
-        GuideRemoteView(channels: channels, tuner: tuner, actions: actions)
+        GuideRemoteView(channels: channels, lineupRevision: lineupRevision, tuner: tuner, actions: actions)
         #else
-        GuideTouchView(channels: channels, tuner: tuner, actions: actions)
+        GuideTouchView(channels: channels, lineupRevision: lineupRevision, tuner: tuner, actions: actions)
         #endif
     }
 }

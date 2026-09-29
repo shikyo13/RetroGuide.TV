@@ -72,6 +72,17 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.versions = versions
     }
 
+    /// This item as part of the show with the shared id `showID`.
+    func withShowExternalID(_ showID: String) -> MediaItem {
+        guard let series, series.externalID != showID else { return self }
+        return MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
+            series: SeriesInfo(key: series.key, title: series.title, seasonNumber: series.seasonNumber, episodeNumber: series.episodeNumber, externalID: showID),
+            year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience, genres: genres,
+            networks: networks, collections: collections, countries: countries, artwork: artwork, versions: versions
+        )
+    }
+
     public static func makeID(serverID: String, itemKey: String) -> String {
         "\(serverID)/\(itemKey)"
     }
@@ -108,16 +119,6 @@ public extension MediaItem {
     var showID: String {
         guard let series else { return id }
         return series.externalID ?? Self.makeID(serverID: serverID, itemKey: series.key)
-    }
-
-    /// Identifies the same episode or movie on different servers: its global
-    /// id, or for an episode without one, its show's global id plus its number.
-    var duplicateKey: String? {
-        if let externalID {
-            return externalID
-        }
-        guard let series, let show = series.externalID, let season = series.seasonNumber, let episode = series.episodeNumber else { return nil }
-        return "\(show)#\(season)x\(episode)"
     }
 
     /// Secondary line, e.g. `"S2 E5 · The One With the Thing"` or `"1994"`.
