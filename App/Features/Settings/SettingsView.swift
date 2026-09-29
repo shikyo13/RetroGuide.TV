@@ -79,6 +79,19 @@ struct SettingsView: View {
                     }
                     if app.pro.access.canChangeScheduling {
                         NavigationLink {
+                            AllChannelsOrderView()
+                        } label: {
+                            SettingsRowLabel(
+                                title: "Schedule order",
+                                systemImage: "shuffle",
+                                value: AllChannelsOrdering.summary(app.customization.defaultOrdering)
+                            )
+                        }
+                    } else {
+                        ProLockedRow(title: "Schedule order", systemImage: "shuffle")
+                    }
+                    if app.pro.access.canChangeScheduling {
+                        NavigationLink {
                             ScheduleGridPickerView()
                         } label: {
                             SettingsRowLabel(
@@ -131,6 +144,8 @@ struct SettingsView: View {
                 case .theme: ThemePickerView()
                 case .pro: ProUpgradeView()
                 case .connection: ServerConnectionView(serverID: app.servers.accounts.first?.id ?? "")
+                case .channel: ChannelDetailView(channelID: app.lineup.first?.id ?? "")
+                case .order: AllChannelsOrderView()
                 }
             }
             #endif

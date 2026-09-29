@@ -33,6 +33,27 @@ struct LineupBuilderTests {
         #expect(channel.isHidden)
     }
 
+    @Test("A default order applies to every automatic channel; a channel's own choice wins")
+    func defaultOrdering() throws {
+        let everywhere = build(LineupCustomization(defaultOrdering: .marathon))
+        #expect(try #require(everywhere.first { $0.id == comedy.id }).definition.ordering == .marathon)
+        let overridden = build(LineupCustomization(orderingOverrides: [comedy.id: .syndication], defaultOrdering: .marathon))
+        #expect(try #require(overridden.first { $0.id == comedy.id }).definition.ordering == .syndication)
+    }
+
+    @Test("Setting the order for all channels clears per-channel choices and updates custom channels")
+    func orderingForAllChannels() {
+        let custom = ChannelDefinition(id: "custom.1", number: 500, name: "Mine", rule: ChannelRule(), ordering: .shuffle, source: .custom)
+        var customization = LineupCustomization(orderingOverrides: [comedy.id: .syndication], customChannels: [custom])
+        customization.setOrderingForAllChannels(.blockShuffle)
+        #expect(customization.orderingOverrides.isEmpty)
+        #expect(customization.defaultOrdering == .blockShuffle)
+        #expect(customization.customChannels.first?.ordering == .blockShuffle)
+        customization.setOrderingForAllChannels(nil)
+        #expect(customization.defaultOrdering == nil)
+        #expect(customization.customChannels.first?.ordering == .blockShuffle)
+    }
+
     @Test("Custom channels are included even when small")
     func customChannels() {
         let custom = ChannelDefinition(

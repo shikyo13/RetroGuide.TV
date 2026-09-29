@@ -31,6 +31,8 @@ enum DebugLaunchOptions {
         case theme
         case pro
         case connection
+        case channel
+        case order
     }
 
     private enum Variable {

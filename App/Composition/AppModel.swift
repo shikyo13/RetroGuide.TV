@@ -25,6 +25,9 @@ final class AppModel {
 
     private(set) var phase: Phase = .launching
     private(set) var lineup: [Channel] = []
+    /// True while channel schedules are being rebuilt (seconds with a large library).
+    var isRebuildingLineup: Bool { pendingLineupRebuilds > .zero }
+    private var pendingLineupRebuilds = 0
     private(set) var libraryIndex = LibraryIndex.empty
     private(set) var isRefreshing = false
     private(set) var lastRefreshed: Date?
@@ -323,6 +326,11 @@ final class AppModel {
         }
     }
 
+    /// Puts every channel on one schedule order (`nil`: each channel's built-in order).
+    func setOrderingForAllChannels(_ ordering: ScheduleOrdering?) {
+        updateCustomization { $0.setOrderingForAllChannels(ordering) }
+    }
+
     /// Adds a new custom channel or replaces an existing one with the same id.
     func saveCustomChannel(_ definition: ChannelDefinition) {
         updateCustomization { customization in
@@ -353,6 +361,8 @@ final class AppModel {
     }
 
     private func rebuildLineup() async {
+        pendingLineupRebuilds += 1
+        defer { pendingLineupRebuilds -= 1 }
         lineup = await engine.makeLineup(index: libraryIndex, customization: customization, grid: preferences.scheduleGrid)
         tuner.setChannels(visibleChannels)
         resumeLastChannelIfAvailable()

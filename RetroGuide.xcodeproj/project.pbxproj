@@ -41,6 +41,7 @@
 		3D8929C0A4F7F1BD7B745C12 /* PresentingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ECA29AE15FAC6521C26C473 /* PresentingViewController.swift */; };
 		3E5BA758E31F9CB8D818F2B0 /* WelcomeStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F65DFF726E08D9C5D9CAD1 /* WelcomeStepView.swift */; };
 		3ED9D209977B68FA66159290 /* AdConsent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E37218D3E6EDB66F0C7DBFC /* AdConsent.swift */; };
+		410FA5737C282A1FD83D314B /* AllChannelsOrderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6443DC1145306FC29A7F1E54 /* AllChannelsOrderView.swift */; };
 		42D421BD47109060D3F3D77E /* Surfaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8E6421682822DF9EB4C7D65 /* Surfaces.swift */; };
 		430F3085BE5B93B77B57D980 /* GuideLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CD3575816B5CC85380E1B80 /* GuideLayout.swift */; };
 		43BB00C4618342F7F57D6614 /* GuideHeaderAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAA0031C0635075EDCB4A5DA /* GuideHeaderAd.swift */; };
@@ -223,6 +224,7 @@
 		620DCE679A3B505A014F908A /* NowPlayingPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingPublisher.swift; sourceTree = "<group>"; };
 		621AFFAB0C64F158C012ABC0 /* AudioRouteProbe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioRouteProbe.swift; sourceTree = "<group>"; };
 		640A1EE370DC839D29A43C74 /* RetroRowButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroRowButtonStyle.swift; sourceTree = "<group>"; };
+		6443DC1145306FC29A7F1E54 /* AllChannelsOrderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllChannelsOrderView.swift; sourceTree = "<group>"; };
 		651E3EB72BF671C9E1ABE5CA /* OnboardingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
 		66CC706B5FDE0AED70647579 /* EngineVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineVideoView.swift; sourceTree = "<group>"; };
 		6B12779CAF7F8DACCCBA2209 /* GuideRemoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideRemoteView.swift; sourceTree = "<group>"; };
@@ -336,6 +338,7 @@
 		18989D79AA8E255FEA7890E3 /* Channels */ = {
 			isa = PBXGroup;
 			children = (
+				6443DC1145306FC29A7F1E54 /* AllChannelsOrderView.swift */,
 				EBE95A2421FA0C633DD728E8 /* ChannelDetailView.swift */,
 				1F0AE37025797A6FA461DDEB /* ChannelEditorView.swift */,
 				3933430448AF3B606CA85CF3 /* ChannelManagerView.swift */,
@@ -819,6 +822,7 @@
 				9FD60B8EA06499AF823DCED0 /* AdUnits.swift in Sources */,
 				1DF9E74DCE9B167CED109160 /* AddServerView.swift in Sources */,
 				60703CE336C8D9EBC245A5B4 /* AdsController.swift in Sources */,
+				410FA5737C282A1FD83D314B /* AllChannelsOrderView.swift in Sources */,
 				7A97EC4C2488630574448B8A /* AppIdentity.swift in Sources */,
 				63BD91C1071983CC0EF685C4 /* AppModel.swift in Sources */,
 				ABCC8B222377612CB09D67DC /* ArtworkResolver.swift in Sources */,

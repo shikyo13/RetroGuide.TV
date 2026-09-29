@@ -22,8 +22,8 @@ public struct LineupBuilder: Sendable {
 
         for var definition in automatic.sorted(by: { $0.number < $1.number }) {
             guard !customization.disabledSources.contains(definition.source) else { continue }
-            if let override = customization.orderingOverrides[definition.id] {
-                definition.ordering = override
+            if let ordering = customization.orderingOverrides[definition.id] ?? customization.defaultOrdering {
+                definition.ordering = ordering
             }
             let items = schedulableItems(for: definition.rule, in: index)
             guard isSubstantial(items) else { continue }
