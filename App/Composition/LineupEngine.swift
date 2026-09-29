@@ -3,10 +3,10 @@ import RetroGuideKit
 
 /// Runs the CPU-heavy parts of lineup generation off the main actor.
 struct LineupEngine: Sendable {
-    let curated: [ChannelDefinition]
+    let themes: [ChannelTheme]
 
     init() {
-        curated = (try? ChannelCatalog.curated()) ?? []
+        themes = (try? ChannelCatalog.themes()) ?? []
     }
 
     func makeIndex(from snapshots: [LibrarySnapshot], quality: [String: VideoQuality]) async -> LibraryIndex {
@@ -16,7 +16,7 @@ struct LineupEngine: Sendable {
     }
 
     func makeLineup(index: LibraryIndex, customization: LineupCustomization, grid: ScheduleGrid) async -> [Channel] {
-        let builder = LineupBuilder(curated: curated, options: LineupOptions.adapted(to: index, grid: grid))
+        let builder = LineupBuilder(themes: themes, options: LineupOptions.adapted(to: index, grid: grid))
         return await Task.detached(priority: .userInitiated) {
             builder.build(index: index, customization: customization)
         }.value

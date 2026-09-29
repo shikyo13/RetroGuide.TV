@@ -68,9 +68,12 @@ struct HomePlanner {
             guard let titles = byTheme[theme.definition.id] else { continue }
             let hours = titles.reduce(0) { $0 + $1.hours }
             if hours < sizing(titles).merge, let family = theme.family {
-                // Themes mixing shows and movies send each title to its own kind's family.
+                // Each title joins the family of what it is: movies to movies,
+                // anime and cartoons to theirs, everything else to the theme's.
                 for title in titles {
-                    byFamily[title.isShow ? (family == .movies ? Self.fallbackFamily(for: title) : family) : .movies, default: []].append(title)
+                    let own = Self.fallbackFamily(for: title)
+                    let target = !title.isShow || [.anime, .cartoons].contains(own) || family == .movies ? own : family
+                    byFamily[target, default: []].append(title)
                 }
             } else {
                 planned += Self.split(Planned(definition: theme.definition, titles: titles), targetHours: sizing(titles).target)
@@ -193,8 +196,13 @@ private struct FitScorer {
     func bestTheme(for title: TitleCatalog.Title) -> ChannelTheme? {
         let position = title.positions[0]
         let item = index.items[position]
+        let matching = rules.filter { $0.rule.matches(item, index.attributes[position]) }
+        // Anime is what viewers know a show as, however common it is in the
+        // library: an anime about sports belongs with anime, not Sports Desk.
+        let animeThemes = matching.filter { $0.theme.definition.rule.categories.contains(.anime) }
+        let candidates = title.categories.contains(.anime) && !animeThemes.isEmpty ? animeThemes : matching
         var best: (theme: ChannelTheme, score: Double)?
-        for (theme, rule) in rules where rule.matches(item, index.attributes[position]) {
+        for (theme, _) in candidates {
             let shared = theme.definition.rule.categories.intersection(title.categories)
             let score = shared.isEmpty ? Self.baseScore : shared.map { distinctiveness[$0, default: Self.baseScore] }.max() ?? Self.baseScore
             if best == nil || score > (best?.score ?? 0) {

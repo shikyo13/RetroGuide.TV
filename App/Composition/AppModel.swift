@@ -368,9 +368,23 @@ final class AppModel {
         pendingLineupRebuilds += 1
         defer { pendingLineupRebuilds -= 1 }
         lineup = await engine.makeLineup(index: libraryIndex, customization: customization, grid: preferences.scheduleGrid)
+        rememberChannelNumbers()
         tuner.setChannels(visibleChannels)
         resumeLastChannelIfAvailable()
         searchIndex = await engine.makeSearchIndex(channels: lineup)
+    }
+
+    /// Saves the automatic channels' numbers so each keeps its number across
+    /// launches and library changes (numbers of channels that disappear are
+    /// remembered too, in case they come back).
+    private func rememberChannelNumbers() {
+        var numbers = customization.channelNumbers
+        for channel in lineup where channel.definition.source != .custom {
+            numbers[channel.id] = channel.number
+        }
+        guard numbers != customization.channelNumbers else { return }
+        customization.channelNumbers = numbers
+        store.customization = customization
     }
 
     private func goOnAir() {
