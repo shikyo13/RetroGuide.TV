@@ -56,9 +56,9 @@ enum DynamicChannelFactory {
     private static func marathonChannels(_ values: [FacetValue], options: LineupOptions) -> [ChannelDefinition] {
         let eligible = values
             .filter { $0.itemCount >= options.marathonMinimumEpisodes }
-            .sorted { $0.itemCount > $1.itemCount }
+            .sorted { ($1.itemCount, $0.id) < ($0.itemCount, $1.id) }
             .prefix(options.maximumMarathonChannels)
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            .sorted { ($0.name.lowercased(), $0.id) < ($1.name.lowercased(), $1.id) }
         return numbered(Array(eligible), in: ChannelNumbering.marathons) { value, number in
             ChannelDefinition(
                 id: "series.\(value.id)",

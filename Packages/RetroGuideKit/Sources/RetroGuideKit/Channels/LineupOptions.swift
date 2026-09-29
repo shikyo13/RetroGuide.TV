@@ -76,8 +76,11 @@ public struct LineupOptions: Sendable, Hashable {
     }
 }
 
-/// Channel number ranges per source, so numbers stay stable as libraries change.
+/// Channel number ranges. Automatic channels are numbered consecutively from
+/// the start of ``automatic`` in lineup order; the per-source ranges order
+/// the channels the library adds (libraries, networks, collections, 24/7).
 public enum ChannelNumbering {
+    public static let automatic = 1..<500
     public static let libraries = 90..<100
     public static let networks = 100..<200
     public static let collections = 200..<300

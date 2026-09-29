@@ -58,7 +58,7 @@ enum PlaylistArranger {
     }
 
     /// Groups item indices by show (movies become single-item groups), with
-    /// episodes in broadcast order and groups sorted by title for stability.
+    /// episodes in broadcast order and groups sorted by title (then id) for stability.
     private static func groupedBySeries(_ items: [MediaItem]) -> [[Int]] {
         var groups: [String: [Int]] = [:]
         for index in items.indices {
@@ -72,6 +72,6 @@ enum PlaylistArranger {
                     return left != right ? left < right : items[lhs].id < items[rhs].id
                 }
             }
-            .sorted { items[$0[0]].headline < items[$1[0]].headline }
+            .sorted { (items[$0[0]].headline, items[$0[0]].id) < (items[$1[0]].headline, items[$1[0]].id) }
     }
 }

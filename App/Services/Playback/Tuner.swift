@@ -97,6 +97,13 @@ final class Tuner {
         guard let current = channel else { return }
         if let updated = channels.first(where: { $0.id == current.id }) {
             channel = updated
+            // A rebuilt lineup can change what's on; rejoin live if it did.
+            let airing = updated.timeline.program(at: .now)
+            if let program, airing?.item.id != program.item.id || airing?.start != program.start {
+                tune(to: updated)
+            } else {
+                program = airing
+            }
         } else if let first = channels.first {
             tune(to: first)
         } else {

@@ -69,9 +69,9 @@ struct SettingsView: View {
                         SettingsRowLabel(title: "Channel groups", systemImage: "square.grid.2x2", value: nil)
                     }
                     NavigationLink {
-                        ShowRepeatsPickerView()
+                        SimulcastLimitPickerView()
                     } label: {
-                        SettingsRowLabel(title: "Show repeats", systemImage: "repeat", value: app.customization.showRepeats.displayName)
+                        SettingsRowLabel(title: "Same show at once", systemImage: "rectangle.stack", value: app.customization.simulcastLimit.displayName)
                     }
                     if app.pro.access.canCreateCustomChannel(existingCount: app.customization.customChannels.count) {
                         NavigationLink {
@@ -151,7 +151,7 @@ struct SettingsView: View {
                 case .connection: ServerConnectionView(serverID: app.servers.accounts.first?.id ?? "")
                 case .channel: ChannelDetailView(channelID: app.lineup.first?.id ?? "")
                 case .order: AllChannelsOrderView()
-                case .repeats: ShowRepeatsPickerView()
+                case .repeats: SimulcastLimitPickerView()
                 }
             }
             #endif

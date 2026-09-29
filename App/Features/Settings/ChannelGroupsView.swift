@@ -4,7 +4,7 @@ import SwiftUI
 /// Turns whole groups of automatic channels on or off.
 struct ChannelGroupsView: View {
     /// Groups the user may switch off. Custom channels always stay.
-    private static let toggleableSources: [ChannelSource] = [.curated, .decade, .network, .collection, .series]
+    private static let toggleableSources: [ChannelSource] = [.curated, .decade, .library, .network, .collection, .series]
 
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme

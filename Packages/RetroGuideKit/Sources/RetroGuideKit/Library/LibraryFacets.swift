@@ -73,6 +73,7 @@ public struct LibraryFacets: Sendable {
                     seriesCount: series[key]?.count ?? .zero
                 )
             }
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            // Locale-independent, so every device builds the same lineup.
+            .sorted { ($0.name.lowercased(), $0.id) < ($1.name.lowercased(), $1.id) }
     }
 }

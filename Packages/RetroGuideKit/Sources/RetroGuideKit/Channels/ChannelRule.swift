@@ -71,6 +71,13 @@ public struct ChannelRule: Codable, Sendable, Hashable {
     public var isUnconstrained: Bool {
         self == ChannelRule()
     }
+
+    /// Whether the rule takes everything of its kinds (Everything, All Shows, Movies).
+    public var isCatchAll: Bool {
+        var others = self
+        others.kinds = []
+        return others.isUnconstrained
+    }
 }
 
 // MARK: - Matching

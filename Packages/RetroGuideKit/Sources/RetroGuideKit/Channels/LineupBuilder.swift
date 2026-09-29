@@ -2,85 +2,120 @@ import Foundation
 
 /// Resolves channel definitions against the library into the final lineup.
 public struct LineupBuilder: Sendable {
-    public let themes: [ChannelTheme]
+    private typealias Resolved = DuplicateChannelMerger.Resolved
+
+    public let curated: [ChannelDefinition]
     public let options: LineupOptions
 
-    public init(themes: [ChannelTheme], options: LineupOptions = LineupOptions()) {
-        self.themes = themes
+    public init(curated: [ChannelDefinition], options: LineupOptions = LineupOptions()) {
+        self.curated = curated
         self.options = options
     }
 
-    /// Plain definitions (tests, older callers): roles come from the bundled
-    /// catalog when the id is known, otherwise an unconstrained rule is a
-    /// catch-all, a decade channel a spotlight and anything else a home.
-    public init(curated: [ChannelDefinition], options: LineupOptions = LineupOptions()) {
-        let known = Dictionary(((try? ChannelCatalog.themes()) ?? []).map { ($0.definition.id, $0) }, uniquingKeysWith: { first, _ in first })
-        self.init(themes: curated.map { definition in
-            if let theme = known[definition.id] {
-                return ChannelTheme(definition: definition, role: theme.role, family: theme.family)
-            }
-            let rule = definition.rule
-            let isCatchAll = rule.categories.isEmpty && rule.genres.isEmpty && rule.networks.isEmpty && rule.collections.isEmpty
-                && rule.seriesIDs.isEmpty && rule.keywords.isEmpty && rule.audiences.isEmpty && rule.decades.isEmpty && rule.libraryIDs.isEmpty
-            let role: ChannelTheme.Role = isCatchAll ? .catchAll : (definition.source == .decade ? .spotlight : .home)
-            return ChannelTheme(definition: definition, role: role, family: nil)
-        }, options: options)
-    }
-
-    /// Builds the lineup sorted by channel number: catch-alls, one home channel
-    /// per title, spotlights (the only repeats, as many as ``ShowRepeats``
-    /// allows) and 24/7 channels, then the viewer's own channels. Hidden
-    /// channels are included (flagged) so the channel manager can show them.
+    /// Builds the lineup sorted by channel number: every curated, decade,
+    /// library, network, collection and 24/7 channel the library can fill,
+    /// numbered without gaps, then the viewer's own channels. Hidden channels
+    /// are included (flagged) so the channel manager can show them; empty or
+    /// duplicate automatic channels are dropped.
+    ///
+    /// No show airs on more than ``LineupCustomization/simulcastLimit``
+    /// channels at once, except on 24/7 and custom channels.
     public func build(index: LibraryIndex, customization: LineupCustomization) -> [Channel] {
-        let catalog = TitleCatalog(index: index)
-        let enabled = themes.filter { !customization.disabledSources.contains($0.definition.source) }
-        let dynamic = DynamicChannelFactory.definitions(for: index.facets, options: options)
-            .filter { !customization.disabledSources.contains($0.source) }
-
-        let catchAlls = enabled.filter { $0.role == .catchAll }.compactMap { theme -> HomePlanner.Planned? in
-            let rule = CompiledRule(theme.definition.rule)
-            let titles = catalog.titles.filter { rule.matches(index.items[$0.positions[0]], index.attributes[$0.positions[0]]) }
-            return titles.isEmpty ? nil : HomePlanner.Planned(definition: theme.definition, titles: titles)
-        }
-        let homes = HomePlanner(themes: enabled).plan(catalog, index: index)
-        // A catch-all airing exactly what one home channel airs adds nothing.
-        let homeContents = Set(homes.map { Set($0.titles.map(\.id)) })
-        let distinctCatchAlls = catchAlls.filter { !homeContents.contains(Set($0.titles.map(\.id))) }
-        let sizing = HomePlanner.Sizing(totalHours: catalog.titles.reduce(0) { $0 + $1.hours }, freshnessDays: HomePlanner.Tuning.movieFreshnessDays)
-        let spotlightHours = sizing.merge * SpotlightPlanner.Tuning.freshnessShare
-        // Library structure is only a hint: how someone splits their server into
-        // libraries says little about what makes a good channel.
-        let spotlightCandidates = enabled.filter { $0.role == .spotlight }.map(\.definition)
-            + dynamic.filter { $0.source != .series && $0.source != .library }
-        let spotlights = SpotlightPlanner(extraAppearances: customization.showRepeats.channelLimit.map { max($0 - 1, 0) }, minimumHours: spotlightHours)
-            .plan(candidates: spotlightCandidates, catalog: catalog, index: index, existing: homes + distinctCatchAlls)
-        let marathons = MarathonPlanner.plan(candidates: dynamic.filter { $0.source == .series }, catalog: catalog)
-
-        let sectioned: [(HomePlanner.Planned, ChannelNumberer.Section)] =
-            distinctCatchAlls.sorted { $0.definition.number < $1.definition.number }.map { ($0, .catchAll) }
-            + homes.filter(\.isShowChannel).map { ($0, .showHomes) }
-            + homes.filter { !$0.isShowChannel }.map { ($0, .movieHomes) }
-            + spotlights.map { ($0, .spotlights) }
-            + marathons.map { ($0, .marathons) }
-        let numbered = ChannelNumberer.number(sectioned.map { ($0.0.definition, $0.1) }, saved: customization.channelNumbers)
-
-        var usedCallSigns = Set<String>()
-        var channels: [Channel] = zip(numbered, sectioned).map { definition, entry in
-            var definition = definition
+        let automatic = curated.sorted { $0.number < $1.number }
+            + DynamicChannelFactory.definitions(for: index.facets, options: options)
+        var seenContent = Set<Int>()
+        var resolved: [Resolved] = []
+        for var definition in automatic {
+            guard !customization.disabledSources.contains(definition.source) else { continue }
             if let ordering = customization.orderingOverrides[definition.id] ?? customization.defaultOrdering {
                 definition.ordering = ordering
             }
-            definition.callSign = CallSign.unique(definition.callSign, avoiding: &usedCallSigns)
-            let items = entry.0.titles.flatMap { $0.positions.map { index.items[$0] } }
-            return makeChannel(definition, items: items, customization: customization)
+            let items = schedulableItems(for: definition.rule, in: index)
+            guard isSubstantial(items), seenContent.insert(contentFingerprint(items)).inserted else { continue }
+            resolved.append((definition, items))
+        }
+        // However small the library, something should be on.
+        if resolved.isEmpty, let fallback = automatic.first(where: { $0.rule.isUnconstrained && !customization.disabledSources.contains($0.source) }) {
+            let items = schedulableItems(for: fallback.rule, in: index)
+            if !items.isEmpty {
+                resolved.append((fallback, items))
+            }
+        }
+        let marathons = resolved.filter { $0.definition.source == .series }
+        resolved = capped(DuplicateChannelMerger.merge(resolved.filter { $0.definition.source != .series }) + marathons)
+
+        var usedCallSigns = Set<String>()
+        for position in resolved.indices {
+            resolved[position].definition.number = ChannelNumbering.automatic.lowerBound + position
+            resolved[position].definition.callSign = CallSign.unique(resolved[position].definition.callSign, avoiding: &usedCallSigns)
         }
         for var definition in customization.customChannels {
             let items = schedulableItems(for: definition.rule, in: index)
             guard !items.isEmpty else { continue }
             definition.callSign = CallSign.unique(definition.callSign, avoiding: &usedCallSigns)
-            channels.append(makeChannel(definition, items: items, customization: customization))
+            resolved.append((definition, items))
         }
-        return channels.sorted { $0.number < $1.number }
+
+        return schedule(resolved, customization: customization).sorted { $0.number < $1.number }
+    }
+
+    /// Visible channels share one schedule that keeps any show from airing on
+    /// more than ``LineupCustomization/simulcastLimit`` of them at once; 24/7,
+    /// custom and hidden channels run on their own.
+    private func schedule(_ resolved: [Resolved], customization: LineupCustomization) -> [Channel] {
+        let isHidden = { (definition: ChannelDefinition) in customization.hiddenChannelIDs.contains(definition.id) }
+        let shared = customization.simulcastLimit.channels.map { _ in
+            resolved.indices.filter { !Self.exemptSources.contains(resolved[$0].definition.source) && !isHidden(resolved[$0].definition) }
+                .sorted { resolved[$0].definition.id < resolved[$1].definition.id }
+        } ?? []
+        var timelines: [Int: any ChannelSchedule] = [:]
+        if let limit = customization.simulcastLimit.channels, !shared.isEmpty {
+            let coordinator = SimulcastCoordinator(limit: limit, channels: shared.map { position in
+                let definition = resolved[position].definition
+                return (ScheduleContext(channelID: definition.id, items: resolved[position].items, grid: options.grid), definition.ordering)
+            })
+            for (member, position) in shared.enumerated() {
+                timelines[position] = coordinator.timeline(for: member)
+            }
+        }
+        return resolved.indices.map { position in
+            let (definition, items) = resolved[position]
+            return Channel(
+                definition: definition,
+                items: items,
+                isHidden: isHidden(definition),
+                timeline: timelines[position] ?? Channel.schedule(for: definition, items: items, grid: options.grid)
+            )
+        }
+    }
+
+    /// 24/7 channels air one show by design, and custom channels are the viewer's call.
+    private static let exemptSources: Set<ChannelSource> = [.series, .custom]
+
+    /// Drops the least essential automatic channels beyond ``LineupOptions/maximumChannels``:
+    /// collections first, then networks, 24/7 shows and libraries, smallest first.
+    private func capped(_ channels: [Resolved]) -> [Resolved] {
+        let excess = channels.count - options.maximumChannels
+        guard excess > .zero else { return channels }
+        let dropped = channels
+            .filter { Self.dropPriority[$0.definition.source] != nil }
+            .sorted { lhs, rhs in
+                let left = Self.dropPriority[lhs.definition.source] ?? .zero
+                let right = Self.dropPriority[rhs.definition.source] ?? .zero
+                if left != right { return left > right }
+                return runtime(lhs.items) < runtime(rhs.items)
+            }
+            .prefix(excess)
+            .map(\.definition.id)
+        let droppedIDs = Set(dropped)
+        return channels.filter { !droppedIDs.contains($0.definition.id) }
+    }
+
+    /// Higher drops first; sources not listed (curated, decades, custom) are never dropped.
+    private static let dropPriority: [ChannelSource: Int] = [.collection: 4, .network: 3, .series: 2, .library: 1]
+
+    private func runtime(_ items: [MediaItem]) -> TimeInterval {
+        items.reduce(.zero) { $0 + $1.duration }
     }
 
     /// Items a rule would air, for live previews in the channel editor.
@@ -92,16 +127,15 @@ public struct LineupBuilder: Sendable {
         rule.matchingItems(in: index).filter { $0.duration >= ScheduleConstants.minimumProgramDuration }
     }
 
-    private func makeChannel(
-        _ definition: ChannelDefinition,
-        items: [MediaItem],
-        customization: LineupCustomization
-    ) -> Channel {
-        Channel(
-            definition: definition,
-            items: items,
-            isHidden: customization.hiddenChannelIDs.contains(definition.id),
-            grid: options.grid
-        )
+    private func isSubstantial(_ items: [MediaItem]) -> Bool {
+        items.count >= options.minimumChannelItems
+            && runtime(items) >= options.minimumChannelRuntime
     }
+
+    private func contentFingerprint(_ items: [MediaItem]) -> Int {
+        var hasher = Hasher()
+        items.forEach { hasher.combine($0.id) }
+        return hasher.finalize()
+    }
+
 }

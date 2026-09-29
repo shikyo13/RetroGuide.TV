@@ -18,8 +18,13 @@ public struct LineupReport: Sendable, CustomStringConvertible {
         public static let contentUse = 0.9
         /// A channel should air this many different programs a day (or all it has).
         public static let expectedProgramsPerDay = 4
+        /// Channels with less content than this repeat within a day whatever
+        /// the schedule does, so they aren't held to the repeat goal.
+        public static let repeatCheckMinimumContent: TimeInterval = 24 * ScheduleConstants.secondsPerHour
         /// A channel airing this share of every show or every movie is a catch-all.
         public static let catchAllShare = 0.9
+        /// How long to check for the same show on several channels at once.
+        public static let simulcastWindow: TimeInterval = 7 * 24 * ScheduleConstants.secondsPerHour
         /// Fixed reference point so reports are comparable between runs.
         public static let referenceDate = ScheduleConstants.epoch.addingTimeInterval(1_000 * 24 * ScheduleConstants.secondsPerHour)
     }
@@ -46,10 +51,14 @@ public struct LineupReport: Sendable, CustomStringConvertible {
     public let programsPerDayLowest: Int
     public let programsPerDayMedian: Int
     public let deadAirShare: Double
+    /// Most channels (24/7 and custom aside) airing one show at the same moment,
+    /// and the share of sampled moments where some show was over the limit.
+    public let simulcastMax: Int
+    public let simulcastOverLimitShare: Double
     /// Items stored across all channels per library item (memory proxy).
     public let storageFactor: Double
 
-    public init(lineup: [Channel], index: LibraryIndex) {
+    public init(lineup: [Channel], index: LibraryIndex, simulcastLimit: SimulcastLimit = .two) {
         let visible = lineup.filter { !$0.isHidden }
         let library = TitleCounts(index.items.filter(Self.isSchedulable))
         let themed = visible.filter { Self.role(of: $0, library: library) == .themed }
@@ -90,6 +99,7 @@ public struct LineupReport: Sendable, CustomStringConvertible {
         repeatDaysMedian = repeatDays.isEmpty ? 0 : repeatDays[repeatDays.count / 2]
         soonestRepeatingChannel = repeats.first.map { Self.label($0.0) } ?? "-"
         repeatShortfalls = repeats.filter { channel, days in
+            guard channel.totalRuntime >= Tuning.repeatCheckMinimumContent else { return false }
             let contentDays = channel.totalRuntime / Tuning.dayLength
             return days < min(Tuning.expectedRepeatDays, contentDays * Tuning.contentUse)
         }.map { Self.label($0.0) }
@@ -121,6 +131,9 @@ public struct LineupReport: Sendable, CustomStringConvertible {
         programsPerDayLowest = perDay.first ?? 0
         programsPerDayMedian = perDay.isEmpty ? 0 : perDay[perDay.count / 2]
         deadAirShare = scheduled > 0 ? dead / scheduled : 0
+        let simulcast = Self.simulcast(on: visible.filter { ![.series, .custom].contains($0.definition.source) }, limit: simulcastLimit.channels)
+        simulcastMax = simulcast.max
+        simulcastOverLimitShare = simulcast.overLimitShare
         storageFactor = index.items.isEmpty ? 0 : Double(visible.reduce(0) { $0 + $1.items.count }) / Double(index.items.count)
     }
 
@@ -134,6 +147,7 @@ public struct LineupReport: Sendable, CustomStringConvertible {
         days before an episode repeats: lowest \(String(format: "%.1f", repeatDaysLowest)) (\(soonestRepeatingChannel)), median \(String(format: "%.1f", repeatDaysMedian))
         channels repeating early \(repeatShortfalls.count), lacking variety \(varietyShortfalls.count)
         different programs per channel per day: lowest \(programsPerDayLowest) (\(leastVariedChannel)), median \(programsPerDayMedian)
+        same show at once: max \(simulcastMax) channels, over the limit \(String(format: "%.1f", simulcastOverLimitShare * 100))% of the time
         dead air \(String(format: "%.1f", deadAirShare * 100))%, stored items per library item \(String(format: "%.1f", storageFactor))
         """
     }
@@ -190,9 +204,47 @@ public struct LineupReport: Sendable, CustomStringConvertible {
         return Tuning.repeatHorizon / Tuning.dayLength
     }
 
+    /// Sweeps every program in the week after the reference date for shows
+    /// airing on several channels at once.
+    private static func simulcast(on channels: [Channel], limit: Int?) -> (max: Int, overLimitShare: Double) {
+        let window = DateInterval(start: Tuning.referenceDate, duration: Tuning.simulcastWindow)
+        var events: [(time: Date, change: Int, show: String)] = []
+        for channel in channels {
+            for program in channel.timeline.programs(overlapping: window) {
+                let show = title(of: program.item)
+                events.append((max(program.start, window.start), 1, show))
+                events.append((min(program.slotEnd, window.end), -1, show))
+            }
+        }
+        // Ends before starts at the same instant: back-to-back isn't overlap.
+        events.sort { ($0.time, $0.change) < ($1.time, $1.change) }
+        var airing: [String: Int] = [:]
+        var overCount = 0
+        var overSince: Date?
+        var overTime: TimeInterval = .zero
+        var highest = 0
+        for event in events {
+            let before = airing[event.show, default: 0]
+            let after = before + event.change
+            airing[event.show] = after
+            highest = max(highest, after)
+            guard let limit else { continue }
+            if before <= limit, after > limit {
+                if overCount == 0 { overSince = event.time }
+                overCount += 1
+            } else if before > limit, after <= limit {
+                overCount -= 1
+                if overCount == 0, let since = overSince {
+                    overTime += event.time.timeIntervalSince(since)
+                }
+            }
+        }
+        return (highest, overTime / window.duration)
+    }
+
     private static func label(_ channel: Channel) -> String {
         let titles = Set(channel.items.map(title)).count
-        let scheduler = channel.timeline is RotationTimeline ? "rotation" : "cycle"
+        let scheduler = channel.timeline is ChannelTimeline ? "cycle" : "simulated"
         return "\(channel.number) \(channel.name), \(titles) titles, \(Int(channel.totalRuntime / ScheduleConstants.secondsPerHour)) h, \(channel.definition.ordering.rawValue) \(scheduler)"
     }
 
