@@ -26,6 +26,19 @@ struct PlaylistArrangerTests {
         #expect(alphaNumbers == Array(1...10))
     }
 
+    @Test("Specials (season 0) air after the regular seasons, not before episode 1")
+    func specialsLast() {
+        let show = [
+            TestFactory.episode("sp1", show: "Naruto", season: 0, number: 1),
+            TestFactory.episode("s1e1", show: "Naruto", season: 1, number: 1),
+            TestFactory.episode("s1e2", show: "Naruto", season: 1, number: 2),
+            TestFactory.episode("s2e1", show: "Naruto", season: 2, number: 1),
+        ]
+        var generator = SeededGenerator(seed: 3)
+        let keys = PlaylistArranger.arrange(show, ordering: .marathon, using: &generator).map { show[$0].itemKey }
+        #expect(keys == ["s1e1", "s1e2", "s2e1", "sp1"])
+    }
+
     @Test("Marathon airs each show contiguously")
     func marathonIsContiguous() {
         var generator = SeededGenerator(seed: 1)
