@@ -3,8 +3,9 @@ import RetroGuideKit
 import SwiftUI
 
 /// The program guide driven by the Siri Remote: the grid is one focusable
-/// element that interprets moves like a cable box, and Play/Pause jumps to
-/// Search and Settings.
+/// element that interprets moves like a cable box. As elsewhere on Apple TV,
+/// Back first goes to the top (Search and Settings) and then closes the
+/// guide; Play/Pause jumps to the top too.
 struct GuideRemoteView: View {
     let tuner: Tuner
     let actions: GuideActions
@@ -48,7 +49,7 @@ struct GuideRemoteView: View {
             .onPlayPauseCommand(perform: focusHeader)
         }
         .screenBackground()
-        .onExitCommand(perform: actions.onClose)
+        .onExitCommand(perform: handleBack)
         .onAppear { focus = .grid }
         .onChange(of: focus) { _, newFocus in
             if newFocus == .grid { isHeaderFocusable = false }
@@ -65,6 +66,14 @@ struct GuideRemoteView: View {
         case .left: model.moveLeft()
         case .right: model.moveRight()
         @unknown default: break
+        }
+    }
+
+    private func handleBack() {
+        if focus == .grid {
+            focusHeader()
+        } else {
+            actions.onClose()
         }
     }
 

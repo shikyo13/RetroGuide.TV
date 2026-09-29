@@ -9,8 +9,9 @@ enum GuideFocus: Hashable {
 }
 
 /// Top bar: brand, date, clock, and the Search and Settings buttons.
-/// On Apple TV, Play/Pause jumps here from anywhere in the grid; on iPhone and
-/// iPad a close button returns to full-screen video.
+/// On Apple TV, Back (or Play/Pause) jumps here from anywhere in the grid and
+/// a hint says what Back does next; on iPhone and iPad a close button returns
+/// to full-screen video.
 struct GuideHeader: View {
     let isShowingNow: Bool
     let windowStart: Date
@@ -37,10 +38,7 @@ struct GuideHeader: View {
                 clock
             }
             #if os(tvOS)
-            Label("Play/Pause", systemImage: "playpause")
-                .font(Typography.micro)
-                .foregroundStyle(theme.textSecondary)
-                .accessibilityHidden(true)
+            backHint
             #endif
             HStack(spacing: PlatformMetric.value(tv: DesignTokens.Spacing.lg, touch: DesignTokens.Spacing.sm)) {
                 Button(action: actions.onOpenSearch) {
@@ -86,6 +84,19 @@ struct GuideHeader: View {
     private var showsClock: Bool {
         !isNarrowLayout && !showsAd
     }
+
+    #if os(tvOS)
+    /// What the remote's Back button does from where focus is now.
+    private var backHint: some View {
+        let isOnButtons = focus.wrappedValue == .search || focus.wrappedValue == .settings
+        return Label(isOnButtons ? "Back: close guide" : "Back: Search & Settings", systemImage: "chevron.backward.circle")
+            .font(Typography.micro)
+            .foregroundStyle(theme.textSecondary)
+            .lineLimit(1)
+            .fixedSize()
+            .accessibilityHidden(true)
+    }
+    #endif
 
     private var clock: some View {
         TimelineView(.periodic(from: .now, by: ScheduleConstants.secondsPerMinute)) { context in
