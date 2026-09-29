@@ -102,6 +102,24 @@ public extension MediaItem {
         series.map { Self.makeID(serverID: serverID, itemKey: $0.key) }
     }
 
+    /// The show (or, for a movie, the movie itself) this item belongs to, the
+    /// same on every server when the server knows the show's global id. Lineups
+    /// and schedules group by this.
+    var showID: String {
+        guard let series else { return id }
+        return series.externalID ?? Self.makeID(serverID: serverID, itemKey: series.key)
+    }
+
+    /// Identifies the same episode or movie on different servers: its global
+    /// id, or for an episode without one, its show's global id plus its number.
+    var duplicateKey: String? {
+        if let externalID {
+            return externalID
+        }
+        guard let series, let show = series.externalID, let season = series.seasonNumber, let episode = series.episodeNumber else { return nil }
+        return "\(show)#\(season)x\(episode)"
+    }
+
     /// Secondary line, e.g. `"S2 E5 · The One With the Thing"` or `"1994"`.
     var subheadline: String? {
         switch kind {

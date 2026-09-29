@@ -12,9 +12,8 @@ public struct LibraryIndex: Sendable {
 
     public init(items: [MediaItem], libraries: [MediaLibrary] = []) {
         let sorted = items.sorted { $0.id < $1.id }
-        let libraryTitles = Dictionary(libraries.map { ($0.id, $0.title) }, uniquingKeysWith: { first, _ in first })
         self.items = sorted
-        self.attributes = sorted.map { NormalizedAttributes($0, libraryTitle: libraryTitles[$0.libraryID]) }
+        self.attributes = sorted.map { NormalizedAttributes($0) }
         self.positionsByID = Dictionary(
             sorted.enumerated().map { ($1.id, $0) },
             uniquingKeysWith: { first, _ in first }
@@ -32,16 +31,16 @@ public struct LibraryIndex: Sendable {
         for (priority, snapshot) in snapshots.enumerated() {
             let preference = quality[snapshot.serverID] ?? .original
             for item in snapshot.items {
-                guard let externalID = item.externalID else {
+                guard let key = item.duplicateKey else {
                     items.append(item)
                     continue
                 }
-                if let existing = chosen[externalID] {
+                if let existing = chosen[key] {
                     guard existing.priority == priority,
                           Self.isBetterFit(item, than: existing.item, for: preference)
                     else { continue }
                 }
-                chosen[externalID] = (priority, item)
+                chosen[key] = (priority, item)
             }
         }
         items.append(contentsOf: chosen.values.map(\.item))
@@ -92,10 +91,10 @@ struct NormalizedAttributes: Sendable {
     let searchableText: String
     let decade: Int?
 
-    init(_ item: MediaItem, libraryTitle: String?, taxonomy: GenreTaxonomy = .shared) {
+    init(_ item: MediaItem, taxonomy: GenreTaxonomy = .shared) {
         genres = TextNormalizer.keys(item.genres)
         var categories = taxonomy.categories(for: item.genres)
-        if AnimeDetector.isAnime(categories: categories, countries: item.countries, libraryTitle: libraryTitle) {
+        if AnimeDetector.isAnime(categories: categories, countries: item.countries) {
             categories.formUnion([.anime, .animation])
         }
         self.categories = categories

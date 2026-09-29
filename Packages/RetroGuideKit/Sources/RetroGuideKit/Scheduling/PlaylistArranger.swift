@@ -62,7 +62,7 @@ enum PlaylistArranger {
     private static func groupedBySeries(_ items: [MediaItem]) -> [[Int]] {
         var groups: [String: [Int]] = [:]
         for index in items.indices {
-            groups[items[index].seriesID ?? items[index].id, default: []].append(index)
+            groups[items[index].showID, default: []].append(index)
         }
         return groups.values
             .map { indices in

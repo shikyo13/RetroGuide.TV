@@ -25,11 +25,12 @@ struct GenreTaxonomyTests {
         #expect(taxonomy.categories(for: ["Zzz Unknown"]).isEmpty)
     }
 
-    @Test("Anime is detected from Japanese animation or the library name")
+    @Test("Anime is detected from metadata: an anime genre, or Japanese animation")
     func animeDetection() {
-        #expect(AnimeDetector.isAnime(categories: [.animation], countries: ["Japan"], libraryTitle: "TV"))
-        #expect(AnimeDetector.isAnime(categories: [.action], countries: [], libraryTitle: "My Anime"))
-        #expect(!AnimeDetector.isAnime(categories: [.animation], countries: ["United States of America"], libraryTitle: "TV"))
+        #expect(AnimeDetector.isAnime(categories: [.anime], countries: []))
+        #expect(AnimeDetector.isAnime(categories: [.animation], countries: ["Japan"]))
+        #expect(!AnimeDetector.isAnime(categories: [.action], countries: []))
+        #expect(!AnimeDetector.isAnime(categories: [.animation], countries: ["United States of America"]))
     }
 
     @Test("Channel rules match on categories derived from raw genres")

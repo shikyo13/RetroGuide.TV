@@ -4,12 +4,16 @@ import Foundation
 public struct SeriesInfo: Codable, Sendable, Hashable {
     /// Server-native identifier of the show.
     public let key: String
+    /// Server-independent identifier of the show (e.g. Plex's `plex://show/…`
+    /// guid), so a show split across servers is one show.
+    public let externalID: String?
     public let title: String
     public let seasonNumber: Int?
     public let episodeNumber: Int?
 
-    public init(key: String, title: String, seasonNumber: Int?, episodeNumber: Int?) {
+    public init(key: String, title: String, seasonNumber: Int?, episodeNumber: Int?, externalID: String? = nil) {
         self.key = key
+        self.externalID = externalID
         self.title = title
         self.seasonNumber = seasonNumber
         self.episodeNumber = episodeNumber

@@ -32,8 +32,8 @@ public struct LibraryFacets: Sendable {
         networks = Self.aggregate(items) { $0.networks.map { ($0, $0) } }
         collections = Self.aggregate(items) { $0.collections.map { ($0, $0) } }
         series = Self.aggregate(items) { item in
-            guard let seriesID = item.seriesID, let title = item.series?.title else { return [] }
-            return [(seriesID, title)]
+            guard let title = item.series?.title else { return [] }
+            return [(item.showID, title)]
         }
         decades = Self.aggregate(items) { item in
             item.year.map { year in
@@ -58,8 +58,8 @@ public struct LibraryFacets: Sendable {
                 if names[key] == nil { names[key] = name }
                 counts[key, default: .zero] += 1
                 runtimes[key, default: .zero] += item.duration
-                if let seriesID = item.seriesID {
-                    series[key, default: []].insert(seriesID)
+                if item.series != nil {
+                    series[key, default: []].insert(item.showID)
                 }
             }
         }

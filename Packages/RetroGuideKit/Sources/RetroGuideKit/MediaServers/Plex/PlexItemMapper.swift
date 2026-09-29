@@ -64,7 +64,8 @@ enum PlexItemMapper {
                 key: showKey,
                 title: metadata.grandparentTitle ?? show?.title ?? metadata.title,
                 seasonNumber: metadata.parentIndex,
-                episodeNumber: metadata.index
+                episodeNumber: metadata.index,
+                externalID: show?.globalGuid ?? metadata.grandparentGlobalGuid
             ),
             year: metadata.year ?? show?.year,
             duration: duration,

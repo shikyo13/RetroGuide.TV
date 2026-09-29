@@ -74,8 +74,8 @@ public struct LineupReport: Sendable, CustomStringConvertible {
             }
         }
         // In libraries too small for themed channels of a kind, the catch-alls are home.
-        let themedKinds = Set(themed.flatMap { $0.items.map { $0.seriesID != nil } })
-        let showTitles = Set(index.items.compactMap(\.seriesID))
+        let themedKinds = Set(themed.flatMap { $0.items.map { $0.series != nil } })
+        let showTitles = Set(index.items.filter { $0.series != nil }.map(\.showID))
         uncoveredTitles = allTitles.filter { perTitle[$0] == nil && themedKinds.contains(showTitles.contains($0)) }.sorted()
         let counts = allTitles.map { perTitle[$0, default: 0] }.sorted()
         themedChannelsPerTitleMedian = counts.isEmpty ? 0 : counts[counts.count / 2]
@@ -166,8 +166,8 @@ public struct LineupReport: Sendable, CustomStringConvertible {
         let movies: Int
 
         init(_ items: [MediaItem]) {
-            shows = Set(items.compactMap(\.seriesID)).count
-            movies = items.filter { $0.seriesID == nil }.count
+            shows = Set(items.filter { $0.series != nil }.map(\.showID)).count
+            movies = items.filter { $0.series == nil }.count
         }
     }
 
@@ -253,6 +253,6 @@ public struct LineupReport: Sendable, CustomStringConvertible {
     }
 
     static func title(of item: MediaItem) -> String {
-        item.seriesID ?? item.id
+        item.showID
     }
 }

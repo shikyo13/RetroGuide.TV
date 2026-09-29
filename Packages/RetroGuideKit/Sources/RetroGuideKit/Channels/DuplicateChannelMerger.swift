@@ -41,6 +41,6 @@ enum DuplicateChannelMerger {
     }
 
     static func title(of item: MediaItem) -> String {
-        item.seriesID ?? item.id
+        item.showID
     }
 }

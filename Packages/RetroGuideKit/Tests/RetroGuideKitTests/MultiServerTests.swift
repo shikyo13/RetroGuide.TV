@@ -38,6 +38,38 @@ struct MultiServerTests {
         #expect(index.items.count == 2)
     }
 
+    private func episode(server: String, key: String, show: String, showGuid: String?, number: Int, guid: String? = nil) -> MediaItem {
+        MediaItem(
+            serverID: server, itemKey: key, externalID: guid, libraryID: "\(server)/1", kind: .episode, title: "Episode \(number)",
+            series: SeriesInfo(key: show, title: "The Show", seasonNumber: 1, episodeNumber: number, externalID: showGuid),
+            duration: 1_320, genres: ["Comedy"]
+        )
+    }
+
+    @Test("A show split across servers is one show with every episode once")
+    func splitShow() throws {
+        let guid = "plex://show/the-show"
+        let index = LibraryIndex(snapshots: [
+            snapshot("home", [1, 2, 3].map { episode(server: "home", key: "h\($0)", show: "10", showGuid: guid, number: $0) }),
+            snapshot("friend", [2, 3, 4, 5].map { episode(server: "friend", key: "f\($0)", show: "77", showGuid: guid, number: $0) }),
+        ])
+        #expect(index.items.compactMap(\.series?.episodeNumber).sorted() == [1, 2, 3, 4, 5])
+        #expect(Set(index.items.map(\.showID)) == [guid])
+        #expect(index.facets.series.map(\.id) == [guid])
+        #expect(index.items.filter { $0.series?.episodeNumber == 2 }.map(\.serverID) == ["home"])
+    }
+
+    @Test("A rule saved with one server's show id still matches that show")
+    func legacyShowRule() {
+        let guid = "plex://show/the-show"
+        let index = LibraryIndex(snapshots: [
+            snapshot("home", [episode(server: "home", key: "h1", show: "10", showGuid: guid, number: 1)]),
+            snapshot("friend", [episode(server: "friend", key: "f2", show: "77", showGuid: guid, number: 2)]),
+        ])
+        #expect(ChannelRule(seriesIDs: ["home/10"]).matchingItems(in: index).count == 1)
+        #expect(ChannelRule(seriesIDs: [guid]).matchingItems(in: index).count == 2)
+    }
+
     @Test("Same-named libraries get the server name")
     func libraryNames() {
         let index = LibraryIndex(snapshots: [

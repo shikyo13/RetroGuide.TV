@@ -30,7 +30,7 @@ final class ScheduleContext: Sendable {
         self.slotLengths = items.map { max(grid.slotLength(for: $0.duration), ScheduleConstants.minimumProgramDuration) }
         var groups: [String: [Int]] = [:]
         for index in items.indices where items[index].duration > .zero {
-            groups[items[index].seriesID ?? items[index].id, default: []].append(index)
+            groups[items[index].showID, default: []].append(index)
         }
         let sorted = groups.sorted { $0.key < $1.key }
         self.showIDs = sorted.map(\.key)
@@ -84,7 +84,7 @@ enum ChannelPicker: ProgramPicker {
     }
 
     static func rotates(ordering: ScheduleOrdering, items: [MediaItem]) -> Bool {
-        let titles = Set(items.map { $0.seriesID ?? $0.id }).count
+        let titles = Set(items.map { $0.showID }).count
         guard ordering != .shuffle, titles > 1 else { return false }
         guard ordering != .marathon else { return true }
         let content = items.reduce(TimeInterval.zero) { $0 + $1.duration }

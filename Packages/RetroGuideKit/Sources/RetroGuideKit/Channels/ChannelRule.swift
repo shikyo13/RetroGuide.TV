@@ -122,7 +122,8 @@ struct CompiledRule {
         guard collections.isEmpty || !collections.isDisjoint(with: attributes.collections) else { return false }
         guard rule.decades.isEmpty || attributes.decade.map(rule.decades.contains) == true else { return false }
         if !rule.seriesIDs.isEmpty {
-            guard let seriesID = item.seriesID, rule.seriesIDs.contains(seriesID) else { return false }
+            // Saved rules may name a show by its server-specific id or its global one.
+            guard let seriesID = item.seriesID, rule.seriesIDs.contains(seriesID) || rule.seriesIDs.contains(item.showID) else { return false }
         }
         if !keywords.isEmpty {
             guard keywords.contains(where: attributes.searchableText.contains) else { return false }

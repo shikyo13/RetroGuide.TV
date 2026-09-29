@@ -51,6 +51,7 @@ struct PlexMetadata: Decodable {
     let title: String
     let grandparentRatingKey: String?
     let grandparentTitle: String?
+    let grandparentGuid: String?
     let parentIndex: Int?
     let index: Int?
     let year: Int?
@@ -70,7 +71,7 @@ struct PlexMetadata: Decodable {
     let media: [PlexMedia]?
 
     enum CodingKeys: String, CodingKey {
-        case ratingKey, guid, type, title, grandparentRatingKey, grandparentTitle
+        case ratingKey, guid, type, title, grandparentRatingKey, grandparentTitle, grandparentGuid
         case parentIndex, index, year, duration, summary, contentRating, contentRatingAge
         case studio, thumb, art, grandparentThumb, grandparentArt, childCount
         case genres = "Genre"
@@ -81,6 +82,15 @@ struct PlexMetadata: Decodable {
 
     /// Plex agent guids (`plex://…`) are global; local and legacy guids are not.
     var globalGuid: String? {
+        Self.global(guid)
+    }
+
+    /// The episode's show's global guid, when the listing includes it.
+    var grandparentGlobalGuid: String? {
+        Self.global(grandparentGuid)
+    }
+
+    private static func global(_ guid: String?) -> String? {
         guard let guid, guid.hasPrefix(PlexAPI.globalGuidPrefix) else { return nil }
         return guid
     }
