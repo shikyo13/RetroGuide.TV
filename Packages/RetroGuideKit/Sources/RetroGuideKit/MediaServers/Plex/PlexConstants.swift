@@ -98,6 +98,8 @@ public enum PlexAPI {
         static let probeTimeout: TimeInterval = 4
         /// Track selection is fetched while tuning, so it must never hold up playback for long.
         static let trackSelectionTimeout: TimeInterval = 2
+        /// Name for a track Plex gives no title or language for.
+        static let unknownTrackTitle = "Unknown"
         /// Asking the server for permission to play a file directly.
         static let playbackDecisionTimeout: TimeInterval = 5
         /// How often to poll plex.tv while waiting for the user to enter a link code.

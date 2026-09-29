@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import RetroGuideKit
 
@@ -78,5 +79,30 @@ struct PlexTrackSelectionMapperTests {
     @Test func withoutPreferencesOnlyChosenTracksAreUsed() {
         let selection = PlexTrackSelectionMapper.selection(from: episode, preferences: nil) { _ in nil }
         #expect(selection.subtitle == SubtitleChoice.none)
+    }
+}
+
+@Suite("Plex track list")
+struct PlexTrackListTests {
+    @Test("Every audio and subtitle track is offered, named the way Plex names it")
+    func listsTracks() throws {
+        let json = """
+        [
+          {"streamType": 1, "index": 0},
+          {"streamType": 2, "index": 1, "languageCode": "jpn", "selected": true, "extendedDisplayTitle": "Japanese (AAC Stereo)"},
+          {"streamType": 2, "index": 2, "languageCode": "eng", "displayTitle": "English (AAC Stereo)"},
+          {"streamType": 3, "index": 3, "languageCode": "eng", "displayTitle": "English (ASS)", "selected": true},
+          {"streamType": 3, "key": "/library/streams/9", "languageCode": "eng", "forced": true, "displayTitle": "English Forced (SRT External)"}
+        ]
+        """
+        let streams = try JSONDecoder().decode([PlexStream].self, from: Data(json.utf8))
+        let url = URL(string: "https://server/library/streams/9")!
+        let tracks = PlexTrackSelectionMapper.tracks(from: streams, preferences: nil) { _ in url }
+        #expect(tracks.audio.map(\.title) == ["Japanese (AAC Stereo)", "English (AAC Stereo)"])
+        #expect(tracks.subtitles.map(\.title) == ["English (ASS)", "English Forced (SRT External)"])
+        #expect(tracks.subtitles[1].isForced)
+        #expect(tracks.subtitles[1].source == .external(url))
+        #expect(tracks.audioOption(for: tracks.selection)?.title == "Japanese (AAC Stereo)")
+        #expect(tracks.subtitleOption(for: tracks.selection)?.title == "English (ASS)")
     }
 }

@@ -88,7 +88,8 @@ struct GuideHeader: View {
     #if os(tvOS)
     /// What the remote's Back button does from where focus is now.
     private var backHint: some View {
-        let isOnButtons = focus.wrappedValue == .search || focus.wrappedValue == .settings
+        // Anywhere but the grid (including Audio & Subtitles on the picture) is the top row.
+        let isOnButtons = focus.wrappedValue != .grid
         return Label(isOnButtons ? "Back: close guide" : "Back: Search & Settings", systemImage: "chevron.backward.circle")
             .font(Typography.micro)
             .foregroundStyle(theme.textSecondary)

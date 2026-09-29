@@ -48,6 +48,12 @@ final class MPVPlaybackEngine: PlaybackEngine {
         core?.stop()
     }
 
+    let switchesTracksLive = true
+
+    func selectTracks(_ tracks: TrackSelection) {
+        core?.selectTracks(tracks)
+    }
+
     func setPrefersHDROutput(_ prefersHDROutput: Bool) {
         core?.setHDROutput(prefersHDROutput)
     }

@@ -94,6 +94,10 @@ final class AppModel {
             nowPlaying?.update(channel: tuner.channel, program: tuner.program, isPlaying: tuner.signal == .live)
         }
         tuner.languagePreferences = store.languagePreferences
+        tuner.trackPreferences = store.trackPreferences
+        tuner.onTrackPreferencesChanged = { [store] preferences in
+            store.trackPreferences = preferences
+        }
     }
 
     // MARK: - Derived state
@@ -215,6 +219,7 @@ final class AppModel {
     func signOut() {
         healthTask?.cancel()
         tuner.powerOff()
+        tuner.trackPreferences = [:]
         servers.removeAll()
         store.resetAll()
         indexGeneration += 1

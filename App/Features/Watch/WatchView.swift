@@ -32,6 +32,11 @@ struct WatchView: View {
     @State private var keyboardHeight: CGFloat = .zero
     /// Height of the free version's ad banner under the menus (iPhone and iPad).
     @State private var bannerHeight: CGFloat = .zero
+    /// Apple TV: the guide's top row (Search, Settings, Audio & Subtitles) can take focus.
+    @State private var isGuideTopBarActive = false
+    @State private var isChoosingTracks = false
+    @State private var guideFocusRequest: GuideFocusRequest?
+    @State private var liveControlsFocusSerial = 0
 
     var body: some View {
         let tuner = app.tuner
@@ -40,6 +45,7 @@ struct WatchView: View {
             switch overlay {
             case .guide:
                 guide(tuner: tuner)
+                    .disabled(isChoosingTracks)
                     .transition(.opacity)
             case .settings:
                 SettingsView(onClose: { overlay = .guide })
@@ -54,6 +60,9 @@ struct WatchView: View {
                 EmptyView()
             }
             liveVideo(tuner: tuner)
+            if overlay == .guide, let previewFrame {
+                liveControls(tuner: tuner, pictureFrame: previewFrame)
+            }
             #if os(iOS)
             if isPictureInPicture {
                 returnToFullScreenTarget
@@ -67,6 +76,10 @@ struct WatchView: View {
         #if os(iOS)
         .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)
         #endif
+        .onChange(of: overlay) {
+            isGuideTopBarActive = false
+            isChoosingTracks = false
+        }
         .onPreferenceChange(LivePreviewFrameKey.self) { frame in
             previewFrame = frame
         }
@@ -162,10 +175,40 @@ struct WatchView: View {
     }
     #endif
 
+    /// The guide's controls on the live picture (above the video layer).
+    private func liveControls(tuner: Tuner, pictureFrame: CGRect) -> some View {
+        var controls = GuideLiveControls(
+            tuner: tuner,
+            pictureFrame: pictureFrame,
+            isTopBarActive: isGuideTopBarActive,
+            isChoosingTracks: $isChoosingTracks,
+            focusSerial: liveControlsFocusSerial,
+            onCloseGuide: { overlay = .none }
+        )
+        #if os(tvOS)
+        controls.onMoveOut = moveFocusFromLiveControls
+        #endif
+        return controls
+    }
+
+    #if os(tvOS)
+    /// Up or Right from the picture's controls returns to Search, Down to the grid.
+    private func moveFocusFromLiveControls(_ direction: MoveCommandDirection) {
+        let serial = (guideFocusRequest?.serial ?? .zero) + 1
+        switch direction {
+        case .up, .right: guideFocusRequest = GuideFocusRequest(target: .topBar, serial: serial)
+        case .down: guideFocusRequest = GuideFocusRequest(target: .grid, serial: serial)
+        default: break
+        }
+    }
+    #endif
+
     private func guide(tuner: Tuner) -> some View {
         GuideView(
             channels: app.visibleChannels,
             lineupRevision: app.lineupRevision,
+            isTopBarActive: $isGuideTopBarActive,
+            focusRequest: guideFocusRequest,
             tuner: tuner,
             actions: GuideActions(
                 onTune: { channel in
@@ -174,7 +217,8 @@ struct WatchView: View {
                 },
                 onClose: { overlay = .none },
                 onOpenSearch: { overlay = .search },
-                onOpenSettings: { overlay = .settings }
+                onOpenSettings: { overlay = .settings },
+                onFocusLiveControls: { liveControlsFocusSerial += 1 }
             )
         )
     }

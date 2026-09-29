@@ -53,11 +53,20 @@ protocol PlaybackEngine: AnyObject {
     /// Whether to output HDR as HDR (the display is in an HDR mode) rather
     /// than converting it to standard range.
     func setPrefersHDROutput(_ prefersHDROutput: Bool)
+    /// Whether ``selectTracks(_:)`` switches audio and subtitles while playing.
+    var switchesTracksLive: Bool { get }
+    func selectTracks(_ tracks: TrackSelection)
 }
 
 extension PlaybackEngine {
     /// Engines that leave HDR handling to the system ignore this.
     func setPrefersHDROutput(_ prefersHDROutput: Bool) {}
+
+    /// Apple's player gets streams the server has already packaged.
+    var switchesTracksLive: Bool { false }
+
+    /// Switches audio and subtitles on what's playing, when the engine can.
+    func selectTracks(_ tracks: TrackSelection) {}
 }
 
 @MainActor

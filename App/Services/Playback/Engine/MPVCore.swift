@@ -170,6 +170,22 @@ final class MPVCore: @unchecked Sendable {
         command(["stop"])
     }
 
+    /// Switches audio and subtitles on the file that's playing (or, while it's
+    /// still loading, replaces the selection it will start with).
+    func selectTracks(_ tracks: TrackSelection) {
+        guard let handle else { return }
+        generationLock.lock()
+        let isLoading = pendingTracks != nil
+        if isLoading {
+            pendingTracks = tracks
+        }
+        generationLock.unlock()
+        guard !isLoading, let rawTrackList = mpv_get_property_string(handle, Option.trackListProperty) else { return }
+        let trackList = String(cString: rawTrackList)
+        mpv_free(rawTrackList)
+        MPVTrackSelector.commands(for: tracks, trackListJSON: trackList).forEach(command)
+    }
+
     /// Passes HDR through to the display (`true`) or tone maps it to standard range.
     /// For standard range the target is stated explicitly: left to guess from the
     /// Metal layer, mpv outputs wide-gamut HDR values that look dark and washed out

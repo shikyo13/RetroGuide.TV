@@ -15,6 +15,33 @@ enum PlexTrackSelectionMapper {
         return TrackSelection(audioStreamIndex: audio?.index, subtitle: choice(for: subtitle, externalURL: externalURL))
     }
 
+    /// Every audio and subtitle track, plus the ones ``selection(from:preferences:externalURL:)`` picks.
+    static func tracks(
+        from streams: [PlexStream],
+        preferences: LanguagePreferences?,
+        externalURL: (String) -> URL?
+    ) -> ItemTracks {
+        ItemTracks(
+            audio: streams.filter { $0.streamType == PlexAPI.StreamType.audio }.compactMap { option(for: $0, kind: .audio, externalURL: externalURL) },
+            subtitles: streams.filter { $0.streamType == PlexAPI.StreamType.subtitle }.compactMap { option(for: $0, kind: .subtitle, externalURL: externalURL) },
+            selection: selection(from: streams, preferences: preferences, externalURL: externalURL)
+        )
+    }
+
+    private static func option(for stream: PlexStream, kind: TrackOption.Kind, externalURL: (String) -> URL?) -> TrackOption? {
+        let source: TrackOption.Source
+        if let index = stream.index {
+            source = .embedded(streamIndex: index)
+        } else if let key = stream.key, let url = externalURL(key) {
+            source = .external(url)
+        } else {
+            return nil
+        }
+        let language = language(of: stream)
+        let title = stream.extendedDisplayTitle ?? stream.displayTitle ?? language ?? PlexAPI.Defaults.unknownTrackTitle
+        return TrackOption(kind: kind, source: source, language: language, title: title, isForced: stream.forced == true)
+    }
+
     private static func automaticSubtitle(in streams: [PlexStream], audio: PlexStream?, preferences: LanguagePreferences) -> PlexStream? {
         let subtitles = streams.filter { $0.streamType == PlexAPI.StreamType.subtitle }
         let candidates = subtitles.map { SubtitleCandidate(language: language(of: $0), isForced: $0.forced == true) }

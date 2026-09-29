@@ -55,6 +55,15 @@ final class Tuner {
     @ObservationIgnored var onSignalChanged: (() -> Void)?
     /// The viewer's account language settings, for items they haven't chosen tracks for.
     @ObservationIgnored var languagePreferences: LanguagePreferences?
+    /// The tuned program's audio and subtitle tracks (when the server says),
+    /// and the ones playing.
+    private(set) var currentTracks: ItemTracks?
+    private(set) var currentSelection: TrackSelection?
+    /// The viewer's audio and subtitle choices per show (by ``MediaItem/showID``).
+    @ObservationIgnored var trackPreferences: [String: TrackPreference] = [:]
+    @ObservationIgnored var onTrackPreferencesChanged: (([String: TrackPreference]) -> Void)?
+    /// A choice made for just the program on now.
+    @ObservationIgnored private var programTrackChoice: (programID: String, selection: TrackSelection)?
 
     @ObservationIgnored private var channels: [Channel] = []
     @ObservationIgnored private var previousChannelID: String?
@@ -130,6 +139,57 @@ final class Tuner {
         return channels.first { $0.isIdentified(by: id) }
     }
 
+    // MARK: - Audio and subtitles
+
+    /// Whether the viewer can pick tracks for what's playing right now.
+    var canChooseTracks: Bool {
+        engine.switchesTracksLive && currentTracks != nil
+    }
+
+    /// Whether the tuned show has remembered track choices.
+    var hasShowTrackPreference: Bool {
+        program.map { trackPreferences[$0.item.showID] != nil } ?? false
+    }
+
+    /// Switches to `audio` (when given) and `subtitle` (`nil`: off) now, and
+    /// remembers them for every episode of the show or just this program.
+    func chooseTracks(audio: TrackOption?, subtitle: TrackOption?, forWholeShow: Bool) {
+        guard let program, let tracks = currentTracks, let current = currentSelection else { return }
+        let selection = tracks.selection(from: current, audio: audio, subtitle: subtitle)
+        if forWholeShow {
+            let chosenAudio = audio ?? tracks.audioOption(for: selection)
+            trackPreferences[program.item.showID] = TrackPreference(audio: chosenAudio, subtitle: subtitle, subtitlesOff: subtitle == nil)
+            onTrackPreferencesChanged?(trackPreferences)
+            programTrackChoice = nil
+        } else {
+            programTrackChoice = (program.id, selection)
+        }
+        apply(selection)
+    }
+
+    /// Forgets the show's remembered tracks and goes back to the server's
+    /// (and account's) choice.
+    func resetTracksToAutomatic() {
+        guard let program, let tracks = currentTracks else { return }
+        trackPreferences[program.item.showID] = nil
+        onTrackPreferencesChanged?(trackPreferences)
+        programTrackChoice = nil
+        apply(tracks.selection)
+    }
+
+    private func apply(_ selection: TrackSelection) {
+        currentSelection = selection
+        engine.selectTracks(selection)
+    }
+
+    /// This program's choice, then the show's, then the server's.
+    private func resolvedSelection(for program: ScheduledProgram, tracks: ItemTracks) -> TrackSelection {
+        if let choice = programTrackChoice, choice.programID == program.id {
+            return choice.selection
+        }
+        return trackPreferences[program.item.showID]?.selection(for: tracks) ?? tracks.selection
+    }
+
     // MARK: - Remote actions
 
     /// `isAutomatic`: the app retuned (a rebuilt lineup, a reconnected server),
@@ -143,6 +203,8 @@ final class Tuner {
         }
         self.channel = channel
         program = channel.timeline.program(at: .now)
+        currentTracks = nil
+        currentSelection = nil
         signal = .tuning
         failedAttempts = .zero
         tuneGeneration += 1
@@ -206,6 +268,8 @@ final class Tuner {
             return
         }
         self.program = program
+        currentTracks = nil
+        currentSelection = nil
         endActiveStream()
 
         let now = Date.now
@@ -220,9 +284,12 @@ final class Tuner {
         // Every (re)start shows the tuning state until frames actually play.
         signal = .tuning
         let generation = tuneGeneration
-        let tracks = await client.trackSelection(for: program.item, preferences: languagePreferences)
-        // The viewer may have changed channel while the selection was loading.
+        let tracks = await client.tracks(for: program.item, preferences: languagePreferences)
+        // The viewer may have changed channel while the tracks were loading.
         guard generation == tuneGeneration, !Task.isCancelled else { return }
+        let selection = tracks.map { resolvedSelection(for: program, tracks: $0) }
+        currentTracks = tracks
+        currentSelection = selection
         do {
             let request = try await client.streamRequest(
                 for: program.item,
@@ -239,7 +306,7 @@ final class Tuner {
             if request.needsTeardown {
                 activeStream = ActiveStream(client: client, sessionID: request.sessionID)
             }
-            engine.play(request, tracks: tracks)
+            engine.play(request, tracks: selection)
             UIApplication.shared.isIdleTimerDisabled = true
             scheduleBoundary(at: program.contentEnd)
         } catch {

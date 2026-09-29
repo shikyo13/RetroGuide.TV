@@ -149,6 +149,9 @@ struct PlexStream: Decodable {
     var languageTag: String?
     var languageCode: String?
     var forced: Bool?
+    /// Plex's names for the track: "English (AAC Stereo)", "English (SRT External)"…
+    var displayTitle: String?
+    var extendedDisplayTitle: String?
 }
 
 /// The signed-in plex.tv user (only the language settings are read).

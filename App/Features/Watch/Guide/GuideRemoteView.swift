@@ -11,14 +11,24 @@ struct GuideRemoteView: View {
     let actions: GuideActions
 
     @State private var model: GuideModel
-    @State private var isHeaderFocusable = false
+    @Binding private var isHeaderFocusable: Bool
     @FocusState private var focus: GuideFocus?
 
     let channels: [Channel]
     let lineupRevision: Int
+    let focusRequest: GuideFocusRequest?
 
-    init(channels: [Channel], lineupRevision: Int, tuner: Tuner, actions: GuideActions) {
+    init(
+        channels: [Channel],
+        lineupRevision: Int,
+        isHeaderFocusable: Binding<Bool>,
+        focusRequest: GuideFocusRequest?,
+        tuner: Tuner,
+        actions: GuideActions
+    ) {
         self.channels = channels
+        self.focusRequest = focusRequest
+        _isHeaderFocusable = isHeaderFocusable
         self.lineupRevision = lineupRevision
         self.tuner = tuner
         self.actions = actions
@@ -36,7 +46,12 @@ struct GuideRemoteView: View {
             .crtEffect(isFullScreen: false)
             .disabled(!isHeaderFocusable)
             .onMoveCommand { direction in
-                if direction == .down { focusGrid() }
+                switch direction {
+                case .down: focusGrid()
+                // The picture's controls sit outside the guide, below and left of Search.
+                case .left where focus == .search: actions.onFocusLiveControls()
+                default: break
+                }
             }
 
             GuidePreviewPanel(tuner: tuner, channel: model.focusedChannel, program: model.focusedProgram)
@@ -57,6 +72,13 @@ struct GuideRemoteView: View {
         .onExitCommand(perform: handleBack)
         .onAppear { focus = .grid }
         .onChange(of: lineupRevision) { model.replaceChannels(channels) }
+        .onChange(of: focusRequest) { _, request in
+            switch request?.target {
+            case .topBar: focusHeader()
+            case .grid: focusGrid()
+            case nil: break
+            }
+        }
         .onChange(of: focus) { _, newFocus in
             if newFocus == .grid { isHeaderFocusable = false }
         }
