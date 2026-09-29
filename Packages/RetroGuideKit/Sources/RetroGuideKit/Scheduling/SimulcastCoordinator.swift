@@ -167,15 +167,19 @@ final class SimulcastCoordinator: @unchecked Sendable {
         var upcoming = StartQueue(activeChannels.map { (state.nextStart[$0], $0) })
         var due: [Int] = []
         while let earliest = upcoming.peek, earliest < end {
+            // Usually one channel starts at a time: pick and move it down the
+            // queue in one step.
+            if upcoming.isTopUnique, let channel = upcoming.topChannel {
+                endProgram(on: channel, state: &state)
+                upcoming.replaceTop(pick(on: channel, at: earliest, state: &state, chunk: &chunk))
+                continue
+            }
             // Every channel starting now; their previous programs end, so they
             // stop counting before anyone picks.
             due.removeAll(keepingCapacity: true)
             while upcoming.peek == earliest, let channel = upcoming.pop() {
                 due.append(channel)
-                if state.airing[channel] >= 0 {
-                    state.airingCount[state.airing[channel]] -= 1
-                    state.airing[channel] = -1
-                }
+                endProgram(on: channel, state: &state)
             }
             // Of channels starting together, those with the fewest shows to
             // choose from pick first (a channel carrying A and B can step
@@ -187,24 +191,35 @@ final class SimulcastCoordinator: @unchecked Sendable {
                 return left != right ? left < right : (lhs + rotation) % contexts.count < (rhs + rotation) % contexts.count
             }
             for channel in due {
-                let context = contexts[channel]
-                let shows = globalShow[channel]
-                // Moved out while it runs, so its arrays aren't copied.
-                var picker = ChannelPicker.moving
-                swap(&picker, &state.pickers[channel])
-                let item = picker.next(at: earliest, in: context) { state.airingCount[shows[$0]] < limit }
-                swap(&picker, &state.pickers[channel])
-                let show = shows[item]
-                state.airing[channel] = show
-                state.airingCount[show] += 1
-                let next = earliest + context.slotLengths[item]
-                state.nextStart[channel] = next
-                upcoming.push(next, channel)
-                chunk.items[channel].append(item)
-                chunk.starts[channel].append(earliest)
+                upcoming.push(pick(on: channel, at: earliest, state: &state, chunk: &chunk), channel)
             }
         }
         return chunk
+    }
+
+    private func endProgram(on channel: Int, state: inout State) {
+        guard state.airing[channel] >= 0 else { return }
+        state.airingCount[state.airing[channel]] -= 1
+        state.airing[channel] = -1
+    }
+
+    /// Airs the channel's next program at `start`; returns when it ends.
+    private func pick(on channel: Int, at start: TimeInterval, state: inout State, chunk: inout Chunk) -> TimeInterval {
+        let context = contexts[channel]
+        let shows = globalShow[channel]
+        // Moved out while it runs, so its arrays aren't copied.
+        var picker = ChannelPicker.moving
+        swap(&picker, &state.pickers[channel])
+        let item = picker.next(at: start, in: context) { state.airingCount[shows[$0]] < limit }
+        swap(&picker, &state.pickers[channel])
+        let show = shows[item]
+        state.airing[channel] = show
+        state.airingCount[show] += 1
+        let next = start + context.slotLengths[item]
+        state.nextStart[channel] = next
+        chunk.items[channel].append(item)
+        chunk.starts[channel].append(start)
+        return next
     }
 
     private func store(_ chunk: Chunk, as number: Int) {
@@ -263,7 +278,9 @@ extension SimulcastCoordinator {
 /// Channels ordered by when their next program starts (then by position, so
 /// the order is deterministic): a binary min-heap.
 private struct StartQueue {
-    private var heap: [(start: TimeInterval, channel: Int)] = []
+    private typealias Entry = (start: TimeInterval, channel: Int)
+
+    private var heap: [Entry] = []
 
     init(_ entries: [(TimeInterval, Int)]) {
         heap.reserveCapacity(entries.count)
@@ -276,37 +293,75 @@ private struct StartQueue {
         heap.first?.start
     }
 
+    var topChannel: Int? {
+        heap.first?.channel
+    }
+
+    /// Whether no other channel starts at the same time as the first.
+    var isTopUnique: Bool {
+        guard let top = heap.first?.start else { return false }
+        return (heap.count <= 1 || heap[1].start != top) && (heap.count <= 2 || heap[2].start != top)
+    }
+
     mutating func push(_ start: TimeInterval, _ channel: Int) {
         heap.append((start, channel))
-        var child = heap.count - 1
-        while child > 0 {
-            let parent = (child - 1) / 2
-            guard precedes(heap[child], heap[parent]) else { break }
-            heap.swapAt(child, parent)
-            child = parent
-        }
+        siftUp(from: heap.count - 1)
     }
 
     mutating func pop() -> Int? {
         guard let top = heap.first else { return nil }
         let last = heap.removeLast()
-        guard !heap.isEmpty else { return top.channel }
-        heap[0] = last
-        var parent = 0
-        while true {
-            let left = 2 * parent + 1
-            let right = left + 1
-            var smallest = parent
-            if left < heap.count, precedes(heap[left], heap[smallest]) { smallest = left }
-            if right < heap.count, precedes(heap[right], heap[smallest]) { smallest = right }
-            guard smallest != parent else { break }
-            heap.swapAt(parent, smallest)
-            parent = smallest
+        if !heap.isEmpty {
+            heap[0] = last
+            siftDown(from: 0)
         }
         return top.channel
     }
 
-    private func precedes(_ lhs: (start: TimeInterval, channel: Int), _ rhs: (start: TimeInterval, channel: Int)) -> Bool {
+    /// Gives the first channel a new start time and restores the order.
+    mutating func replaceTop(_ start: TimeInterval) {
+        guard !heap.isEmpty else { return }
+        heap[0].start = start
+        siftDown(from: 0)
+    }
+
+    // Both sifts move entries into a hole instead of swapping, in one pass
+    // over the buffer: this runs once per program on every channel.
+
+    private mutating func siftUp(from index: Int) {
+        heap.withUnsafeMutableBufferPointer { buffer in
+            let moving = buffer[index]
+            var hole = index
+            while hole > 0 {
+                let parent = (hole - 1) / 2
+                guard Self.precedes(moving, buffer[parent]) else { break }
+                buffer[hole] = buffer[parent]
+                hole = parent
+            }
+            buffer[hole] = moving
+        }
+    }
+
+    private mutating func siftDown(from index: Int) {
+        heap.withUnsafeMutableBufferPointer { buffer in
+            let count = buffer.count
+            let moving = buffer[index]
+            var hole = index
+            while true {
+                var child = 2 * hole + 1
+                guard child < count else { break }
+                if child + 1 < count, Self.precedes(buffer[child + 1], buffer[child]) {
+                    child += 1
+                }
+                guard Self.precedes(buffer[child], moving) else { break }
+                buffer[hole] = buffer[child]
+                hole = child
+            }
+            buffer[hole] = moving
+        }
+    }
+
+    private static func precedes(_ lhs: Entry, _ rhs: Entry) -> Bool {
         lhs.start != rhs.start ? lhs.start < rhs.start : lhs.channel < rhs.channel
     }
 }
