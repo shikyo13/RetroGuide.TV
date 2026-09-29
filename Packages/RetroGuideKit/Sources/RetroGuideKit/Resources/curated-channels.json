@@ -5,7 +5,8 @@
     "name": "Everything",
     "callSign": "ALL",
     "ordering": "shuffle",
-    "rule": {}
+    "rule": {},
+    "role": "catchAll"
   },
   {
     "id": "curated.sitcoms",
@@ -24,7 +25,9 @@
         "animation",
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.toons",
@@ -46,7 +49,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "cartoons"
   },
   {
     "id": "curated.adult-animation",
@@ -68,7 +73,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "cartoons"
   },
   {
     "id": "curated.anime",
@@ -83,7 +90,9 @@
       "categories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "anime"
   },
   {
     "id": "curated.drama",
@@ -101,7 +110,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.crime",
@@ -120,7 +131,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.scifi",
@@ -138,7 +151,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.horror",
@@ -156,7 +171,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.thriller",
@@ -174,7 +191,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.action",
@@ -193,7 +212,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.fantasy",
@@ -211,7 +232,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.family",
@@ -233,7 +256,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "cartoons"
   },
   {
     "id": "curated.kids",
@@ -249,7 +274,9 @@
       "categories": [
         "children"
       ]
-    }
+    },
+    "role": "home",
+    "family": "cartoons"
   },
   {
     "id": "curated.docs",
@@ -264,7 +291,9 @@
       "categories": [
         "documentary"
       ]
-    }
+    },
+    "role": "home",
+    "family": "unscripted"
   },
   {
     "id": "curated.history",
@@ -280,7 +309,8 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "spotlight"
   },
   {
     "id": "curated.reality",
@@ -295,7 +325,9 @@
       "categories": [
         "reality"
       ]
-    }
+    },
+    "role": "home",
+    "family": "unscripted"
   },
   {
     "id": "curated.game-shows",
@@ -310,7 +342,9 @@
       "categories": [
         "gameShow"
       ]
-    }
+    },
+    "role": "home",
+    "family": "unscripted"
   },
   {
     "id": "curated.talk",
@@ -325,7 +359,9 @@
       "categories": [
         "talk"
       ]
-    }
+    },
+    "role": "home",
+    "family": "unscripted"
   },
   {
     "id": "curated.food",
@@ -337,7 +373,9 @@
       "categories": [
         "food"
       ]
-    }
+    },
+    "role": "home",
+    "family": "unscripted"
   },
   {
     "id": "curated.travel",
@@ -349,7 +387,9 @@
       "categories": [
         "travel"
       ]
-    }
+    },
+    "role": "home",
+    "family": "unscripted"
   },
   {
     "id": "curated.sports",
@@ -361,7 +401,9 @@
       "categories": [
         "sport"
       ]
-    }
+    },
+    "role": "home",
+    "family": "unscripted"
   },
   {
     "id": "curated.western",
@@ -373,7 +415,9 @@
       "categories": [
         "western"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.war",
@@ -389,7 +433,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.romance",
@@ -407,7 +453,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.music",
@@ -420,7 +468,9 @@
         "music",
         "musical"
       ]
-    }
+    },
+    "role": "home",
+    "family": "unscripted"
   },
   {
     "id": "curated.martial-arts",
@@ -435,7 +485,9 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "scripted"
   },
   {
     "id": "curated.all-shows",
@@ -447,7 +499,8 @@
       "kinds": [
         "episode"
       ]
-    }
+    },
+    "role": "catchAll"
   },
   {
     "id": "curated.classic-tv",
@@ -468,7 +521,8 @@
         "anime"
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.tv-80s",
@@ -487,7 +541,8 @@
         "anime"
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.tv-90s",
@@ -506,7 +561,8 @@
         "anime"
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.tv-00s",
@@ -525,7 +581,8 @@
         "anime"
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.tv-10s",
@@ -544,7 +601,8 @@
         "anime"
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.tv-20s",
@@ -563,7 +621,8 @@
         "anime"
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.movies",
@@ -575,7 +634,8 @@
       "kinds": [
         "movie"
       ]
-    }
+    },
+    "role": "catchAll"
   },
   {
     "id": "curated.blockbusters",
@@ -591,7 +651,9 @@
         "action",
         "adventure"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.comedy-movies",
@@ -606,7 +668,9 @@
       "categories": [
         "comedy"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.family-movies",
@@ -627,7 +691,9 @@
         "animation",
         "children"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.horror-movies",
@@ -642,7 +708,9 @@
       "categories": [
         "horror"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.scifi-movies",
@@ -657,7 +725,9 @@
       "categories": [
         "sciFi"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.drama-movies",
@@ -672,7 +742,9 @@
       "categories": [
         "drama"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.thriller-movies",
@@ -689,7 +761,9 @@
         "mystery",
         "crime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.romance-movies",
@@ -704,7 +778,9 @@
       "categories": [
         "romance"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.animated-movies",
@@ -719,7 +795,9 @@
       "categories": [
         "animation"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.classic-movies",
@@ -740,7 +818,8 @@
         1970
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.movies-80s",
@@ -756,7 +835,8 @@
         1980
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.movies-90s",
@@ -772,7 +852,8 @@
         1990
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.movies-00s",
@@ -788,7 +869,8 @@
         2000
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.movies-10s",
@@ -804,7 +886,8 @@
         2010
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.movies-20s",
@@ -820,7 +903,8 @@
         2020
       ]
     },
-    "source": "decade"
+    "source": "decade",
+    "role": "spotlight"
   },
   {
     "id": "curated.doc-movies",
@@ -835,7 +919,9 @@
       "categories": [
         "documentary"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.anime-movies",
@@ -850,7 +936,9 @@
       "categories": [
         "anime"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.fantasy-movies",
@@ -865,7 +953,9 @@
       "categories": [
         "fantasy"
       ]
-    }
+    },
+    "role": "home",
+    "family": "movies"
   },
   {
     "id": "curated.action-movies-mature",
@@ -886,7 +976,8 @@
         "crime",
         "horror"
       ]
-    }
+    },
+    "role": "spotlight"
   },
   {
     "id": "curated.saturday-morning",
@@ -906,7 +997,8 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "spotlight"
   },
   {
     "id": "curated.mystery",
@@ -921,7 +1013,8 @@
       "excludedCategories": [
         "anime"
       ]
-    }
+    },
+    "role": "spotlight"
   },
   {
     "id": "curated.superheroes",
@@ -944,7 +1037,8 @@
         "wonder woman",
         "flash"
       ]
-    }
+    },
+    "role": "spotlight"
   },
   {
     "id": "curated.holiday",
@@ -961,6 +1055,7 @@
         "santa",
         "xmas"
       ]
-    }
+    },
+    "role": "spotlight"
   }
 ]

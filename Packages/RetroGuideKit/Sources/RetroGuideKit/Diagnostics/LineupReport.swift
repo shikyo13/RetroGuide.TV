@@ -1,0 +1,206 @@
+import Foundation
+
+/// Scores a lineup against the goals channel generation is designed for:
+/// every title has a themed home, titles don't repeat across many channels,
+/// channels are distinct, episodes don't come round again too soon, and each
+/// channel shows a real mix of programs every day.
+public struct LineupReport: Sendable, CustomStringConvertible {
+    public enum Tuning {
+        /// Channels sharing this much of their combined titles count as duplicates.
+        public static let duplicateSimilarity = 0.6
+        /// How far ahead to look for an episode coming round again.
+        public static let repeatHorizon: TimeInterval = 30 * 24 * ScheduleConstants.secondsPerHour
+        /// Length of the window used for "different programs per day".
+        public static let dayLength: TimeInterval = 24 * ScheduleConstants.secondsPerHour
+        /// A channel should last this long before repeating…
+        public static let expectedRepeatDays = 7.0
+        /// …or use at least this share of its content first.
+        public static let contentUse = 0.9
+        /// A channel should air this many different programs a day (or all it has).
+        public static let expectedProgramsPerDay = 4
+        /// A channel airing this share of every show or every movie is a catch-all.
+        public static let catchAllShare = 0.9
+        /// Fixed reference point so reports are comparable between runs.
+        public static let referenceDate = ScheduleConstants.epoch.addingTimeInterval(1_000 * 24 * ScheduleConstants.secondsPerHour)
+    }
+
+    public let channelCount: Int
+    public let channelsBySource: [ChannelSource: Int]
+    public let titleCount: Int
+    /// Titles (shows and movies) without any themed channel.
+    public let uncoveredTitles: [String]
+    public let themedChannelsPerTitleMedian: Int
+    public let themedChannelsPerTitleMax: Int
+    public let duplicateChannelPairs: Int
+    /// Days until any episode on a channel airs again, across themed channels (capped at the horizon).
+    public let repeatDaysLowest: Double
+    public let repeatDaysMedian: Double
+    /// Channels repeating before a week while they still had content left, and
+    /// channels airing fewer different programs a day than they could.
+    public let repeatShortfalls: [String]
+    public let varietyShortfalls: [String]
+    /// The channel that repeats soonest, and the one with the least variety.
+    public let soonestRepeatingChannel: String
+    public let leastVariedChannel: String
+    /// Different shows or movies airing on a themed channel in one day.
+    public let programsPerDayLowest: Int
+    public let programsPerDayMedian: Int
+    public let deadAirShare: Double
+    /// Items stored across all channels per library item (memory proxy).
+    public let storageFactor: Double
+
+    public init(lineup: [Channel], index: LibraryIndex) {
+        let visible = lineup.filter { !$0.isHidden }
+        let library = TitleCounts(index.items.filter(Self.isSchedulable))
+        let themed = visible.filter { Self.role(of: $0, library: library) == .themed }
+        channelCount = visible.count
+        channelsBySource = Dictionary(grouping: visible, by: \.definition.source).mapValues(\.count)
+
+        let allTitles = Set(index.items.filter(Self.isSchedulable).map(Self.title))
+        titleCount = allTitles.count
+        var perTitle: [String: Int] = [:]
+        for channel in themed {
+            for title in Set(channel.items.map(Self.title)) {
+                perTitle[title, default: 0] += 1
+            }
+        }
+        // In libraries too small for themed channels of a kind, the catch-alls are home.
+        let themedKinds = Set(themed.flatMap { $0.items.map { $0.seriesID != nil } })
+        let showTitles = Set(index.items.compactMap(\.seriesID))
+        uncoveredTitles = allTitles.filter { perTitle[$0] == nil && themedKinds.contains(showTitles.contains($0)) }.sorted()
+        let counts = allTitles.map { perTitle[$0, default: 0] }.sorted()
+        themedChannelsPerTitleMedian = counts.isEmpty ? 0 : counts[counts.count / 2]
+        themedChannelsPerTitleMax = counts.last ?? 0
+
+        let titleSets = themed.map { Set($0.items.map(Self.title)) }
+        var duplicates = 0
+        for first in titleSets.indices {
+            for second in titleSets.indices where second > first {
+                let union = titleSets[first].union(titleSets[second]).count
+                if union > 0, Double(titleSets[first].intersection(titleSets[second]).count) / Double(union) >= Tuning.duplicateSimilarity {
+                    duplicates += 1
+                }
+            }
+        }
+        duplicateChannelPairs = duplicates
+
+        let repeats = themed.map { ($0, Self.repeatDays(of: $0)) }.sorted { $0.1 < $1.1 }
+        let repeatDays = repeats.map(\.1)
+        repeatDaysLowest = repeatDays.first ?? 0
+        repeatDaysMedian = repeatDays.isEmpty ? 0 : repeatDays[repeatDays.count / 2]
+        soonestRepeatingChannel = repeats.first.map { Self.label($0.0) } ?? "-"
+        repeatShortfalls = repeats.filter { channel, days in
+            let contentDays = channel.totalRuntime / Tuning.dayLength
+            return days < min(Tuning.expectedRepeatDays, contentDays * Tuning.contentUse)
+        }.map { Self.label($0.0) }
+
+        let day = DateInterval(start: Tuning.referenceDate, duration: Tuning.dayLength)
+        var perDay: [Int] = []
+        var dead: TimeInterval = 0
+        var scheduled: TimeInterval = 0
+        var leastVaried: (channel: Channel, count: Int)?
+        var varietyGaps: [String] = []
+        for channel in themed {
+            let programs = channel.timeline.programs(overlapping: day)
+            let count = Set(programs.map { Self.title(of: $0.item) }).count
+            perDay.append(count)
+            if leastVaried.map({ count < $0.count }) ?? true {
+                leastVaried = (channel, count)
+            }
+            if count < min(Tuning.expectedProgramsPerDay, Set(channel.items.map(Self.title)).count) {
+                varietyGaps.append(Self.label(channel))
+            }
+            for program in programs {
+                dead += program.slotEnd.timeIntervalSince(program.contentEnd)
+                scheduled += program.slotEnd.timeIntervalSince(program.start)
+            }
+        }
+        perDay.sort()
+        leastVariedChannel = leastVaried.map { Self.label($0.channel) } ?? "-"
+        varietyShortfalls = varietyGaps
+        programsPerDayLowest = perDay.first ?? 0
+        programsPerDayMedian = perDay.isEmpty ? 0 : perDay[perDay.count / 2]
+        deadAirShare = scheduled > 0 ? dead / scheduled : 0
+        storageFactor = index.items.isEmpty ? 0 : Double(visible.reduce(0) { $0 + $1.items.count }) / Double(index.items.count)
+    }
+
+    public var description: String {
+        let sources = channelsBySource.sorted { $0.key.rawValue < $1.key.rawValue }.map { "\($0.key.rawValue)=\($0.value)" }.joined(separator: " ")
+        return """
+        channels \(channelCount) [\(sources)]
+        titles \(titleCount), without a themed home \(uncoveredTitles.count)
+        themed channels per title: median \(themedChannelsPerTitleMedian), max \(themedChannelsPerTitleMax)
+        near-duplicate channel pairs \(duplicateChannelPairs)
+        days before an episode repeats: lowest \(String(format: "%.1f", repeatDaysLowest)) (\(soonestRepeatingChannel)), median \(String(format: "%.1f", repeatDaysMedian))
+        channels repeating early \(repeatShortfalls.count), lacking variety \(varietyShortfalls.count)
+        different programs per channel per day: lowest \(programsPerDayLowest) (\(leastVariedChannel)), median \(programsPerDayMedian)
+        dead air \(String(format: "%.1f", deadAirShare * 100))%, stored items per library item \(String(format: "%.1f", storageFactor))
+        """
+    }
+
+    // MARK: - Roles
+
+    enum Role {
+        case catchAll
+        case marathon
+        case custom
+        case themed
+    }
+
+    struct TitleCounts {
+        let shows: Int
+        let movies: Int
+
+        init(_ items: [MediaItem]) {
+            shows = Set(items.compactMap(\.seriesID)).count
+            movies = items.filter { $0.seriesID == nil }.count
+        }
+    }
+
+    /// Same classification as lineup generation: channels covering (nearly) every
+    /// show or every movie are catch-alls; 24/7 and custom channels are their own thing.
+    static func role(of channel: Channel, library: TitleCounts) -> Role {
+        switch channel.definition.source {
+        case .series: return .marathon
+        case .custom: return .custom
+        default: break
+        }
+        let own = TitleCounts(channel.items)
+        let share = Tuning.catchAllShare
+        let coversShows = own.shows > 0 && Double(own.shows) >= share * Double(library.shows)
+        let coversMovies = own.movies > 0 && Double(own.movies) >= share * Double(library.movies)
+        let isCatchAll = (own.movies == 0 && coversShows) || (own.shows == 0 && coversMovies) || (coversShows && coversMovies)
+        return isCatchAll ? .catchAll : .themed
+    }
+
+    // MARK: - Measurements
+
+    /// Walks the schedule until some episode airs a second time.
+    private static func repeatDays(of channel: Channel) -> Double {
+        guard var program = channel.timeline.program(at: Tuning.referenceDate) else { return 0 }
+        var seen: Set<String> = []
+        let horizon = Tuning.referenceDate.addingTimeInterval(Tuning.repeatHorizon)
+        while program.start < horizon {
+            if !seen.insert(program.item.id).inserted {
+                return program.start.timeIntervalSince(Tuning.referenceDate) / Tuning.dayLength
+            }
+            guard let next = channel.timeline.program(after: program) else { break }
+            program = next
+        }
+        return Tuning.repeatHorizon / Tuning.dayLength
+    }
+
+    private static func label(_ channel: Channel) -> String {
+        let titles = Set(channel.items.map(title)).count
+        let scheduler = channel.timeline is RotationTimeline ? "rotation" : "cycle"
+        return "\(channel.number) \(channel.name), \(titles) titles, \(Int(channel.totalRuntime / ScheduleConstants.secondsPerHour)) h, \(channel.definition.ordering.rawValue) \(scheduler)"
+    }
+
+    private static func isSchedulable(_ item: MediaItem) -> Bool {
+        item.duration >= ScheduleConstants.minimumProgramDuration
+    }
+
+    static func title(of item: MediaItem) -> String {
+        item.seriesID ?? item.id
+    }
+}

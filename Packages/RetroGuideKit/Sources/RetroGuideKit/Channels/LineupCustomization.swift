@@ -9,6 +9,8 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
     public var defaultOrdering: ScheduleOrdering?
     /// How many themed channels one show or movie may appear on.
     public var showRepeats: ShowRepeats
+    /// Numbers the automatic channels had, so they keep them as others come and go.
+    public var channelNumbers: [String: Int]
     public var customChannels: [ChannelDefinition]
     /// Automatic channel groups the user turned off (custom channels are never disabled).
     public var disabledSources: Set<ChannelSource>
@@ -18,6 +20,7 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
         orderingOverrides: [String: ScheduleOrdering] = [:],
         defaultOrdering: ScheduleOrdering? = nil,
         showRepeats: ShowRepeats = .balanced,
+        channelNumbers: [String: Int] = [:],
         customChannels: [ChannelDefinition] = [],
         disabledSources: Set<ChannelSource> = []
     ) {
@@ -25,6 +28,7 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
         self.orderingOverrides = orderingOverrides
         self.defaultOrdering = defaultOrdering
         self.showRepeats = showRepeats
+        self.channelNumbers = channelNumbers
         self.customChannels = customChannels
         self.disabledSources = disabledSources
     }
@@ -36,6 +40,7 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
         orderingOverrides = try container.decodeIfPresent([String: ScheduleOrdering].self, forKey: .orderingOverrides) ?? [:]
         defaultOrdering = try container.decodeIfPresent(ScheduleOrdering.self, forKey: .defaultOrdering)
         showRepeats = try container.decodeIfPresent(ShowRepeats.self, forKey: .showRepeats) ?? .balanced
+        channelNumbers = try container.decodeIfPresent([String: Int].self, forKey: .channelNumbers) ?? [:]
         customChannels = try container.decodeIfPresent([ChannelDefinition].self, forKey: .customChannels) ?? []
         disabledSources = try container.decodeIfPresent(Set<ChannelSource>.self, forKey: .disabledSources) ?? []
     }
