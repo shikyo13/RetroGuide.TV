@@ -41,6 +41,8 @@ final class AdsController {
         let canRequestAds = await AdConsent.gather()
         isPrivacyChoiceRequired = AdConsent.isPrivacyChoiceRequired
         guard canRequestAds else { return }
+        // Match the app's 4+ age rating: only ads suitable for general audiences.
+        MobileAds.shared.requestConfiguration.maxAdContentRating = .general
         _ = await MobileAds.shared.start()
         isReady = true
         await loadInterstitial()
