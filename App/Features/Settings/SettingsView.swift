@@ -68,6 +68,11 @@ struct SettingsView: View {
                     } label: {
                         SettingsRowLabel(title: "Channel groups", systemImage: "square.grid.2x2", value: nil)
                     }
+                    NavigationLink {
+                        ShowRepeatsPickerView()
+                    } label: {
+                        SettingsRowLabel(title: "Show repeats", systemImage: "repeat", value: app.customization.showRepeats.displayName)
+                    }
                     if app.pro.access.canCreateCustomChannel(existingCount: app.customization.customChannels.count) {
                         NavigationLink {
                             ChannelEditorView(existing: nil)
@@ -146,6 +151,7 @@ struct SettingsView: View {
                 case .connection: ServerConnectionView(serverID: app.servers.accounts.first?.id ?? "")
                 case .channel: ChannelDetailView(channelID: app.lineup.first?.id ?? "")
                 case .order: AllChannelsOrderView()
+                case .repeats: ShowRepeatsPickerView()
                 }
             }
             #endif

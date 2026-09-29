@@ -33,6 +33,7 @@ enum DebugLaunchOptions {
         case connection
         case channel
         case order
+        case repeats
     }
 
     private enum Variable {

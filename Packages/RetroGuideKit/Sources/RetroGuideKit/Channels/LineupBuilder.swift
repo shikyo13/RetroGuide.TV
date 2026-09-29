@@ -31,7 +31,8 @@ public struct LineupBuilder: Sendable {
             resolved.append((definition, items))
         }
 
-        resolved = capped(resolved)
+        let variety = LineupVariety(limit: customization.showRepeats.channelLimit, isSubstantial: isSubstantial, taxonomy: .shared)
+        resolved = capped(variety.apply(resolved, library: LineupVariety.LibraryTitles(schedulable(index.items))))
 
         for definition in customization.customChannels {
             let items = schedulableItems(for: definition.rule, in: index)
@@ -78,6 +79,10 @@ public struct LineupBuilder: Sendable {
     /// Items a rule would air, for live previews in the channel editor.
     public func preview(rule: ChannelRule, in index: LibraryIndex) -> [MediaItem] {
         schedulableItems(for: rule, in: index)
+    }
+
+    private func schedulable(_ items: [MediaItem]) -> [MediaItem] {
+        items.filter { $0.duration >= ScheduleConstants.minimumProgramDuration }
     }
 
     private func schedulableItems(for rule: ChannelRule, in index: LibraryIndex) -> [MediaItem] {

@@ -34,12 +34,24 @@ struct PlaylistArrangerTests {
         #expect(transitions == 2)
     }
 
-    @Test("Syndication alternates between shows")
+    @Test("Syndication never airs the same show twice in a row while others remain")
     func syndicationAlternates() {
+        let balanced = TestFactory.show("Alpha", episodes: 6) + TestFactory.show("Beta", episodes: 6) + TestFactory.show("Gamma", episodes: 6)
         var generator = SeededGenerator(seed: 1)
-        let firstFour = PlaylistArranger.arrange(items, ordering: .syndication, using: &generator)
-            .prefix(4)
-            .map { items[$0].headline }
-        #expect(Set(firstFour.prefix(3)).count == 3)
+        let shows = PlaylistArranger.arrange(balanced, ordering: .syndication, using: &generator).map { balanced[$0].headline }
+        #expect(zip(shows, shows.dropFirst()).allSatisfy { $0 != $1 })
+    }
+
+    @Test("Short shows air throughout the cycle, not only at the start", arguments: [ScheduleOrdering.shuffle, .blockShuffle, .syndication])
+    func shortShowsAreSpread(ordering: ScheduleOrdering) {
+        let mix = TestFactory.show("Long", episodes: 300) + TestFactory.show("Short", episodes: 12)
+        for seed in UInt64(1)...20 {
+            var generator = SeededGenerator(seed: seed)
+            let order = PlaylistArranger.arrange(mix, ordering: ordering, using: &generator)
+            let shortPositions = order.enumerated().filter { mix[$0.element].headline == "Short" }.map(\.offset)
+            let lastQuarter = order.count * 3 / 4
+            #expect(shortPositions.contains { $0 >= lastQuarter })
+            #expect(shortPositions.contains { $0 < order.count / 4 })
+        }
     }
 }

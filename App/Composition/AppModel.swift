@@ -326,6 +326,10 @@ final class AppModel {
         }
     }
 
+    func setShowRepeats(_ repeats: ShowRepeats) {
+        updateCustomization { $0.showRepeats = repeats }
+    }
+
     /// Puts every channel on one schedule order (`nil`: each channel's built-in order).
     func setOrderingForAllChannels(_ ordering: ScheduleOrdering?) {
         updateCustomization { $0.setOrderingForAllChannels(ordering) }

@@ -7,6 +7,8 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
     /// Schedule order for every automatic channel without its own override
     /// (`nil`: each channel keeps its built-in order).
     public var defaultOrdering: ScheduleOrdering?
+    /// How many themed channels one show or movie may appear on.
+    public var showRepeats: ShowRepeats
     public var customChannels: [ChannelDefinition]
     /// Automatic channel groups the user turned off (custom channels are never disabled).
     public var disabledSources: Set<ChannelSource>
@@ -15,12 +17,14 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
         hiddenChannelIDs: Set<String> = [],
         orderingOverrides: [String: ScheduleOrdering] = [:],
         defaultOrdering: ScheduleOrdering? = nil,
+        showRepeats: ShowRepeats = .balanced,
         customChannels: [ChannelDefinition] = [],
         disabledSources: Set<ChannelSource> = []
     ) {
         self.hiddenChannelIDs = hiddenChannelIDs
         self.orderingOverrides = orderingOverrides
         self.defaultOrdering = defaultOrdering
+        self.showRepeats = showRepeats
         self.customChannels = customChannels
         self.disabledSources = disabledSources
     }
@@ -31,6 +35,7 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
         hiddenChannelIDs = try container.decodeIfPresent(Set<String>.self, forKey: .hiddenChannelIDs) ?? []
         orderingOverrides = try container.decodeIfPresent([String: ScheduleOrdering].self, forKey: .orderingOverrides) ?? [:]
         defaultOrdering = try container.decodeIfPresent(ScheduleOrdering.self, forKey: .defaultOrdering)
+        showRepeats = try container.decodeIfPresent(ShowRepeats.self, forKey: .showRepeats) ?? .balanced
         customChannels = try container.decodeIfPresent([ChannelDefinition].self, forKey: .customChannels) ?? []
         disabledSources = try container.decodeIfPresent(Set<ChannelSource>.self, forKey: .disabledSources) ?? []
     }

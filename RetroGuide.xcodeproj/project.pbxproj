@@ -28,6 +28,7 @@
 		21FE91CD314E7F3B7C0DD596 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CFCF3C393427EE3A94F97A /* QRCodeView.swift */; };
 		223D48DA2CED32A8289DA5DA /* LibrarySnapshotStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A1311F79C8A607BFCC59A04 /* LibrarySnapshotStore.swift */; };
 		24826AD60105397551CD07E9 /* ScanlineOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 112719CCB56AAAD12EECF35A /* ScanlineOverlay.swift */; };
+		253EC223874C6B36D7B51EBC /* ShowRepeatsPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50B72D0664C4FE9DF8D50442 /* ShowRepeatsPickerView.swift */; };
 		273B01499313B7B6380E5DFE /* Typography.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E191CE740931DEBCDB4A48 /* Typography.swift */; };
 		2E83CEF7279EF7D79B101B22 /* ProUpgradeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4D658E170DE9E23473337E5 /* ProUpgradeView.swift */; };
 		2F0FA427ABBBA20B53DE90AD /* GuideTimeRuler.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBEB1593C43A740EC7B3A56C /* GuideTimeRuler.swift */; };
@@ -208,6 +209,7 @@
 		4B23A277D13DDAB3F7138C0D /* ThemeCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalog.swift; sourceTree = "<group>"; };
 		4FB6B1A4149A228D3D71A1B8 /* AddServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddServerView.swift; sourceTree = "<group>"; };
 		4FBEA280867125292968A959 /* RetroIconButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroIconButtonStyle.swift; sourceTree = "<group>"; };
+		50B72D0664C4FE9DF8D50442 /* ShowRepeatsPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowRepeatsPickerView.swift; sourceTree = "<group>"; };
 		529E54D5CBE1128C70DF51E6 /* ServerSetupStepsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSetupStepsView.swift; sourceTree = "<group>"; };
 		545A73DFD529801ABD8E96F4 /* ImagePipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePipeline.swift; sourceTree = "<group>"; };
 		54B3620D1BDA643D8841A03F /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
@@ -344,6 +346,7 @@
 				3933430448AF3B606CA85CF3 /* ChannelManagerView.swift */,
 				2342F75A3FFB608FE4032CE5 /* FacetPickerView.swift */,
 				217F6E0574F0BA824BD17F4B /* ScheduleOrderSection.swift */,
+				50B72D0664C4FE9DF8D50442 /* ShowRepeatsPickerView.swift */,
 			);
 			path = Channels;
 			sourceTree = "<group>";
@@ -925,6 +928,7 @@
 				346E73890827CD5921DC9ED9 /* ServersView.swift in Sources */,
 				5252BA898645AA0FADA135DE /* SettingsComponents.swift in Sources */,
 				DF4C68D78AF1775762716641 /* SettingsView.swift in Sources */,
+				253EC223874C6B36D7B51EBC /* ShowRepeatsPickerView.swift in Sources */,
 				07BE24DAC854FDC5AB82ABD8 /* SignalOverlay.swift in Sources */,
 				A81E12379CDB78335D6E9042 /* SplashView.swift in Sources */,
 				344BBCFC8E4E7130D58A182A /* StaticNoiseView.swift in Sources */,
