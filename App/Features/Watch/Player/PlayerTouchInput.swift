@@ -72,9 +72,9 @@ struct PlayerTouchControls: View {
             }
             .buttonStyle(.retroPrimary)
             Button {
-                onCommand(.chooseTracks)
+                onCommand(.openOptions)
             } label: {
-                Label("Audio & Subtitles", systemImage: "captions.bubble")
+                Label("Options", systemImage: "slider.horizontal.3")
             }
             .buttonStyle(.retroIcon)
             Spacer(minLength: DesignTokens.Spacing.md)

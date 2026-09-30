@@ -14,8 +14,8 @@ struct ChannelBanner: View {
     let program: ScheduledProgram?
     let isShowingNext: Bool
     /// Apple TV: the viewer opened the info (not a channel change), so Down
-    /// reaches the Audio & Subtitles button.
-    var offersTracks = false
+    /// reaches the Options button.
+    var offersOptions = false
 
     @Environment(\.theme) private var theme
     /// iPhone in portrait: too narrow for the badge, details and logo side by side.
@@ -117,7 +117,7 @@ struct ChannelBanner: View {
                 }
             }
             #if os(tvOS)
-            RemoteHints(offersTracks: offersTracks)
+            RemoteHints(offersOptions: offersOptions)
             #endif
         }
     }
@@ -137,7 +137,7 @@ struct ChannelBanner: View {
 /// A compact legend of remote controls. On iPhone and iPad the on-screen
 /// controls take its place.
 struct RemoteHints: View {
-    var offersTracks = false
+    var offersOptions = false
 
     @Environment(\.theme) private var theme
 
@@ -147,8 +147,8 @@ struct RemoteHints: View {
             hint("chevron.left.chevron.right", "Now / Next")
             hint("circle.circle", "Guide")
             hint("playpause", "Last channel")
-            if offersTracks {
-                hint("chevron.down", "Audio & Subtitles")
+            if offersOptions {
+                hint("chevron.down", "Options")
             }
         }
         .font(Typography.micro)

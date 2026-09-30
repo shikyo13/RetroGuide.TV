@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// The "Audio & Subtitles" button on the guide's live picture, drawn above the
+/// The "Options" button on the guide's live picture, drawn above the
 /// video layer (which sits over the guide). The panel it opens is presented
-/// by the watch screen (see ``TrackPickerPresentation``).
+/// by the watch screen (see ``WatchOptionsPresentation``).
 ///
 /// On Apple TV the button belongs to the guide's top row: it can take focus
 /// only while Search and Settings can (reach it with Left from Search), and
@@ -11,7 +11,7 @@ struct GuideLiveControls: View {
     /// Where the live picture is, in screen coordinates.
     let pictureFrame: CGRect
     let isTopBarActive: Bool
-    @Binding var isChoosingTracks: Bool
+    @Binding var isShowingOptions: Bool
     /// Changes whenever the guide hands focus to the button.
     let focusSerial: Int
     let onCloseGuide: () -> Void
@@ -33,15 +33,15 @@ struct GuideLiveControls: View {
     }
 
     private var button: some View {
-        LiveTracksButton { isChoosingTracks = true }
+        WatchOptionsButton { isShowingOptions = true }
         #if os(tvOS)
-            .disabled(!isTopBarActive || isChoosingTracks)
+            .disabled(!isTopBarActive || isShowingOptions)
             .focused($isButtonFocused)
             .onMoveCommand(perform: onMoveOut)
             .onExitCommand(perform: onCloseGuide)
             .onChange(of: focusSerial) { isButtonFocused = true }
             // Closing the panel returns to the button that opened it.
-            .onChange(of: isChoosingTracks) { _, isOpen in
+            .onChange(of: isShowingOptions) { _, isOpen in
                 if !isOpen { isButtonFocused = true }
             }
         #endif

@@ -5,16 +5,16 @@ import SwiftUI
 enum PlayerChromeFocus: Hashable {
     /// The full-screen remote input (channel changes, info, guide).
     case remote
-    /// The Audio & Subtitles button on the info banner.
-    case tracks
+    /// The Options button on the info banner.
+    case options
 }
 
 /// Transient overlays while watching full screen: the channel number, the info
 /// banner and, on iPhone and iPad, the on-screen controls. Input comes from the
 /// Siri Remote or touch as ``PlayerCommand``s.
 ///
-/// On Apple TV, info the viewer asked for (Left/Right) also offers an Audio &
-/// Subtitles button, reached with Down; after a channel change Down still
+/// On Apple TV, info the viewer asked for (Left/Right) also offers an Options
+/// button, reached with Down; after a channel change Down still
 /// changes channel, so surfing is unaffected.
 struct PlayerChromeView: View {
     private enum Timing {
@@ -23,10 +23,10 @@ struct PlayerChromeView: View {
     }
 
     let tuner: Tuner
-    /// False while a panel over the picture (Audio & Subtitles) has focus.
+    /// False while a panel over the picture (Options) has focus.
     var isActive = true
     let onOpenGuide: () -> Void
-    let onChooseTracks: () -> Void
+    let onOpenOptions: () -> Void
 
     @State private var isOSDVisible = false
     @State private var isBannerVisible = false
@@ -57,7 +57,7 @@ struct PlayerChromeView: View {
         .task(id: BannerTrigger(generation: tuner.tuneGeneration, request: bannerRequest)) {
             try? await Task.sleep(for: DebugLaunchOptions.bannerDuration ?? Timing.bannerDuration)
             // Stays up while the viewer is on its button.
-            guard !Task.isCancelled, focus != .tracks else { return }
+            guard !Task.isCancelled, focus != .options else { return }
             isBannerVisible = false
             isInfoRequested = false
         }
@@ -95,16 +95,16 @@ struct PlayerChromeView: View {
             }
             Spacer()
             #if os(tvOS)
-            if offersTracks {
+            if offersOptions {
                 HStack {
                     Spacer()
-                    tracksButton
+                    optionsButton
                 }
                 .transition(.opacity)
             }
             #endif
             if isBannerVisible, let channel = tuner.channel {
-                ChannelBanner(channel: channel, program: bannerProgram, isShowingNext: showsNext, offersTracks: offersTracks)
+                ChannelBanner(channel: channel, program: bannerProgram, isShowingNext: showsNext, offersOptions: offersOptions)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .allowsHitTesting(false)
             }
@@ -114,8 +114,8 @@ struct PlayerChromeView: View {
         .ignoresSafeArea(.container, edges: isShortLayout ? .bottom : [])
     }
 
-    /// Apple TV: info the viewer asked for offers Audio & Subtitles.
-    private var offersTracks: Bool {
+    /// Apple TV: info the viewer asked for offers Options.
+    private var offersOptions: Bool {
         #if os(tvOS)
         isBannerVisible && isInfoRequested
         #else
@@ -124,17 +124,17 @@ struct PlayerChromeView: View {
     }
 
     #if os(tvOS)
-    private var tracksButton: some View {
-        LiveTracksButton(action: onChooseTracks)
+    private var optionsButton: some View {
+        WatchOptionsButton(action: onOpenOptions)
             .disabled(!isActive)
-            .focused($focus, equals: .tracks)
+            .focused($focus, equals: .options)
             .onMoveCommand { direction in
-                if direction == .up { leaveTracksButton() }
+                if direction == .up { leaveOptionsButton() }
             }
-            .onExitCommand(perform: leaveTracksButton)
+            .onExitCommand(perform: leaveOptionsButton)
     }
 
-    private func leaveTracksButton() {
+    private func leaveOptionsButton() {
         focus = .remote
         // The banner's timer starts again now that the viewer has moved on.
         bannerRequest += 1
@@ -152,8 +152,8 @@ struct PlayerChromeView: View {
         case .channelUp: tuner.channelUp()
         case .channelDown:
             #if os(tvOS)
-            if offersTracks {
-                focus = .tracks
+            if offersOptions {
+                focus = .options
                 return
             }
             #endif
@@ -164,7 +164,7 @@ struct PlayerChromeView: View {
         case .hideInfo: isBannerVisible = false
         case .openGuide: onOpenGuide()
         case .lastChannel: tuner.recall()
-        case .chooseTracks: onChooseTracks()
+        case .openOptions: onOpenOptions()
         }
     }
 

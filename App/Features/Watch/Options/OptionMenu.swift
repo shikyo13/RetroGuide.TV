@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// A settings-style row that opens a menu of choices ("Subtitles  English ⌃⌄").
-struct TrackMenu: View {
+struct OptionMenu: View {
     struct Choice: Identifiable, Hashable {
         let id: String
         let title: String

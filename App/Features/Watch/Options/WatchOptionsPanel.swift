@@ -1,10 +1,10 @@
 import RetroGuideKit
 import SwiftUI
 
-/// Audio and subtitle choices for what's on now, as two menus. Changes apply
-/// to the live picture right away, and are remembered for every episode of
-/// the show (by language, like PASTA) or just this one.
-struct TrackPickerPanel: View {
+/// Options for what's on now: audio and subtitles (applied to the live picture
+/// right away, and remembered for every episode of the show by language, like
+/// PASTA, or just this one) and the channel's schedule order.
+struct WatchOptionsPanel: View {
     private enum ChoiceID {
         static let subtitlesOff = "subtitles.off"
         static let wholeShow = "scope.show"
@@ -13,7 +13,10 @@ struct TrackPickerPanel: View {
 
     let tuner: Tuner
 
+    @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
+    /// Shown right away; rebuilding a large lineup takes a few seconds.
+    @State private var pendingOrdering: ScheduleOrdering?
     @State private var appliesToWholeShow = true
     /// Focus starts on Subtitles, the usual reason to open the panel.
     @FocusState private var isSubtitlesFocused: Bool
@@ -22,7 +25,14 @@ struct TrackPickerPanel: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                 header
-                content
+                SettingsSection("Audio & Subtitles") {
+                    content
+                }
+                if let channel = tuner.channel {
+                    SettingsSection("Channel \(channel.number) · \(channel.name)") {
+                        scheduleOrder(for: channel)
+                    }
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(DesignTokens.Spacing.lg)
@@ -36,7 +46,7 @@ struct TrackPickerPanel: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            Text("Audio & Subtitles")
+            Text("Options")
                 .font(Typography.title)
                 .foregroundStyle(theme.textPrimary)
             if let program = tuner.program {
@@ -66,10 +76,10 @@ struct TrackPickerPanel: View {
         let audio = tracks.audioOption(for: selection)
         let subtitle = tracks.subtitleOption(for: selection)
         VStack(spacing: DesignTokens.Spacing.sm) {
-            TrackMenu(
+            OptionMenu(
                 title: "Audio",
                 systemImage: "speaker.wave.2",
-                choices: tracks.audio.map { TrackMenu.Choice(id: $0.id, title: $0.title) },
+                choices: tracks.audio.map { OptionMenu.Choice(id: $0.id, title: $0.title) },
                 selection: Binding(
                     get: { audio?.id ?? "" },
                     set: { id in
@@ -79,11 +89,11 @@ struct TrackPickerPanel: View {
                 )
             )
             .disabled(tracks.audio.count < 2)
-            TrackMenu(
+            OptionMenu(
                 title: "Subtitles",
                 systemImage: "captions.bubble",
-                choices: [TrackMenu.Choice(id: ChoiceID.subtitlesOff, title: "Off")]
-                    + tracks.subtitles.map { TrackMenu.Choice(id: $0.id, title: $0.title) },
+                choices: [OptionMenu.Choice(id: ChoiceID.subtitlesOff, title: "Off")]
+                    + tracks.subtitles.map { OptionMenu.Choice(id: $0.id, title: $0.title) },
                 selection: Binding(
                     get: { subtitle?.id ?? ChoiceID.subtitlesOff },
                     set: { id in
@@ -93,12 +103,12 @@ struct TrackPickerPanel: View {
             )
             .focused($isSubtitlesFocused)
             if let show = tuner.program?.item.series?.title {
-                TrackMenu(
+                OptionMenu(
                     title: "Use for",
                     systemImage: "square.stack",
                     choices: [
-                        TrackMenu.Choice(id: ChoiceID.wholeShow, title: "Every episode of \(show)"),
-                        TrackMenu.Choice(id: ChoiceID.thisEpisode, title: "Just this episode"),
+                        OptionMenu.Choice(id: ChoiceID.wholeShow, title: "Every episode of \(show)"),
+                        OptionMenu.Choice(id: ChoiceID.thisEpisode, title: "Just this episode"),
                     ],
                     selection: Binding(
                         get: { appliesToWholeShow ? ChoiceID.wholeShow : ChoiceID.thisEpisode },
@@ -115,6 +125,36 @@ struct TrackPickerPanel: View {
         }
     }
 
+    @ViewBuilder
+    private func scheduleOrder(for channel: Channel) -> some View {
+        let current = pendingOrdering ?? channel.definition.ordering
+        OptionMenu(
+            title: "Schedule order",
+            systemImage: "shuffle",
+            choices: ScheduleOrdering.allCases.map { OptionMenu.Choice(id: $0.rawValue, title: $0.displayName) },
+            selection: Binding(
+                get: { current.rawValue },
+                set: { rawValue in
+                    guard let ordering = ScheduleOrdering(rawValue: rawValue), ordering != current else { return }
+                    pendingOrdering = ordering
+                    app.setOrdering(ordering, for: channel.definition)
+                }
+            )
+        )
+        .disabled(!app.pro.access.canChangeScheduling)
+        .onChange(of: channel.definition.ordering) { _, ordering in
+            if ordering == pendingOrdering {
+                pendingOrdering = nil
+            }
+        }
+        if app.pro.access.canChangeScheduling {
+            note(current.explanation)
+            ScheduleUpdatingNote(isVisible: pendingOrdering != nil && app.isRebuildingLineup)
+        } else {
+            note("Changing a channel's schedule order is part of RetroGuide Pro (Settings › RetroGuide Pro).")
+        }
+    }
+
     /// Movies have no other episodes, so their choice is remembered for the movie.
     private var isForWholeShow: Bool {
         tuner.program?.item.series == nil || appliesToWholeShow
@@ -125,5 +165,6 @@ struct TrackPickerPanel: View {
             .font(Typography.body)
             .foregroundStyle(theme.textSecondary)
             .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

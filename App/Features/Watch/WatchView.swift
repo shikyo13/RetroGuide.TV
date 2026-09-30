@@ -32,9 +32,9 @@ struct WatchView: View {
     @State private var keyboardHeight: CGFloat = .zero
     /// Height of the free version's ad banner under the menus (iPhone and iPad).
     @State private var bannerHeight: CGFloat = .zero
-    /// Apple TV: the guide's top row (Search, Settings, Audio & Subtitles) can take focus.
+    /// Apple TV: the guide's top row (Search, Settings, Options) can take focus.
     @State private var isGuideTopBarActive = false
-    @State private var isChoosingTracks = false
+    @State private var isShowingOptions = false
     @State private var guideFocusRequest: GuideFocusRequest?
     @State private var liveControlsFocusSerial = 0
 
@@ -45,7 +45,7 @@ struct WatchView: View {
             switch overlay {
             case .guide:
                 guide(tuner: tuner)
-                    .disabled(isChoosingTracks)
+                    .disabled(isShowingOptions)
                     .transition(.opacity)
             case .settings:
                 SettingsView(onClose: { overlay = .guide })
@@ -71,20 +71,20 @@ struct WatchView: View {
             if overlay == .none {
                 PlayerChromeView(
                     tuner: tuner,
-                    isActive: !isChoosingTracks,
+                    isActive: !isShowingOptions,
                     onOpenGuide: { overlay = .guide },
-                    onChooseTracks: { isChoosingTracks = true }
+                    onOpenOptions: { isShowingOptions = true }
                 )
                     .transition(.opacity)
             }
         }
-        .trackPicker(isPresented: $isChoosingTracks, tuner: tuner)
+        .watchOptions(isPresented: $isShowingOptions, tuner: tuner)
         #if os(iOS)
         .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)
         #endif
         .onChange(of: overlay) {
             isGuideTopBarActive = false
-            isChoosingTracks = false
+            isShowingOptions = false
         }
         .onPreferenceChange(LivePreviewFrameKey.self) { frame in
             previewFrame = frame
@@ -186,7 +186,7 @@ struct WatchView: View {
         var controls = GuideLiveControls(
             pictureFrame: pictureFrame,
             isTopBarActive: isGuideTopBarActive,
-            isChoosingTracks: $isChoosingTracks,
+            isShowingOptions: $isShowingOptions,
             focusSerial: liveControlsFocusSerial,
             onCloseGuide: { overlay = .none }
         )

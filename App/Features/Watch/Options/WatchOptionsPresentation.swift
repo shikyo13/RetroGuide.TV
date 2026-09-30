@@ -1,9 +1,9 @@
 import SwiftUI
 
-/// Shows ``TrackPickerPanel`` over whatever is on screen (the guide or the
+/// Shows ``WatchOptionsPanel`` over whatever is on screen (the guide or the
 /// full-screen picture): beside it on Apple TV, where Back closes it, and as a
 /// sheet on iPhone and iPad.
-struct TrackPickerPresentation: ViewModifier {
+struct WatchOptionsPresentation: ViewModifier {
     private enum Layout {
         static let panelWidth: CGFloat = 760
     }
@@ -20,7 +20,7 @@ struct TrackPickerPresentation: ViewModifier {
         }
         #else
         content.sheet(isPresented: $isPresented) {
-            TrackPickerPanel(tuner: tuner)
+            WatchOptionsPanel(tuner: tuner)
                 .screenBackground()
                 .presentationDetents([.medium, .large])
         }
@@ -31,7 +31,7 @@ struct TrackPickerPresentation: ViewModifier {
     private var panel: some View {
         HStack {
             Spacer()
-            TrackPickerPanel(tuner: tuner)
+            WatchOptionsPanel(tuner: tuner)
                 .frame(width: Layout.panelWidth)
                 .panel()
                 .padding(DesignTokens.Spacing.xl)
@@ -44,7 +44,7 @@ struct TrackPickerPresentation: ViewModifier {
 }
 
 extension View {
-    func trackPicker(isPresented: Binding<Bool>, tuner: Tuner) -> some View {
-        modifier(TrackPickerPresentation(tuner: tuner, isPresented: isPresented))
+    func watchOptions(isPresented: Binding<Bool>, tuner: Tuner) -> some View {
+        modifier(WatchOptionsPresentation(tuner: tuner, isPresented: isPresented))
     }
 }
