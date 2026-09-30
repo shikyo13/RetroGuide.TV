@@ -80,3 +80,22 @@ struct MultiServerTests {
         #expect(Set(index.facets.libraries.map(\.name)) == ["Movies · Home", "Movies · Friend"])
     }
 }
+
+@Suite("Merged copies keep their memberships")
+struct MergedMembershipTests {
+    @Test("An episode in two libraries counts for both, and for a collection only one copy is in")
+    func keepsMembership() {
+        let shared = "plex://episode/1"
+        func copy(_ server: String, collections: [String]) -> MediaItem {
+            MediaItem(serverID: server, itemKey: "1", externalID: shared, libraryID: "\(server)/1", kind: .episode, title: "E1",
+                      series: SeriesInfo(key: "10", title: "Show", seasonNumber: 1, episodeNumber: 1), duration: 1_320, collections: collections)
+        }
+        func snapshot(_ server: String, _ item: MediaItem) -> LibrarySnapshot {
+            LibrarySnapshot(serverID: server, serverName: server, libraries: [MediaLibrary(serverID: server, key: "1", title: "TV \(server)", kind: .shows)], items: [item])
+        }
+        let index = LibraryIndex(snapshots: [snapshot("a", copy("a", collections: [])), snapshot("b", copy("b", collections: ["Favorites"]))])
+        #expect(index.items.count == 1)
+        #expect(ChannelRule(libraryIDs: ["b/1"]).matchingItems(in: index).count == 1)
+        #expect(ChannelRule(collections: ["Favorites"]).matchingItems(in: index).count == 1)
+    }
+}

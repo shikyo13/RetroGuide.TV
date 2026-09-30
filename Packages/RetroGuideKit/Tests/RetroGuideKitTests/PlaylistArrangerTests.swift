@@ -15,7 +15,7 @@ struct PlaylistArrangerTests {
         #expect(order.sorted() == Array(items.indices))
     }
 
-    @Test("Episode order within a show is preserved", arguments: [ScheduleOrdering.blockShuffle, .syndication, .marathon])
+    @Test("Episode order within a show is preserved", arguments: ScheduleOrdering.allCases)
     func episodesStayInOrder(ordering: ScheduleOrdering) {
         var generator = SeededGenerator(seed: 7)
         let order = PlaylistArranger.arrange(items, ordering: ordering, using: &generator)

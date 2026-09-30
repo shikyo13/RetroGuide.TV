@@ -86,9 +86,29 @@ extension ChannelRule {
     /// Returns the ids of every item in `index` that satisfies the rule.
     public func matchingItems(in index: LibraryIndex) -> [MediaItem] {
         let compiled = CompiledRule(self, showAliases: index.showAliases)
-        return zip(index.items, index.attributes)
-            .filter { compiled.matches($0, $1) }
-            .map(\.0)
+        guard let candidates = candidatePositions(in: index) else {
+            return zip(index.items, index.attributes)
+                .filter { compiled.matches($0, $1) }
+                .map(\.0)
+        }
+        // Every matching item is among the candidates; the full rule still decides.
+        return candidates.filter { compiled.matches(index.items[$0], index.attributes[$0]) }.map { index.items[$0] }
+    }
+
+    /// Positions that could match, when the rule requires a network,
+    /// collection or library the index can look up; `nil` to check everything.
+    private func candidatePositions(in index: LibraryIndex) -> [Int]? {
+        let lookup: [[Int]]
+        if !libraryIDs.isEmpty {
+            lookup = libraryIDs.map { index.positionsByLibrary[$0] ?? [] }
+        } else if !networks.isEmpty {
+            lookup = TextNormalizer.keys(networks).map { index.positionsByNetwork[$0] ?? [] }
+        } else if !collections.isEmpty {
+            lookup = TextNormalizer.keys(collections).map { index.positionsByCollection[$0] ?? [] }
+        } else {
+            return nil
+        }
+        return lookup.count == 1 ? lookup[0] : Set(lookup.joined()).sorted()
     }
 }
 
@@ -115,7 +135,7 @@ struct CompiledRule {
 
     func matches(_ item: MediaItem, _ attributes: NormalizedAttributes) -> Bool {
         guard rule.kinds.isEmpty || rule.kinds.contains(item.kind) else { return false }
-        guard rule.libraryIDs.isEmpty || rule.libraryIDs.contains(item.libraryID) else { return false }
+        guard rule.libraryIDs.isEmpty || item.libraryIDs.contains(where: rule.libraryIDs.contains) else { return false }
         guard rule.audiences.isEmpty || rule.audiences.contains(item.audience) else { return false }
         guard rule.categories.isEmpty || !rule.categories.isDisjoint(with: attributes.categories) else { return false }
         guard rule.excludedCategories.isDisjoint(with: attributes.categories) else { return false }

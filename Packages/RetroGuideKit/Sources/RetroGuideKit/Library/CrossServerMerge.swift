@@ -35,6 +35,12 @@ struct CrossServerMerge {
     // MARK: - Shows
 
     /// The shared id of every server-specific show that has or can learn one.
+    ///
+    /// Server-specific shows linked by an episode they share (directly or
+    /// through a chain of servers) are one show. A group whose linked shows
+    /// know exactly one shared id takes it; a group with conflicting ids is
+    /// left as it is rather than guessed. The result never depends on the
+    /// order items or servers are listed in.
     private static func sharedShowIDs(_ items: [MediaItem]) -> [String: String] {
         var known: [String: String] = [:]
         for item in items.sorted(by: { $0.id < $1.id }) {
@@ -42,16 +48,31 @@ struct CrossServerMerge {
                 known[native] = shared
             }
         }
-        // Shows without one borrow it through an episode both servers have.
-        var showsByEpisode: [String: Set<String>] = [:]
+        // Link shows through the episodes they share.
+        var natives: [String] = []
+        var position: [String: Int] = [:]
+        for native in Set(items.compactMap(\.seriesID)).sorted() {
+            position[native] = natives.count
+            natives.append(native)
+        }
+        var groups = DisjointSets(count: natives.count)
+        var firstShowWithEpisode: [String: Int] = [:]
         for item in items {
-            if let episode = item.externalID, let native = item.seriesID {
-                showsByEpisode[episode, default: []].insert(native)
+            guard let episode = item.externalID, let native = item.seriesID, let show = position[native] else { continue }
+            if let first = firstShowWithEpisode[episode] {
+                groups.union(first, show)
+            } else {
+                firstShowWithEpisode[episode] = show
             }
         }
-        for natives in showsByEpisode.values where natives.count > 1 {
-            guard let shared = natives.sorted().compactMap({ known[$0] }).first else { continue }
-            for native in natives where known[native] == nil {
+        var sharedIDsByGroup: [Int: Set<String>] = [:]
+        for (index, native) in natives.enumerated() {
+            if let shared = known[native] {
+                sharedIDsByGroup[groups.find(index), default: []].insert(shared)
+            }
+        }
+        for (index, native) in natives.enumerated() where known[native] == nil {
+            if let ids = sharedIDsByGroup[groups.find(index)], ids.count == 1, let shared = ids.first {
                 known[native] = shared
             }
         }
@@ -73,8 +94,10 @@ struct CrossServerMerge {
             }
         }
         var best: [Int: Int] = [:]
+        var members: [Int: [Int]] = [:]
         for position in entries.indices {
             let group = groups.find(position)
+            members[group, default: []].append(position)
             guard let current = best[group] else {
                 best[group] = position
                 continue
@@ -83,7 +106,11 @@ struct CrossServerMerge {
                 best[group] = position
             }
         }
-        return best.values.sorted().map { entries[$0].item }
+        // One copy plays; the others' libraries and collections still count.
+        return best.sorted { $0.value < $1.value }.map { group, winner in
+            let others = (members[group] ?? []).filter { $0 != winner }.map { entries[$0].item }
+            return others.isEmpty ? entries[winner].item : entries[winner].item.merging(copies: others)
+        }
     }
 
     /// Ids under which another server's copy would be found.

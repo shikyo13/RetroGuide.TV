@@ -38,6 +38,8 @@ final class Tuner {
     }
     /// Increments on every tune so overlays can re-appear even on the same channel.
     private(set) var tuneGeneration = 0
+    /// The tune the engine's current stream was started for.
+    @ObservationIgnored private var playbackGeneration: Int?
     /// Channel changes the viewer made (not automatic retunes after a lineup
     /// rebuild), so a pending "return to the last channel" knows whether the
     /// viewer has moved on.
@@ -294,18 +296,14 @@ final class Tuner {
         // Every (re)start shows the tuning state until frames actually play.
         signal = .tuning
         let generation = tuneGeneration
-        let tracks = await client.tracks(for: program.item, preferences: languagePreferences)
-        // The viewer may have changed channel while the tracks were loading.
-        guard generation == tuneGeneration, !Task.isCancelled else { return }
-        let selection = tracks.map { resolvedSelection(for: program, tracks: $0) }
-        currentTracks = tracks
-        currentSelection = selection
         do {
             let request = try await client.streamRequest(
                 for: program.item,
                 startingAt: program.elapsed(at: now),
                 capabilities: engine.capabilities
             )
+            // The tracks of the copy actually being streamed.
+            let tracks = await client.tracks(for: program.item, version: request.versionIndex, preferences: languagePreferences)
             // A newer tune started while the stream was being prepared.
             guard generation == tuneGeneration, !Task.isCancelled else {
                 if request.needsTeardown {
@@ -316,7 +314,19 @@ final class Tuner {
             if request.needsTeardown {
                 activeStream = ActiveStream(client: client, sessionID: request.sessionID)
             }
-            engine.play(request, tracks: selection)
+            // Preparing took time: join where the program is now, or move on
+            // if it has ended meanwhile.
+            let joinedAt = Date.now
+            guard program.contains(joinedAt), !program.isInIntermission(at: joinedAt) else {
+                endActiveStream()
+                await startPlayback()
+                return
+            }
+            let selection = tracks.map { resolvedSelection(for: program, tracks: $0) }
+            currentTracks = tracks
+            currentSelection = selection
+            playbackGeneration = generation
+            engine.play(request.starting(at: program.elapsed(at: joinedAt)), tracks: selection)
             UIApplication.shared.isIdleTimerDisabled = true
             scheduleBoundary(at: program.contentEnd)
         } catch {
@@ -326,6 +336,9 @@ final class Tuner {
     }
 
     private func handle(_ event: PlaybackEvent) {
+        // Events from a stream started for an earlier tune (the viewer changed
+        // channel before it reported) don't describe what's tuned now.
+        guard playbackGeneration == tuneGeneration else { return }
         switch event {
         case .playing:
             guard signal == .tuning else { return }

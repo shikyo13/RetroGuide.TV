@@ -46,7 +46,7 @@ struct DemoServerClient: MediaServerClient {
         )
     }
 
-    func tracks(for item: MediaItem, preferences: LanguagePreferences?) async -> ItemTracks? {
+    func tracks(for item: MediaItem, version: Int?, preferences: LanguagePreferences?) async -> ItemTracks? {
         nil
     }
 

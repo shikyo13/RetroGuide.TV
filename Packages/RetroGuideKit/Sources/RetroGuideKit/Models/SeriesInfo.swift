@@ -32,6 +32,11 @@ public struct SeriesInfo: Codable, Sendable, Hashable {
     /// Plex files specials, OVAs and extras under season 0.
     private static let specialsSeason = 0
 
+    /// Specials, OVAs and extras rather than a regular episode.
+    var isSpecial: Bool {
+        seasonNumber == Self.specialsSeason
+    }
+
     /// Sort key that keeps episodes in broadcast order within a show, with
     /// specials after the last regular season rather than before episode 1.
     var broadcastOrder: (Int, Int) {

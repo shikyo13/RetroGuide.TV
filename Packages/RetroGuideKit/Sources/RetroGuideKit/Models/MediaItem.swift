@@ -30,6 +30,10 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     public let artwork: Artwork
     /// Every version of the file on its server, in the server's order.
     public let versions: [MediaVersion]
+    /// Other libraries (on any server) holding a copy of this episode or
+    /// movie that lost out to this one when copies were merged: the item is
+    /// still part of those libraries. Set only in the merged library index.
+    public private(set) var otherLibraryIDs: [String]?
 
     public init(
         serverID: String,
@@ -70,6 +74,27 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.countries = countries
         self.artwork = artwork
         self.versions = versions
+    }
+
+    /// Every library holding a copy of this item.
+    public var libraryIDs: [String] {
+        [libraryID] + (otherLibraryIDs ?? [])
+    }
+
+    /// This item, also counting as part of the libraries and collections the
+    /// other copies of it belong to.
+    func merging(copies: [MediaItem]) -> MediaItem {
+        let libraries = copies.flatMap(\.libraryIDs).filter { $0 != libraryID }
+        let otherCollections = copies.flatMap(\.collections).filter { !collections.contains($0) }
+        guard !libraries.isEmpty || !otherCollections.isEmpty else { return self }
+        var merged = MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
+            series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
+            genres: genres, networks: networks, collections: collections + Set(otherCollections).sorted(), countries: countries,
+            artwork: artwork, versions: versions
+        )
+        merged.otherLibraryIDs = Set(libraries).sorted()
+        return merged
     }
 
     /// This item as part of the show with the shared id `showID`.

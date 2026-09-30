@@ -41,7 +41,9 @@ public struct LibraryFacets: Sendable {
                 return [(String(decade), Decade.label(for: decade))]
             } ?? []
         }
-        self.libraries = Self.aggregate(items) { [($0.libraryID, libraryTitles[$0.libraryID] ?? $0.libraryID)] }
+        self.libraries = Self.aggregate(items) { item in
+            item.libraryIDs.map { ($0, libraryTitles[$0] ?? $0) }
+        }
     }
 
     /// Groups items by the keys `extract` returns, preserving the first display name seen.

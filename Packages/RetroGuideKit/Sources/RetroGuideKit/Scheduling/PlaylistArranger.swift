@@ -13,7 +13,8 @@ enum PlaylistArranger {
     ) -> [Int] {
         switch ordering {
         case .shuffle:
-            let groups = groupedBySeries(items).map { $0.shuffled(using: &generator).map { [$0] } }
+            // Shows in random order; each show's episodes stay in order.
+            let groups = groupedBySeries(items).map { $0.map { [$0] } }
             return spread(groups, phase: .jittered, using: &generator)
         case .blockShuffle:
             let groups = groupedBySeries(items).map { chunked($0, size: ScheduleConstants.blockShuffleEpisodesPerBlock) }

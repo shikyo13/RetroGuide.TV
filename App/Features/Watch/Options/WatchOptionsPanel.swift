@@ -119,7 +119,13 @@ struct WatchOptionsPanel: View {
             }
         }
         if let progress = app.trackSync.progress {
-            note("Saving to Plex… \(progress.saved) of \(progress.total)")
+            note("Saving to Plex… \(progress.done) of \(progress.total)")
+        } else if app.trackSync.failedCount > .zero {
+            note("Couldn't save \(app.trackSync.failedCount) \(app.trackSync.failedCount == 1 ? "episode" : "episodes") to Plex. They still play with your choice here.")
+            Button("Try again", systemImage: "arrow.clockwise") {
+                app.trackSync.retryFailed()
+            }
+            .buttonStyle(.retro)
         }
     }
 

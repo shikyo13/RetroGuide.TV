@@ -92,3 +92,73 @@ struct SchedulingRegressionTests {
         #expect(longestRun <= 2, "\(aired)")
     }
 }
+
+@Suite("Cross-server identity")
+struct CrossServerIdentityTests {
+    private func episode(_ server: String, show: String, showGuid: String?, number: Int) -> MediaItem {
+        MediaItem(serverID: server, itemKey: "\(server)-\(number)", externalID: "plex://episode/\(number)", libraryID: "\(server)/1", kind: .episode, title: "E\(number)",
+                  series: SeriesInfo(key: show, title: "Show", seasonNumber: 1, episodeNumber: number, externalID: showGuid), duration: 1_320)
+    }
+
+    private func snapshot(_ server: String, _ items: [MediaItem]) -> LibrarySnapshot {
+        LibrarySnapshot(serverID: server, serverName: server, libraries: [MediaLibrary(serverID: server, key: "1", title: "TV", kind: .shows)], items: items)
+    }
+
+    /// A knows the show; A and B share episode 1, B and C share episode 2; C has episode 3.
+    private func snapshots() -> [LibrarySnapshot] {
+        [
+            snapshot("a", [episode("a", show: "10", showGuid: "plex://show/s", number: 1)]),
+            snapshot("b", [episode("b", show: "20", showGuid: nil, number: 1), episode("b", show: "20", showGuid: nil, number: 2)]),
+            snapshot("c", [episode("c", show: "30", showGuid: nil, number: 2), episode("c", show: "30", showGuid: nil, number: 3)]),
+        ]
+    }
+
+    @Test("A chain of servers resolves to one show, whatever the order", arguments: 0..<30)
+    func chainIsStable(seed: Int) {
+        var generator = SeededGenerator(seed: UInt64(seed))
+        let shuffled = snapshots().shuffled(using: &generator).map {
+            LibrarySnapshot(serverID: $0.serverID, serverName: $0.serverName, libraries: $0.libraries, items: $0.items.shuffled(using: &generator))
+        }
+        let index = LibraryIndex(snapshots: shuffled)
+        #expect(Set(index.items.map(\.showID)) == ["plex://show/s"])
+    }
+
+    @Test("Shows linked to two different global ids are left alone")
+    func conflictingIDs() {
+        let index = LibraryIndex(snapshots: [
+            snapshot("a", [episode("a", show: "10", showGuid: "plex://show/one", number: 1)]),
+            snapshot("b", [episode("b", show: "20", showGuid: nil, number: 1), episode("b", show: "20", showGuid: nil, number: 2)]),
+            snapshot("c", [episode("c", show: "30", showGuid: "plex://show/two", number: 2)]),
+        ])
+        #expect(index.items.contains { $0.showID == "b/20" })
+    }
+}
+
+@Suite("Fair turns on small channels")
+struct FairTurnsTests {
+    private static let items = TestFactory.show("Long", episodes: 500) + TestFactory.show("Short1", episodes: 6) + TestFactory.show("Short2", episodes: 6)
+
+    private static func airings(_ ordering: ScheduleOrdering, count: Int) -> [MediaItem] {
+        let context = ScheduleContext(channelID: "c", items: items, grid: .continuous)
+        var picker = ChannelPicker(ordering: ordering, context: context)
+        return (0..<count).map { _ in context.items[picker.next(at: .zero, in: context) { _ in true }] }
+    }
+
+    @Test("Each show gets an equal share of turns, whatever its episode count", arguments: [ScheduleOrdering.syndication, .shuffle, .blockShuffle])
+    func equalShares(ordering: ScheduleOrdering) {
+        let aired = Self.airings(ordering, count: 600)
+        let longShare = Double(aired.filter { $0.headline == "Long" }.count) / Double(aired.count)
+        #expect(abs(longShare - 1.0 / 3.0) < 0.05, "Long show had \(longShare)")
+    }
+
+    @Test("Every order keeps each show's episodes in order", arguments: ScheduleOrdering.allCases)
+    func episodesInOrder(ordering: ScheduleOrdering) {
+        var next: [String: Int] = [:]
+        for item in Self.airings(ordering, count: 600) {
+            let number = item.series?.episodeNumber ?? 0
+            let expected = next[item.headline] ?? 1
+            #expect(number == expected || number == 1, "\(item.headline) jumped to \(number)")
+            next[item.headline] = number + 1
+        }
+    }
+}

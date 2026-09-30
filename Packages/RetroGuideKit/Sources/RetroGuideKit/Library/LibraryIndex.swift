@@ -11,6 +11,11 @@ public struct LibraryIndex: Sendable {
     private let positionsByID: [String: Int]
     /// Server-specific show ids → the shared show id (see ``CrossServerMerge``).
     let showAliases: [String: String]
+    /// Item positions by normalized network and collection name, and by
+    /// library id, so a rule naming one finds its items without a full scan.
+    let positionsByNetwork: [String: [Int]]
+    let positionsByCollection: [String: [Int]]
+    let positionsByLibrary: [String: [Int]]
 
     public init(items: [MediaItem], libraries: [MediaLibrary] = []) {
         self.init(items: items, libraries: libraries, showAliases: [:])
@@ -20,12 +25,24 @@ public struct LibraryIndex: Sendable {
         self.showAliases = showAliases
         let sorted = items.sorted { $0.id < $1.id }
         self.items = sorted
-        self.attributes = sorted.map { NormalizedAttributes($0) }
+        let showDecades = Self.showDecades(sorted)
+        self.attributes = sorted.map { NormalizedAttributes($0, decade: showDecades[$0.showID] ?? $0.year.map(Decade.containing(year:))) }
         self.positionsByID = Dictionary(
             sorted.enumerated().map { ($1.id, $0) },
             uniquingKeysWith: { first, _ in first }
         )
         self.facets = LibraryFacets(items: sorted, attributes: attributes, libraries: libraries)
+        var byNetwork: [String: [Int]] = [:]
+        var byCollection: [String: [Int]] = [:]
+        var byLibrary: [String: [Int]] = [:]
+        for (position, item) in sorted.enumerated() {
+            attributes[position].networks.forEach { byNetwork[$0, default: []].append(position) }
+            attributes[position].collections.forEach { byCollection[$0, default: []].append(position) }
+            item.libraryIDs.forEach { byLibrary[$0, default: []].append(position) }
+        }
+        positionsByNetwork = byNetwork
+        positionsByCollection = byCollection
+        positionsByLibrary = byLibrary
     }
 
     /// Merges snapshots in priority order (see ``CrossServerMerge``).
@@ -50,6 +67,27 @@ public struct LibraryIndex: Sendable {
         }
     }
 
+    /// The decade each show belongs to on decade channels: the one most of its
+    /// regular episodes aired in (the earlier on a tie), so a show that ran
+    /// across decades is on one decade channel. Specials count only for a
+    /// show with no dated regular episodes. Movies keep their own year.
+    private static func showDecades(_ items: [MediaItem]) -> [String: Int] {
+        var regular: [String: [Int: Int]] = [:]
+        var specials: [String: [Int: Int]] = [:]
+        for item in items {
+            guard let series = item.series, let year = item.year else { continue }
+            let decade = Decade.containing(year: year)
+            if series.isSpecial {
+                specials[item.showID, default: [:]][decade, default: 0] += 1
+            } else {
+                regular[item.showID, default: [:]][decade, default: 0] += 1
+            }
+        }
+        return specials.merging(regular) { _, regular in regular }.compactMapValues { counts in
+            counts.max { lhs, rhs in lhs.value != rhs.value ? lhs.value < rhs.value : lhs.key > rhs.key }?.key
+        }
+    }
+
     public static let empty = LibraryIndex(items: [])
 
     public var isEmpty: Bool {
@@ -70,7 +108,7 @@ struct NormalizedAttributes: Sendable {
     let searchableText: String
     let decade: Int?
 
-    init(_ item: MediaItem, taxonomy: GenreTaxonomy = .shared) {
+    init(_ item: MediaItem, decade: Int?, taxonomy: GenreTaxonomy = .shared) {
         genres = TextNormalizer.keys(item.genres)
         var categories = taxonomy.categories(for: item.genres)
         if AnimeDetector.isAnime(categories: categories, countries: item.countries) {
@@ -80,7 +118,7 @@ struct NormalizedAttributes: Sendable {
         networks = TextNormalizer.keys(item.networks)
         collections = TextNormalizer.keys(item.collections)
         searchableText = TextNormalizer.key([item.series?.title, item.title].compactMap { $0 }.joined(separator: " "))
-        decade = item.year.map(Decade.containing(year:))
+        self.decade = decade
     }
 }
 

@@ -53,19 +53,19 @@ public struct PlexServerClient: MediaServerClient {
             let sessionID = UUID().uuidString
             switch await playbackDecision(for: item, mediaIndex: version.index, sessionID: sessionID) {
             case let .directPlay(partKey):
-                return try directPlayRequest(filePath: partKey, sessionID: sessionID, position: position)
+                return try directPlayRequest(filePath: partKey, sessionID: sessionID, position: position, version: version.index)
             case .unavailable:
                 continue
             case .unknown:
                 // No answer from the server: try the file anyway (smaller files don't need a decision).
                 guard let filePath = version.filePath else { continue }
-                return try directPlayRequest(filePath: filePath, sessionID: sessionID, position: position)
+                return try directPlayRequest(filePath: filePath, sessionID: sessionID, position: position, version: version.index)
             }
         }
         // The server declined every copy. A decision is only a server opinion, so
         // still try the preferred file rather than giving up.
-        if let filePath = playable.first?.filePath {
-            return try directPlayRequest(filePath: filePath, sessionID: UUID().uuidString, position: position)
+        if let preferred = playable.first, let filePath = preferred.filePath {
+            return try directPlayRequest(filePath: filePath, sessionID: UUID().uuidString, position: position, version: preferred.index)
         }
         if capabilities.playsAnyFile {
             throw StreamError.noPlayableVersion
@@ -75,7 +75,7 @@ public struct PlexServerClient: MediaServerClient {
 
     /// The original file; the player seeks to the live position itself. The
     /// session identifier carries the server's permission to play it directly.
-    private func directPlayRequest(filePath: String, sessionID: String, position: TimeInterval) throws -> StreamRequest {
+    private func directPlayRequest(filePath: String, sessionID: String, position: TimeInterval, version: Int) throws -> StreamRequest {
         let url = try context.builder.url(path: filePath, query: [
             URLQueryItem(name: PlexAPI.Header.token, value: context.token),
             URLQueryItem(name: PlexAPI.Header.sessionIdentifier, value: sessionID),
@@ -87,7 +87,8 @@ public struct PlexServerClient: MediaServerClient {
             startsAtPosition: false,
             sessionID: sessionID,
             method: .directPlay,
-            buffer: playback.bufferProfile
+            buffer: playback.bufferProfile,
+            versionIndex: version
         )
     }
 
@@ -119,12 +120,15 @@ public struct PlexServerClient: MediaServerClient {
             startsAtPosition: true,
             sessionID: sessionID,
             method: .directStream,
-            buffer: playback.bufferProfile
+            buffer: playback.bufferProfile,
+            versionIndex: mediaIndex
         )
     }
 
-    public func tracks(for item: MediaItem, preferences: LanguagePreferences?) async -> ItemTracks? {
-        guard let part = await part(of: item, timeout: PlexAPI.Defaults.trackSelectionTimeout), let streams = part.streams else { return nil }
+    public func tracks(for item: MediaItem, version: Int?, preferences: LanguagePreferences?) async -> ItemTracks? {
+        guard let parts = await parts(of: item, timeout: PlexAPI.Defaults.trackSelectionTimeout) else { return nil }
+        let chosen = version.flatMap { parts.indices.contains($0) ? parts[$0] : nil } ?? parts.first ?? nil
+        guard let streams = chosen?.streams else { return nil }
         return PlexTrackSelectionMapper.tracks(from: streams, preferences: preferences, externalURL: externalSubtitleURL)
     }
 
@@ -133,9 +137,22 @@ public struct PlexServerClient: MediaServerClient {
         preferences: LanguagePreferences?,
         choose: @Sendable (_ tracks: ItemTracks, _ automatic: TrackSelection) -> TrackSelection
     ) async -> Bool {
-        guard let part = await part(of: item, timeout: PlexAPI.Defaults.trackSaveTimeout),
-              let partID = part.id, let streams = part.streams
-        else { return false }
+        guard let parts = await parts(of: item, timeout: PlexAPI.Defaults.trackSaveTimeout)?.compactMap({ $0 }), !parts.isEmpty else { return false }
+        var allSaved = true
+        for part in parts {
+            let saved = await save(part, preferences: preferences, choose: choose)
+            allSaved = allSaved && saved
+        }
+        return allSaved
+    }
+
+    /// Saves the chosen tracks on one copy's file.
+    private func save(
+        _ part: PlexPart,
+        preferences: LanguagePreferences?,
+        choose: @Sendable (_ tracks: ItemTracks, _ automatic: TrackSelection) -> TrackSelection
+    ) async -> Bool {
+        guard let partID = part.id, let streams = part.streams else { return false }
         let tracks = PlexTrackSelectionMapper.tracks(from: streams, preferences: preferences, externalURL: externalSubtitleURL)
         let automatic = PlexTrackSelectionMapper.automaticSelection(from: streams, preferences: preferences, externalURL: externalSubtitleURL)
         let selection = choose(tracks, automatic)
@@ -158,12 +175,15 @@ public struct PlexServerClient: MediaServerClient {
         return (try? await context.http.data(for: request)) != nil
     }
 
-    private func part(of item: MediaItem, timeout: TimeInterval) async -> PlexPart? {
+    /// The first file of every copy of the item, in the server's copy order
+    /// (the order ``MediaVersion/index`` counts in; `nil` for a copy without one).
+    private func parts(of item: MediaItem, timeout: TimeInterval) async -> [PlexPart?]? {
         let builder = RequestBuilder(baseURL: context.baseURL, headers: context.builder.headers, timeout: timeout)
         guard let request = try? builder.request(path: PlexAPI.Path.metadata(item.itemKey)),
-              let page = try? await context.http.decode(PlexEnvelope<PlexMetadataPage>.self, for: request)
+              let page = try? await context.http.decode(PlexEnvelope<PlexMetadataPage>.self, for: request),
+              let media = page.mediaContainer.metadata?.first?.media
         else { return nil }
-        return page.mediaContainer.metadata?.first?.media?.first?.parts?.first
+        return media.map { $0.parts?.first }
     }
 
     private func externalSubtitleURL(_ key: String) -> URL? {

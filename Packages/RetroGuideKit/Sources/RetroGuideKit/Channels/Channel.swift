@@ -29,7 +29,8 @@ public struct Channel: Sendable, Identifiable, Hashable {
     /// A schedule for a channel on its own (see ``ChannelPicker``). Channels
     /// that share a simulcast limit are scheduled by a ``SimulcastCoordinator``.
     static func schedule(for definition: ChannelDefinition, items: [MediaItem], grid: ScheduleGrid) -> any ChannelSchedule {
-        guard ChannelPicker.rotates(ordering: definition.ordering, items: items) else {
+        // One show (a 24/7 channel) needs no turns: plain arithmetic finds its episode.
+        guard Set(items.map(\.showID)).count > 1 else {
             return ChannelTimeline(channelID: definition.id, items: items, ordering: definition.ordering, grid: grid)
         }
         let context = ScheduleContext(channelID: definition.id, items: items, grid: grid)

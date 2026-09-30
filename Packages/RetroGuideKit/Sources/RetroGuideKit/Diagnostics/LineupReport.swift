@@ -7,7 +7,7 @@ import Foundation
 public struct LineupReport: Sendable, CustomStringConvertible {
     public enum Tuning {
         /// Channels sharing this much of their combined titles count as duplicates.
-        public static let duplicateSimilarity = 0.6
+        public static let duplicateSimilarity = LineupOptions.Defaults.nearDuplicateSimilarity
         /// How far ahead to look for an episode coming round again.
         public static let repeatHorizon: TimeInterval = 30 * 24 * ScheduleConstants.secondsPerHour
         /// Length of the window used for "different programs per day".

@@ -12,11 +12,12 @@ public struct LineupBuilder: Sendable {
         self.options = options
     }
 
-    /// Builds the lineup sorted by channel number: every curated, decade,
-    /// library, network, collection and 24/7 channel the library can fill,
-    /// numbered without gaps, then the viewer's own channels. Hidden channels
-    /// are included (flagged) so the channel manager can show them; empty or
-    /// duplicate automatic channels are dropped.
+    /// Builds the lineup sorted by channel number: catch-all, genre, decade,
+    /// network, collection, library and 24/7 channels the library can fill
+    /// (``ChannelCategory``), then the viewer's custom channels. Visible
+    /// channels are numbered without gaps. Hidden channels are included
+    /// (flagged, numbered last) so the channel manager can show them. Thin
+    /// channels, near-duplicates and channels beyond the cap are left out.
     ///
     /// No show airs on more than ``LineupCustomization/simulcastLimit``
     /// channels at once, except on 24/7 and custom channels.
@@ -24,32 +25,63 @@ public struct LineupBuilder: Sendable {
         let automatic = curated.sorted { $0.number < $1.number }
             + DynamicChannelFactory.definitions(for: index.facets, options: options)
         let enabled = automatic.filter { !customization.disabledSources.contains($0.source) }
-        var seenContent = Set<Int>()
-        var resolved: [Resolved] = []
-        var formerIDs: [String: Set<String>] = [:]
-        for definition in enabled {
-            let items = schedulableItems(for: definition.rule, in: index)
-            guard isSubstantial(items), seenContent.insert(contentFingerprint(items)).inserted else { continue }
-            formerIDs[definition.id] = Self.formerIDs(of: definition, items: items, index: index)
-            resolved.append((customized(definition, formerIDs: formerIDs[definition.id] ?? [], customization), items))
+        let seasons = Self.regularSeasonCounts(index.items)
+        // Every show is a 24/7 candidate: check seasons first, and take their
+        // episodes from one grouping pass rather than a library scan each.
+        let episodesByShow = Dictionary(grouping: index.items.filter { $0.series != nil && $0.duration >= ScheduleConstants.minimumProgramDuration }, by: \.showID)
+        let candidates = enabled
+            .filter { $0.source != .series || ($0.rule.seriesIDs.first.flatMap { seasons[$0] } ?? .zero) >= options.marathonMinimumSeasons }
+            .map { definition in
+                let show = definition.source == .series ? definition.rule.seriesIDs.first : nil
+                return (definition, show.map { episodesByShow[$0] ?? [] } ?? schedulableItems(for: definition.rule, in: index))
+            }
+        let minimumTitles = Set(index.items.map(\.showID)).count >= options.titleMinimumLibraryTitles ? options.minimumChannelTitles : 1
+
+        // 24/7 channels skip the other rules and have their own limit.
+        let marathons = candidates
+            .filter { $0.0.source == .series && isSubstantial($0.1) }
+            .sorted { ($0.1.count, $1.0.id) > ($1.1.count, $0.0.id) }
+            .prefix(options.maximumMarathonChannels)
+            .sorted { ($0.0.name.lowercased(), $0.0.id) < ($1.0.name.lowercased(), $1.0.id) }
+        let decades = candidates.filter { $0.0.source == .decade }
+        let others = candidates.filter { $0.0.source != .decade && $0.0.source != .series }.filter { definition, items in
+            (!ChannelCategory(definition).needsSeveralTitles || DecadeChannelMerger.titleCount(items) >= minimumTitles)
+                && !isFranchise(definition, items)
         }
+        var resolved: [Resolved] = (others + DecadeChannelMerger.merge(decades, minimumTitles: minimumTitles))
+            .filter { isSubstantial($0.1) }
+            .enumerated()
+            .sorted { lhs, rhs in
+                (ChannelCategory(lhs.element.0), lhs.offset) < (ChannelCategory(rhs.element.0), rhs.offset)
+            }
+            .map(\.element)
+        resolved = DuplicateChannelMerger.merge(resolved, similarity: options.nearDuplicateSimilarity)
         // However small the library, something should be on: the broadest
         // enabled channel with anything to air.
-        if resolved.isEmpty {
-            let broadestFirst = enabled.filter(\.rule.isUnconstrained) + enabled.filter { !$0.rule.isUnconstrained }
-            for definition in broadestFirst {
-                let items = schedulableItems(for: definition.rule, in: index)
-                guard !items.isEmpty else { continue }
-                resolved.append((customized(definition, formerIDs: [], customization), items))
-                break
-            }
+        if resolved.isEmpty, marathons.isEmpty {
+            let broadestFirst = candidates.filter(\.0.rule.isUnconstrained) + candidates.filter { !$0.0.rule.isUnconstrained }
+            resolved = broadestFirst.first { !$0.1.isEmpty }.map { [$0] } ?? []
         }
-        let marathons = resolved.filter { $0.definition.source == .series }
-        resolved = capped(DuplicateChannelMerger.merge(resolved.filter { $0.definition.source != .series }) + marathons)
+        resolved = LineupSelection.select(resolved, capacity: options.maximumChannels) + marathons
 
-        var usedCallSigns = Set<String>()
+        var formerIDs: [String: Set<String>] = [:]
         for position in resolved.indices {
-            resolved[position].definition.number = ChannelNumbering.automatic.lowerBound + position
+            let (definition, items) = resolved[position]
+            formerIDs[definition.id] = Self.formerIDs(of: definition, items: items, index: index)
+            resolved[position].definition = customized(definition, formerIDs: formerIDs[definition.id] ?? [], customization)
+        }
+        let isHidden = { (definition: ChannelDefinition) in
+            customization.hiddenChannelIDs.contains(definition.id)
+                || !customization.hiddenChannelIDs.isDisjoint(with: formerIDs[definition.id] ?? [])
+        }
+        // Visible channels are numbered without gaps; hidden ones follow.
+        let numberingOrder = resolved.indices.filter { !isHidden(resolved[$0].definition) }
+            + resolved.indices.filter { isHidden(resolved[$0].definition) }
+        var usedCallSigns = Set<String>()
+        for (offset, position) in numberingOrder.enumerated() {
+            resolved[position].definition.number = ChannelNumbering.automatic.lowerBound + offset
+        }
+        for position in resolved.indices {
             resolved[position].definition.callSign = CallSign.unique(resolved[position].definition.callSign, avoiding: &usedCallSigns)
         }
         for var definition in customization.customChannels {
@@ -59,7 +91,24 @@ public struct LineupBuilder: Sendable {
             resolved.append((definition, items))
         }
 
-        return schedule(resolved, formerIDs: formerIDs, customization: customization).sorted { $0.number < $1.number }
+        return schedule(resolved, isHidden: isHidden, formerIDs: formerIDs, customization: customization).sorted { $0.number < $1.number }
+    }
+
+    /// A collection of a few movies only: one film franchise, not a channel.
+    private func isFranchise(_ definition: ChannelDefinition, _ items: [MediaItem]) -> Bool {
+        definition.source == .collection
+            && items.allSatisfy { $0.kind == .movie }
+            && DecadeChannelMerger.titleCount(items) < options.movieCollectionMinimumTitles
+    }
+
+    /// Regular (non-special) seasons of every show, by show id.
+    private static func regularSeasonCounts(_ items: [MediaItem]) -> [String: Int] {
+        var seasons: [String: Set<Int>] = [:]
+        for item in items {
+            guard let series = item.series, !series.isSpecial, let season = series.seasonNumber else { continue }
+            seasons[item.showID, default: []].insert(season)
+        }
+        return seasons.mapValues(\.count)
     }
 
     /// The definition with the viewer's schedule order applied.
@@ -73,10 +122,13 @@ public struct LineupBuilder: Sendable {
         return definition
     }
 
-    /// Ids a 24/7 channel had before shows were identified across servers
-    /// (`series.<server>/<key>`), so hidden channels, schedule orders and
-    /// the last watched channel carry over.
+    /// Ids a channel had before, so hidden channels, schedule orders and the
+    /// last watched channel carry over: a merged decade channel's members,
+    /// and a 24/7 channel's ids from before shows were identified across
+    /// servers (`series.<server>/<key>`).
     private static func formerIDs(of definition: ChannelDefinition, items: [MediaItem], index: LibraryIndex) -> Set<String> {
+        let members = DecadeChannelMerger.memberIDs(of: definition)
+        guard members.isEmpty else { return members }
         guard definition.source == .series, let showID = definition.rule.seriesIDs.first else { return [] }
         let natives = Set(items.compactMap(\.seriesID)).union(index.showAliases.filter { $0.value == showID }.keys)
         return Set(natives.map { "series.\($0)" }).subtracting([definition.id])
@@ -85,11 +137,12 @@ public struct LineupBuilder: Sendable {
     /// Visible channels share one schedule that keeps any show from airing on
     /// more than ``LineupCustomization/simulcastLimit`` of them at once; 24/7,
     /// custom and hidden channels run on their own.
-    private func schedule(_ resolved: [Resolved], formerIDs: [String: Set<String>], customization: LineupCustomization) -> [Channel] {
-        let isHidden = { (definition: ChannelDefinition) in
-            customization.hiddenChannelIDs.contains(definition.id)
-                || !customization.hiddenChannelIDs.isDisjoint(with: formerIDs[definition.id] ?? [])
-        }
+    private func schedule(
+        _ resolved: [Resolved],
+        isHidden: (ChannelDefinition) -> Bool,
+        formerIDs: [String: Set<String>],
+        customization: LineupCustomization
+    ) -> [Channel] {
         let shared = customization.simulcastLimit.channels.map { _ in
             resolved.indices.filter { !Self.exemptSources.contains(resolved[$0].definition.source) && !isHidden(resolved[$0].definition) }
                 .sorted { resolved[$0].definition.id < resolved[$1].definition.id }
@@ -119,28 +172,6 @@ public struct LineupBuilder: Sendable {
     /// 24/7 channels air one show by design, and custom channels are the viewer's call.
     private static let exemptSources: Set<ChannelSource> = [.series, .custom]
 
-    /// Drops the least essential automatic channels beyond ``LineupOptions/maximumChannels``:
-    /// collections first, then networks, 24/7 shows and libraries, smallest first.
-    private func capped(_ channels: [Resolved]) -> [Resolved] {
-        let excess = channels.count - options.maximumChannels
-        guard excess > .zero else { return channels }
-        let dropped = channels
-            .filter { Self.dropPriority[$0.definition.source] != nil }
-            .sorted { lhs, rhs in
-                let left = Self.dropPriority[lhs.definition.source] ?? .zero
-                let right = Self.dropPriority[rhs.definition.source] ?? .zero
-                if left != right { return left > right }
-                return runtime(lhs.items) < runtime(rhs.items)
-            }
-            .prefix(excess)
-            .map(\.definition.id)
-        let droppedIDs = Set(dropped)
-        return channels.filter { !droppedIDs.contains($0.definition.id) }
-    }
-
-    /// Higher drops first; sources not listed (curated, decades, custom) are never dropped.
-    private static let dropPriority: [ChannelSource: Int] = [.collection: 4, .network: 3, .series: 2, .library: 1]
-
     private func runtime(_ items: [MediaItem]) -> TimeInterval {
         items.reduce(.zero) { $0 + $1.duration }
     }
@@ -159,10 +190,5 @@ public struct LineupBuilder: Sendable {
             && runtime(items) >= options.minimumChannelRuntime
     }
 
-    private func contentFingerprint(_ items: [MediaItem]) -> Int {
-        var hasher = Hasher()
-        items.forEach { hasher.combine($0.id) }
-        return hasher.finalize()
-    }
 
 }

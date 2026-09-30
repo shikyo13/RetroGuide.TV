@@ -63,7 +63,7 @@ struct LineupScalingTests {
             ChannelDefinition(id: "c.comedy", number: 2, name: "Comedy", rule: ChannelRule(categories: [.comedy]), source: .curated),
             ChannelDefinition(id: "c.drama", number: 3, name: "Drama", rule: ChannelRule(categories: [.drama]), source: .curated),
         ]
-        let options = LineupOptions(minimumChannelRuntime: 3_600, minimumChannelItems: 2, marathonMinimumEpisodes: 10, maximumChannels: 2)
+        let options = LineupOptions(minimumChannelRuntime: 3_600, minimumChannelItems: 2, maximumChannels: 2)
         let sources = LineupBuilder(curated: curated, options: options)
             .build(index: index, customization: LineupCustomization())
             .map(\.definition.source)
@@ -73,7 +73,7 @@ struct LineupScalingTests {
     @Test("Disabled groups are left out")
     func disabledSources() {
         let index = LibraryIndex(items: TestFactory.show("A", episodes: 30))
-        let options = LineupOptions(minimumChannelRuntime: 3_600, minimumChannelItems: 2, marathonMinimumEpisodes: 10)
+        let options = LineupOptions(minimumChannelRuntime: 3_600, minimumChannelItems: 2, marathonMinimumSeasons: 1)
         let channels = LineupBuilder(curated: [], options: options)
             .build(index: index, customization: LineupCustomization(disabledSources: [.series]))
         #expect(!channels.contains { $0.definition.source == .series })

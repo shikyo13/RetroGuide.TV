@@ -109,11 +109,16 @@ Live TV starts as soon as your first server is indexed. Add more servers later i
 
 - **Indexing.** RetroGuide.TV reads your library metadata from Plex once and
   caches it on the Apple TV, refreshing when it's more than six hours old. It
-  never changes anything on your server and doesn't affect watch history.
-- **Scheduling.** Each channel's schedule is computed from the channel's content
-  and a fixed epoch rather than stored. Every schedule cycle plays each item on
-  the channel once, in an order seeded by the channel and the cycle number.
-  "What's on now" is simple arithmetic, so schedules never need rebuilding.
+  doesn't affect watch history. The one thing it writes is your own choice of
+  audio and subtitles (Options › Audio & Subtitles), saved to your Plex account
+  as its track selection so every app you use plays the same tracks.
+- **Scheduling.** Schedules are computed from the lineup and the date, never
+  stored, so every device agrees. Shows take turns: each gets an equal share of
+  turns however many episodes it has, and always continues with its next
+  episode, in order. Channels are scheduled together so the same show isn't on
+  more than the chosen number of channels at once (24/7, custom and hidden
+  channels aside); when a channel has nothing else it may air, it airs the show
+  anyway rather than going dark. A 24/7 channel's position is simple arithmetic.
 - **Playback.** Only one stream plays at a time. Channel changes wait a moment
   while you're flipping, and the previous stream is released before the next one
   starts. With the default player the server just sends the original file, like

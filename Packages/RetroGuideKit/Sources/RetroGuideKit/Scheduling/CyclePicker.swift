@@ -1,7 +1,12 @@
 import Foundation
 
-/// Airs a channel's items in one fixed order, cycle after cycle, so nothing
-/// repeats until everything has aired.
+/// Airs a channel's shows in turns, cycle after cycle. Every show gets the same
+/// number of turns per cycle whatever its episode count (a 500-episode show
+/// just takes longer to get through), and each turn airs that show's next
+/// episode, in order. Show Rotation is one turn per show in a fixed order;
+/// Shuffle a new random order of shows each round; Block Shuffle the same with
+/// a short block of episodes per turn; Marathon every episode of a show, then
+/// the next show.
 ///
 /// When the show whose turn it is may not air now (it's on enough other
 /// channels), its turn waits and the next show that may air goes early; the
@@ -14,13 +19,13 @@ struct CyclePicker: ProgramPicker {
         /// Set-aside turns remembered for making up; past this the oldest is
         /// dropped (a show blocked that long airs elsewhere anyway).
         static let maximumSetAside = 32
+        /// Rounds of different random show orders per Shuffle and Block Shuffle
+        /// cycle, so the pattern of shows doesn't visibly repeat every round.
+        static let shuffledRounds = 8
     }
 
-    /// Item indices in airing order.
+    /// Show indices in airing order: a turn airs that show's next episode.
     private let turns: [Int]
-    /// Whether turns stand for "the show's next episode" (episodic orderings)
-    /// rather than a specific item (shuffle).
-    private let followsEpisodes: Bool
     /// The turn due next.
     private var position = 0
     /// Turns that already aired out of order (early, or made up late), so
@@ -33,11 +38,7 @@ struct CyclePicker: ProgramPicker {
     private var episode: [Int]
 
     init(ordering: ScheduleOrdering, context: ScheduleContext) {
-        var generator = SeededGenerator(seed: context.seed)
-        let playable = context.shows.flatMap { $0 }.sorted()
-        let order = PlaylistArranger.arrange(playable.map { context.items[$0] }, ordering: ordering, using: &generator)
-        turns = order.map { playable[$0] }
-        followsEpisodes = ordering != .shuffle
+        turns = Self.turns(for: ordering, context: context)
         airedEarly = Array(repeating: false, count: turns.count)
         episode = Array(repeating: 0, count: context.shows.count)
     }
@@ -113,14 +114,43 @@ struct CyclePicker: ProgramPicker {
     }
 
     private func show(ofTurn turn: Int, in context: ScheduleContext) -> Int {
-        context.showOfItem[turns[(turn + turns.count) % turns.count]]
+        turns[(turn + turns.count) % turns.count]
     }
 
     private func candidate(at turn: Int, in context: ScheduleContext) -> Int {
-        let item = turns[turn]
-        guard followsEpisodes else { return item }
-        let show = context.showOfItem[item]
+        let show = turns[turn]
         return context.shows[show][episode[show]]
+    }
+
+    /// One cycle of turns for `ordering`.
+    private static func turns(for ordering: ScheduleOrdering, context: ScheduleContext) -> [Int] {
+        let shows = Array(context.shows.indices)
+        var generator = SeededGenerator(seed: context.seed)
+        switch ordering {
+        case .syndication:
+            return shows.shuffled(using: &generator)
+        case .shuffle:
+            return rounds(of: shows, repeating: 1, using: &generator)
+        case .blockShuffle:
+            return rounds(of: shows, repeating: ScheduleConstants.blockShuffleEpisodesPerBlock, using: &generator)
+        case .marathon:
+            return shows.flatMap { Array(repeating: $0, count: context.shows[$0].count) }
+        }
+    }
+
+    /// ``Tuning/shuffledRounds`` rounds, each every show once in a new random
+    /// order (each turn `repeating` times in a row), never the same show
+    /// either side of a round boundary when there's a choice.
+    private static func rounds(of shows: [Int], repeating: Int, using generator: inout SeededGenerator) -> [Int] {
+        var order: [Int] = []
+        for _ in 0..<Tuning.shuffledRounds {
+            var round = shows.shuffled(using: &generator)
+            if round.count > 1, round.first == order.last {
+                round.swapAt(0, round.count - 1)
+            }
+            order += round
+        }
+        return order.flatMap { Array(repeating: $0, count: repeating) }
     }
 
     private mutating func takeDueTurn(_ item: Int, in context: ScheduleContext) -> Int {
@@ -130,9 +160,7 @@ struct CyclePicker: ProgramPicker {
 
     private mutating func take(_ item: Int, in context: ScheduleContext) -> Int {
         let show = context.showOfItem[item]
-        if followsEpisodes {
-            episode[show] = (episode[show] + 1) % context.shows[show].count
-        }
+        episode[show] = (episode[show] + 1) % context.shows[show].count
         lastShow = show
         return item
     }

@@ -22,6 +22,9 @@ public struct StreamRequest: Sendable, Hashable {
     public let sessionID: String
     public let method: StreamMethod
     public let buffer: BufferProfile
+    /// Which copy of the item this streams (``MediaVersion/index``), so its
+    /// own audio and subtitle tracks are the ones offered and played.
+    public let versionIndex: Int?
 
     public init(
         url: URL,
@@ -29,7 +32,8 @@ public struct StreamRequest: Sendable, Hashable {
         startsAtPosition: Bool,
         sessionID: String,
         method: StreamMethod,
-        buffer: BufferProfile = .standard
+        buffer: BufferProfile = .standard,
+        versionIndex: Int? = nil
     ) {
         self.url = url
         self.startPosition = startPosition
@@ -37,6 +41,17 @@ public struct StreamRequest: Sendable, Hashable {
         self.sessionID = sessionID
         self.method = method
         self.buffer = buffer
+        self.versionIndex = versionIndex
+    }
+
+    /// The same stream starting at `position` instead, when the player seeks
+    /// itself (a stream the server starts at a position can't move).
+    public func starting(at position: TimeInterval) -> StreamRequest {
+        guard !startsAtPosition else { return self }
+        return StreamRequest(
+            url: url, startPosition: position, startsAtPosition: false, sessionID: sessionID,
+            method: method, buffer: buffer, versionIndex: versionIndex
+        )
     }
 
     /// Whether the server holds resources for this stream that must be released.
@@ -70,16 +85,17 @@ public protocol MediaServerClient: Sendable {
         capabilities: PlaybackCapabilities
     ) async throws -> StreamRequest
 
-    /// The item's audio and subtitle tracks, and the ones to play for this
+    /// The audio and subtitle tracks of copy `version` of the item (`nil`: the
+    /// first copy), and the ones to play for this
     /// viewer: their choices for the item when they made any, otherwise picked
     /// with their account's `preferences`. `nil` when unknown (the player then
     /// falls back to its own language rules).
-    func tracks(for item: MediaItem, preferences: LanguagePreferences?) async -> ItemTracks?
+    func tracks(for item: MediaItem, version: Int?, preferences: LanguagePreferences?) async -> ItemTracks?
 
     /// Saves the tracks `choose` picks for `item` (given its tracks and what
     /// the account's language settings would pick) as this account's choice
-    /// on the server, so every app signed in to it plays them. Returns whether
-    /// it's saved.
+    /// on the server, on every copy of the item, so every app signed in to it
+    /// plays them whichever copy it plays. Returns whether all were saved.
     func saveTracks(
         for item: MediaItem,
         preferences: LanguagePreferences?,
