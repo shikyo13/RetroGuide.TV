@@ -360,6 +360,10 @@
     "rule": {
       "categories": [
         "sport"
+      ],
+      "excludedCategories": [
+        "anime",
+        "animation"
       ]
     }
   },
