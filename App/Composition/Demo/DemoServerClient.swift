@@ -50,6 +50,15 @@ struct DemoServerClient: MediaServerClient {
         nil
     }
 
+    /// The demo library's files have one track each; there's nothing to save.
+    func saveTracks(
+        for item: MediaItem,
+        preferences: LanguagePreferences?,
+        choose: @Sendable (_ tracks: ItemTracks, _ automatic: TrackSelection) -> TrackSelection
+    ) async -> Bool {
+        false
+    }
+
     func endStream(sessionID: String) async {}
 
     func imageURL(for reference: String, size: ImageSize) -> URL? {

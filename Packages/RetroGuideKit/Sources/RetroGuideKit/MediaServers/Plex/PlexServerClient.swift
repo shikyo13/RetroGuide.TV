@@ -124,17 +124,57 @@ public struct PlexServerClient: MediaServerClient {
     }
 
     public func tracks(for item: MediaItem, preferences: LanguagePreferences?) async -> ItemTracks? {
-        let builder = RequestBuilder(
-            baseURL: context.baseURL,
-            headers: context.builder.headers,
-            timeout: PlexAPI.Defaults.trackSelectionTimeout
-        )
+        guard let part = await part(of: item, timeout: PlexAPI.Defaults.trackSelectionTimeout), let streams = part.streams else { return nil }
+        return PlexTrackSelectionMapper.tracks(from: streams, preferences: preferences, externalURL: externalSubtitleURL)
+    }
+
+    public func saveTracks(
+        for item: MediaItem,
+        preferences: LanguagePreferences?,
+        choose: @Sendable (_ tracks: ItemTracks, _ automatic: TrackSelection) -> TrackSelection
+    ) async -> Bool {
+        guard let part = await part(of: item, timeout: PlexAPI.Defaults.trackSaveTimeout),
+              let partID = part.id, let streams = part.streams
+        else { return false }
+        let tracks = PlexTrackSelectionMapper.tracks(from: streams, preferences: preferences, externalURL: externalSubtitleURL)
+        let automatic = PlexTrackSelectionMapper.automaticSelection(from: streams, preferences: preferences, externalURL: externalSubtitleURL)
+        let selection = choose(tracks, automatic)
+        let audio = streams.first { $0.streamType == PlexAPI.StreamType.audio && $0.index == selection.audioStreamIndex }
+        let subtitle = streams.first { $0.streamType == PlexAPI.StreamType.subtitle && matches($0, selection.subtitle) }
+        var query: [URLQueryItem] = [URLQueryItem(name: "allParts", value: "1")]
+        if let audio, audio.selected != true, let id = audio.id {
+            query.append(URLQueryItem(name: "audioStreamID", value: String(id)))
+        }
+        let currentSubtitle = streams.first { $0.streamType == PlexAPI.StreamType.subtitle && $0.selected == true }
+        if selection.subtitle == .none, currentSubtitle != nil {
+            query.append(URLQueryItem(name: "subtitleStreamID", value: PlexAPI.Defaults.noSubtitleStreamID))
+        } else if let subtitle, subtitle.selected != true, let id = subtitle.id {
+            query.append(URLQueryItem(name: "subtitleStreamID", value: String(id)))
+        }
+        // Already the saved choice: nothing to write.
+        guard query.count > 1 else { return true }
+        let builder = RequestBuilder(baseURL: context.baseURL, headers: context.builder.headers, timeout: PlexAPI.Defaults.trackSaveTimeout)
+        guard let request = try? builder.request(path: PlexAPI.Path.part(partID), method: "PUT", query: query) else { return false }
+        return (try? await context.http.data(for: request)) != nil
+    }
+
+    private func part(of item: MediaItem, timeout: TimeInterval) async -> PlexPart? {
+        let builder = RequestBuilder(baseURL: context.baseURL, headers: context.builder.headers, timeout: timeout)
         guard let request = try? builder.request(path: PlexAPI.Path.metadata(item.itemKey)),
-              let page = try? await context.http.decode(PlexEnvelope<PlexMetadataPage>.self, for: request),
-              let streams = page.mediaContainer.metadata?.first?.media?.first?.parts?.first?.streams
+              let page = try? await context.http.decode(PlexEnvelope<PlexMetadataPage>.self, for: request)
         else { return nil }
-        return PlexTrackSelectionMapper.tracks(from: streams, preferences: preferences) { key in
-            try? context.builder.url(path: key, query: [URLQueryItem(name: PlexAPI.Header.token, value: context.token)])
+        return page.mediaContainer.metadata?.first?.media?.first?.parts?.first
+    }
+
+    private func externalSubtitleURL(_ key: String) -> URL? {
+        try? context.builder.url(path: key, query: [URLQueryItem(name: PlexAPI.Header.token, value: context.token)])
+    }
+
+    private func matches(_ stream: PlexStream, _ choice: SubtitleChoice) -> Bool {
+        switch choice {
+        case .none: false
+        case let .embedded(index): stream.index == index
+        case let .external(url): stream.key.flatMap(externalSubtitleURL) == url
         }
     }
 

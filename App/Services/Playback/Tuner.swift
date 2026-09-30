@@ -59,11 +59,11 @@ final class Tuner {
     /// and the ones playing.
     private(set) var currentTracks: ItemTracks?
     private(set) var currentSelection: TrackSelection?
-    /// The viewer's audio and subtitle choices per show (by ``MediaItem/showID``).
-    @ObservationIgnored var trackPreferences: [String: TrackPreference] = [:]
-    @ObservationIgnored var onTrackPreferencesChanged: (([String: TrackPreference]) -> Void)?
-    /// A choice made for just the program on now.
-    @ObservationIgnored private var programTrackChoice: (programID: String, selection: TrackSelection)?
+    /// The viewer's audio and subtitle choices, each at its own scope.
+    private(set) var trackRules = TrackRules()
+    /// Called after the viewer changes a choice: the new rules, the item it
+    /// was made on, and how far the change reaches (to save it to the server).
+    @ObservationIgnored var onTrackRulesChanged: ((TrackRules, MediaItem, TrackScope) -> Void)?
 
     @ObservationIgnored private var channels: [Channel] = []
     @ObservationIgnored private var previousChannelID: String?
@@ -146,35 +146,48 @@ final class Tuner {
         engine.switchesTracksLive && currentTracks != nil
     }
 
-    /// Whether the tuned show has remembered track choices.
-    var hasShowTrackPreference: Bool {
-        program.map { trackPreferences[$0.item.showID] != nil } ?? false
+    /// The scope of the audio choice covering what's on (`nil`: automatic).
+    var audioScope: TrackScope? {
+        program.flatMap { trackRules.audioRule(for: $0.item)?.scope }
     }
 
-    /// Switches to `audio` (when given) and `subtitle` (`nil`: off) now, and
-    /// remembers them for every episode of the show or just this program.
-    func chooseTracks(audio: TrackOption?, subtitle: TrackOption?, forWholeShow: Bool) {
-        guard let program, let tracks = currentTracks, let current = currentSelection else { return }
-        let selection = tracks.selection(from: current, audio: audio, subtitle: subtitle)
-        if forWholeShow {
-            let chosenAudio = audio ?? tracks.audioOption(for: selection)
-            trackPreferences[program.item.showID] = TrackPreference(audio: chosenAudio, subtitle: subtitle, subtitlesOff: subtitle == nil)
-            onTrackPreferencesChanged?(trackPreferences)
-            programTrackChoice = nil
-        } else {
-            programTrackChoice = (program.id, selection)
-        }
-        apply(selection)
+    /// The scope of the subtitle choice covering what's on (`nil`: automatic).
+    var subtitleScope: TrackScope? {
+        program.flatMap { trackRules.subtitleRule(for: $0.item)?.scope }
     }
 
-    /// Forgets the show's remembered tracks and goes back to the server's
-    /// (and account's) choice.
-    func resetTracksToAutomatic() {
+    /// Takes rules that changed elsewhere (another device) and applies them to what's on.
+    func replaceTrackRules(_ rules: TrackRules) {
+        trackRules = rules
         guard let program, let tracks = currentTracks else { return }
-        trackPreferences[program.item.showID] = nil
-        onTrackPreferencesChanged?(trackPreferences)
-        programTrackChoice = nil
-        apply(tracks.selection)
+        apply(rules.selection(for: program.item, tracks: tracks))
+    }
+
+    /// Plays `option` now and remembers it for everything `scope` covers.
+    func chooseAudio(_ option: TrackOption, scope: TrackScope) {
+        updateRules(scope: scope) { $0.setAudio(AudioRule(option), scope: scope, for: $1) }
+    }
+
+    /// Shows `option` (`nil`: subtitles off) now and remembers it for everything `scope` covers.
+    func chooseSubtitles(_ option: TrackOption?, scope: TrackScope) {
+        updateRules(scope: scope) { $0.setSubtitles(SubtitleRule(option), scope: scope, for: $1) }
+    }
+
+    /// Goes back to the server's and account's audio for this show.
+    func resetAudio() {
+        updateRules(scope: .show) { $0.resetAudio(for: $1) }
+    }
+
+    /// Goes back to the server's and account's subtitles for this show.
+    func resetSubtitles() {
+        updateRules(scope: .show) { $0.resetSubtitles(for: $1) }
+    }
+
+    private func updateRules(scope: TrackScope, _ change: (inout TrackRules, MediaItem) -> Void) {
+        guard let program, let tracks = currentTracks else { return }
+        change(&trackRules, program.item)
+        onTrackRulesChanged?(trackRules, program.item, scope)
+        apply(trackRules.selection(for: program.item, tracks: tracks))
     }
 
     private func apply(_ selection: TrackSelection) {
@@ -182,12 +195,9 @@ final class Tuner {
         engine.selectTracks(selection)
     }
 
-    /// This program's choice, then the show's, then the server's.
+    /// The viewer's choices where they made any, otherwise the server's.
     private func resolvedSelection(for program: ScheduledProgram, tracks: ItemTracks) -> TrackSelection {
-        if let choice = programTrackChoice, choice.programID == program.id {
-            return choice.selection
-        }
-        return trackPreferences[program.item.showID]?.selection(for: tracks) ?? tracks.selection
+        trackRules.selection(for: program.item, tracks: tracks)
     }
 
     // MARK: - Remote actions

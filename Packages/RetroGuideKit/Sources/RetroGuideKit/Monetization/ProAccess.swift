@@ -30,6 +30,12 @@ public struct ProAccess: Sendable, Hashable {
         isPro
     }
 
+    /// Audio and subtitle choices for a whole library at once (like PASTA's
+    /// "Apply to Library"); episodes, seasons and shows are free.
+    public var canChooseTracksForLibrary: Bool {
+        isPro
+    }
+
     /// Ads appear only in the free version (on iPhone and iPad).
     public var showsAds: Bool {
         !isPro

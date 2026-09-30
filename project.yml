@@ -54,6 +54,11 @@ targets:
       - package: GoogleUserMessagingPlatform
         product: GoogleUserMessagingPlatform
         destinationFilters: [iOS]
+    entitlements:
+      path: App/Resources/RetroGuide.entitlements
+      properties:
+        # iCloud key-value storage: audio and subtitle choices sync across devices.
+        com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)$(CFBundleIdentifier)
     info:
       path: App/Resources/Info.plist
       properties:

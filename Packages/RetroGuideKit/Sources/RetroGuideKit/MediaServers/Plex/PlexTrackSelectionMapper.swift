@@ -15,6 +15,23 @@ enum PlexTrackSelectionMapper {
         return TrackSelection(audioStreamIndex: audio?.index, subtitle: choice(for: subtitle, externalURL: externalURL))
     }
 
+    /// What the account's language settings pick, ignoring choices already
+    /// saved for the item: the preferred audio language (else the file's
+    /// default track), and subtitles by the account's subtitle setting.
+    static func automaticSelection(
+        from streams: [PlexStream],
+        preferences: LanguagePreferences?,
+        externalURL: (String) -> URL?
+    ) -> TrackSelection {
+        let audioStreams = streams.filter { $0.streamType == PlexAPI.StreamType.audio }
+        let wanted = LanguageCode.normalized(preferences?.audioLanguage)
+        let audio = audioStreams.first { wanted != nil && LanguageCode.normalized(language(of: $0)) == wanted }
+            ?? audioStreams.first { $0.isDefault == true }
+            ?? audioStreams.first
+        let subtitle = preferences.flatMap { automaticSubtitle(in: streams, audio: audio, preferences: $0) }
+        return TrackSelection(audioStreamIndex: audio?.index, subtitle: choice(for: subtitle, externalURL: externalURL))
+    }
+
     /// Every audio and subtitle track, plus the ones ``selection(from:preferences:externalURL:)`` picks.
     static func tracks(
         from streams: [PlexStream],

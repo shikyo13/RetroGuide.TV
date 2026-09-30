@@ -1,14 +1,14 @@
 import RetroGuideKit
 import SwiftUI
 
-/// Options for what's on now: audio and subtitles (applied to the live picture
-/// right away, and remembered for every episode of the show by language, like
-/// PASTA, or just this one) and the channel's schedule order.
+/// Options for what's on now: audio and subtitles, applied to the live picture
+/// right away and remembered, each at its own scope like PASTA (this episode,
+/// season, show or library), on this device, in iCloud and on the server; and
+/// the channel's schedule order.
 struct WatchOptionsPanel: View {
     private enum ChoiceID {
         static let subtitlesOff = "subtitles.off"
-        static let wholeShow = "scope.show"
-        static let thisEpisode = "scope.episode"
+        static let automatic = "scope.automatic"
     }
 
     let tuner: Tuner
@@ -17,7 +17,6 @@ struct WatchOptionsPanel: View {
     @Environment(\.theme) private var theme
     /// Shown right away; rebuilding a large lineup takes a few seconds.
     @State private var pendingOrdering: ScheduleOrdering?
-    @State private var appliesToWholeShow = true
     /// Focus starts on Subtitles, the usual reason to open the panel.
     @FocusState private var isSubtitlesFocused: Bool
 
@@ -84,11 +83,20 @@ struct WatchOptionsPanel: View {
                     get: { audio?.id ?? "" },
                     set: { id in
                         guard let option = tracks.audio.first(where: { $0.id == id }) else { return }
-                        tuner.chooseTracks(audio: option, subtitle: subtitle, forWholeShow: isForWholeShow)
+                        tuner.chooseAudio(option, scope: tuner.audioScope ?? defaultScope)
                     }
                 )
             )
             .disabled(tracks.audio.count < 2)
+            if tracks.audio.count > 1 {
+                scopeMenu(title: "Audio for", scope: tuner.audioScope) { scope in
+                    if let scope, let audio {
+                        tuner.chooseAudio(audio, scope: scope)
+                    } else {
+                        tuner.resetAudio()
+                    }
+                }
+            }
             OptionMenu(
                 title: "Subtitles",
                 systemImage: "captions.bubble",
@@ -97,32 +105,65 @@ struct WatchOptionsPanel: View {
                 selection: Binding(
                     get: { subtitle?.id ?? ChoiceID.subtitlesOff },
                     set: { id in
-                        tuner.chooseTracks(audio: nil, subtitle: tracks.subtitles.first { $0.id == id }, forWholeShow: isForWholeShow)
+                        tuner.chooseSubtitles(tracks.subtitles.first { $0.id == id }, scope: tuner.subtitleScope ?? defaultScope)
                     }
                 )
             )
             .focused($isSubtitlesFocused)
-            if let show = tuner.program?.item.series?.title {
-                OptionMenu(
-                    title: "Use for",
-                    systemImage: "square.stack",
-                    choices: [
-                        OptionMenu.Choice(id: ChoiceID.wholeShow, title: "Every episode of \(show)"),
-                        OptionMenu.Choice(id: ChoiceID.thisEpisode, title: "Just this episode"),
-                    ],
-                    selection: Binding(
-                        get: { appliesToWholeShow ? ChoiceID.wholeShow : ChoiceID.thisEpisode },
-                        set: { appliesToWholeShow = $0 == ChoiceID.wholeShow }
-                    )
-                )
+            scopeMenu(title: "Subtitles for", scope: tuner.subtitleScope) { scope in
+                if let scope {
+                    tuner.chooseSubtitles(subtitle, scope: scope)
+                } else {
+                    tuner.resetSubtitles()
+                }
             }
         }
-        if tuner.hasShowTrackPreference {
-            Button("Back to automatic", systemImage: "arrow.uturn.backward") {
-                tuner.resetTracksToAutomatic()
-            }
-            .buttonStyle(.retro)
+        if let progress = app.trackSync.progress {
+            note("Saving to Plex… \(progress.saved) of \(progress.total)")
         }
+    }
+
+    /// How far a choice reaches: "Automatic" (the server's and account's
+    /// choice), or this episode, season, show or library.
+    private func scopeMenu(title: String, scope: TrackScope?, onSelect: @escaping (TrackScope?) -> Void) -> some View {
+        OptionMenu(
+            title: title,
+            systemImage: "square.stack",
+            choices: [OptionMenu.Choice(id: ChoiceID.automatic, title: "Automatic")] + availableScopes.map {
+                OptionMenu.Choice(id: $0.rawValue, title: scopeTitle($0))
+            },
+            selection: Binding(
+                get: { scope?.rawValue ?? ChoiceID.automatic },
+                set: { onSelect(TrackScope(rawValue: $0)) }
+            )
+        )
+    }
+
+    /// Scopes that mean something for what's on (movies have no seasons),
+    /// the whole library with RetroGuide Pro.
+    private var availableScopes: [TrackScope] {
+        guard let item = tuner.program?.item else { return [] }
+        let scopes: [TrackScope] = item.series == nil ? [.show, .library] : [.episode, .season, .show, .library]
+        return scopes.filter { TrackRules.applies($0, to: item) && ($0 != .library || app.pro.access.canChooseTracksForLibrary) }
+    }
+
+    /// A new choice covers the whole show (or the movie) until narrowed.
+    private var defaultScope: TrackScope {
+        .show
+    }
+
+    private func scopeTitle(_ scope: TrackScope) -> String {
+        guard let item = tuner.program?.item else { return scope.rawValue }
+        switch scope {
+        case .episode: return "This episode"
+        case .season: return item.series?.seasonNumber.map { "Season \($0)" } ?? "This season"
+        case .show: return item.series.map { "Every episode of \($0.title)" } ?? "This movie"
+        case .library: return "Everything in \(libraryName(for: item))"
+        }
+    }
+
+    private func libraryName(for item: MediaItem) -> String {
+        app.libraryIndex.facets.libraries.first { $0.id == item.libraryID }?.name ?? "this library"
     }
 
     @ViewBuilder
@@ -153,11 +194,6 @@ struct WatchOptionsPanel: View {
         } else {
             note("Changing a channel's schedule order is part of RetroGuide Pro (Settings › RetroGuide Pro).")
         }
-    }
-
-    /// Movies have no other episodes, so their choice is remembered for the movie.
-    private var isForWholeShow: Bool {
-        tuner.program?.item.series == nil || appliesToWholeShow
     }
 
     private func note(_ text: String) -> some View {

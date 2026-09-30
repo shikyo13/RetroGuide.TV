@@ -35,7 +35,7 @@ struct PreferencesStore {
         static let accounts = "accounts.v1"
         static let customization = "lineupCustomization.v1"
         static let languagePreferences = "languagePreferences.v1"
-        static let trackPreferences = "trackPreferences.v1"
+        static let trackRules = "trackRules.v1"
         static let plexClientIdentifier = "plexClientIdentifier"
     }
 
@@ -68,10 +68,11 @@ struct PreferencesStore {
         }
     }
 
-    /// Audio and subtitle choices the viewer made for whole shows, by show id.
-    var trackPreferences: [String: TrackPreference] {
-        get { decode([String: TrackPreference].self, forKey: Key.trackPreferences) ?? [:] }
-        nonmutating set { encode(newValue, forKey: Key.trackPreferences) }
+    /// The viewer's audio and subtitle choices (also kept in iCloud, see
+    /// ``CloudTrackRulesStore``).
+    var trackRules: TrackRules {
+        get { decode(TrackRules.self, forKey: Key.trackRules) ?? TrackRules() }
+        nonmutating set { encode(newValue, forKey: Key.trackRules) }
     }
 
     var customization: LineupCustomization {
@@ -90,7 +91,7 @@ struct PreferencesStore {
     }
 
     func resetAll() {
-        [Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackPreferences].forEach(defaults.removeObject(forKey:))
+        [Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules].forEach(defaults.removeObject(forKey:))
     }
 
     private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {

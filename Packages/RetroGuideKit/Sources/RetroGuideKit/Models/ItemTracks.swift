@@ -73,9 +73,5 @@ public struct ItemTracks: Sendable, Hashable {
         subtitles.first { $0.subtitleChoice == selection.subtitle }
     }
 
-    /// `current` with `audio` playing instead (when given) and `subtitle`
-    /// shown (`nil`: subtitles off).
-    public func selection(from current: TrackSelection, audio: TrackOption?, subtitle: TrackOption?) -> TrackSelection {
-        TrackSelection(audioStreamIndex: audio?.streamIndex ?? current.audioStreamIndex, subtitle: subtitle?.subtitleChoice ?? .none)
-    }
+
 }

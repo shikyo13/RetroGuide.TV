@@ -22,6 +22,7 @@ public enum PlexAPI {
         static let transcodeStop = "/video/:/transcode/universal/stop"
         static let photoTranscode = "/photo/:/transcode"
         static func metadata(_ key: String) -> String { "/library/metadata/\(key)" }
+        static func part(_ id: Int) -> String { "/library/parts/\(id)" }
     }
 
     enum Header {
@@ -98,6 +99,10 @@ public enum PlexAPI {
         static let probeTimeout: TimeInterval = 4
         /// Track selection is fetched while tuning, so it must never hold up playback for long.
         static let trackSelectionTimeout: TimeInterval = 2
+        /// Saving a track choice happens in the background, so it can wait longer.
+        static let trackSaveTimeout: TimeInterval = 10
+        /// `subtitleStreamID` meaning "no subtitles".
+        static let noSubtitleStreamID = "0"
         /// Name for a track Plex gives no title or language for.
         static let unknownTrackTitle = "Unknown"
         /// Asking the server for permission to play a file directly.

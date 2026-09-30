@@ -129,11 +129,12 @@ struct PlexMedia: Decodable {
 }
 
 struct PlexPart: Decodable {
+    let id: Int?
     let key: String?
     let streams: [PlexStream]?
 
     enum CodingKeys: String, CodingKey {
-        case key
+        case id, key
         case streams = "Stream"
     }
 }
@@ -141,6 +142,8 @@ struct PlexPart: Decodable {
 /// One audio, video or subtitle stream of a media part. `selected` reflects the
 /// requesting user's language preferences and per-item choices.
 struct PlexStream: Decodable {
+    /// The server's id for the stream, used to save a track choice.
+    var id: Int?
     let streamType: Int
     let index: Int?
     let key: String?
@@ -152,6 +155,13 @@ struct PlexStream: Decodable {
     /// Plex's names for the track: "English (AAC Stereo)", "English (SRT External)"…
     var displayTitle: String?
     var extendedDisplayTitle: String?
+    /// The file marks this track as the one to play by default.
+    var isDefault: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case id, streamType, index, key, selected, languageTag, languageCode, forced, displayTitle, extendedDisplayTitle
+        case isDefault = "default"
+    }
 }
 
 /// The signed-in plex.tv user (only the language settings are read).

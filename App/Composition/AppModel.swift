@@ -46,6 +46,9 @@ final class AppModel {
     }
 
     let tuner: Tuner
+    /// Saves audio and subtitle choices to the servers in the background.
+    let trackSync: TrackSync
+    @ObservationIgnored private let cloudTrackRules = CloudTrackRulesStore()
     let servers: ServerLibrary
     @ObservationIgnored private var nowPlaying: NowPlayingPublisher?
     let pro = ProStore()
@@ -74,6 +77,9 @@ final class AppModel {
         self.tuner = Tuner(engineKind: store.preferences.playerEngine) { [servers] serverID in
             servers.client(for: serverID)
         }
+        self.trackSync = TrackSync { [servers] serverID in
+            servers.client(for: serverID)
+        }
         tuner.onChannelChanged = { [weak self] channelID in
             self?.preferences.lastChannelID = channelID
         }
@@ -94,10 +100,18 @@ final class AppModel {
             nowPlaying?.update(channel: tuner.channel, program: tuner.program, isPlaying: tuner.signal == .live)
         }
         tuner.languagePreferences = store.languagePreferences
-        tuner.trackPreferences = store.trackPreferences
-        tuner.onTrackPreferencesChanged = { [store] preferences in
-            store.trackPreferences = preferences
+        // Another device's rules (via iCloud) win over this one's older copy.
+        let rules = cloudTrackRules.rules ?? store.trackRules
+        store.trackRules = rules
+        tuner.replaceTrackRules(rules)
+        tuner.onTrackRulesChanged = { [weak self] rules, item, scope in
+            self?.trackRulesChanged(rules, on: item, scope: scope)
         }
+        cloudTrackRules.onChange = { [weak self] rules in
+            self?.store.trackRules = rules
+            self?.tuner.replaceTrackRules(rules)
+        }
+        cloudTrackRules.start()
     }
 
     // MARK: - Derived state
@@ -219,7 +233,8 @@ final class AppModel {
     func signOut() {
         healthTask?.cancel()
         tuner.powerOff()
-        tuner.trackPreferences = [:]
+        trackSync.cancelAll()
+        tuner.replaceTrackRules(TrackRules())
         servers.removeAll()
         store.resetAll()
         indexGeneration += 1
@@ -342,6 +357,14 @@ final class AppModel {
                 customization.orderingOverrides[definition.id] = ordering
             }
         }
+    }
+
+    /// Keeps a changed choice on this device, in iCloud for the viewer's other
+    /// devices, and on the servers for every app signed in to the account.
+    private func trackRulesChanged(_ rules: TrackRules, on item: MediaItem, scope: TrackScope) {
+        store.trackRules = rules
+        cloudTrackRules.save(rules)
+        trackSync.save(rules, around: item, scope: scope, among: libraryIndex.items, preferences: store.languagePreferences)
     }
 
     func setSimulcastLimit(_ limit: SimulcastLimit) {

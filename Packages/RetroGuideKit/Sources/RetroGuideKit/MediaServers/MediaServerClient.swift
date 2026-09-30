@@ -76,6 +76,16 @@ public protocol MediaServerClient: Sendable {
     /// falls back to its own language rules).
     func tracks(for item: MediaItem, preferences: LanguagePreferences?) async -> ItemTracks?
 
+    /// Saves the tracks `choose` picks for `item` (given its tracks and what
+    /// the account's language settings would pick) as this account's choice
+    /// on the server, so every app signed in to it plays them. Returns whether
+    /// it's saved.
+    func saveTracks(
+        for item: MediaItem,
+        preferences: LanguagePreferences?,
+        choose: @Sendable (_ tracks: ItemTracks, _ automatic: TrackSelection) -> TrackSelection
+    ) async -> Bool
+
     /// Tells the server a stream is no longer needed so it can free transcoder resources.
     func endStream(sessionID: String) async
 
