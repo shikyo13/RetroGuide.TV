@@ -1,9 +1,21 @@
 import RetroGuideKit
 import SwiftUI
 
+/// Where focus is while watching full screen on Apple TV.
+enum PlayerChromeFocus: Hashable {
+    /// The full-screen remote input (channel changes, info, guide).
+    case remote
+    /// The Audio & Subtitles button on the info banner.
+    case tracks
+}
+
 /// Transient overlays while watching full screen: the channel number, the info
 /// banner and, on iPhone and iPad, the on-screen controls. Input comes from the
 /// Siri Remote or touch as ``PlayerCommand``s.
+///
+/// On Apple TV, info the viewer asked for (Left/Right) also offers an Audio &
+/// Subtitles button, reached with Down; after a channel change Down still
+/// changes channel, so surfing is unaffected.
 struct PlayerChromeView: View {
     private enum Timing {
         static let osdDuration: Duration = .seconds(3)
@@ -11,12 +23,18 @@ struct PlayerChromeView: View {
     }
 
     let tuner: Tuner
+    /// False while a panel over the picture (Audio & Subtitles) has focus.
+    var isActive = true
     let onOpenGuide: () -> Void
+    let onChooseTracks: () -> Void
 
     @State private var isOSDVisible = false
     @State private var isBannerVisible = false
     @State private var showsNext = false
     @State private var bannerRequest = 0
+    /// The banner is up because the viewer asked for it (not a channel change).
+    @State private var isInfoRequested = false
+    @FocusState private var focus: PlayerChromeFocus?
     /// iPhone in landscape: the banner can't be tapped, so it may sit over the
     /// home indicator's area, close to the bottom edge.
     @Environment(\.isShortLayout) private var isShortLayout
@@ -30,6 +48,7 @@ struct PlayerChromeView: View {
         .animation(DesignTokens.Motion.quickEase, value: isOSDVisible)
         .task(id: tuner.tuneGeneration) {
             showsNext = false
+            isInfoRequested = false
             isOSDVisible = true
             isBannerVisible = true
             try? await Task.sleep(for: Timing.osdDuration)
@@ -37,15 +56,22 @@ struct PlayerChromeView: View {
         }
         .task(id: BannerTrigger(generation: tuner.tuneGeneration, request: bannerRequest)) {
             try? await Task.sleep(for: DebugLaunchOptions.bannerDuration ?? Timing.bannerDuration)
-            guard !Task.isCancelled else { return }
+            // Stays up while the viewer is on its button.
+            guard !Task.isCancelled, focus != .tracks else { return }
             isBannerVisible = false
+            isInfoRequested = false
+        }
+        .onAppear { focus = .remote }
+        .onChange(of: isActive) { _, isActive in
+            if isActive { focus = .remote }
         }
     }
 
     @ViewBuilder
     private var input: some View {
         #if os(tvOS)
-        PlayerRemoteInput(onCommand: handle)
+        PlayerRemoteInput(focus: $focus, onCommand: handle)
+            .disabled(!isActive)
         #else
         PlayerTouchInput(isInfoVisible: isBannerVisible, onCommand: handle)
         #endif
@@ -68,8 +94,17 @@ struct PlayerChromeView: View {
                 }
             }
             Spacer()
+            #if os(tvOS)
+            if offersTracks {
+                HStack {
+                    Spacer()
+                    tracksButton
+                }
+                .transition(.opacity)
+            }
+            #endif
             if isBannerVisible, let channel = tuner.channel {
-                ChannelBanner(channel: channel, program: bannerProgram, isShowingNext: showsNext)
+                ChannelBanner(channel: channel, program: bannerProgram, isShowingNext: showsNext, offersTracks: offersTracks)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .allowsHitTesting(false)
             }
@@ -78,6 +113,33 @@ struct PlayerChromeView: View {
         .landscapeTopClearance()
         .ignoresSafeArea(.container, edges: isShortLayout ? .bottom : [])
     }
+
+    /// Apple TV: info the viewer asked for offers Audio & Subtitles.
+    private var offersTracks: Bool {
+        #if os(tvOS)
+        isBannerVisible && isInfoRequested
+        #else
+        false
+        #endif
+    }
+
+    #if os(tvOS)
+    private var tracksButton: some View {
+        LiveTracksButton(action: onChooseTracks)
+            .disabled(!isActive)
+            .focused($focus, equals: .tracks)
+            .onMoveCommand { direction in
+                if direction == .up { leaveTracksButton() }
+            }
+            .onExitCommand(perform: leaveTracksButton)
+    }
+
+    private func leaveTracksButton() {
+        focus = .remote
+        // The banner's timer starts again now that the viewer has moved on.
+        bannerRequest += 1
+    }
+    #endif
 
     private var bannerProgram: ScheduledProgram? {
         guard let current = tuner.program else { return nil }
@@ -88,19 +150,28 @@ struct PlayerChromeView: View {
     private func handle(_ command: PlayerCommand) {
         switch command {
         case .channelUp: tuner.channelUp()
-        case .channelDown: tuner.channelDown()
+        case .channelDown:
+            #if os(tvOS)
+            if offersTracks {
+                focus = .tracks
+                return
+            }
+            #endif
+            tuner.channelDown()
         case .showInfo: presentBanner(next: isBannerVisible)
         case .showNow: presentBanner(next: false)
         case .showNext: presentBanner(next: true)
         case .hideInfo: isBannerVisible = false
         case .openGuide: onOpenGuide()
         case .lastChannel: tuner.recall()
+        case .chooseTracks: onChooseTracks()
         }
     }
 
     private func presentBanner(next: Bool) {
         showsNext = next
         isBannerVisible = true
+        isInfoRequested = true
         bannerRequest += 1
     }
 }

@@ -69,10 +69,16 @@ struct WatchView: View {
             }
             #endif
             if overlay == .none {
-                PlayerChromeView(tuner: tuner, onOpenGuide: { overlay = .guide })
+                PlayerChromeView(
+                    tuner: tuner,
+                    isActive: !isChoosingTracks,
+                    onOpenGuide: { overlay = .guide },
+                    onChooseTracks: { isChoosingTracks = true }
+                )
                     .transition(.opacity)
             }
         }
+        .trackPicker(isPresented: $isChoosingTracks, tuner: tuner)
         #if os(iOS)
         .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)
         #endif
@@ -178,7 +184,6 @@ struct WatchView: View {
     /// The guide's controls on the live picture (above the video layer).
     private func liveControls(tuner: Tuner, pictureFrame: CGRect) -> some View {
         var controls = GuideLiveControls(
-            tuner: tuner,
             pictureFrame: pictureFrame,
             isTopBarActive: isGuideTopBarActive,
             isChoosingTracks: $isChoosingTracks,

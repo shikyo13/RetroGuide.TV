@@ -71,6 +71,12 @@ struct PlayerTouchControls: View {
                 Label("Guide", systemImage: "list.bullet.rectangle")
             }
             .buttonStyle(.retroPrimary)
+            Button {
+                onCommand(.chooseTracks)
+            } label: {
+                Label("Audio & Subtitles", systemImage: "captions.bubble")
+            }
+            .buttonStyle(.retroIcon)
             Spacer(minLength: DesignTokens.Spacing.md)
             Button {
                 onCommand(.lastChannel)
