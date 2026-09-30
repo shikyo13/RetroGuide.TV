@@ -38,6 +38,8 @@ final class TrackSync {
     @ObservationIgnored private let clientProvider: (String) -> (any MediaServerClient)?
     @ObservationIgnored private var queue: [Job] = []
     @ObservationIgnored private var worker: Task<Void, Never>?
+    /// The viewer's newest choices: retries send these, never an older snapshot.
+    @ObservationIgnored private var latestRules = TrackRules()
 
     init(clientProvider: @escaping (String) -> (any MediaServerClient)?) {
         self.clientProvider = clientProvider
@@ -45,17 +47,25 @@ final class TrackSync {
 
     /// Saves `rules` for everything `scope` covers around `item`.
     func save(_ rules: TrackRules, around item: MediaItem, scope: TrackScope, among items: [MediaItem], preferences: LanguagePreferences?) {
+        latestRules = rules
         let covered = TrackRules.items(in: scope, around: item, among: items)
         guard !covered.isEmpty else { return }
+        // A newer choice replaces an older one that failed for the same episodes.
+        let coveredIDs = Set(covered.map(\.id))
+        failedJobs = failedJobs.compactMap { job in
+            let remaining = job.items.filter { !coveredIDs.contains($0.id) }
+            return remaining.isEmpty ? nil : Job(items: remaining, rules: job.rules, preferences: job.preferences)
+        }
+        failedCount = failedJobs.reduce(0) { $0 + $1.items.count }
         enqueue(Job(items: covered, rules: rules, preferences: preferences))
     }
 
-    /// Tries the episodes that failed to save again.
+    /// Tries the episodes that failed to save again, with the current choices.
     func retryFailed() {
         let jobs = failedJobs
         failedJobs = []
         failedCount = .zero
-        jobs.forEach(enqueue)
+        jobs.forEach { enqueue(Job(items: $0.items, rules: latestRules, preferences: $0.preferences)) }
     }
 
     private func enqueue(_ job: Job) {
@@ -70,6 +80,7 @@ final class TrackSync {
         queue.removeAll()
         failedJobs = []
         failedCount = .zero
+        latestRules = TrackRules()
         worker?.cancel()
         worker = nil
         progress = nil

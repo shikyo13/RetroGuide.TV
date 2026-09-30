@@ -23,6 +23,10 @@ final class Tuner {
         /// Retry quietly (behind the tuning static) with these back-off
         /// delays before showing No Signal.
         static let quickRetryDelays: [Duration] = [.seconds(1), .seconds(2), .seconds(4)]
+        /// A stream the server starts at a position (Apple player, remuxed)
+        /// can only start on whole seconds; if preparing it put it this far
+        /// behind, it's requested again at the current position.
+        static let serverPositionTolerance: TimeInterval = 1
         /// After quick retries are exhausted, keep retrying at this interval.
         static let retryDelay: Duration = .seconds(15)
     }
@@ -297,7 +301,7 @@ final class Tuner {
         signal = .tuning
         let generation = tuneGeneration
         do {
-            let request = try await client.streamRequest(
+            var request = try await client.streamRequest(
                 for: program.item,
                 startingAt: program.elapsed(at: now),
                 capabilities: engine.capabilities
@@ -321,6 +325,19 @@ final class Tuner {
                 endActiveStream()
                 await startPlayback()
                 return
+            }
+            if request.startsAtPosition, program.elapsed(at: joinedAt) - request.startPosition >= Timing.serverPositionTolerance {
+                endActiveStream()
+                request = try await client.streamRequest(for: program.item, startingAt: program.elapsed(at: .now), capabilities: engine.capabilities)
+                guard generation == tuneGeneration, !Task.isCancelled else {
+                    if request.needsTeardown {
+                        Task { await client.endStream(sessionID: request.sessionID) }
+                    }
+                    return
+                }
+                if request.needsTeardown {
+                    activeStream = ActiveStream(client: client, sessionID: request.sessionID)
+                }
             }
             let selection = tracks.map { resolvedSelection(for: program, tracks: $0) }
             currentTracks = tracks
