@@ -6,8 +6,17 @@ protocol ProgramPicker: Sendable {
     /// The item (index into ``ScheduleContext/items``) to air starting at
     /// `offset` seconds after the epoch. `isAllowed` says whether an item may
     /// air now (``SimulcastCoordinator``); a picker passes over items that
-    /// may not, and airs one anyway only when nothing else is left.
-    mutating func next(at offset: TimeInterval, in context: ScheduleContext, isAllowed: (Int) -> Bool) -> Int
+    /// may not. When nothing is allowed it airs one that `isAcceptable`
+    /// (breaking only the rules that may bend), and only when nothing is
+    /// even acceptable does it air one anyway.
+    mutating func next(at offset: TimeInterval, in context: ScheduleContext, isAllowed: (Int) -> Bool, isAcceptable: (Int) -> Bool) -> Int
+}
+
+extension ProgramPicker {
+    /// The next item when every rule may bend alike.
+    mutating func next(at offset: TimeInterval, in context: ScheduleContext, isAllowed: (Int) -> Bool) -> Int {
+        next(at: offset, in: context, isAllowed: isAllowed, isAcceptable: isAllowed)
+    }
 }
 
 /// What a picker needs to know about a channel: its items grouped into shows
@@ -54,6 +63,13 @@ final class ScheduleContext: Sendable {
     var isEmpty: Bool {
         shows.isEmpty
     }
+
+    /// The episode `show` starts from at the epoch: a different one on every
+    /// channel, so channels sharing a show don't move through it in step and
+    /// air the same episode at the same time.
+    func firstEpisode(of show: Int) -> Int {
+        Int((StableHash.fnv1a(showIDs[show]) ^ seed) % UInt64(shows[show].count))
+    }
 }
 
 /// The picker a channel runs: a rotating lineup when it has the depth for
@@ -91,16 +107,16 @@ enum ChannelPicker: ProgramPicker {
         return content >= RotationPicker.Tuning.minimumContent && titles >= RotationPicker.Tuning.minimumShows
     }
 
-    mutating func next(at offset: TimeInterval, in context: ScheduleContext, isAllowed: (Int) -> Bool) -> Int {
+    mutating func next(at offset: TimeInterval, in context: ScheduleContext, isAllowed: (Int) -> Bool, isAcceptable: (Int) -> Bool) -> Int {
         switch self {
         case .rotation(var picker):
             self = .moving
-            let item = picker.next(at: offset, in: context, isAllowed: isAllowed)
+            let item = picker.next(at: offset, in: context, isAllowed: isAllowed, isAcceptable: isAcceptable)
             self = .rotation(picker)
             return item
         case .cycle(var picker):
             self = .moving
-            let item = picker.next(at: offset, in: context, isAllowed: isAllowed)
+            let item = picker.next(at: offset, in: context, isAllowed: isAllowed, isAcceptable: isAcceptable)
             self = .cycle(picker)
             return item
         case .moving:

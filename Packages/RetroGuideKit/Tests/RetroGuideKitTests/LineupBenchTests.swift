@@ -12,6 +12,9 @@ struct LineupBenchTests {
         /// libraries with enough titles for their channels can always avoid it.
         static let simulcastOverLimitShare = 0.0
         static let simulcastLibraryTitles = 150
+        /// Below this, channels share so few titles that keeping episodes in
+        /// order sometimes leaves no episode that isn't already on elsewhere.
+        static let sameEpisodeLibraryTitles = 20
         /// How long a stretch of schedule the repeat check walks.
         static let repeatWindow: TimeInterval = 14 * 24 * ScheduleConstants.secondsPerHour
     }
@@ -38,6 +41,15 @@ struct LineupBenchTests {
         let (report, _, _) = try Self.report(for: profile)
         guard report.titleCount >= Goal.simulcastLibraryTitles else { return }
         #expect(report.simulcastOverLimitShare <= Goal.simulcastOverLimitShare)
+    }
+
+    @Test("No episode or movie is on two channels at once", arguments: SyntheticLibrary.Profile.all)
+    func noSameEpisode(profile: SyntheticLibrary.Profile) throws {
+        for limit in [SimulcastLimit.two, .unlimited] {
+            let (report, _, _) = try Self.report(for: profile, limit: limit)
+            guard report.titleCount >= Goal.sameEpisodeLibraryTitles else { return }
+            #expect(report.sameEpisodeShare == 0, "\(limit): \(report.sameEpisodeShare)")
+        }
     }
 
     @Test("Channels are distinct, capped and numbered without gaps", arguments: SyntheticLibrary.Profile.all)

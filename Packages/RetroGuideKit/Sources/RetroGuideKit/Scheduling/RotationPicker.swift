@@ -79,7 +79,7 @@ struct RotationPicker: ProgramPicker {
         }
         self.rank = rank
         let never = -TimeInterval.greatestFiniteMagnitude
-        episode = Array(repeating: 0, count: showCount)
+        episode = context.shows.indices.map(context.firstEpisode)
         onAir = Array(repeating: 0, count: showCount)
         lastAired = Array(repeating: never, count: showCount)
         restingUntil = Array(repeating: never, count: showCount)
@@ -92,25 +92,33 @@ struct RotationPicker: ProgramPicker {
         roundOrder = Self.roundOrder(slots: plan.slots, round: 0, shuffled: plan.shufflesTurns, seed: context.seed)
     }
 
-    mutating func next(at offset: TimeInterval, in context: ScheduleContext, isAllowed: (Int) -> Bool) -> Int {
+    mutating func next(at offset: TimeInterval, in context: ScheduleContext, isAllowed: (Int) -> Bool, isAcceptable: (Int) -> Bool) -> Int {
         self.offset = offset
-        // A show that may not air now (it's on enough other channels) passes
-        // its turn; if every slot's show is blocked, one hands its slot to a
-        // show from the pool.
+        if let item = airFirst(passing: isAllowed, in: context) ?? airFirst(passing: isAcceptable, in: context) {
+            return item
+        }
+        // Nothing may air: better a simulcast than dead air.
+        return air(slot: roundOrder[turnSlot], in: context)
+    }
+
+    /// A show that doesn't pass (it's on enough other channels) passes its
+    /// turn; if every slot's show is blocked, one hands its slot to a show
+    /// from the pool that passes. Nil, with the turn unchanged, if none does.
+    private mutating func airFirst(passing passes: (Int) -> Bool, in context: ScheduleContext) -> Int? {
         let firstSlot = turnSlot
         for _ in 0..<roundOrder.count {
             let slot = roundOrder[turnSlot]
-            if isAllowed(nextItem(of: slotShow[slot], in: context)) {
+            if passes(nextItem(of: slotShow[slot], in: context)) {
                 return air(slot: slot, in: context)
             }
             passTurn()
         }
         turnSlot = firstSlot
         let slot = roundOrder[turnSlot]
-        if let replacement = nextFromPool(showCount: context.shows.count, allowed: { isAllowed(nextItem(of: $0, in: context)) }) {
-            replace(slot: slot, with: replacement)
+        guard let replacement = nextFromPool(showCount: context.shows.count, allowed: { passes(nextItem(of: $0, in: context)) }) else {
+            return nil
         }
-        // Nothing may air: better a simulcast than dead air.
+        replace(slot: slot, with: replacement)
         return air(slot: slot, in: context)
     }
 

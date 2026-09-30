@@ -37,7 +37,7 @@ enum DecadeChannelMerger {
         else { return [] }
         let run = Array(untrimmed[firstFilled...lastFilled])
         let items = run.flatMap(\.items)
-        guard let first = run.first, let last = run.last, titleCount(items) >= minimumTitles else { return [] }
+        guard let first = run.first, titleCount(items) >= minimumTitles else { return [] }
         guard run.count > 1 else { return [first] }
         var definition = first.definition
         // Every member's id, so settings made on them carry over (see ``memberIDs(of:)``).

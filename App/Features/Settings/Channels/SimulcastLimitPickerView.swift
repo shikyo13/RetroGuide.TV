@@ -11,7 +11,7 @@ struct SimulcastLimitPickerView: View {
     var body: some View {
         let current = pending ?? app.customization.simulcastLimit
         SettingsPage(title: "Same Show at Once") {
-            Text("Keeps the same show from being on too many channels at the same moment, so flipping through channels finds something different. 24/7 channels and your own channels aren't limited.")
+            Text("Keeps the same show from being on too many channels at the same moment, so flipping through channels finds something different. 24/7 channels and your own channels don't count. Whatever you choose, two channels never air the same episode or movie at the same time.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
             VStack(spacing: DesignTokens.Spacing.sm) {

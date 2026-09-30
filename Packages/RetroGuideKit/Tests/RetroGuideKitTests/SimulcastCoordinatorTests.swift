@@ -47,6 +47,57 @@ struct SimulcastCoordinatorTests {
         #expect(Self.mostAtOnce(timelines, in: Self.week) <= limit)
     }
 
+    /// Longest time one episode is on two of the timelines at once.
+    private static func sameEpisodeOverlap(_ timelines: [any ChannelSchedule], in interval: DateInterval) -> TimeInterval {
+        let programs = timelines.flatMap { $0.programs(overlapping: interval) }
+        var longest: TimeInterval = .zero
+        for (_, airings) in Dictionary(grouping: programs, by: \.item.id) {
+            for (index, first) in airings.enumerated() {
+                for second in airings.dropFirst(index + 1) where first.channelID != second.channelID {
+                    let shared = min(first.slotEnd, second.slotEnd).timeIntervalSince(max(first.start, second.start))
+                    longest = max(longest, shared)
+                }
+            }
+        }
+        return longest
+    }
+
+    @Test("No episode is on two channels at once, however many may air its show", arguments: [1, 2, Int.max])
+    func noSameEpisode(limit: Int) {
+        // Short shows on as many channels as there are shows: channels that
+        // started in step would keep clashing.
+        let items = (1...4).flatMap { TestFactory.show("Show\($0)", episodes: 4) }
+        let timelines = Self.coordinated((1...4).map { ("channel.\($0)", items, .syndication) }, limit: limit)
+        #expect(Self.sameEpisodeOverlap(timelines, in: Self.week) <= .zero)
+    }
+
+    @Test("Channels steer clear of what a 24/7 channel is airing")
+    func avoidsFixedChannels() {
+        let marathon = TestFactory.show("Show1", episodes: 6)
+        let fixed = ChannelTimeline(channelID: "marathon", items: marathon, ordering: .syndication, grid: .continuous)
+        let items = Self.sharedShows(3)
+        let coordinator = SimulcastCoordinator(
+            limit: 2,
+            channels: (1...3).map { (ScheduleContext(channelID: "channel.\($0)", items: items, grid: .continuous), .syndication) },
+            fixed: fixed.repeatingSlots()
+        )
+        let timelines: [any ChannelSchedule] = (0..<3).map { coordinator.timeline(for: $0) } + [fixed]
+        #expect(Self.sameEpisodeOverlap(timelines, in: Self.week) <= .zero)
+    }
+
+    @Test("Uncounted channels don't use up the limit")
+    func uncountedChannels() {
+        let items = Self.sharedShows(1)
+        let coordinator = SimulcastCoordinator(
+            limit: 1,
+            channels: (1...2).map { (ScheduleContext(channelID: "channel.\($0)", items: items, grid: .continuous), .syndication) },
+            uncounted: [0]
+        )
+        let timelines = (0..<2).map { coordinator.timeline(for: $0) }
+        #expect(Self.mostAtOnce(timelines, in: Self.week) == 2)
+        #expect(Self.sameEpisodeOverlap(timelines, in: Self.week) <= .zero)
+    }
+
     @Test("Without clashes to avoid, channels keep their full mix")
     func keepsVariety() throws {
         let items = Self.sharedShows(8)

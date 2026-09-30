@@ -115,10 +115,15 @@ Live TV starts as soon as your first server is indexed. Add more servers later i
 - **Scheduling.** Schedules are computed from the lineup and the date, never
   stored, so every device agrees. Shows take turns: each gets an equal share of
   turns however many episodes it has, and always continues with its next
-  episode, in order. Channels are scheduled together so the same show isn't on
-  more than the chosen number of channels at once (24/7, custom and hidden
-  channels aside); when a channel has nothing else it may air, it airs the show
-  anyway rather than going dark. A 24/7 channel's position is simple arithmetic.
+  episode, in order; each channel starts each show at its own episode, so
+  channels sharing shows don't move through them in step. Channels are
+  scheduled together so the same show isn't on more than the chosen number of
+  channels at once (24/7 and custom channels don't count) and the same episode
+  or movie is never on two channels at once, 24/7 channels included. A 24/7
+  channel's schedule repeats a fixed cycle, so both its position and the other
+  channels' check against it are simple arithmetic. When a channel has nothing
+  else it may air, it breaks the show limit before it repeats an episode, and
+  airs something anyway rather than going dark.
 - **Playback.** Only one stream plays at a time. Channel changes wait a moment
   while you're flipping, and the previous stream is released before the next one
   starts. With the default player the server just sends the original file, like

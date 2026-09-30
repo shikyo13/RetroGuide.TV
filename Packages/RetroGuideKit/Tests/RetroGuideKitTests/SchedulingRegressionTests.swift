@@ -153,10 +153,11 @@ struct FairTurnsTests {
 
     @Test("Every order keeps each show's episodes in order", arguments: ScheduleOrdering.allCases)
     func episodesInOrder(ordering: ScheduleOrdering) {
+        // Each show starts wherever the channel starts it, then runs in order.
         var next: [String: Int] = [:]
         for item in Self.airings(ordering, count: 600) {
             let number = item.series?.episodeNumber ?? 0
-            let expected = next[item.headline] ?? 1
+            let expected = next[item.headline] ?? number
             #expect(number == expected || number == 1, "\(item.headline) jumped to \(number)")
             next[item.headline] = number + 1
         }

@@ -40,10 +40,10 @@ struct CyclePicker: ProgramPicker {
     init(ordering: ScheduleOrdering, context: ScheduleContext) {
         turns = Self.turns(for: ordering, context: context)
         airedEarly = Array(repeating: false, count: turns.count)
-        episode = Array(repeating: 0, count: context.shows.count)
+        episode = context.shows.indices.map(context.firstEpisode)
     }
 
-    mutating func next(at offset: TimeInterval, in context: ScheduleContext, isAllowed: (Int) -> Bool) -> Int {
+    mutating func next(at offset: TimeInterval, in context: ScheduleContext, isAllowed: (Int) -> Bool, isAcceptable: (Int) -> Bool) -> Int {
         for _ in 0...turns.count {
             skipTurnsAiredEarly()
             let due = candidate(at: position, in: context)
@@ -73,9 +73,41 @@ struct CyclePicker: ProgramPicker {
             }
             position = (position + 1) % turns.count
         }
-        // Nothing may air: better a simulcast than dead air.
         skipTurnsAiredEarly()
+        // Nothing may air: the first acceptable turn airs instead, set-aside
+        // turns first; failing that, better a simulcast than dead air.
+        if let (index, item) = firstSetAside(passing: isAcceptable, in: context) {
+            airedEarly[setAside.remove(at: index)] = true
+            return take(item, in: context)
+        }
+        if let turn = firstTurn(passing: isAcceptable, in: context), turn != position {
+            airedEarly[turn] = true
+            return take(candidate(at: turn, in: context), in: context)
+        }
         return takeDueTurn(candidate(at: position, in: context), in: context)
+    }
+
+    /// The oldest set-aside turn whose episode passes.
+    private func firstSetAside(passing passes: (Int) -> Bool, in context: ScheduleContext) -> (index: Int, item: Int)? {
+        for (index, turn) in setAside.enumerated() {
+            let item = candidate(at: turn, in: context)
+            if passes(item) {
+                return (index, item)
+            }
+        }
+        return nil
+    }
+
+    /// The nearest turn from the due one, all the way round, that passes and
+    /// hasn't aired early.
+    private func firstTurn(passing passes: (Int) -> Bool, in context: ScheduleContext) -> Int? {
+        for step in 0..<turns.count {
+            let turn = (position + step) % turns.count
+            if !airedEarly[turn], passes(candidate(at: turn, in: context)) {
+                return turn
+            }
+        }
+        return nil
     }
 
     private mutating func skipTurnsAiredEarly() {

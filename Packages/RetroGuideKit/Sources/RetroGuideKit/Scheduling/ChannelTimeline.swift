@@ -55,6 +55,16 @@ public final class ChannelTimeline: @unchecked Sendable {
         return makeProgram(cycle: nextCycle, slot: .zero, layout: self.layout(forCycle: nextCycle))
     }
 
+    /// Every item's slot in the cycle, which repeats unchanged every
+    /// ``cycleLength`` from the epoch.
+    func repeatingSlots() -> [(item: MediaItem, slot: RepeatingSlot)] {
+        guard !isEmpty else { return [] }
+        let layout = layout(forCycle: .zero)
+        return layout.order.enumerated().map { slot, index in
+            (items[index], RepeatingSlot(offset: layout.startOffsets[slot], length: slotLengths[index], period: cycleLength))
+        }
+    }
+
     // MARK: - Layout
 
     private func makeProgram(cycle: Int, slot: Int, layout: CycleLayout) -> ScheduledProgram {

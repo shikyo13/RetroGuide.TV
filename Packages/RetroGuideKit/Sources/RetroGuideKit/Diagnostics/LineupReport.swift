@@ -55,6 +55,9 @@ public struct LineupReport: Sendable, CustomStringConvertible {
     /// and the share of sampled moments where some show was over the limit.
     public let simulcastMax: Int
     public let simulcastOverLimitShare: Double
+    /// Share of sampled moments where one episode or movie was on two
+    /// channels at once (every visible channel, 24/7 and custom included).
+    public let sameEpisodeShare: Double
     /// Items stored across all channels per library item (memory proxy).
     public let storageFactor: Double
 
@@ -131,9 +134,10 @@ public struct LineupReport: Sendable, CustomStringConvertible {
         programsPerDayLowest = perDay.first ?? 0
         programsPerDayMedian = perDay.isEmpty ? 0 : perDay[perDay.count / 2]
         deadAirShare = scheduled > 0 ? dead / scheduled : 0
-        let simulcast = Self.simulcast(on: visible.filter { ![.series, .custom].contains($0.definition.source) }, limit: simulcastLimit.channels)
+        let simulcast = Self.overlap(on: visible.filter { ![.series, .custom].contains($0.definition.source) }, of: Self.title, limit: simulcastLimit.channels)
         simulcastMax = simulcast.max
         simulcastOverLimitShare = simulcast.overLimitShare
+        sameEpisodeShare = Self.overlap(on: visible, of: \.id, limit: 1).overLimitShare
         storageFactor = index.items.isEmpty ? 0 : Double(visible.reduce(0) { $0 + $1.items.count }) / Double(index.items.count)
     }
 
@@ -148,6 +152,7 @@ public struct LineupReport: Sendable, CustomStringConvertible {
         channels repeating early \(repeatShortfalls.count), lacking variety \(varietyShortfalls.count)
         different programs per channel per day: lowest \(programsPerDayLowest) (\(leastVariedChannel)), median \(programsPerDayMedian)
         same show at once: max \(simulcastMax) channels, over the limit \(String(format: "%.1f", simulcastOverLimitShare * 100))% of the time
+        same episode at once \(String(format: "%.1f", sameEpisodeShare * 100))% of the time
         dead air \(String(format: "%.1f", deadAirShare * 100))%, stored items per library item \(String(format: "%.1f", storageFactor))
         """
     }
@@ -204,14 +209,15 @@ public struct LineupReport: Sendable, CustomStringConvertible {
         return Tuning.repeatHorizon / Tuning.dayLength
     }
 
-    /// Sweeps every program in the week after the reference date for shows
-    /// airing on several channels at once.
-    private static func simulcast(on channels: [Channel], limit: Int?) -> (max: Int, overLimitShare: Double) {
+    /// Sweeps every program in the week after the reference date for titles
+    /// (shows, or single episodes and movies, by `key`) airing on several
+    /// channels at once.
+    private static func overlap(on channels: [Channel], of key: (MediaItem) -> String, limit: Int?) -> (max: Int, overLimitShare: Double) {
         let window = DateInterval(start: Tuning.referenceDate, duration: Tuning.simulcastWindow)
         var events: [(time: Date, change: Int, show: String)] = []
         for channel in channels {
             for program in channel.timeline.programs(overlapping: window) {
-                let show = title(of: program.item)
+                let show = key(program.item)
                 events.append((max(program.start, window.start), 1, show))
                 events.append((min(program.slotEnd, window.end), -1, show))
             }

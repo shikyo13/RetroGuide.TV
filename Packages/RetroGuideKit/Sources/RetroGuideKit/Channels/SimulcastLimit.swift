@@ -1,7 +1,8 @@
 import Foundation
 
-/// How many channels may air the same show at the same time. 24/7 channels
-/// don't count: airing one show is what they're for.
+/// How many channels may air the same show at the same time. 24/7 and custom
+/// channels don't count: airing one show is what 24/7 channels are for.
+/// Whatever the limit, no episode or movie airs on two channels at once.
 public enum SimulcastLimit: String, Codable, Sendable, CaseIterable, Hashable {
     case one
     case two
@@ -32,7 +33,7 @@ public enum SimulcastLimit: String, Codable, Sendable, CaseIterable, Hashable {
         case .one: "A show airs on only one channel at a time. Most variety while surfing."
         case .two: "A show airs on at most two channels at the same time."
         case .three: "A show airs on at most three channels at the same time."
-        case .unlimited: "Channels schedule independently; a show may be on several at once."
+        case .unlimited: "A show may be on any number of channels at once, always a different episode."
         }
     }
 }

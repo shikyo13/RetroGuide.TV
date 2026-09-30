@@ -1,13 +1,16 @@
 import Foundation
 
 /// Schedules a group of channels together so that no show is on more than
-/// `limit` of them at the same moment.
+/// `limit` of them at the same moment, and no episode or movie is on two
+/// channels at once (including the fixed 24/7 channels around them).
 ///
 /// All channels are simulated side by side from ``ScheduleConstants/epoch``,
 /// always advancing the channel whose next program starts first. A channel
-/// about to air a show that's already on `limit` others passes that turn and
-/// airs something else, and the show continues where it left off later. Only
-/// real clashes are avoided, so channels keep their full variety. The result
+/// about to air a show that's already on `limit` others, or an episode that's
+/// already on, passes that turn and airs something else, and the show
+/// continues where it left off later. Only real clashes are avoided, so
+/// channels keep their full variety. Channels that don't count toward the
+/// limit (custom channels) still avoid airing the same episode. The result
 /// depends only on the lineup, so every device shows the same guide.
 ///
 /// Simulated days are cached, with the state needed to continue from them.
@@ -23,9 +26,14 @@ final class SimulcastCoordinator: @unchecked Sendable {
 
     private let limit: Int
     private let contexts: [ScheduleContext]
-    /// Show of every channel's items, as an index shared by all channels.
+    /// Show and item of every channel's items, as indices shared by all channels.
     private let globalShow: [[Int]]
+    private let globalItem: [[Int]]
     private let showCount: Int
+    /// Whether each channel's airings count toward `limit`.
+    private let countsTowardLimit: [Bool]
+    /// When fixed channels air each item (by shared item index), if ever.
+    private let fixedSlots: [[RepeatingSlot]]
     /// Channels with anything to air.
     private let activeChannels: [Int]
     private let initial: State
@@ -40,9 +48,13 @@ final class SimulcastCoordinator: @unchecked Sendable {
         var pickers: [ChannelPicker]
         /// When each channel's next program starts.
         var nextStart: [TimeInterval]
-        /// Show each channel is airing (-1: none yet), and how many channels air each show.
+        /// Show each channel is airing (-1: none, or it doesn't count toward
+        /// the limit), and how many channels air each show.
         var airing: [Int]
         var airingCount: [Int]
+        /// Item each channel is airing (-1: none yet), and how many channels air each item.
+        var airingItem: [Int]
+        var itemAiringCount: [Int]
         /// Advances with every group of channels starting together, to rotate
         /// which of equally constrained channels picks first.
         var startGroups = 0
@@ -54,9 +66,32 @@ final class SimulcastCoordinator: @unchecked Sendable {
         var starts: [[TimeInterval]]
     }
 
-    init(limit: Int, channels: [(context: ScheduleContext, ordering: ScheduleOrdering)]) {
+    /// - Parameters:
+    ///   - uncounted: positions of channels that don't count toward `limit`.
+    ///   - fixed: items' slots on channels outside the group (24/7 channels),
+    ///     which the group works around.
+    init(
+        limit: Int,
+        channels: [(context: ScheduleContext, ordering: ScheduleOrdering)],
+        uncounted: Set<Int> = [],
+        fixed: [(item: MediaItem, slot: RepeatingSlot)] = []
+    ) {
         self.limit = limit
         self.contexts = channels.map(\.context)
+        self.countsTowardLimit = channels.indices.map { !uncounted.contains($0) }
+        var itemIDs: [String: Int] = [:]
+        self.globalItem = channels.map { channel in
+            channel.context.items.map { item in
+                if let known = itemIDs[item.id] { return known }
+                itemIDs[item.id] = itemIDs.count
+                return itemIDs.count - 1
+            }
+        }
+        var fixedSlots = Array(repeating: [RepeatingSlot](), count: itemIDs.count)
+        for (item, slot) in fixed {
+            if let index = itemIDs[item.id] { fixedSlots[index].append(slot) }
+        }
+        self.fixedSlots = fixedSlots
         var ids: [String: Int] = [:]
         for id in Set(channels.flatMap(\.context.showIDs)).sorted() {
             ids[id] = ids.count
@@ -70,7 +105,9 @@ final class SimulcastCoordinator: @unchecked Sendable {
             pickers: channels.map { ChannelPicker(ordering: $0.ordering, context: $0.context) },
             nextStart: Array(repeating: .zero, count: channels.count),
             airing: Array(repeating: -1, count: channels.count),
-            airingCount: Array(repeating: 0, count: ids.count)
+            airingCount: Array(repeating: 0, count: ids.count),
+            airingItem: Array(repeating: -1, count: channels.count),
+            itemAiringCount: Array(repeating: 0, count: itemIDs.count)
         )
     }
 
@@ -198,28 +235,54 @@ final class SimulcastCoordinator: @unchecked Sendable {
     }
 
     private func endProgram(on channel: Int, state: inout State) {
-        guard state.airing[channel] >= 0 else { return }
-        state.airingCount[state.airing[channel]] -= 1
-        state.airing[channel] = -1
+        if state.airing[channel] >= 0 {
+            state.airingCount[state.airing[channel]] -= 1
+            state.airing[channel] = -1
+        }
+        if state.airingItem[channel] >= 0 {
+            state.itemAiringCount[state.airingItem[channel]] -= 1
+            state.airingItem[channel] = -1
+        }
     }
 
     /// Airs the channel's next program at `start`; returns when it ends.
     private func pick(on channel: Int, at start: TimeInterval, state: inout State, chunk: inout Chunk) -> TimeInterval {
         let context = contexts[channel]
         let shows = globalShow[channel]
+        let items = globalItem[channel]
+        let counts = countsTowardLimit[channel]
         // Moved out while it runs, so its arrays aren't copied.
         var picker = ChannelPicker.moving
         swap(&picker, &state.pickers[channel])
-        let item = picker.next(at: start, in: context) { state.airingCount[shows[$0]] < limit }
+        // The same episode on two channels never bends; the show limit may,
+        // when nothing else could air.
+        func isFree(_ candidate: Int) -> Bool {
+            state.itemAiringCount[items[candidate]] == 0
+                && !isOnFixedChannel(items[candidate], from: start, to: start + context.slotLengths[candidate])
+        }
+        let item = picker.next(
+            at: start,
+            in: context,
+            isAllowed: { (!counts || state.airingCount[shows[$0]] < limit) && isFree($0) },
+            isAcceptable: isFree
+        )
         swap(&picker, &state.pickers[channel])
-        let show = shows[item]
-        state.airing[channel] = show
-        state.airingCount[show] += 1
+        if counts {
+            state.airing[channel] = shows[item]
+            state.airingCount[shows[item]] += 1
+        }
+        state.airingItem[channel] = items[item]
+        state.itemAiringCount[items[item]] += 1
         let next = start + context.slotLengths[item]
         state.nextStart[channel] = next
         chunk.items[channel].append(item)
         chunk.starts[channel].append(start)
         return next
+    }
+
+    /// Whether a 24/7 channel airs the item at any point in `start..<end`.
+    private func isOnFixedChannel(_ item: Int, from start: TimeInterval, to end: TimeInterval) -> Bool {
+        fixedSlots[item].contains { $0.overlaps(from: start, to: end) }
     }
 
     private func store(_ chunk: Chunk, as number: Int) {

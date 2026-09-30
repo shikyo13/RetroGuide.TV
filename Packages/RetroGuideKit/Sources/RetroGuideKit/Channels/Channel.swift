@@ -30,11 +30,16 @@ public struct Channel: Sendable, Identifiable, Hashable {
     /// that share a simulcast limit are scheduled by a ``SimulcastCoordinator``.
     static func schedule(for definition: ChannelDefinition, items: [MediaItem], grid: ScheduleGrid) -> any ChannelSchedule {
         // One show (a 24/7 channel) needs no turns: plain arithmetic finds its episode.
-        guard Set(items.map(\.showID)).count > 1 else {
+        guard !airsOneShow(items) else {
             return ChannelTimeline(channelID: definition.id, items: items, ordering: definition.ordering, grid: grid)
         }
         let context = ScheduleContext(channelID: definition.id, items: items, grid: grid)
         return SimulatedTimeline(channelID: definition.id, context: context, picker: ChannelPicker(ordering: definition.ordering, context: context))
+    }
+
+    /// Whether the items are all one show (or one movie).
+    static func airsOneShow(_ items: [MediaItem]) -> Bool {
+        Set(items.map(\.showID)).count <= 1
     }
 
     public var id: String { definition.id }

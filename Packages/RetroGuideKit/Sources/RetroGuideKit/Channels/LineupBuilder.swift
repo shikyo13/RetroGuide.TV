@@ -20,7 +20,8 @@ public struct LineupBuilder: Sendable {
     /// channels, near-duplicates and channels beyond the cap are left out.
     ///
     /// No show airs on more than ``LineupCustomization/simulcastLimit``
-    /// channels at once, except on 24/7 and custom channels.
+    /// channels at once (24/7 and custom channels don't count), and no episode
+    /// or movie airs on two channels at once.
     public func build(index: LibraryIndex, customization: LineupCustomization) -> [Channel] {
         let automatic = curated.sorted { $0.number < $1.number }
             + DynamicChannelFactory.definitions(for: index.facets, options: options)
@@ -134,25 +135,41 @@ public struct LineupBuilder: Sendable {
         return Set(natives.map { "series.\($0)" }).subtracting([definition.id])
     }
 
-    /// Visible channels share one schedule that keeps any show from airing on
-    /// more than ``LineupCustomization/simulcastLimit`` of them at once; 24/7,
-    /// custom and hidden channels run on their own.
+    /// Visible channels share one schedule: no show on more than
+    /// ``LineupCustomization/simulcastLimit`` of them at once (24/7 and custom
+    /// channels don't count), and never the same episode or movie on two at
+    /// once, 24/7 channels included. 24/7 channels repeat a fixed cycle that
+    /// the others work around; hidden channels run on their own.
     private func schedule(
         _ resolved: [Resolved],
         isHidden: (ChannelDefinition) -> Bool,
         formerIDs: [String: Set<String>],
         customization: LineupCustomization
     ) -> [Channel] {
-        let shared = customization.simulcastLimit.channels.map { _ in
-            resolved.indices.filter { !Self.exemptSources.contains(resolved[$0].definition.source) && !isHidden(resolved[$0].definition) }
-                .sorted { resolved[$0].definition.id < resolved[$1].definition.id }
-        } ?? []
         var timelines: [Int: any ChannelSchedule] = [:]
-        if let limit = customization.simulcastLimit.channels, !shared.isEmpty {
-            let coordinator = SimulcastCoordinator(limit: limit, channels: shared.map { position in
-                let definition = resolved[position].definition
-                return (ScheduleContext(channelID: definition.id, items: resolved[position].items, grid: options.grid), definition.ordering)
-            })
+        var fixed: [(item: MediaItem, slot: RepeatingSlot)] = []
+        var shared: [Int] = []
+        for position in resolved.indices where !isHidden(resolved[position].definition) {
+            let (definition, items) = resolved[position]
+            if Self.exemptSources.contains(definition.source), Channel.airsOneShow(items) {
+                let timeline = ChannelTimeline(channelID: definition.id, items: items, ordering: definition.ordering, grid: options.grid)
+                timelines[position] = timeline
+                fixed += timeline.repeatingSlots()
+            } else {
+                shared.append(position)
+            }
+        }
+        shared.sort { resolved[$0].definition.id < resolved[$1].definition.id }
+        if !shared.isEmpty {
+            let coordinator = SimulcastCoordinator(
+                limit: customization.simulcastLimit.channels ?? .max,
+                channels: shared.map { position in
+                    let definition = resolved[position].definition
+                    return (ScheduleContext(channelID: definition.id, items: resolved[position].items, grid: options.grid), definition.ordering)
+                },
+                uncounted: Set(shared.indices.filter { Self.exemptSources.contains(resolved[shared[$0]].definition.source) }),
+                fixed: fixed
+            )
             for (member, position) in shared.enumerated() {
                 timelines[position] = coordinator.timeline(for: member)
             }
@@ -169,7 +186,8 @@ public struct LineupBuilder: Sendable {
         }
     }
 
-    /// 24/7 channels air one show by design, and custom channels are the viewer's call.
+    /// Channels that don't count toward the simulcast limit: 24/7 channels
+    /// air one show by design, and custom channels are the viewer's call.
     private static let exemptSources: Set<ChannelSource> = [.series, .custom]
 
     private func runtime(_ items: [MediaItem]) -> TimeInterval {
