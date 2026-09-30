@@ -20,6 +20,7 @@ struct ProUpgradeView: View {
                 purchaseControls(pro)
             }
         }
+        .task { await pro.loadProductIfNeeded() }
     }
 
     @ViewBuilder
@@ -32,6 +33,15 @@ struct ProUpgradeView: View {
             }
             .buttonStyle(.retroPrimary)
             .disabled(pro.product == nil || pro.purchaseState == .purchasing)
+
+            if pro.product == nil, !pro.isLoadingProduct {
+                Button {
+                    Task { await pro.loadProductIfNeeded() }
+                } label: {
+                    Label("Try Again", systemImage: "arrow.clockwise")
+                }
+                .buttonStyle(.retro)
+            }
 
             Button {
                 Task { await pro.restore() }
@@ -49,7 +59,9 @@ struct ProUpgradeView: View {
     }
 
     private func buyTitle(_ pro: ProStore) -> String {
-        guard let product = pro.product else { return "Not available right now" }
+        guard let product = pro.product else {
+            return pro.isLoadingProduct ? "Contacting the App Store…" : "Couldn't reach the App Store"
+        }
         return "Upgrade for \(product.displayPrice)"
     }
 

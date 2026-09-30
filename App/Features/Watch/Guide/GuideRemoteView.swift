@@ -72,6 +72,12 @@ struct GuideRemoteView: View {
         .onExitCommand(perform: handleBack)
         .onAppear { focus = .grid }
         .onChange(of: lineupRevision) { model.replaceChannels(channels) }
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: GuideLayout.Time.followInterval)
+                model.followLiveTime()
+            }
+        }
         .onChange(of: focusRequest) { _, request in
             switch request?.target {
             case .topBar: focusHeader()

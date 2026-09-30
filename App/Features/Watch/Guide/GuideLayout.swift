@@ -42,6 +42,8 @@ enum GuideLayout {
         static let minimumVisible: TimeInterval = 15 * ScheduleConstants.secondsPerMinute
         /// Nudges focus anchors inside a program rather than on its boundary.
         static let epsilon: TimeInterval = 1
+        /// How often an open guide moves along with the clock.
+        static let followInterval: Duration = .seconds(ScheduleConstants.secondsPerMinute)
     }
 
     /// Floors `date` to the start of its guide slot (e.g. 8:47 → 8:30).

@@ -13,6 +13,14 @@ struct SearchView: View {
     private enum Timing {
         /// Brief pause after a keystroke before searching, so fast typing stays smooth.
         static let debounce: Duration = .milliseconds(150)
+        /// How often open results refresh, so "on now" stays true as programs end.
+        static let refreshInterval: Duration = .seconds(60)
+    }
+
+    /// Everything that should rerun the search: the text and the lineup's index.
+    private struct SearchKey: Equatable {
+        let query: String
+        let revision: Int
     }
 
     let onClose: () -> Void
@@ -31,7 +39,7 @@ struct SearchView: View {
                 LazyVStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
                     ForEach(results) { result in
                         Button {
-                            if let channel = result.channel { onTune(channel) }
+                            if let channel = result.channel.flatMap(app.currentChannel) { onTune(channel) }
                         } label: {
                             SearchResultRow(result: result)
                         }
@@ -74,10 +82,12 @@ struct SearchView: View {
             if wasPresented, !isPresented { onClose() }
         }
         #endif
-        .task(id: query) {
+        .task(id: SearchKey(query: query, revision: app.searchRevision)) {
             try? await Task.sleep(for: Timing.debounce)
-            guard !Task.isCancelled else { return }
-            results = app.searchIndex.search(query, at: .now)
+            while !Task.isCancelled {
+                results = app.searchIndex.search(query, at: .now)
+                try? await Task.sleep(for: Timing.refreshInterval)
+            }
         }
     }
 }

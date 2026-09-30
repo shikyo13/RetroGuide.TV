@@ -32,6 +32,18 @@ final class AppModel {
     /// rebuild that finishes after a newer one doesn't overwrite it.
     private var indexGeneration = 0
     private var lineupGeneration = 0
+    /// Bumped on sign-out and server removal: work started before (a library
+    /// download, a rebuild) must not publish into the new session.
+    private var sessionGeneration = 0
+    /// A refresh was asked for while one was running (settings changed,
+    /// a server was added): run another with the latest settings after.
+    @ObservationIgnored private var refreshPending = false
+    /// The lineup build in progress, and whether another was asked for
+    /// meanwhile: builds run one at a time, and the next one uses the latest
+    /// settings, however many changes came in.
+    @ObservationIgnored private var lineupBuild: Task<Void, Never>?
+    @ObservationIgnored private var lineupBuildPending = false
+    @ObservationIgnored private var isSessionStarted = false
     /// Bumped whenever a new lineup is published, so open views can refresh.
     private(set) var lineupRevision = 0
     private(set) var libraryIndex = LibraryIndex.empty
@@ -39,7 +51,11 @@ final class AppModel {
     private(set) var lastRefreshed: Date?
     private(set) var refreshError: String?
     private(set) var customization: LineupCustomization
-    private(set) var searchIndex = ProgramSearchIndex.empty
+    private(set) var searchIndex = ProgramSearchIndex.empty {
+        didSet { searchRevision += 1 }
+    }
+    /// Changes whenever ``searchIndex`` is replaced, so open searches rerun.
+    private(set) var searchRevision = 0
 
     var preferences: UserPreferences {
         didSet { preferencesChanged(from: oldValue) }
@@ -107,9 +123,12 @@ final class AppModel {
         tuner.onTrackRulesChanged = { [weak self] rules, item, scope in
             self?.trackRulesChanged(rules, on: item, scope: scope)
         }
+        trackSync.setCurrent(rules: rules, preferences: store.languagePreferences)
         cloudTrackRules.onChange = { [weak self] rules in
-            self?.store.trackRules = rules
-            self?.tuner.replaceTrackRules(rules)
+            guard let self else { return }
+            store.trackRules = rules
+            tuner.replaceTrackRules(rules)
+            trackSync.setCurrent(rules: rules, preferences: store.languagePreferences)
         }
         cloudTrackRules.start()
     }
@@ -118,6 +137,12 @@ final class AppModel {
 
     var visibleChannels: [Channel] {
         lineup.filter { !$0.isHidden }
+    }
+
+    /// `channel` as it is in the current lineup (results can outlive a rebuild),
+    /// or nil once it's gone.
+    func currentChannel(_ channel: Channel) -> Channel? {
+        lineup.first { $0.isIdentified(by: channel.id) }
     }
 
     /// The chosen theme, or Classic Cable when a Pro theme is chosen without Pro.
@@ -158,10 +183,7 @@ final class AppModel {
             phase = .onboarding
             return
         }
-        startHealthChecks()
-        networkMonitor.start { [weak self] in
-            Task { await self?.refreshConnections() }
-        }
+        startConnectedSession()
         if let cachedAt = servers.oldestRefresh {
             lastRefreshed = cachedAt
             await rebuildIndexAndLineup()
@@ -193,11 +215,12 @@ final class AppModel {
     /// Adds a server chosen during onboarding or from Settings, then indexes it.
     func addServer(_ account: ServerAccount, token: String, accountToken: String?) async {
         servers.add(account, token: token, accountToken: accountToken)
-        startHealthChecks()
+        startConnectedSession()
         await refreshLibrary()
     }
 
     func removeServer(id: String) async {
+        sessionGeneration += 1
         servers.remove(serverID: id)
         guard servers.hasServers else {
             signOut()
@@ -213,8 +236,13 @@ final class AppModel {
 
     /// Applies a server's quality/buffering settings and rejoins the current channel.
     func updatePlayback(_ playback: ServerPlaybackSettings, serverID: String) async {
+        let qualityChanged = servers.qualityByServer[serverID] != playback.quality
         servers.setPlayback(playback, serverID: serverID)
-        await rebuildIndexAndLineup()
+        // Quality decides which copy of each item plays (and so the library
+        // index); buffering only affects the stream.
+        if qualityChanged {
+            await rebuildIndexAndLineup()
+        }
         if let channel = tuner.channel {
             tuner.tune(to: channel, isAutomatic: true)
         }
@@ -231,6 +259,10 @@ final class AppModel {
     }
 
     func signOut() {
+        sessionGeneration += 1
+        refreshPending = false
+        isSessionStarted = false
+        networkMonitor.stop()
         healthTask?.cancel()
         tuner.powerOff()
         trackSync.cancelAll()
@@ -256,10 +288,22 @@ final class AppModel {
     /// Re-indexes every server. Shows full-screen progress only when there is
     /// nothing to watch yet; otherwise refreshes quietly.
     func refreshLibrary() async {
-        guard !isRefreshing else { return }
+        guard !isRefreshing else {
+            refreshPending = true
+            return
+        }
         isRefreshing = true
-        refreshError = nil
         defer { isRefreshing = false }
+        repeat {
+            refreshPending = false
+            await refreshLibraryOnce()
+        } while refreshPending
+    }
+
+    private func refreshLibraryOnce() async {
+        let session = sessionGeneration
+        guard servers.hasServers else { return }
+        refreshError = nil
         let showsProgress = lineup.isEmpty
         if showsProgress {
             phase = .indexing(LibraryLoadProgress(fraction: .zero, message: "Connecting…"))
@@ -267,15 +311,19 @@ final class AppModel {
         do {
             let hadFailures = try await servers.refreshAll(
                 progress: { [weak self] progress in
-                    guard let self, showsProgress, phase != .ready else { return }
+                    guard let self, session == sessionGeneration, showsProgress, phase != .ready else { return }
                     phase = .indexing(progress)
                 },
                 onServerReady: { [weak self] in
                     // Go on air as soon as any server is ready; others merge in as they finish.
-                    await self?.rebuildIndexAndLineup()
-                    self?.goOnAir()
+                    guard let self, session == sessionGeneration else { return }
+                    await rebuildIndexAndLineup()
+                    guard session == sessionGeneration else { return }
+                    goOnAir()
                 }
             )
+            // Signed out or a server removed meanwhile: nothing here applies.
+            guard session == sessionGeneration else { return }
             lastRefreshed = .now
             await refreshLanguagePreferences()
             refreshError = offlineServersMessage
@@ -283,6 +331,7 @@ final class AppModel {
                 await rebuildIndexAndLineup()
             }
         } catch {
+            guard session == sessionGeneration else { return }
             refreshError = error.localizedDescription
             if showsProgress {
                 phase = .failed(error.localizedDescription)
@@ -296,6 +345,17 @@ final class AppModel {
     }
 
     // MARK: - Reachability
+
+    /// Health checks and network-change handling for a signed-in session,
+    /// started once whether the viewer signed in just now or before.
+    private func startConnectedSession() {
+        guard !isSessionStarted else { return }
+        isSessionStarted = true
+        startHealthChecks()
+        networkMonitor.start { [weak self] in
+            Task { await self?.refreshConnections() }
+        }
+    }
 
     private func startHealthChecks() {
         healthTask?.cancel()
@@ -409,7 +469,27 @@ final class AppModel {
         #endif
     }
 
+    /// Rebuilds the lineup with the current settings. A request while a build
+    /// runs waits for one more build after it, which uses the latest settings.
     private func rebuildLineup() async {
+        if let running = lineupBuild {
+            lineupBuildPending = true
+            await running.value
+            return
+        }
+        let build = Task { [weak self] in
+            guard let self else { return }
+            repeat {
+                lineupBuildPending = false
+                await rebuildLineupOnce()
+            } while lineupBuildPending
+            lineupBuild = nil
+        }
+        lineupBuild = build
+        await build.value
+    }
+
+    private func rebuildLineupOnce() async {
         lineupGeneration += 1
         let generation = lineupGeneration
         pendingLineupRebuilds += 1
@@ -488,5 +568,6 @@ final class AppModel {
         guard let preferences = await servers.fetchLanguagePreferences() else { return }
         store.languagePreferences = preferences
         tuner.languagePreferences = preferences
+        trackSync.setCurrent(rules: store.trackRules, preferences: preferences)
     }
 }

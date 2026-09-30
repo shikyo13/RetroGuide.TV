@@ -24,6 +24,7 @@ final class ProStore {
     /// Whether ownership has been checked since launch, so ads never flash up for a Pro owner.
     private(set) var hasLoaded = false
     private(set) var product: Product?
+    private(set) var isLoadingProduct = false
     private(set) var purchaseState = PurchaseState.idle
 
     @ObservationIgnored private var updatesTask: Task<Void, Never>?
@@ -85,7 +86,16 @@ final class ProStore {
         await refreshOwnership()
     }
 
+    /// Loads the product if an earlier try failed (no network at launch),
+    /// e.g. when the upgrade screen opens.
+    func loadProductIfNeeded() async {
+        guard product == nil, !isLoadingProduct else { return }
+        await loadProduct()
+    }
+
     private func loadProduct() async {
+        isLoadingProduct = true
+        defer { isLoadingProduct = false }
         do {
             product = try await Product.products(for: [ProductID.pro]).first
         } catch {

@@ -49,6 +49,12 @@ struct GuideTouchView: View {
         .onAppear(perform: fitWindowToWidth)
         .onChange(of: isNarrowLayout) { fitWindowToWidth() }
         .onChange(of: lineupRevision) { model.replaceChannels(channels) }
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: GuideLayout.Time.followInterval)
+                model.followLiveTime()
+            }
+        }
         .animation(DesignTokens.Motion.quickEase, value: model.windowStart)
         .animation(DesignTokens.Motion.quickEase, value: model.focusAnchor)
     }

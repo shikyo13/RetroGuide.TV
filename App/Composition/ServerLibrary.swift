@@ -190,12 +190,21 @@ final class ServerLibrary {
                 }
             }
             for await (account, result) in group {
+                // Removed, or its libraries changed, while downloading: this
+                // result is for settings that no longer apply.
+                guard isCurrent(account) else { continue }
                 switch result {
                 case let .success(snapshot):
                     snapshots[account.id] = snapshot
                     status[account.id] = .online
                     aggregator.finish(serverID: account.id, succeeded: true)
                     await snapshotStore.save(snapshot)
+                    guard isCurrent(account) else {
+                        // Removed while the cache was being written: don't leave it behind.
+                        snapshots[account.id] = nil
+                        snapshotStore.remove(serverID: account.id)
+                        continue
+                    }
                     await onServerReady()
                 case let .failure(error):
                     status[account.id] = .offline
@@ -208,6 +217,11 @@ final class ServerLibrary {
             throw failure
         }
         return !failures.isEmpty
+    }
+
+    /// Whether `account` is still connected with the same library selection.
+    private func isCurrent(_ account: ServerAccount) -> Bool {
+        accounts.first { $0.id == account.id }?.selectedLibraryIDs == account.selectedLibraryIDs
     }
 
     private nonisolated static func download(
