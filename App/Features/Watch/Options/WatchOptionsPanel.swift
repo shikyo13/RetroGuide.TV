@@ -3,8 +3,8 @@ import SwiftUI
 
 /// Options for what's on now: audio and subtitles, applied to the live picture
 /// right away and remembered, each at its own scope like PASTA (this episode,
-/// season, show or library), on this device, in iCloud and on the server; and
-/// the channel's schedule order.
+/// season, show or library), on this device, in iCloud and on the server; the
+/// channel's schedule order; and why what's on is on this channel.
 struct WatchOptionsPanel: View {
     private enum ChoiceID {
         static let subtitlesOff = "subtitles.off"
@@ -30,6 +30,9 @@ struct WatchOptionsPanel: View {
                 if let channel = tuner.channel {
                     SettingsSection("Channel \(channel.number) · \(channel.name)") {
                         scheduleOrder(for: channel)
+                        if let item = tuner.program?.item {
+                            ChannelPlacementControls(channel: channel, item: item)
+                        }
                     }
                 }
             }

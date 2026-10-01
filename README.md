@@ -23,7 +23,13 @@ next in a cable-style guide.
   lineup scales to the size of your library.
 - **Works with any library.** Genres are normalized across Plex agents and
   languages (for example "Sci-Fi & Fantasy", "Science Fiction" and "Komödie"), and
-  anime is recognized even without an "Anime" genre tag.
+  anime is recognized even without an "Anime" genre tag. Servers' genre tags are
+  loose ("Mystery" on a fishing documentary), so RetroGuide checks well-known
+  titles against its own classification, built from Wikidata and matched by IMDb,
+  TMDB or TVDB id: loosely applied tags count only when it agrees, and
+  documentaries, reality, game and talk shows stay off the channels built around
+  fiction. "Why is this here?" in a channel's Options says why a show is on it,
+  and with RetroGuide Pro a show can be taken off one channel.
 - **Custom channels.** Combine genres, shows, networks, collections, decades,
   audiences and libraries, with a live preview of what the channel will air.
 - **Real TV scheduling.** Every channel runs on a fixed clock, so with the same

@@ -12,6 +12,9 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
     public var customChannels: [ChannelDefinition]
     /// Automatic channel groups the user turned off (custom channels are never disabled).
     public var disabledSources: Set<ChannelSource>
+    /// Shows and movies taken off a channel by hand, by channel id: the show's
+    /// (or movie's) id, ``MediaItem/showID``.
+    public var removedTitles: [String: Set<String>]
 
     public init(
         hiddenChannelIDs: Set<String> = [],
@@ -19,7 +22,8 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
         defaultOrdering: ScheduleOrdering? = nil,
         simulcastLimit: SimulcastLimit = .two,
         customChannels: [ChannelDefinition] = [],
-        disabledSources: Set<ChannelSource> = []
+        disabledSources: Set<ChannelSource> = [],
+        removedTitles: [String: Set<String>] = [:]
     ) {
         self.hiddenChannelIDs = hiddenChannelIDs
         self.orderingOverrides = orderingOverrides
@@ -27,6 +31,7 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
         self.simulcastLimit = simulcastLimit
         self.customChannels = customChannels
         self.disabledSources = disabledSources
+        self.removedTitles = removedTitles
     }
 
     /// Tolerant decoding so settings saved by older versions keep working.
@@ -38,6 +43,7 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
         simulcastLimit = try container.decodeIfPresent(SimulcastLimit.self, forKey: .simulcastLimit) ?? .two
         customChannels = try container.decodeIfPresent([ChannelDefinition].self, forKey: .customChannels) ?? []
         disabledSources = try container.decodeIfPresent(Set<ChannelSource>.self, forKey: .disabledSources) ?? []
+        removedTitles = try container.decodeIfPresent([String: Set<String>].self, forKey: .removedTitles) ?? [:]
     }
 
     /// Puts every channel on `ordering` at once: automatic channels through

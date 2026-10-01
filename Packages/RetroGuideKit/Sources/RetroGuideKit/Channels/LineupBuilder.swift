@@ -34,7 +34,8 @@ public struct LineupBuilder: Sendable {
             .filter { $0.source != .series || ($0.rule.seriesIDs.first.flatMap { seasons[$0] } ?? .zero) >= options.marathonMinimumSeasons }
             .map { definition in
                 let show = definition.source == .series ? definition.rule.seriesIDs.first : nil
-                return (definition, show.map { episodesByShow[$0] ?? [] } ?? schedulableItems(for: definition.rule, in: index))
+                let items = show.map { episodesByShow[$0] ?? [] } ?? schedulableItems(for: definition.rule, in: index)
+                return (definition, Self.removing(customization.removedTitles[definition.id], from: items))
             }
         let minimumTitles = Set(index.items.map(\.showID)).count >= options.titleMinimumLibraryTitles ? options.minimumChannelTitles : 1
 
@@ -86,13 +87,19 @@ public struct LineupBuilder: Sendable {
             resolved[position].definition.callSign = CallSign.unique(resolved[position].definition.callSign, avoiding: &usedCallSigns)
         }
         for var definition in customization.customChannels {
-            let items = schedulableItems(for: definition.rule, in: index)
+            let items = Self.removing(customization.removedTitles[definition.id], from: schedulableItems(for: definition.rule, in: index))
             guard !items.isEmpty else { continue }
             definition.callSign = CallSign.unique(definition.callSign, avoiding: &usedCallSigns)
             resolved.append((definition, items))
         }
 
         return schedule(resolved, isHidden: isHidden, formerIDs: formerIDs, customization: customization).sorted { $0.number < $1.number }
+    }
+
+    /// `items` less the shows and movies taken off the channel by hand.
+    private static func removing(_ removed: Set<String>?, from items: [MediaItem]) -> [MediaItem] {
+        guard let removed, !removed.isEmpty else { return items }
+        return items.filter { !removed.contains($0.showID) }
     }
 
     /// A collection of a few movies only: one film franchise, not a channel.

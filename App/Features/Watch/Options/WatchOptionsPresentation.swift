@@ -34,6 +34,8 @@ struct WatchOptionsPresentation: ViewModifier {
             WatchOptionsPanel(tuner: tuner)
                 .frame(width: Layout.panelWidth)
                 .panel()
+                // Long content scrolls inside the panel rather than past its edge.
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.large, style: .continuous))
                 .padding(DesignTokens.Spacing.xl)
         }
         .background(Color.black.opacity(DesignTokens.Opacity.muted))

@@ -3,7 +3,7 @@ import SwiftUI
 /// Development-only launch options for testing and screenshots, read from
 /// environment variables (set by a launch script, never shipped):
 ///
-/// - `RETROGUIDE_DEV_OVERLAY`: open on `guide`, `search` or `settings`.
+/// - `RETROGUIDE_DEV_OVERLAY`: open on `guide`, `search`, `settings` or `options`.
 /// - `RETROGUIDE_DEV_SEARCH`: text to search for when Search opens.
 /// - `RETROGUIDE_DEV_ORIENTATION`: `landscape` or `portrait` to start that way (iPhone).
 /// - `RETROGUIDE_DEV_PRO`: `1` to act as if RetroGuide Pro were purchased.
@@ -25,6 +25,8 @@ enum DebugLaunchOptions {
         case guide
         case search
         case settings
+        /// The Options panel over full-screen TV.
+        case options
     }
 
     enum SettingsPage: String {

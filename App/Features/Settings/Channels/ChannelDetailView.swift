@@ -34,6 +34,7 @@ struct ChannelDetailView: View {
                 ScheduleOrderSection(selection: channel.definition.ordering) { ordering in
                     app.setOrdering(ordering, for: channel.definition)
                 }
+                RemovedTitlesSection(channel: channel)
                 if channel.definition.source == .custom {
                     SettingsSection("Custom channel") {
                         NavigationLink {

@@ -18,7 +18,7 @@ struct WatchView: View {
             case .guide: .guide
             case .search: .search
             case .settings: .settings
-            case nil: .none
+            case .options, nil: .none
             }
         }
     }
@@ -34,7 +34,7 @@ struct WatchView: View {
     @State private var bannerHeight: CGFloat = .zero
     /// Apple TV: the guide's top row (Search, Settings, Options) can take focus.
     @State private var isGuideTopBarActive = false
-    @State private var isShowingOptions = false
+    @State private var isShowingOptions = DebugLaunchOptions.overlay == .options
     @State private var guideFocusRequest: GuideFocusRequest?
     @State private var liveControlsFocusSerial = 0
 

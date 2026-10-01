@@ -419,6 +419,26 @@ final class AppModel {
         }
     }
 
+    /// Takes a show (or movie) off one channel; it stays on every other channel.
+    func removeTitle(showID: String, fromChannel channelID: String) {
+        updateCustomization { $0.removedTitles[channelID, default: []].insert(showID) }
+    }
+
+    /// Puts a show taken off a channel back on it.
+    func restoreTitle(showID: String, toChannel channelID: String) {
+        updateCustomization { customization in
+            customization.removedTitles[channelID]?.remove(showID)
+            if customization.removedTitles[channelID]?.isEmpty == true {
+                customization.removedTitles[channelID] = nil
+            }
+        }
+    }
+
+    /// The display name of a show or movie in the library, by ``MediaItem/showID``.
+    func titleName(showID: String) -> String? {
+        libraryIndex.items.first { $0.showID == showID }?.headline
+    }
+
     /// Keeps a changed choice on this device, in iCloud for the viewer's other
     /// devices, and on the servers for every app signed in to the account.
     private func trackRulesChanged(_ rules: TrackRules, on item: MediaItem, scope: TrackScope) {

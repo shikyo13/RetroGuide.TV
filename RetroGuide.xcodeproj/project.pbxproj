@@ -13,6 +13,7 @@
 		0982F4C63893AE7898CF9C5A /* OnboardingFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DFDA25C249B7C1171C5798 /* OnboardingFlowView.swift */; };
 		0F70EBE0D88DE0438F1BB070 /* AVPlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */; };
 		128558BEF0F947A6DED11964 /* ScheduleOrderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217F6E0574F0BA824BD17F4B /* ScheduleOrderSection.swift */; };
+		13535A2983FE766E44C7B60A /* PlacementText.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33F5C6380C978AE3E2616A /* PlacementText.swift */; };
 		14A5B0E5118164FD144DA680 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; platformFilters = (ios, ); productRef = F3A64A1F2A2BBE821A2B26E1 /* GoogleUserMessagingPlatform */; };
 		1519C7C4A3D7CF0977B65BDB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187AFD75F0AE0640CC040E41 /* RootView.swift */; };
 		1621D2170E71F4484C39983B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C5C915609130F57A5F8D278 /* Assets.xcassets */; };
@@ -80,6 +81,7 @@
 		78F0A7BBD6035C1683AEA35D /* ChannelManagerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3933430448AF3B606CA85CF3 /* ChannelManagerView.swift */; };
 		7905A8F9F409C1026DFF069F /* FreeVersionAds.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F64DDF7C46F3E4128C2C2FE /* FreeVersionAds.swift */; };
 		7A97EC4C2488630574448B8A /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEBCBC697963B90B6FE85490 /* AppIdentity.swift */; };
+		7B86511ED41BE12FCC3DB21C /* ChannelPlacementControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = D06F4B98B34746EE526B5EFC /* ChannelPlacementControls.swift */; };
 		7E1F0CB17CABA171F2D65BBB /* WatchOptionsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEFF98634580A62CA20573D /* WatchOptionsPanel.swift */; };
 		805EA4139AAEA890B5977374 /* LibrarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E70EC001D86A5D672FE0DE6 /* LibrarySettingsView.swift */; };
 		813929000F28006DF8545A6B /* VPNStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C95722DD0F492AFD4008C8 /* VPNStatus.swift */; };
@@ -93,6 +95,7 @@
 		8D4FC6F90CC52CF5F1A2059D /* ProStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA93DD29E354AB8A3A08DF7 /* ProStore.swift */; };
 		8DBC9BF9907BF654E22B1C18 /* FacetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2342F75A3FFB608FE4032CE5 /* FacetPickerView.swift */; };
 		8FF5A5B693EF76B5DF1F280F /* MPVKit in Frameworks */ = {isa = PBXBuildFile; productRef = AF7766867AB8515623736C48 /* MPVKit */; };
+		930B7ED7E49AE404D4FE0B43 /* RemovedTitlesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BCE63CDE2B10FA67A293BE9 /* RemovedTitlesSection.swift */; };
 		94E4C5E01039B184321A2E3E /* TrackSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0601DF37765D3C776688AF60 /* TrackSync.swift */; };
 		96EFAD1FAC58EE6D40D218C2 /* LiveVideoStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */; };
 		9AA0329A1FE988E8FEF917EF /* ThemePalettes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8481B109A8DCD793BC1591A /* ThemePalettes.swift */; };
@@ -165,6 +168,7 @@
 		09B0843197AF6460B72A4027 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		0A571995B69258A623DBF644 /* KeepsScreenAwake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeepsScreenAwake.swift; sourceTree = "<group>"; };
 		0BA93DD29E354AB8A3A08DF7 /* ProStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProStore.swift; sourceTree = "<group>"; };
+		0BCE63CDE2B10FA67A293BE9 /* RemovedTitlesSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemovedTitlesSection.swift; sourceTree = "<group>"; };
 		0ECA29AE15FAC6521C26C473 /* PresentingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentingViewController.swift; sourceTree = "<group>"; };
 		0F3C239C0108B6C983C2CA9B /* InvisibleButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvisibleButtonStyle.swift; sourceTree = "<group>"; };
 		0F64DDF7C46F3E4128C2C2FE /* FreeVersionAds.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FreeVersionAds.swift; sourceTree = "<group>"; };
@@ -284,7 +288,9 @@
 		C81F85483795CE27FA87CAD2 /* ScheduleFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormatting.swift; sourceTree = "<group>"; };
 		C9B881830F35AE894929CE47 /* MPVTrackSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVTrackSelector.swift; sourceTree = "<group>"; };
 		CBEB1593C43A740EC7B3A56C /* GuideTimeRuler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideTimeRuler.swift; sourceTree = "<group>"; };
+		CE33F5C6380C978AE3E2616A /* PlacementText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementText.swift; sourceTree = "<group>"; };
 		D0121D6DF72DF1DCF481F2F7 /* ArtworkResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkResolver.swift; sourceTree = "<group>"; };
+		D06F4B98B34746EE526B5EFC /* ChannelPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelPlacementControls.swift; sourceTree = "<group>"; };
 		D0C26D1723E494C6278D25A4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		D0DF0549433E240368F45D75 /* PlayerChromeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerChromeView.swift; sourceTree = "<group>"; };
 		D0EBE1540EB09EEDE7296CA6 /* AdsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsController.swift; sourceTree = "<group>"; };
@@ -361,6 +367,7 @@
 				1F0AE37025797A6FA461DDEB /* ChannelEditorView.swift */,
 				3933430448AF3B606CA85CF3 /* ChannelManagerView.swift */,
 				2342F75A3FFB608FE4032CE5 /* FacetPickerView.swift */,
+				0BCE63CDE2B10FA67A293BE9 /* RemovedTitlesSection.swift */,
 				217F6E0574F0BA824BD17F4B /* ScheduleOrderSection.swift */,
 				53189849C1BCFF00A003EF62 /* SimulcastLimitPickerView.swift */,
 			);
@@ -595,8 +602,10 @@
 		8216EF794E3D8CC0C34F8DB6 /* Options */ = {
 			isa = PBXGroup;
 			children = (
+				D06F4B98B34746EE526B5EFC /* ChannelPlacementControls.swift */,
 				7453CB93CF6564D403BF756D /* GuideLiveControls.swift */,
 				B39D6FB966CDC8361D2A3310 /* OptionMenu.swift */,
+				CE33F5C6380C978AE3E2616A /* PlacementText.swift */,
 				375275F966C6A54E256081C1 /* WatchOptionsButton.swift */,
 				BEEFF98634580A62CA20573D /* WatchOptionsPanel.swift */,
 				55A175DE79ACDC3BF5784A06 /* WatchOptionsPresentation.swift */,
@@ -870,6 +879,7 @@
 				3BB6BFA4A4E73A7C3BA33D35 /* ChannelGroupsView.swift in Sources */,
 				78F0A7BBD6035C1683AEA35D /* ChannelManagerView.swift in Sources */,
 				4D5209A82EB9E90DDAA807CF /* ChannelNumberOSD.swift in Sources */,
+				7B86511ED41BE12FCC3DB21C /* ChannelPlacementControls.swift in Sources */,
 				A37E05DE46B53CFE86D5384D /* CloudTrackRulesStore.swift in Sources */,
 				459009C3FD10B3FB413B3BA3 /* Color+Hex.swift in Sources */,
 				AF9BFFE61C5614EB130B7A8D /* ColumnWidth.swift in Sources */,
@@ -923,6 +933,7 @@
 				0982F4C63893AE7898CF9C5A /* OnboardingFlowView.swift in Sources */,
 				E428E9102569104BF28B0219 /* OnboardingModel.swift in Sources */,
 				ABF8794F1AE3AE30E95FAC07 /* OptionMenu.swift in Sources */,
+				13535A2983FE766E44C7B60A /* PlacementText.swift in Sources */,
 				A5ED6B0B3D3D5CF9F874BE34 /* PlatformMetric.swift in Sources */,
 				A1E76CBA8D06CBB33C672891 /* PlaybackEngine.swift in Sources */,
 				1653642F5EE272B581D64B87 /* PlayerChromeView.swift in Sources */,
@@ -942,6 +953,7 @@
 				21FE91CD314E7F3B7C0DD596 /* QRCodeView.swift in Sources */,
 				9CD6CF6223D598BA2A994FB0 /* RatingChip.swift in Sources */,
 				61B84956AE4E2BB297319733 /* RemoteImage.swift in Sources */,
+				930B7ED7E49AE404D4FE0B43 /* RemovedTitlesSection.swift in Sources */,
 				4D0B7232C2F171D4B09C8BFB /* RetroButtonStyle.swift in Sources */,
 				1B22F184D9F92EA9941A6E64 /* RetroGuideApp.swift in Sources */,
 				343B16325AD70913DCF1B210 /* RetroIconButtonStyle.swift in Sources */,
