@@ -29,6 +29,14 @@ final class Tuner {
         static let serverPositionTolerance: TimeInterval = 1
         /// After quick retries are exhausted, keep retrying at this interval.
         static let retryDelay: Duration = .seconds(15)
+        /// A program not playing this long after its stream was opened won't
+        /// start (typically a file with missing data, which the player would
+        /// otherwise read for minutes): the channel moves on at the next program.
+        static let startTimeout: Duration = .seconds(30)
+    }
+
+    private enum Message {
+        static let didNotStart = "This program won't start. Its file may be damaged."
     }
 
     private(set) var channel: Channel?
@@ -77,6 +85,7 @@ final class Tuner {
     @ObservationIgnored private var activeStream: ActiveStream?
     @ObservationIgnored private var tuneTask: Task<Void, Never>?
     @ObservationIgnored private var boundaryTask: Task<Void, Never>?
+    @ObservationIgnored private var startWatchdog: Task<Void, Never>?
     @ObservationIgnored private var failedAttempts = 0
 
     private struct ActiveStream {
@@ -346,6 +355,7 @@ final class Tuner {
             engine.play(request.starting(at: program.elapsed(at: joinedAt)), tracks: selection)
             UIApplication.shared.isIdleTimerDisabled = true
             scheduleBoundary(at: program.contentEnd)
+            watchStart(of: program, generation: generation)
         } catch {
             guard generation == tuneGeneration, !Task.isCancelled else { return }
             fail(with: error.localizedDescription)
@@ -359,6 +369,7 @@ final class Tuner {
         switch event {
         case .playing:
             guard signal == .tuning else { return }
+            startWatchdog?.cancel()
             signal = .live
             failedAttempts = .zero
         case .ended:
@@ -371,6 +382,20 @@ final class Tuner {
             fail(with: message)
         case let .format(format):
             setVideoFormat(format)
+        }
+    }
+
+    /// Gives up on a program that hasn't started after ``Timing/startTimeout``
+    /// and waits for the next one, rather than retrying the same file.
+    private func watchStart(of program: ScheduledProgram, generation: Int) {
+        startWatchdog?.cancel()
+        startWatchdog = Task { [weak self] in
+            try? await Task.sleep(for: Timing.startTimeout)
+            guard !Task.isCancelled, let self, generation == tuneGeneration, signal == .tuning else { return }
+            engine.stop()
+            endActiveStream()
+            signal = .noSignal(Message.didNotStart)
+            scheduleBoundary(at: program.slotEnd)
         }
     }
 
@@ -403,6 +428,7 @@ final class Tuner {
     }
 
     private func fail(with message: String) {
+        startWatchdog?.cancel()
         engine.stop()
         endActiveStream()
         boundaryTask?.cancel()
@@ -438,6 +464,7 @@ final class Tuner {
     private func stopTimers() {
         tuneTask?.cancel()
         boundaryTask?.cancel()
+        startWatchdog?.cancel()
     }
 
     /// Tells the server to release a repackaged stream.
