@@ -194,7 +194,7 @@ public struct PlexServerClient: MediaServerClient {
         switch choice {
         case .none: false
         case let .embedded(index): stream.index == index
-        case let .external(url): stream.key.flatMap(externalSubtitleURL) == url
+        case let .external(url): stream.externalKey.flatMap(externalSubtitleURL) == url
         }
     }
 

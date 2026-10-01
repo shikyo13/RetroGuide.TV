@@ -76,6 +76,17 @@ struct PlexTrackSelectionMapperTests {
         #expect(selection.subtitle == .embedded(streamIndex: 4))
     }
 
+    @Test("External VobSub subtitles are fetched as .idx, so the player finds the .sub beside them")
+    func vobSubKeepsItsExtension() {
+        var vobSub = PlexStream(streamType: subtitle, index: nil, key: "/library/streams/77", selected: true, languageCode: "eng")
+        vobSub.codec = "idx"
+        var srt = PlexStream(streamType: subtitle, index: nil, key: "/library/streams/78", selected: true, languageCode: "eng")
+        srt.codec = "srt"
+        let url = { (key: String) in URL(string: "http://server" + key) }
+        #expect(PlexTrackSelectionMapper.selection(from: [vobSub], preferences: nil, externalURL: url).subtitle == .external(URL(string: "http://server/library/streams/77.idx")!))
+        #expect(PlexTrackSelectionMapper.selection(from: [srt], preferences: nil, externalURL: url).subtitle == .external(URL(string: "http://server/library/streams/78")!))
+    }
+
     @Test func withoutPreferencesOnlyChosenTracksAreUsed() {
         let selection = PlexTrackSelectionMapper.selection(from: episode, preferences: nil) { _ in nil }
         #expect(selection.subtitle == SubtitleChoice.none)

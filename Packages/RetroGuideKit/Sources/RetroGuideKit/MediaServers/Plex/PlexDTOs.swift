@@ -164,10 +164,20 @@ struct PlexStream: Decodable {
     var extendedDisplayTitle: String?
     /// The file marks this track as the one to play by default.
     var isDefault: Bool?
+    /// "srt", "ass", "idx" (VobSub)…
+    var codec: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, streamType, index, key, selected, languageTag, languageCode, forced, displayTitle, extendedDisplayTitle
+        case id, streamType, index, key, selected, languageTag, languageCode, forced, displayTitle, extendedDisplayTitle, codec
         case isDefault = "default"
+    }
+
+    /// Where to fetch an external subtitle file. A VobSub `.idx` names its
+    /// images in a `.sub` beside it, found by swapping the extension, so the
+    /// path needs the extension too (Plex serves `/library/streams/<id>.sub`).
+    var externalKey: String? {
+        guard let key else { return nil }
+        return codec == PlexAPI.Subtitle.vobSubIndexCodec ? key + PlexAPI.Subtitle.vobSubIndexExtension : key
     }
 }
 

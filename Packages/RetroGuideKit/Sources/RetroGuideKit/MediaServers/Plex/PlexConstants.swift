@@ -124,6 +124,11 @@ public enum PlexAPI {
     /// the server to remux into HLS whenever the video/audio can be copied,
     /// and to transcode only what the Apple TV cannot decode.
     /// Playback decisions: the server authorizes a session to play a file directly.
+    enum Subtitle {
+        static let vobSubIndexCodec = "idx"
+        static let vobSubIndexExtension = ".idx"
+    }
+
     enum Decision {
         /// Plex's built-in profiles for Apple platforms describe Apple's own player
         /// (for example stereo only, or at most 1080p), which would reject files

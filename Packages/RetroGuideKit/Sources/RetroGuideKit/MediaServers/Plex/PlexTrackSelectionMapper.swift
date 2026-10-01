@@ -49,7 +49,7 @@ enum PlexTrackSelectionMapper {
         let source: TrackOption.Source
         if let index = stream.index {
             source = .embedded(streamIndex: index)
-        } else if let key = stream.key, let url = externalURL(key) {
+        } else if let key = stream.externalKey, let url = externalURL(key) {
             source = .external(url)
         } else {
             return nil
@@ -75,7 +75,7 @@ enum PlexTrackSelectionMapper {
         if let index = stream.index {
             return .embedded(streamIndex: index)
         }
-        if let key = stream.key, let url = externalURL(key) {
+        if let key = stream.externalKey, let url = externalURL(key) {
             return .external(url)
         }
         return .none
