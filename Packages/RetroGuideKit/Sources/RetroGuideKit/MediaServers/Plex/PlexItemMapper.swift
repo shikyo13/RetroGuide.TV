@@ -38,7 +38,8 @@ enum PlexItemMapper {
                 logo: metadata.clearLogo,
                 thumbnail: metadata.thumb
             ),
-            versions: metadata.versions
+            versions: metadata.versions,
+            titleIDs: titleIDs(of: metadata)
         )
     }
 
@@ -82,8 +83,13 @@ enum PlexItemMapper {
                 logo: metadata.clearLogo ?? show?.clearLogo,
                 thumbnail: metadata.thumb
             ),
-            versions: metadata.versions
+            versions: metadata.versions,
+            titleIDs: show.flatMap(titleIDs(of:))
         )
+    }
+
+    private static func titleIDs(of metadata: PlexMetadata) -> TitleIDs? {
+        TitleIDs(guids: (metadata.guids ?? []).map(\.id))
     }
 
     private static func seconds(_ milliseconds: Int?) -> TimeInterval? {

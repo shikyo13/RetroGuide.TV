@@ -21,12 +21,26 @@ public struct LibraryIndex: Sendable {
         self.init(items: items, libraries: libraries, showAliases: [:])
     }
 
-    init(items: [MediaItem], libraries: [MediaLibrary], showAliases: [String: String]) {
+    init(items: [MediaItem], libraries: [MediaLibrary], showAliases: [String: String], classification: TitleClassification = .shared) {
         self.showAliases = showAliases
         let sorted = items.sorted { $0.id < $1.id }
         self.items = sorted
         let showDecades = Self.showDecades(sorted)
-        self.attributes = sorted.map { NormalizedAttributes($0, decade: showDecades[$0.showID] ?? $0.year.map(Decade.containing(year:))) }
+        // A show's episodes share its ids: look each show up once.
+        var classifications: [String: Set<GenreCategory>] = [:]
+        var unclassified = Set<String>()
+        self.attributes = sorted.map { item in
+            var classified = classifications[item.showID]
+            if classified == nil, !unclassified.contains(item.showID) {
+                classified = item.titleIDs.flatMap { classification.categories(for: $0, kind: item.kind) }
+                if let classified {
+                    classifications[item.showID] = classified
+                } else {
+                    unclassified.insert(item.showID)
+                }
+            }
+            return NormalizedAttributes(item, decade: showDecades[item.showID] ?? item.year.map(Decade.containing(year:)), classified: classified)
+        }
         self.positionsByID = Dictionary(
             sorted.enumerated().map { ($1.id, $0) },
             uniquingKeysWith: { first, _ in first }
@@ -97,24 +111,46 @@ public struct LibraryIndex: Sendable {
     public func item(withID id: String) -> MediaItem? {
         positionsByID[id].map { items[$0] }
     }
+
+    func attributes(of item: MediaItem) -> NormalizedAttributes? {
+        positionsByID[item.id].map { attributes[$0] }
+    }
 }
 
 /// Pre-normalized lookup keys for one item.
 struct NormalizedAttributes: Sendable {
     let genres: Set<String>
     let categories: Set<GenreCategory>
+    let categorySource: CategorySource
+    let format: TitleFormat
     let networks: Set<String>
     let collections: Set<String>
     let searchableText: String
     let decade: Int?
 
-    init(_ item: MediaItem, decade: Int?, taxonomy: GenreTaxonomy = .shared) {
+    /// `classified`: the title's categories from ``TitleClassification``, if it knows the title.
+    init(_ item: MediaItem, decade: Int?, classified: Set<GenreCategory>?, taxonomy: GenreTaxonomy = .shared) {
         genres = TextNormalizer.keys(item.genres)
-        var categories = taxonomy.categories(for: item.genres)
+        let tagged = taxonomy.categories(for: item.genres)
+        var categories: Set<GenreCategory>
+        if let classified {
+            // The server's tags, less the loosely applied ones the
+            // classification doesn't confirm; either source's word is enough
+            // that a title is unscripted. Untagged titles take the classification.
+            categories = tagged.isEmpty
+                ? classified
+                : tagged.subtracting(GenreCategory.looselyTagged.subtracting(classified))
+                    .union(classified.intersection(GenreCategory.unscripted))
+            categorySource = .classification
+        } else {
+            categories = tagged
+            categorySource = .server
+        }
         if AnimeDetector.isAnime(categories: categories, countries: item.countries) {
             categories.formUnion([.anime, .animation])
         }
         self.categories = categories
+        format = categories.isDisjoint(with: GenreCategory.unscripted) ? .scripted : .unscripted
         networks = TextNormalizer.keys(item.networks)
         collections = TextNormalizer.keys(item.collections)
         searchableText = TextNormalizer.key([item.series?.title, item.title].compactMap { $0 }.joined(separator: " "))

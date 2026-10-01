@@ -30,6 +30,8 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     public let artwork: Artwork
     /// Every version of the file on its server, in the server's order.
     public let versions: [MediaVersion]
+    /// The title's public database ids (the show's for an episode).
+    public let titleIDs: TitleIDs?
     /// Other libraries (on any server) holding a copy of this episode or
     /// movie that lost out to this one when copies were merged: the item is
     /// still part of those libraries. Set only in the merged library index.
@@ -53,7 +55,8 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         collections: [String] = [],
         countries: [String] = [],
         artwork: Artwork = Artwork(),
-        versions: [MediaVersion] = []
+        versions: [MediaVersion] = [],
+        titleIDs: TitleIDs? = nil
     ) {
         self.id = Self.makeID(serverID: serverID, itemKey: itemKey)
         self.serverID = serverID
@@ -74,6 +77,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.countries = countries
         self.artwork = artwork
         self.versions = versions
+        self.titleIDs = titleIDs
     }
 
     /// Every library holding a copy of this item.
@@ -86,12 +90,13 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     func merging(copies: [MediaItem]) -> MediaItem {
         let libraries = copies.flatMap(\.libraryIDs).filter { $0 != libraryID }
         let otherCollections = copies.flatMap(\.collections).filter { !collections.contains($0) }
-        guard !libraries.isEmpty || !otherCollections.isEmpty else { return self }
+        let borrowedIDs = titleIDs == nil && copies.contains { $0.titleIDs != nil }
+        guard !libraries.isEmpty || !otherCollections.isEmpty || borrowedIDs else { return self }
         var merged = MediaItem(
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
             series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
             genres: genres, networks: networks, collections: collections + Set(otherCollections).sorted(), countries: countries,
-            artwork: artwork, versions: versions
+            artwork: artwork, versions: versions, titleIDs: titleIDs ?? copies.lazy.compactMap(\.titleIDs).first
         )
         merged.otherLibraryIDs = Set(libraries).sorted()
         return merged
@@ -104,7 +109,8 @@ public struct MediaItem: Codable, Sendable, Identifiable {
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
             series: SeriesInfo(key: series.key, title: series.title, seasonNumber: series.seasonNumber, episodeNumber: series.episodeNumber, externalID: showID),
             year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience, genres: genres,
-            networks: networks, collections: collections, countries: countries, artwork: artwork, versions: versions
+            networks: networks, collections: collections, countries: countries, artwork: artwork, versions: versions,
+            titleIDs: titleIDs
         )
     }
 

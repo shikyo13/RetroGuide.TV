@@ -42,7 +42,7 @@ struct PlexLibraryLoader: Sendable {
         memberships.genres = try await membership(library, field: PlexAPI.FilterField.genre, type: .movie)
         memberships.collections = try await collectionMembership(library)
         report(MovieStage.tags, "Reading \(library.title) movies…")
-        let movies = try await context.allMetadata(path: PlexAPI.Path.sectionItems(library.key), query: typeQuery(.movie) + PlexAPI.Trim.listing)
+        let movies = try await context.allMetadata(path: PlexAPI.Path.sectionItems(library.key), query: typeQuery(.movie) + PlexAPI.Trim.listingWithIDs)
         report(MovieStage.movies, "Indexed \(movies.count) movies")
         return movies.compactMap { PlexItemMapper.movie($0, library: library, memberships: memberships) }
     }
@@ -60,7 +60,7 @@ struct PlexLibraryLoader: Sendable {
     ) async throws -> [MediaItem] {
         report(.zero, "Reading \(library.title)…")
         let path = PlexAPI.Path.sectionItems(library.key)
-        let shows = try await context.allMetadata(path: path, query: typeQuery(.show) + PlexAPI.Trim.listing)
+        let shows = try await context.allMetadata(path: path, query: typeQuery(.show) + PlexAPI.Trim.listingWithIDs)
         let showsByKey = Dictionary(shows.map { ($0.ratingKey, $0) }, uniquingKeysWith: { first, _ in first })
         report(ShowStage.shows, "Reading genres and networks in \(library.title)…")
 

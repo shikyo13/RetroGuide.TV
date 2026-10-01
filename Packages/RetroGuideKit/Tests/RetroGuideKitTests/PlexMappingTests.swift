@@ -32,6 +32,21 @@ struct PlexMappingTests {
         #expect(item.subheadline == "S1 E1 · Pilot")
     }
 
+    @Test("Episodes carry their show's public database ids; movies their own")
+    func mapsTitleIDs() throws {
+        let show = try JSONDecoder().decode(PlexMetadata.self, from: Data("""
+            {"ratingKey": "900", "title": "Example Show", "Guid": [{"id": "imdb://tt0944947"}, {"id": "tvdb://121361"}]}
+            """.utf8))
+        let episode = try #require(PlexItemMapper.episode(try loadFixture()[0], show: show, library: library, memberships: PlexTagMemberships()))
+        #expect(episode.titleIDs == TitleIDs(imdb: 944_947, tvdb: 121_361))
+
+        let movie = try JSONDecoder().decode(PlexMetadata.self, from: Data("""
+            {"ratingKey": "5", "title": "Example Movie", "duration": 6000000, "Guid": [{"id": "tmdb://603"}]}
+            """.utf8))
+        let movies = MediaLibrary(serverID: "server", key: "1", title: "Movies", kind: .movies)
+        #expect(PlexItemMapper.movie(movie, library: movies, memberships: PlexTagMemberships())?.titleIDs == TitleIDs(tmdb: 603))
+    }
+
     @Test("Items without a duration are skipped")
     func skipsUntimed() throws {
         let metadata = try loadFixture()

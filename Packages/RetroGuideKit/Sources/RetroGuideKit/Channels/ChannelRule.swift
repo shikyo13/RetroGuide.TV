@@ -11,6 +11,8 @@ public struct ChannelRule: Codable, Sendable, Hashable {
     /// Canonical genre categories: work across servers, agents and languages.
     public var categories: Set<GenreCategory>
     public var excludedCategories: Set<GenreCategory>
+    /// Scripted or unscripted titles only (``TitleFormat``); empty takes both.
+    public var formats: Set<TitleFormat>
     /// Raw genre names exactly as the server reports them.
     public var genres: Set<String>
     public var excludedGenres: Set<String>
@@ -26,6 +28,7 @@ public struct ChannelRule: Codable, Sendable, Hashable {
         libraryIDs: Set<String> = [],
         categories: Set<GenreCategory> = [],
         excludedCategories: Set<GenreCategory> = [],
+        formats: Set<TitleFormat> = [],
         genres: Set<String> = [],
         excludedGenres: Set<String> = [],
         networks: Set<String> = [],
@@ -39,6 +42,7 @@ public struct ChannelRule: Codable, Sendable, Hashable {
         self.libraryIDs = libraryIDs
         self.categories = categories
         self.excludedCategories = excludedCategories
+        self.formats = formats
         self.genres = genres
         self.excludedGenres = excludedGenres
         self.networks = networks
@@ -57,6 +61,7 @@ public struct ChannelRule: Codable, Sendable, Hashable {
         libraryIDs = try container.decodeIfPresent(Set<String>.self, forKey: .libraryIDs) ?? []
         categories = try container.decodeIfPresent(Set<GenreCategory>.self, forKey: .categories) ?? []
         excludedCategories = try container.decodeIfPresent(Set<GenreCategory>.self, forKey: .excludedCategories) ?? []
+        formats = try container.decodeIfPresent(Set<TitleFormat>.self, forKey: .formats) ?? []
         genres = try container.decodeIfPresent(Set<String>.self, forKey: .genres) ?? []
         excludedGenres = try container.decodeIfPresent(Set<String>.self, forKey: .excludedGenres) ?? []
         networks = try container.decodeIfPresent(Set<String>.self, forKey: .networks) ?? []
@@ -139,6 +144,7 @@ struct CompiledRule {
         guard rule.audiences.isEmpty || rule.audiences.contains(item.audience) else { return false }
         guard rule.categories.isEmpty || !rule.categories.isDisjoint(with: attributes.categories) else { return false }
         guard rule.excludedCategories.isDisjoint(with: attributes.categories) else { return false }
+        guard rule.formats.isEmpty || rule.formats.contains(attributes.format) else { return false }
         guard genres.isEmpty || !genres.isDisjoint(with: attributes.genres) else { return false }
         guard excludedGenres.isDisjoint(with: attributes.genres) else { return false }
         guard networks.isEmpty || !networks.isDisjoint(with: attributes.networks) else { return false }

@@ -39,6 +39,11 @@ struct PlexTag: Decodable {
     let tag: String
 }
 
+/// An agent id such as `imdb://tt0944947` (listings include these with `includeGuids`).
+struct PlexGuid: Decodable {
+    let id: String
+}
+
 struct PlexImage: Decodable {
     let type: String
     let url: String
@@ -69,6 +74,7 @@ struct PlexMetadata: Decodable {
     let countries: [PlexTag]?
     let images: [PlexImage]?
     let media: [PlexMedia]?
+    let guids: [PlexGuid]?
 
     enum CodingKeys: String, CodingKey {
         case ratingKey, guid, type, title, grandparentRatingKey, grandparentTitle, grandparentGuid
@@ -78,6 +84,7 @@ struct PlexMetadata: Decodable {
         case countries = "Country"
         case images = "Image"
         case media = "Media"
+        case guids = "Guid"
     }
 
     /// Plex agent guids (`plex://…`) are global; local and legacy guids are not.

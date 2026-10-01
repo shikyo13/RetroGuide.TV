@@ -23,6 +23,9 @@
       "excludedCategories": [
         "animation",
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -45,6 +48,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -67,6 +73,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -82,6 +91,9 @@
       ],
       "categories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -100,6 +112,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -114,8 +129,7 @@
         "episode"
       ],
       "categories": [
-        "crime",
-        "mystery"
+        "crime"
       ],
       "excludedCategories": [
         "anime"
@@ -137,6 +151,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -155,6 +172,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -173,6 +193,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -192,6 +215,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -210,6 +236,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -410,6 +439,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -438,6 +470,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -594,6 +629,9 @@
       "categories": [
         "action",
         "adventure"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -645,6 +683,9 @@
       ],
       "categories": [
         "horror"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -660,6 +701,9 @@
       ],
       "categories": [
         "sciFi"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -675,6 +719,9 @@
       ],
       "categories": [
         "drama"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -692,6 +739,9 @@
         "thriller",
         "mystery",
         "crime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -707,6 +757,9 @@
       ],
       "categories": [
         "romance"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -722,6 +775,9 @@
       ],
       "categories": [
         "animation"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -868,6 +924,9 @@
       ],
       "categories": [
         "fantasy"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -889,6 +948,9 @@
         "thriller",
         "crime",
         "horror"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },
@@ -924,6 +986,9 @@
       ],
       "excludedCategories": [
         "anime"
+      ],
+      "formats": [
+        "scripted"
       ]
     }
   },

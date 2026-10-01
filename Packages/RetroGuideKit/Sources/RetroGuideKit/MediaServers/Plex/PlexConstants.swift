@@ -68,6 +68,14 @@ public enum PlexAPI {
             URLQueryItem(name: excludeFields, value: "file,tagline"),
         ]
 
+        /// For show and movie listings: the listing, plus each title's agent
+        /// ids (IMDb, TMDB, TVDB) for ``TitleClassification``.
+        static let listingWithIDs = [
+            URLQueryItem(name: "includeGuids", value: "1"),
+            URLQueryItem(name: excludeElements, value: "Role,Director,Writer,Producer,Similar,Label,UltraBlurColors,Marker,Chapter"),
+            URLQueryItem(name: excludeFields, value: "file,tagline"),
+        ]
+
         /// For membership lookups, where only `ratingKey` is used.
         static let keysOnly = [
             URLQueryItem(name: excludeElements, value: "Media,Genre,Country,Collection,Role,Director,Writer,Producer,Similar,Label,Guid,Image,UltraBlurColors,Marker,Chapter"),

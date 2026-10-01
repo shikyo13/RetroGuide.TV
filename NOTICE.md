@@ -17,3 +17,11 @@ RetroGuide.TV links the LGPL build of MPVKit (the `MPVKit` product, not
 `MPVKit-GPL`). Because RetroGuide.TV is open source, you can rebuild it against a
 modified version of these libraries: replace the MPVKit package version or path in
 `project.yml`, run `xcodegen generate`, and build.
+
+## Title classification data
+
+- Source: Wikidata (https://www.wikidata.org), available under the Creative Commons
+  CC0 1.0 Universal Public Domain Dedication.
+- `Packages/RetroGuideKit/Sources/RetroGuideKit/Resources/title-classification.bin`
+  is derived from it by `Tools/TitleClassifier`, which maps Wikidata's types and
+  genres onto RetroGuide's genre categories.
