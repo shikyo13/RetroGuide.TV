@@ -3,8 +3,8 @@ import GoogleMobileAds
 import RetroGuideKit
 import SwiftUI
 
-/// The free version's ads on iPhone and iPad: a standard banner under the
-/// menus (never over full-screen TV; in the guide header on a landscape
+/// The free version's ads on iPhone and iPad: an anchored adaptive banner
+/// under the menus (never over full-screen TV; in the guide header on a landscape
 /// iPhone, where height is scarce), and a full-screen ad at a natural break
 /// once 90 minutes of watching have passed.
 /// Natural breaks are closing the guide and a program ending on the channel
@@ -61,7 +61,6 @@ private struct FreeVersionAds: ViewModifier {
                 if showsBanner {
                     BannerAdView(adSize: bannerSize)
                         .frame(width: cgSize(for: bannerSize).width, height: bannerHeightWhenShown)
-                        .clipped()
                         .frame(maxWidth: .infinity)
                         .background(theme.surface)
                         // The ad view must never be resized frame by frame: the SDK

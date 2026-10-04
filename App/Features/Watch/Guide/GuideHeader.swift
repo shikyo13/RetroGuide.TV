@@ -30,7 +30,7 @@ struct GuideHeader: View {
             Spacer(minLength: DesignTokens.Spacing.sm)
             #if os(iOS)
             if showsAd {
-                GuideHeaderAd()
+                GuideHeaderAdSlot()
                 Spacer(minLength: DesignTokens.Spacing.sm)
             }
             #endif

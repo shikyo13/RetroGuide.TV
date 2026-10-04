@@ -43,6 +43,9 @@ struct GuideTouchView: View {
             GuideTouchGrid(model: model, tunedChannelID: tuner.channel?.id, onTune: actions.onTune)
                 .crtEffect(isFullScreen: false)
         }
+        #if os(iOS)
+        .guideHeaderAd()
+        #endif
         .padding(.horizontal, DesignTokens.Spacing.md)
         .padding(.top, DesignTokens.Spacing.xs)
         .screenBackground()
