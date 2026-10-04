@@ -10,8 +10,9 @@ struct ChannelPlacementControls: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     @State private var isExplaining = false
-    /// The title just taken off, named after the channel has moved on to something else.
-    @State private var removedTitle: String?
+    /// The title just taken off, so it can be put back right away (the
+    /// channel has moved on to something else by then).
+    @State private var removed: (showID: String, name: String)?
 
     var body: some View {
         controls
@@ -34,13 +35,20 @@ struct ChannelPlacementControls: View {
                 on: channel
             ))
         }
-        if let removedTitle {
-            note("\(removedTitle) is off \(channel.name). To put it back: Settings › Channels › \(channel.name).")
+        if let removed {
+            note("\(removed.name) is off \(channel.name). Settings › Channels › Taken off channels lists everything you've taken off.")
+            Button {
+                app.restoreTitle(showID: removed.showID, toChannel: channel.id)
+                self.removed = nil
+            } label: {
+                SettingsRowLabel(title: "Undo: put \(removed.name) back", systemImage: "arrow.uturn.backward", value: nil, accessory: nil)
+            }
+            .buttonStyle(.retroRow)
         }
         if channel.definition.source != .series {
             if app.pro.access.canRemoveFromChannels {
                 Button {
-                    removedTitle = item.headline
+                    removed = (item.showID, item.headline)
                     app.removeTitle(showID: item.showID, fromChannel: channel.id)
                 } label: {
                     SettingsRowLabel(title: "Not on this channel", systemImage: "minus.circle", value: nil, accessory: nil)

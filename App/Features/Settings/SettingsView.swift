@@ -73,6 +73,13 @@ struct SettingsView: View {
                     } label: {
                         SettingsRowLabel(title: "Same show at once", systemImage: "rectangle.stack", value: app.customization.simulcastLimit.displayName)
                     }
+                    if removedTitleCount > .zero {
+                        NavigationLink {
+                            RemovedTitlesPage()
+                        } label: {
+                            SettingsRowLabel(title: "Taken off channels", systemImage: "minus.circle", value: "\(removedTitleCount)")
+                        }
+                    }
                     if app.pro.access.canCreateCustomChannel(existingCount: app.customization.customChannels.count) {
                         NavigationLink {
                             ChannelEditorView(existing: nil)
@@ -165,6 +172,11 @@ struct SettingsView: View {
     private var proSummary: String {
         if app.pro.isPro { return "Active" }
         return app.pro.product?.displayPrice ?? ProLockedRow.badge
+    }
+
+    /// Shows and movies taken off channels by hand, across every channel.
+    private var removedTitleCount: Int {
+        app.customization.removedTitles.values.reduce(.zero) { $0 + $1.count }
     }
 
     private var channelSummary: String {
