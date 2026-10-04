@@ -96,7 +96,7 @@ public struct LineupBuilder: Sendable {
         return schedule(resolved, isHidden: isHidden, formerIDs: formerIDs, customization: customization).sorted { $0.number < $1.number }
     }
 
-    /// `items` less the shows and movies taken off the channel by hand.
+    /// `items` less the shows and movies removed from the channel by hand.
     private static func removing(_ removed: Set<String>?, from items: [MediaItem]) -> [MediaItem] {
         guard let removed, !removed.isEmpty else { return items }
         return items.filter { !removed.contains($0.showID) }

@@ -12,7 +12,7 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
     public var customChannels: [ChannelDefinition]
     /// Automatic channel groups the user turned off (custom channels are never disabled).
     public var disabledSources: Set<ChannelSource>
-    /// Shows and movies taken off a channel by hand, by channel id: the show's
+    /// Shows and movies removed from a channel by hand, by channel id: the show's
     /// (or movie's) id, ``MediaItem/showID``.
     public var removedTitles: [String: Set<String>]
 

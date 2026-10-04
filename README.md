@@ -29,7 +29,7 @@ next in a cable-style guide.
   TMDB or TVDB id: loosely applied tags count only when it agrees, and
   documentaries, reality, game and talk shows stay off the channels built around
   fiction. "Why is this here?" in a channel's Options says why a show is on it,
-  and with RetroGuide Pro a show can be taken off one channel.
+  and with RetroGuide Pro a show can be removed from one channel.
 - **Custom channels.** Combine genres, shows, networks, collections, decades,
   audiences and libraries, with a live preview of what the channel will air.
 - **Real TV scheduling.** Every channel runs on a fixed clock, so with the same

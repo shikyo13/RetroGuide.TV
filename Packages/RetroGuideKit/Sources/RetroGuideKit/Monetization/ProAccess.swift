@@ -36,7 +36,7 @@ public struct ProAccess: Sendable, Hashable {
         isPro
     }
 
-    /// Taking a show or movie off one channel by hand ("Why is this here?" is free).
+    /// Removing a show or movie from one channel by hand ("Why is this here?" is free).
     public var canRemoveFromChannels: Bool {
         isPro
     }

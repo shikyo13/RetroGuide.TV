@@ -77,7 +77,7 @@ struct SettingsView: View {
                         NavigationLink {
                             RemovedTitlesPage()
                         } label: {
-                            SettingsRowLabel(title: "Taken off channels", systemImage: "minus.circle", value: "\(removedTitleCount)")
+                            SettingsRowLabel(title: "Removed from channels", systemImage: "minus.circle", value: "\(removedTitleCount)")
                         }
                     }
                     if app.pro.access.canCreateCustomChannel(existingCount: app.customization.customChannels.count) {
@@ -174,7 +174,7 @@ struct SettingsView: View {
         return app.pro.product?.displayPrice ?? ProLockedRow.badge
     }
 
-    /// Shows and movies taken off channels by hand, across every channel.
+    /// Shows and movies removed from channels by hand, across every channel.
     private var removedTitleCount: Int {
         app.customization.removedTitles.values.reduce(.zero) { $0 + $1.count }
     }

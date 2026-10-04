@@ -424,7 +424,7 @@ final class AppModel {
         updateCustomization { $0.removedTitles[channelID, default: []].insert(showID) }
     }
 
-    /// Puts a show taken off a channel back on it.
+    /// Puts a show removed from a channel back on it.
     func restoreTitle(showID: String, toChannel channelID: String) {
         updateCustomization { customization in
             customization.removedTitles[channelID]?.remove(showID)

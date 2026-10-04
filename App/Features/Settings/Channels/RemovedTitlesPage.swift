@@ -1,15 +1,15 @@
 import RetroGuideKit
 import SwiftUI
 
-/// Every show and movie taken off a channel, by channel, each with a way to put it back.
+/// Every show and movie removed from a channel, by channel, each with a way to put it back.
 struct RemovedTitlesPage: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
 
     var body: some View {
-        SettingsPage(title: "Taken off channels") {
+        SettingsPage(title: "Removed from channels") {
             if app.customization.removedTitles.isEmpty {
-                Text("Nothing is taken off any channel. To take a show off one, open Options while it's on and choose Not on this channel.")
+                Text("Nothing is removed from any channel. To remove a show from one, open Options while it's on and choose Remove this show from this channel.")
                     .font(Typography.body)
                     .foregroundStyle(theme.textSecondary)
             }
@@ -27,7 +27,7 @@ struct RemovedTitlesPage: View {
         }
     }
 
-    /// Channels with something taken off, in channel order (ones no longer in the lineup last).
+    /// Channels with something removed, in channel order (ones no longer in the lineup last).
     private var channelIDs: [String] {
         app.customization.removedTitles.keys.sorted { lhs, rhs in
             let left = app.lineup.first { $0.id == lhs }?.number ?? .max
