@@ -10,6 +10,7 @@ struct ChannelPlacementControls: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     @State private var isExplaining = false
+    @State private var isConfirmingRemoval = false
     /// The title just taken off, so it can be put back right away (the
     /// channel has moved on to something else by then).
     @State private var removed: (showID: String, name: String)?
@@ -48,12 +49,20 @@ struct ChannelPlacementControls: View {
         if channel.definition.source != .series {
             if app.pro.access.canRemoveFromChannels {
                 Button {
-                    removed = (item.showID, item.headline)
-                    app.removeTitle(showID: item.showID, fromChannel: channel.id)
+                    isConfirmingRemoval = true
                 } label: {
                     SettingsRowLabel(title: "Not on this channel", systemImage: "minus.circle", value: nil, accessory: nil)
                 }
                 .buttonStyle(.retroRow)
+                .confirmationDialog("Take \(item.headline) off \(channel.name)?", isPresented: $isConfirmingRemoval, titleVisibility: .visible) {
+                    Button("Take Off", role: .destructive) {
+                        removed = (item.showID, item.headline)
+                        app.removeTitle(showID: item.showID, fromChannel: channel.id)
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("It stays on your other channels. You can put it back any time in Settings › Channels › Taken off channels.")
+                }
             } else {
                 note("Taking a show off a channel is part of RetroGuide Pro (Settings › RetroGuide Pro).")
             }
