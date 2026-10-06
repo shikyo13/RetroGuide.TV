@@ -86,6 +86,7 @@
 		805EA4139AAEA890B5977374 /* LibrarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E70EC001D86A5D672FE0DE6 /* LibrarySettingsView.swift */; };
 		813929000F28006DF8545A6B /* VPNStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C95722DD0F492AFD4008C8 /* VPNStatus.swift */; };
 		83B88E3EDCDB87872742AB45 /* ThemeCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B23A277D13DDAB3F7138C0D /* ThemeCatalog.swift */; };
+		866A0EB73AB28544D2DCBDB3 /* RatingPrompter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130CC237A5F2FDD66A49DBC5 /* RatingPrompter.swift */; };
 		86CF56BC970F2BABE026FD0E /* LibraryPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106458C76CA02AA261456C9F /* LibraryPickerView.swift */; };
 		8ABC3DEFA77E0F7A23FD7F6A /* RetroRowButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 640A1EE370DC839D29A43C74 /* RetroRowButtonStyle.swift */; };
 		8B5CE523D5B7BA7DA1292AF0 /* ChannelEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0AE37025797A6FA461DDEB /* ChannelEditorView.swift */; };
@@ -150,6 +151,7 @@
 		E428E9102569104BF28B0219 /* OnboardingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651E3EB72BF671C9E1ABE5CA /* OnboardingModel.swift */; };
 		ED7F2344AA752D822E88CB87 /* WatchOptionsPresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A175DE79ACDC3BF5784A06 /* WatchOptionsPresentation.swift */; };
 		EE02E369366A08BA4AC32A34 /* GuideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B746D8737282E49C370CF911 /* GuideView.swift */; };
+		EE77837048987578601DBAE8 /* RatingPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D2CE07BACDB88DCA49EF932 /* RatingPrompt.swift */; };
 		EFD83E959D6D885EE2791FF4 /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7B1848B4217F5A58027419 /* PreferencesStore.swift */; };
 		F0BBC4BCF16C95FC7EFC2BB4 /* PlayerTouchInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B1F37F2BE97290FE6DEF64B /* PlayerTouchInput.swift */; };
 		F28C95A80322AA0D40CDF4EA /* ThemePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D86A861EAF73F92B9F472DD /* ThemePickerView.swift */; };
@@ -177,6 +179,7 @@
 		106458C76CA02AA261456C9F /* LibraryPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryPickerView.swift; sourceTree = "<group>"; };
 		112719CCB56AAAD12EECF35A /* ScanlineOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanlineOverlay.swift; sourceTree = "<group>"; };
 		1228ACA50F43CD93B6C327B2 /* ScheduleGridPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleGridPickerView.swift; sourceTree = "<group>"; };
+		130CC237A5F2FDD66A49DBC5 /* RatingPrompter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingPrompter.swift; sourceTree = "<group>"; };
 		14EBB550D625B329BE602117 /* ServerRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerRegistry.swift; sourceTree = "<group>"; };
 		1576787E4500E23843801F06 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		16540AD44B0BC427225A94A4 /* Tuner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tuner.swift; sourceTree = "<group>"; };
@@ -247,6 +250,7 @@
 		651E3EB72BF671C9E1ABE5CA /* OnboardingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingModel.swift; sourceTree = "<group>"; };
 		66CC706B5FDE0AED70647579 /* EngineVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineVideoView.swift; sourceTree = "<group>"; };
 		6B12779CAF7F8DACCCBA2209 /* GuideRemoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideRemoteView.swift; sourceTree = "<group>"; };
+		6D2CE07BACDB88DCA49EF932 /* RatingPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingPrompt.swift; sourceTree = "<group>"; };
 		7453CB93CF6564D403BF756D /* GuideLiveControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideLiveControls.swift; sourceTree = "<group>"; };
 		7A418261B4F03EED66473C6E /* RetroGuide.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RetroGuide.entitlements; sourceTree = "<group>"; };
 		7DCAC7B46690CFA2F832866A /* ProgressTrack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressTrack.swift; sourceTree = "<group>"; };
@@ -510,6 +514,14 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		564617331DB542850EF35A07 /* Ratings */ = {
+			isa = PBXGroup;
+			children = (
+				130CC237A5F2FDD66A49DBC5 /* RatingPrompter.swift */,
+			);
+			path = Ratings;
+			sourceTree = "<group>";
+		};
 		6090A1DDB5E1C037957AA28B /* Ads */ = {
 			isa = PBXGroup;
 			children = (
@@ -584,6 +596,7 @@
 				3F18FA95749078B2E6E8F4B1 /* Persistence */,
 				0CD91C311C4922B01E4A2C80 /* Playback */,
 				BF0DC89AFCB13C4D8AC2AEC4 /* Purchases */,
+				564617331DB542850EF35A07 /* Ratings */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -666,6 +679,7 @@
 				0F64DDF7C46F3E4128C2C2FE /* FreeVersionAds.swift */,
 				0A571995B69258A623DBF644 /* KeepsScreenAwake.swift */,
 				9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */,
+				6D2CE07BACDB88DCA49EF932 /* RatingPrompt.swift */,
 				837678E87635D37172F0F4C4 /* WatchLayout.swift */,
 				882F8CA7ECA178E614F9241E /* WatchView.swift */,
 			);
@@ -955,6 +969,8 @@
 				AF9F80CCF79978692322149D /* ProgressTrack.swift in Sources */,
 				21FE91CD314E7F3B7C0DD596 /* QRCodeView.swift in Sources */,
 				9CD6CF6223D598BA2A994FB0 /* RatingChip.swift in Sources */,
+				EE77837048987578601DBAE8 /* RatingPrompt.swift in Sources */,
+				866A0EB73AB28544D2DCBDB3 /* RatingPrompter.swift in Sources */,
 				61B84956AE4E2BB297319733 /* RemoteImage.swift in Sources */,
 				BD80567F20BF4EB83FA3CFF5 /* RemovedTitlesPage.swift in Sources */,
 				930B7ED7E49AE404D4FE0B43 /* RemovedTitlesSection.swift in Sources */,
@@ -1045,7 +1061,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 20261004.2;
+				CURRENT_PROJECT_VERSION = 20261005.1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1060,7 +1076,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.1.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1136,7 +1152,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 20261004.2;
+				CURRENT_PROJECT_VERSION = 20261005.1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1157,7 +1173,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.1.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

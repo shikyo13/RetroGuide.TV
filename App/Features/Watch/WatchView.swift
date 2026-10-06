@@ -81,6 +81,7 @@ struct WatchView: View {
         .watchOptions(isPresented: $isShowingOptions, tuner: tuner)
         #if os(iOS)
         .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)
+        .ratingPrompt(isWatchingFullScreen: overlay == .none, tuner: tuner)
         #endif
         .onChange(of: overlay) {
             isGuideTopBarActive = false
