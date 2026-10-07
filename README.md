@@ -17,7 +17,7 @@ next in a cable-style guide.
 
 ## Download
 
-[Get RetroGuide.TV on the App Store](https://apps.apple.com/app/id6816213425)
+[Get RetroGuide.TV on the App Store](https://apps.apple.com/app/apple-store/id6816213425?pt=128673019&ct=github_readme&mt=8)
 for Apple TV, iPhone and iPad.
 
 You need a Plex Media Server you own or that is shared with you. **No media is
