@@ -37,7 +37,10 @@ final class MPVCore: @unchecked Sendable {
             ("cache", "yes"),
             ("demuxer-max-bytes", "64MiB"),
             ("demuxer-max-back-bytes", "16MiB"),
-            ("network-timeout", "20"),
+            ("network-timeout", "10"),
+            // Join a channel at the keyframe before the live position instead of
+            // decoding up to the exact second: starts sooner, a second or two early.
+            ("hr-seek", "no"),
             // Fallback only: the server's per-user track selection (see MPVTrackSelector)
             // overrides these once the file loads. Without it, behave like Plex's
             // "shown with foreign audio": subtitles in

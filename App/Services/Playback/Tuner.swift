@@ -1,4 +1,5 @@
 import Observation
+import OSLog
 import RetroGuideKit
 import UIKit
 
@@ -17,9 +18,12 @@ final class Tuner {
     }
 
     private enum Timing {
-        /// Wait this long after the last surf press before starting a stream,
-        /// so flipping through channels never opens a stream per channel.
+        /// While flipping through channels, wait this long after each press
+        /// before starting a stream, so flipping never opens one per channel.
         static let surfSettle: Duration = .milliseconds(450)
+        /// Presses closer together than this count as flipping; a single
+        /// press starts its stream right away.
+        static let flippingWindow: Duration = .seconds(1)
         /// Retry quietly (behind the tuning static) with these back-off
         /// delays before showing No Signal.
         static let quickRetryDelays: [Duration] = [.seconds(1), .seconds(2), .seconds(4)]
@@ -91,6 +95,11 @@ final class Tuner {
     @ObservationIgnored private var boundaryTask: Task<Void, Never>?
     @ObservationIgnored private var startWatchdog: Task<Void, Never>?
     @ObservationIgnored private var failedAttempts = 0
+    /// When the viewer last flipped a channel (see ``Timing/flippingWindow``).
+    @ObservationIgnored private var lastSurf: ContinuousClock.Instant?
+    /// When the current tune started, for the time-to-picture log.
+    @ObservationIgnored private var tuneStart: ContinuousClock.Instant?
+    @ObservationIgnored private let logger = Logger(subsystem: AppIdentity.bundleIdentifier, category: "tuner")
 
     private struct ActiveStream {
         let client: any MediaServerClient
@@ -250,8 +259,17 @@ final class Tuner {
         tuneGeneration += 1
         onChannelChanged?(channel.id)
         stopTimers()
+        // The old stream stops now rather than downloading while the new
+        // one is prepared.
+        engine.stop()
+        endActiveStream()
+        let now = ContinuousClock.now
+        tuneStart = now
+        logger.notice("tune \(channel.number, privacy: .public)\(isAutomatic ? " (automatic)" : "", privacy: .public)")
+        let isFlipping = surfing && lastSurf.map { now - $0 < Timing.flippingWindow } == true
+        lastSurf = surfing ? now : nil
         tuneTask = Task { [weak self] in
-            if surfing {
+            if isFlipping {
                 try? await Task.sleep(for: Timing.surfSettle)
             }
             guard !Task.isCancelled else { return }
@@ -391,6 +409,9 @@ final class Tuner {
                 subtitleDelay = .zero
             }
             engine.setSubtitleDelay(subtitleDelay)
+            if let tuneStart {
+                logger.notice("stream ready in \((ContinuousClock.now - tuneStart).milliseconds, privacy: .public) ms (\(String(describing: request.method), privacy: .public))")
+            }
             engine.play(request.starting(at: program.elapsed(at: joinedAt)), tracks: selection)
             UIApplication.shared.isIdleTimerDisabled = true
             scheduleBoundary(at: program.contentEnd)
@@ -409,6 +430,10 @@ final class Tuner {
         case .playing:
             guard signal == .tuning else { return }
             startWatchdog?.cancel()
+            if let tuneStart {
+                logger.notice("live in \((ContinuousClock.now - tuneStart).milliseconds, privacy: .public) ms")
+                self.tuneStart = nil
+            }
             signal = .live
             failedAttempts = .zero
         case .ended:
@@ -513,5 +538,11 @@ final class Tuner {
         Task.detached(priority: .utility) {
             await stream.client.endStream(sessionID: stream.sessionID)
         }
+    }
+}
+
+private extension Duration {
+    var milliseconds: Int64 {
+        components.seconds * 1000 + components.attoseconds / 1_000_000_000_000_000
     }
 }
