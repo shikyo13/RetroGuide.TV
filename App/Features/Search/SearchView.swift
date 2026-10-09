@@ -85,7 +85,13 @@ struct SearchView: View {
         .task(id: SearchKey(query: query, revision: app.searchRevision)) {
             try? await Task.sleep(for: Timing.debounce)
             while !Task.isCancelled {
-                results = app.searchIndex.search(query, at: .now)
+                // Off the main thread, so typing never stutters on a large lineup.
+                let index = app.searchIndex
+                let found = await Task.detached(priority: .userInitiated) { [query] in
+                    index.search(query, at: .now)
+                }.value
+                guard !Task.isCancelled else { return }
+                results = found
                 try? await Task.sleep(for: Timing.refreshInterval)
             }
         }

@@ -190,13 +190,16 @@ final class AppModel {
             await rebuildIndexAndLineup()
             phase = .ready
             turnOn()
+            // Find each server's current address before refreshing from it,
+            // in case the network changed since the last session.
+            await refreshConnections()
             if Date.now.timeIntervalSince(cachedAt) > Refresh.staleAfter {
                 await refreshLibrary()
             }
         } else {
             await refreshLibrary()
+            await refreshConnections()
         }
-        await refreshConnections()
     }
 
     /// Re-checks server addresses right away, e.g. when the app comes back to the
