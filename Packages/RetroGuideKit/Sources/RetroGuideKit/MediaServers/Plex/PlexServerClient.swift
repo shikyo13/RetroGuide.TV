@@ -215,7 +215,6 @@ public struct PlexServerClient: MediaServerClient {
                 URLQueryItem(name: "width", value: String(size.width)),
                 URLQueryItem(name: "height", value: String(size.height)),
                 URLQueryItem(name: "minSize", value: "1"),
-                URLQueryItem(name: "upscale", value: "1"),
                 URLQueryItem(name: "url", value: reference),
                 URLQueryItem(name: PlexAPI.Header.token, value: context.token),
             ]

@@ -25,9 +25,20 @@ struct RemoteImage<Placeholder: View>: View {
         }
         .animation(DesignTokens.Motion.standardEase, value: image != nil)
         .task(id: url) {
+            guard let url else {
+                image = nil
+                return
+            }
+            let maxPixelSize = max(size.width, size.height)
+            // Already in memory: show it at once, with no placeholder or fade.
+            if let cached = ImagePipeline.shared.cachedImage(for: url, maxPixelSize: maxPixelSize) {
+                var transaction = Transaction()
+                transaction.disablesAnimations = true
+                withTransaction(transaction) { image = cached }
+                return
+            }
             image = nil
-            guard let url else { return }
-            let loaded = await ImagePipeline.shared.image(for: url, maxPixelSize: max(size.width, size.height))
+            let loaded = await ImagePipeline.shared.image(for: url, maxPixelSize: maxPixelSize)
             guard !Task.isCancelled else { return }
             image = loaded
         }

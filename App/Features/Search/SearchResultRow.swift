@@ -15,7 +15,7 @@ struct SearchResultRow: View {
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
-            RemoteImage(serverID: result.title.sample.serverID, reference: result.title.sample.artwork.poster, size: ArtworkSize.poster) {
+            RemoteImage(serverID: result.title.sample.serverID, reference: result.title.sample.artwork.poster, size: ArtworkSize.posterThumbnail) {
                 theme.surfaceRaised
             }
             .frame(width: Layout.posterWidth, height: Layout.posterHeight)
