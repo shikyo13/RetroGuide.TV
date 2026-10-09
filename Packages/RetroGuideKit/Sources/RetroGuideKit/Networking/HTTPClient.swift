@@ -33,6 +33,11 @@ public struct HTTPClient: Sendable {
         self.decoder = decoder
     }
 
+    /// For requests a viewer is waiting on (starting a stream, its tracks,
+    /// ending it): a session of their own, so they never queue behind a
+    /// library download's many requests to the same server.
+    public static let playback = HTTPClient(session: URLSession(configuration: .playbackRequests))
+
     public func data(for request: URLRequest) async throws -> Data {
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse else {
@@ -98,4 +103,19 @@ public struct RequestBuilder: Sendable {
         headers.merging(extraHeaders) { _, new in new }.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         return request
     }
+}
+
+private extension URLSessionConfiguration {
+    /// Uncached, with a few connections per server kept for playback.
+    static var playbackRequests: URLSessionConfiguration {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.urlCache = nil
+        configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
+        configuration.httpMaximumConnectionsPerHost = PlaybackSession.connectionsPerServer
+        return configuration
+    }
+}
+
+private enum PlaybackSession {
+    static let connectionsPerServer = 4
 }

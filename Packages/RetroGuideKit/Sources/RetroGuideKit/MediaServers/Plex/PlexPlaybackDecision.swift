@@ -10,8 +10,10 @@ enum PlexPlaybackDecision: Equatable {
     case directPlay(partKey: String)
     /// The server declined this version (for example its file was deleted).
     case unavailable
-    /// No answer (network trouble); the version may still play.
+    /// The server answered but not with a decision; the version may still play.
     case unknown
+    /// The server couldn't be reached at all, so the file can't be either.
+    case unreachable
 }
 
 struct PlexDecisionContainer: Decodable {
@@ -61,9 +63,15 @@ extension PlexServerClient {
             PlexAPI.Header.clientProfileName: PlexAPI.Decision.genericProfile,
             PlexAPI.Header.clientProfileExtra: PlexAPI.Decision.directPlayAnythingProfile,
         ]
-        guard let request = try? builder.request(path: PlexAPI.Path.playbackDecision, query: query, extraHeaders: headers),
-              let envelope = try? await context.http.decode(PlexEnvelope<PlexDecisionContainer>.self, for: request)
-        else { return .unknown }
-        return envelope.mediaContainer.decision
+        guard let request = try? builder.request(path: PlexAPI.Path.playbackDecision, query: query, extraHeaders: headers) else {
+            return .unknown
+        }
+        do {
+            return try await context.playbackHTTP.decode(PlexEnvelope<PlexDecisionContainer>.self, for: request).mediaContainer.decision
+        } catch is URLError {
+            return .unreachable
+        } catch {
+            return .unknown
+        }
     }
 }

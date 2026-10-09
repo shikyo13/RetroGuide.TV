@@ -11,9 +11,10 @@ public struct PlexServerClient: MediaServerClient {
         token: String,
         identity: PlexClientIdentity,
         playback: ServerPlaybackSettings = .local,
-        http: HTTPClient = HTTPClient()
+        http: HTTPClient = HTTPClient(),
+        playbackHTTP: HTTPClient = .playback
     ) {
-        context = PlexRequestContext(serverID: serverID, baseURL: baseURL, token: token, identity: identity, http: http)
+        context = PlexRequestContext(serverID: serverID, baseURL: baseURL, token: token, identity: identity, http: http, playbackHTTP: playbackHTTP)
         self.playback = playback
     }
 
@@ -56,6 +57,9 @@ public struct PlexServerClient: MediaServerClient {
                 return try directPlayRequest(filePath: partKey, sessionID: sessionID, position: position, version: version.index)
             case .unavailable:
                 continue
+            case .unreachable:
+                // Don't hand the player a file it would spend its whole network timeout on.
+                throw StreamError.serverUnreachable
             case .unknown:
                 // No answer from the server: try the file anyway (smaller files don't need a decision).
                 guard let filePath = version.filePath else { continue }
@@ -180,7 +184,7 @@ public struct PlexServerClient: MediaServerClient {
     private func parts(of item: MediaItem, timeout: TimeInterval) async -> [PlexPart?]? {
         let builder = RequestBuilder(baseURL: context.baseURL, headers: context.builder.headers, timeout: timeout)
         guard let request = try? builder.request(path: PlexAPI.Path.metadata(item.itemKey)),
-              let page = try? await context.http.decode(PlexEnvelope<PlexMetadataPage>.self, for: request),
+              let page = try? await context.playbackHTTP.decode(PlexEnvelope<PlexMetadataPage>.self, for: request),
               let media = page.mediaContainer.metadata?.first?.media
         else { return nil }
         return media.map { $0.parts?.first }
@@ -201,7 +205,7 @@ public struct PlexServerClient: MediaServerClient {
     public func endStream(sessionID: String) async {
         let query = [URLQueryItem(name: "session", value: sessionID)]
         guard let request = try? context.builder.request(path: PlexAPI.Path.transcodeStop, query: query) else { return }
-        _ = try? await context.http.data(for: request)
+        _ = try? await context.playbackHTTP.data(for: request)
     }
 
     public func imageURL(for reference: String, size: ImageSize) -> URL? {

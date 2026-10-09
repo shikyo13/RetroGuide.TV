@@ -111,11 +111,15 @@ public protocol MediaServerClient: Sendable {
 public enum StreamError: Error, Equatable, LocalizedError {
     /// Every copy of the title is missing or unplayable on the server.
     case noPlayableVersion
+    /// The server didn't answer.
+    case serverUnreachable
 
     public var errorDescription: String? {
         switch self {
         case .noPlayableVersion:
             "The server can't play this title. Its files may have been moved or deleted."
+        case .serverUnreachable:
+            "The server isn't responding."
         }
     }
 }
