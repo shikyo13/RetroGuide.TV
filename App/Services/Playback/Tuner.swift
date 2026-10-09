@@ -326,13 +326,21 @@ final class Tuner {
         signal = .tuning
         let generation = tuneGeneration
         do {
+            // With a single copy the tracks don't depend on the server's
+            // decision, so both requests go out at once.
+            let item = program.item
+            let preferences = languagePreferences
+            let hasOneCopy = item.versions.count <= 1
+            async let singleCopyTracks = hasOneCopy ? client.tracks(for: item, version: nil, preferences: preferences) : nil
             var request = try await client.streamRequest(
-                for: program.item,
+                for: item,
                 startingAt: program.elapsed(at: now),
                 capabilities: engine.capabilities
             )
             // The tracks of the copy actually being streamed.
-            let tracks = await client.tracks(for: program.item, version: request.versionIndex, preferences: languagePreferences)
+            let tracks = hasOneCopy
+                ? await singleCopyTracks
+                : await client.tracks(for: item, version: request.versionIndex, preferences: preferences)
             // A newer tune started while the stream was being prepared.
             guard generation == tuneGeneration, !Task.isCancelled else {
                 if request.needsTeardown {
