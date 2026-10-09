@@ -54,6 +54,12 @@ final class MPVPlaybackEngine: PlaybackEngine {
         core?.selectTracks(tracks)
     }
 
+    let adjustsSubtitleTiming = true
+
+    func setSubtitleDelay(_ seconds: TimeInterval) {
+        core?.setSubtitleDelay(seconds)
+    }
+
     func setPrefersHDROutput(_ prefersHDROutput: Bool) {
         core?.setHDROutput(prefersHDROutput)
     }

@@ -73,6 +73,10 @@ final class Tuner {
     /// and the ones playing.
     private(set) var currentTracks: ItemTracks?
     private(set) var currentSelection: TrackSelection?
+    /// How far subtitles are moved for what's on now (see ``SubtitleTiming``).
+    private(set) var subtitleDelay: TimeInterval = .zero
+    /// The item ``subtitleDelay`` was set for: a new program starts in sync.
+    @ObservationIgnored private var subtitleDelayItemID: String?
     /// The viewer's audio and subtitle choices, each at its own scope.
     private(set) var trackRules = TrackRules()
     /// Called after the viewer changes a choice: the new rules, the item it
@@ -155,6 +159,12 @@ final class Tuner {
     }
 
     // MARK: - Audio and subtitles
+
+    /// Shows subtitles `delay` seconds later (earlier when negative) for what's on now.
+    func setSubtitleDelay(_ delay: TimeInterval) {
+        subtitleDelay = SubtitleTiming.clamped(delay)
+        engine.setSubtitleDelay(subtitleDelay)
+    }
 
     /// Whether the viewer can pick tracks for what's playing right now.
     var canChooseTracks: Bool {
@@ -376,6 +386,11 @@ final class Tuner {
             currentTracks = tracks
             currentSelection = selection
             playbackGeneration = generation
+            if subtitleDelayItemID != program.item.id {
+                subtitleDelayItemID = program.item.id
+                subtitleDelay = .zero
+            }
+            engine.setSubtitleDelay(subtitleDelay)
             engine.play(request.starting(at: program.elapsed(at: joinedAt)), tracks: selection)
             UIApplication.shared.isIdleTimerDisabled = true
             scheduleBoundary(at: program.contentEnd)

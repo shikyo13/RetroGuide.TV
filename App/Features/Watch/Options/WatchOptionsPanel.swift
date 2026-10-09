@@ -120,6 +120,9 @@ struct WatchOptionsPanel: View {
                     tuner.resetSubtitles()
                 }
             }
+            if subtitle != nil, tuner.engine.adjustsSubtitleTiming {
+                SubtitleTimingControl(tuner: tuner)
+            }
         }
         if let progress = app.trackSync.progress {
             note("Saving to Plex… \(progress.done) of \(progress.total)")

@@ -56,6 +56,10 @@ protocol PlaybackEngine: AnyObject {
     /// Whether ``selectTracks(_:)`` switches audio and subtitles while playing.
     var switchesTracksLive: Bool { get }
     func selectTracks(_ tracks: TrackSelection)
+    /// Whether ``setSubtitleDelay(_:)`` moves subtitles on what's playing.
+    var adjustsSubtitleTiming: Bool { get }
+    /// Shows subtitles `seconds` later (earlier when negative), for this and later files.
+    func setSubtitleDelay(_ seconds: TimeInterval)
 }
 
 extension PlaybackEngine {
@@ -67,6 +71,11 @@ extension PlaybackEngine {
 
     /// Switches audio and subtitles on what's playing, when the engine can.
     func selectTracks(_ tracks: TrackSelection) {}
+
+    /// Apple's player shows subtitles the server has timed.
+    var adjustsSubtitleTiming: Bool { false }
+
+    func setSubtitleDelay(_ seconds: TimeInterval) {}
 }
 
 @MainActor

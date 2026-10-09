@@ -85,6 +85,7 @@
 		7E1F0CB17CABA171F2D65BBB /* WatchOptionsPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEEFF98634580A62CA20573D /* WatchOptionsPanel.swift */; };
 		805EA4139AAEA890B5977374 /* LibrarySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E70EC001D86A5D672FE0DE6 /* LibrarySettingsView.swift */; };
 		813929000F28006DF8545A6B /* VPNStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32C95722DD0F492AFD4008C8 /* VPNStatus.swift */; };
+		83534407C63AEF805602EF14 /* SubtitleTimingControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0D1CD7CD3D111FBE40C4615 /* SubtitleTimingControl.swift */; };
 		83B88E3EDCDB87872742AB45 /* ThemeCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B23A277D13DDAB3F7138C0D /* ThemeCatalog.swift */; };
 		866A0EB73AB28544D2DCBDB3 /* RatingPrompter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130CC237A5F2FDD66A49DBC5 /* RatingPrompter.swift */; };
 		86CF56BC970F2BABE026FD0E /* LibraryPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106458C76CA02AA261456C9F /* LibraryPickerView.swift */; };
@@ -312,6 +313,7 @@
 		E91331A410DCC822983B10A3 /* ServerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailView.swift; sourceTree = "<group>"; };
 		EBE95A2421FA0C633DD728E8 /* ChannelDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelDetailView.swift; sourceTree = "<group>"; };
 		EFC1B0A525F43C6F9AF3F80C /* InterstitialPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterstitialPresenter.swift; sourceTree = "<group>"; };
+		F0D1CD7CD3D111FBE40C4615 /* SubtitleTimingControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleTimingControl.swift; sourceTree = "<group>"; };
 		F4A0B4FE6D7B95B90E765C77 /* ThemePalettes+Broadcast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThemePalettes+Broadcast.swift"; sourceTree = "<group>"; };
 		F4D658E170DE9E23473337E5 /* ProUpgradeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProUpgradeView.swift; sourceTree = "<group>"; };
 		FAA0031C0635075EDCB4A5DA /* GuideHeaderAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideHeaderAd.swift; sourceTree = "<group>"; };
@@ -622,6 +624,7 @@
 				7453CB93CF6564D403BF756D /* GuideLiveControls.swift */,
 				B39D6FB966CDC8361D2A3310 /* OptionMenu.swift */,
 				CE33F5C6380C978AE3E2616A /* PlacementText.swift */,
+				F0D1CD7CD3D111FBE40C4615 /* SubtitleTimingControl.swift */,
 				375275F966C6A54E256081C1 /* WatchOptionsButton.swift */,
 				BEEFF98634580A62CA20573D /* WatchOptionsPanel.swift */,
 				55A175DE79ACDC3BF5784A06 /* WatchOptionsPresentation.swift */,
@@ -998,6 +1001,7 @@
 				BFB7AE33797AE06B256FBBD5 /* SimulcastLimitPickerView.swift in Sources */,
 				A81E12379CDB78335D6E9042 /* SplashView.swift in Sources */,
 				344BBCFC8E4E7130D58A182A /* StaticNoiseView.swift in Sources */,
+				83534407C63AEF805602EF14 /* SubtitleTimingControl.swift in Sources */,
 				42D421BD47109060D3F3D77E /* Surfaces.swift in Sources */,
 				E12FF8A63EA8CE4599227EF4 /* TVGlyph.swift in Sources */,
 				20766AA11246762B2EB2089D /* TapAction.swift in Sources */,

@@ -92,6 +92,7 @@ final class MPVCore: @unchecked Sendable {
         static let noStartPosition = "none"
         static let windowID = "wid"
         static let trackListProperty = "track-list"
+        static let subtitleDelayProperty = "sub-delay"
         static let maxBytesProperty = "demuxer-max-bytes"
         static let readaheadProperty = "demuxer-readahead-secs"
         /// libmpv log verbosity forwarded to the unified log in debug builds.
@@ -184,6 +185,12 @@ final class MPVCore: @unchecked Sendable {
         let trackList = String(cString: rawTrackList)
         mpv_free(rawTrackList)
         MPVTrackSelector.commands(for: tracks, trackListJSON: trackList).forEach(command)
+    }
+
+    /// Shows subtitles `seconds` later (earlier when negative). mpv keeps it across files.
+    func setSubtitleDelay(_ seconds: TimeInterval) {
+        guard let handle else { return }
+        mpv_set_property_string(handle, Option.subtitleDelayProperty, String(format: "%.2f", seconds))
     }
 
     /// Passes HDR through to the display (`true`) or tone maps it to standard range.
