@@ -22,7 +22,7 @@ struct ChannelBanner: View {
     @Environment(\.isNarrowLayout) private var isStacked
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: ScheduleConstants.secondsPerMinute)) { context in
+        TimelineView(.everyMinute) { context in
             Group {
                 if isStacked {
                     stackedLayout(now: context.date)

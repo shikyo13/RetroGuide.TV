@@ -100,7 +100,7 @@ struct GuideHeader: View {
     #endif
 
     private var clock: some View {
-        TimelineView(.periodic(from: .now, by: ScheduleConstants.secondsPerMinute)) { context in
+        TimelineView(.everyMinute) { context in
             HStack(spacing: DesignTokens.Spacing.md) {
                 Text(ScheduleFormatting.day(isShowingNow ? context.date : windowStart))
                     .foregroundStyle(theme.textSecondary)
