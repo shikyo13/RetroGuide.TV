@@ -9,16 +9,14 @@ struct SchedulingRegressionTests {
     @Test func cycleFindsFreeShowBeyondLookahead() {
         let items = TestFactory.show("A", episodes: 600) + TestFactory.show("B", episodes: 1)
         let context = ScheduleContext(channelID: "c", items: items, grid: .continuous)
-        var picker = CyclePicker(ordering: .syndication, context: context)
+        var picker = TrackingPicker(order: CycleOrder(ordering: .syndication, context: context), at: 0)
         let showA = context.showOfItem[0]
         // Advance until B has just aired.
-        var offset: TimeInterval = 0
         for _ in 0..<2_000 {
-            let item = picker.next(at: offset, in: context) { _ in true }
-            offset += context.slotLengths[item]
+            let item = picker.next(isAllowed: { _ in true }, isAcceptable: { _ in true })
             if context.showOfItem[item] != showA { break }
         }
-        let next = picker.next(at: offset, in: context) { context.showOfItem[$0] != showA }
+        let next = picker.next(isAllowed: { context.showOfItem[$0] != showA }, isAcceptable: { _ in true })
         #expect(context.showOfItem[next] != showA, "aired blocked show A although B was free")
     }
 
@@ -72,24 +70,26 @@ struct SchedulingRegressionTests {
         #expect(ChannelRule(seriesIDs: ["friend/77"]).matchingItems(in: index).count == 2)
     }
 
-    // J: after a block ends, made-up turns air back to back.
-    @Test func madeUpTurnsAreSpread() {
+    // J: after a block ends, the show picks up exactly where it left off and catches up.
+    @Test func madeUpTurnsStayInOrder() {
         let items = TestFactory.show("A", episodes: 12) + TestFactory.show("B", episodes: 12) + TestFactory.show("C", episodes: 12)
         let context = ScheduleContext(channelID: "c", items: items, grid: .continuous)
-        var picker = CyclePicker(ordering: .syndication, context: context)
+        var picker = TrackingPicker(order: CycleOrder(ordering: .syndication, context: context), at: 0)
         let showA = context.showOfItem[0]
-        var aired: [Int] = []
-        for turn in 0..<24 {
+        var episodes: [Int] = []
+        for turn in 0..<36 {
             let blocked = turn < 9
-            aired.append(context.showOfItem[picker.next(at: 0, in: context) { !blocked || context.showOfItem[$0] != showA }])
+            let allowed: (Int) -> Bool = { !blocked || context.showOfItem[$0] != showA }
+            let item = picker.next(isAllowed: allowed, isAcceptable: allowed)
+            if context.showOfItem[item] == showA {
+                #expect(!blocked, "aired A while it was blocked")
+                episodes.append(context.items[item].series?.episodeNumber ?? 0)
+            }
         }
-        let afterBlock = aired.dropFirst(9)
-        let longestRun = afterBlock.reduce(into: (run: 0, best: 0, last: -1)) { state, show in
-            state.run = show == state.last ? state.run + 1 : 1
-            state.best = max(state.best, state.run)
-            state.last = show
-        }.best
-        #expect(longestRun <= 2, "\(aired)")
+        #expect(episodes.count == 12, "A should have caught up: \(episodes)")
+        for (previous, next) in zip(episodes, episodes.dropFirst()) {
+            #expect(next == previous % 12 + 1, "\(episodes)")
+        }
     }
 }
 
@@ -140,8 +140,8 @@ struct FairTurnsTests {
 
     private static func airings(_ ordering: ScheduleOrdering, count: Int) -> [MediaItem] {
         let context = ScheduleContext(channelID: "c", items: items, grid: .continuous)
-        var picker = ChannelPicker(ordering: ordering, context: context)
-        return (0..<count).map { _ in context.items[picker.next(at: .zero, in: context) { _ in true }] }
+        let order = NominalOrders.make(ordering: ordering, context: context)
+        return (0..<count).map { context.items[order.program(at: $0).item] }
     }
 
     @Test("Each show gets an equal share of turns, whatever its episode count", arguments: [ScheduleOrdering.syndication, .shuffle, .blockShuffle])
