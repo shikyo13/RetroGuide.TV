@@ -104,7 +104,7 @@ final class Tuner {
     /// Swaps the playback engine (from Settings) and rejoins the current channel.
     func useEngine(_ kind: PlaybackEngineKind) {
         guard kind != engine.kind else { return }
-        stopPlayback()
+        suspend()
         engine = PlaybackEngineFactory.make(kind)
         attach(engine)
         setVideoFormat(nil)
@@ -220,6 +220,11 @@ final class Tuner {
     /// `isAutomatic`: the app retuned (a rebuilt lineup, a reconnected server),
     /// not the viewer.
     func tune(to channel: Channel, surfing: Bool = false, isAutomatic: Bool = false) {
+        // Choosing the channel that's already on (the guide's picture, its
+        // Watch button) keeps the stream; only a dead signal is worth a retry.
+        if !isAutomatic, channel.id == self.channel?.id, isReceiving {
+            return
+        }
         if channel.id != self.channel?.id {
             previousChannelID = self.channel?.id
         }
@@ -266,10 +271,21 @@ final class Tuner {
         signal = .off
     }
 
-    /// Rejoins the current channel live when returning to the foreground.
+    /// Rejoins the current channel live after ``suspend()``. Does nothing
+    /// while the channel is still on (the app only went inactive, for
+    /// Control Center or the app switcher), so the stream keeps playing.
     func resume() {
-        guard let channel else { return }
-        tune(to: channel)
+        guard let channel, signal == .off else { return }
+        tune(to: channel, isAutomatic: true)
+    }
+
+    /// The channel is playing, starting or between programs: there's a
+    /// stream (or a scheduled one) worth keeping.
+    private var isReceiving: Bool {
+        switch signal {
+        case .tuning, .live, .intermission: true
+        case .off, .noSignal: false
+        }
     }
 
     func powerOff() {
