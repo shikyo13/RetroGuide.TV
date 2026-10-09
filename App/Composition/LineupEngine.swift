@@ -21,7 +21,8 @@ struct LineupEngine: Sendable {
             let lineup = builder.build(index: index, customization: customization)
             // Channels sharing a simulcast limit are simulated together on
             // first use; do that here rather than when the guide first opens.
-            for channel in lineup {
+            // Hidden channels are never shown or tuned, so they're left cold.
+            for channel in lineup where !channel.isHidden {
                 _ = channel.timeline.program(at: .now)
             }
             return lineup

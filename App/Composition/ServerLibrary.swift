@@ -198,14 +198,14 @@ final class ServerLibrary {
                     snapshots[account.id] = snapshot
                     status[account.id] = .online
                     aggregator.finish(serverID: account.id, succeeded: true)
+                    // On air first; the cache is written after.
+                    await onServerReady()
                     await snapshotStore.save(snapshot)
-                    guard isCurrent(account) else {
+                    if !isCurrent(account) {
                         // Removed while the cache was being written: don't leave it behind.
                         snapshots[account.id] = nil
                         snapshotStore.remove(serverID: account.id)
-                        continue
                     }
-                    await onServerReady()
                 case let .failure(error):
                     status[account.id] = .offline
                     aggregator.finish(serverID: account.id, succeeded: false)

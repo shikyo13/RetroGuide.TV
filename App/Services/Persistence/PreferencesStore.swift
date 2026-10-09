@@ -9,6 +9,8 @@ struct UserPreferences: Codable, Equatable, Sendable {
     var showsScanlines = true
     var playerEngine: PlaybackEngineKind = .universal
     var displayMatching: DisplayMatching = .dynamicRange
+    /// Where earlier versions kept the last channel; read once to carry it over
+    /// (see ``PreferencesStore/lastChannelID``).
     var lastChannelID: String?
 
     init() {}
@@ -37,6 +39,7 @@ struct PreferencesStore {
         static let languagePreferences = "languagePreferences.v1"
         static let trackRules = "trackRules.v1"
         static let plexClientIdentifier = "plexClientIdentifier"
+        static let lastChannelID = "lastChannelID.v1"
     }
 
     private let defaults: UserDefaults
@@ -48,6 +51,13 @@ struct PreferencesStore {
     var preferences: UserPreferences {
         get { decode(UserPreferences.self, forKey: Key.preferences) ?? UserPreferences() }
         nonmutating set { encode(newValue, forKey: Key.preferences) }
+    }
+
+    /// The channel to come back to. Saved on its own, apart from
+    /// ``preferences``, because it changes on every channel change.
+    var lastChannelID: String? {
+        get { defaults.string(forKey: Key.lastChannelID) ?? preferences.lastChannelID }
+        nonmutating set { defaults.set(newValue, forKey: Key.lastChannelID) }
     }
 
     var accounts: [ServerAccount] {

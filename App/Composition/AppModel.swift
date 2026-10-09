@@ -43,6 +43,7 @@ final class AppModel {
     /// settings, however many changes came in.
     @ObservationIgnored private var lineupBuild: Task<Void, Never>?
     @ObservationIgnored private var lineupBuildPending = false
+    @ObservationIgnored private var searchIndexBuild: Task<Void, Never>?
     @ObservationIgnored private var isSessionStarted = false
     /// Bumped whenever a new lineup is published, so open views can refresh.
     private(set) var lineupRevision = 0
@@ -97,7 +98,7 @@ final class AppModel {
             servers.client(for: serverID)
         }
         tuner.onChannelChanged = { [weak self] channelID in
-            self?.preferences.lastChannelID = channelID
+            self?.store.lastChannelID = channelID
         }
         tuner.onServerTrouble = { [weak self] _ in
             Task { await self?.recheckServers() }
@@ -520,9 +521,13 @@ final class AppModel {
         lineupRevision += 1
         tuner.setChannels(visibleChannels)
         resumeLastChannelIfAvailable()
-        let search = await engine.makeSearchIndex(channels: built)
-        guard generation == lineupGeneration else { return }
-        searchIndex = search
+        // Search follows on its own: nothing waits for it, least of all the first picture.
+        searchIndexBuild?.cancel()
+        searchIndexBuild = Task { [weak self, engine] in
+            let search = await engine.makeSearchIndex(channels: built)
+            guard let self, !Task.isCancelled, generation == lineupGeneration else { return }
+            searchIndex = search
+        }
     }
 
     private func goOnAir() {
@@ -536,10 +541,10 @@ final class AppModel {
         let channels = visibleChannels
         tuner.setChannels(channels)
         guard tuner.channel == nil else { return }
-        if let lastChannel = tuner.channel(withID: preferences.lastChannelID) {
+        if let lastChannel = tuner.channel(withID: store.lastChannelID) {
             tuner.tune(to: lastChannel, isAutomatic: true)
         } else if let first = channels.first {
-            let lastChannelID = preferences.lastChannelID
+            let lastChannelID = store.lastChannelID
             tuner.tune(to: first, isAutomatic: true)
             // The last channel may come from a server that is still indexing.
             if let lastChannelID {
