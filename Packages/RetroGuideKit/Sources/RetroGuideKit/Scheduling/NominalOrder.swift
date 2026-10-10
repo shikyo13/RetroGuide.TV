@@ -13,31 +13,59 @@ protocol NominalOrder: Sendable {
     func position(at offset: Int) -> Int
 }
 
+/// Where a channel's order stands at one moment, by identity rather than by
+/// position, so the next version of its content can carry on from exactly
+/// there: every show's next episode, which turn is due, and what each lane
+/// is running.
+struct SpliceState: Sendable {
+    /// Each show's last aired episode (item index): the new content decides
+    /// what follows it, so an episode added after the last one airs next
+    /// rather than the show starting over.
+    var lastAired: [Int: Int] = [:]
+    /// Cycling orders: the turns from the due one on, as (show, occurrence in the cycle).
+    var upcomingTurns: [Turn] = []
+    /// Rotating orders: each lane's shows, the one on the air first, and the lane due next.
+    var lanes: [[Int]] = []
+    var dueLane = 0
+
+    struct Turn: Sendable, Hashable {
+        let show: Int
+        let occurrence: Int
+    }
+}
+
+/// One version of a channel's order, measured from where it starts
+/// (position and time zero), able to say where it stands at any position.
+protocol OrderSegment: NominalOrder {
+    func state(at position: Int) -> SpliceState
+}
+
 enum NominalOrders {
     /// Rotation needs depth: enough content and enough shows waiting that a
     /// finished show can always rest. Smaller channels, and Shuffle, air
-    /// everything once in a fixed order before anything repeats (``CycleOrder``).
+    /// everything once in a fixed order before anything repeats (``CycleSegment``).
     enum Tuning {
         static let minimumContent: TimeInterval = 28 * 24 * ScheduleConstants.secondsPerHour
         static let minimumShows = 6
     }
 
-    /// The order a channel runs with `ordering`: a rotating lineup when it
-    /// has the depth for one, otherwise one fixed cycle after another.
-    /// - Parameter keep: how often each show takes its turns on a cycling
-    ///   channel (``ShowBudget``); always when nil.
-    static func make(ordering: ScheduleOrdering, context: ScheduleContext, keep: [Int]? = nil) -> any NominalOrder {
-        guard rotates(ordering: ordering, items: context.items) else {
-            return CycleOrder(ordering: ordering, context: context, keep: keep)
-        }
-        return LaneOrder(ordering: ordering, context: context)
+    /// The order a channel runs with `ordering`. Each time its content
+    /// changes (``ScheduleContext/versionTimes``) or its show budget does,
+    /// the order carries on from where it stood with the new content, so the
+    /// schedule before that moment never changes and nothing skips or repeats.
+    static func make(ordering: ScheduleOrdering, context: ScheduleContext, budget: BudgetSchedule? = nil) -> any NominalOrder {
+        CompositeOrder.build(ordering: ordering, context: context, budget: budget)
     }
 
     static func rotates(ordering: ScheduleOrdering, items: [MediaItem]) -> Bool {
         let titles = Set(items.map(\.showID)).count
+        let content = items.reduce(TimeInterval.zero) { $0 + $1.duration }
+        return rotates(ordering: ordering, titles: titles, content: content)
+    }
+
+    static func rotates(ordering: ScheduleOrdering, titles: Int, content: TimeInterval) -> Bool {
         guard ordering != .shuffle, titles > 1 else { return false }
         guard ordering != .marathon else { return true }
-        let content = items.reduce(TimeInterval.zero) { $0 + $1.duration }
         return content >= Tuning.minimumContent && titles >= Tuning.minimumShows
     }
 
@@ -57,24 +85,157 @@ enum NominalOrders {
     }
 }
 
+/// Each show's episodes as of one content version, with their slot-time
+/// prefix sums, rebuilt only for shows whose episodes changed.
+struct EpisodeShelf {
+    private let context: ScheduleContext
+    /// Item indices joining at each version time.
+    private let joining: [Int: [Int]]
+    private(set) var episodes: [Int: [Int]] = [:]
+    private(set) var prefixes: [Int: [Int]] = [:]
+    /// Shows with episodes so far, ascending.
+    private(set) var shows: [Int] = []
+    private(set) var content: TimeInterval = .zero
+
+    init(context: ScheduleContext) {
+        self.context = context
+        var joining: [Int: [Int]] = [:]
+        for show in context.shows.indices {
+            for item in context.shows[show] {
+                joining[context.effective[item], default: []].append(item)
+            }
+        }
+        self.joining = joining
+    }
+
+    /// Takes in the items joining at `time`.
+    mutating func advance(to time: Int) {
+        guard let items = joining[time] else { return }
+        var changed = Set<Int>()
+        for item in items {
+            changed.insert(context.showOfItem[item])
+            content += context.items[item].duration
+        }
+        for show in changed {
+            // Broadcast order, the same as the show's full list.
+            let list = context.shows[show].filter { context.effective[$0] <= time }
+            episodes[show] = list
+            prefixes[show] = ShowReel.prefix(of: list, slotLengths: context.slotLengths)
+        }
+        shows = episodes.keys.sorted()
+    }
+
+    /// The show's reel, starting after `previous` (its last aired episode),
+    /// or where the channel starts the show when it's new.
+    func reel(of show: Int, after previous: Int?) -> ShowReel {
+        let items = episodes[show] ?? []
+        let start = previous.flatMap { items.firstIndex(of: $0) }.map { $0 + 1 } ?? context.firstEpisode(of: show, count: items.count)
+        return ShowReel(items: items, prefix: prefixes[show] ?? [0], start: start)
+    }
+}
+
+/// A channel's order across all versions of its content: one segment per
+/// version, each starting where the previous one stood when the new content
+/// joined. Positions run on across segments.
+struct CompositeOrder: NominalOrder {
+    private let positions: [Int]
+    private let times: [Int]
+    private let segments: [any OrderSegment]
+
+    static func build(ordering: ScheduleOrdering, context: ScheduleContext, budget: BudgetSchedule?) -> CompositeOrder {
+        var shelf = EpisodeShelf(context: context)
+        let budgetTimes = budget?.changeTimes ?? []
+        let versions = Set(context.versionTimes + budgetTimes).sorted()
+        var positions: [Int] = []
+        var times: [Int] = []
+        var segments: [any OrderSegment] = []
+        for time in versions {
+            shelf.advance(to: time)
+            guard !shelf.shows.isEmpty else { continue }
+            let keep = budget?.keep(at: time)
+            guard let last = segments.last, let lastPosition = positions.last, let lastTime = times.last else {
+                positions.append(.zero)
+                times.append(time)
+                segments.append(segment(ordering: ordering, context: context, shelf: shelf, keep: keep, from: nil, reusing: nil))
+                continue
+            }
+            // The first program of the old version starting at or after the
+            // change hands over to the new one, at its own start time.
+            var local = last.position(at: time - lastTime)
+            if last.start(of: local) < time - lastTime {
+                local += 1
+            }
+            let state = last.state(at: local)
+            positions.append(lastPosition + local)
+            times.append(lastTime + last.start(of: local))
+            segments.append(segment(ordering: ordering, context: context, shelf: shelf, keep: keep, from: state, reusing: (last as? CycleSegment)?.template))
+        }
+        return CompositeOrder(positions: positions, times: times, segments: segments)
+    }
+
+    private static func segment(ordering: ScheduleOrdering, context: ScheduleContext, shelf: EpisodeShelf, keep: [Int]?, from state: SpliceState?, reusing template: CycleSegment.Template?) -> any OrderSegment {
+        guard NominalOrders.rotates(ordering: ordering, titles: shelf.shows.count, content: shelf.content) else {
+            return CycleSegment(ordering: ordering, context: context, shelf: shelf, keep: keep, from: state, reusing: template)
+        }
+        return LaneSegment(ordering: ordering, context: context, shelf: shelf, from: state)
+    }
+
+    func start(of position: Int) -> Int {
+        guard !segments.isEmpty else { return .zero }
+        let index = segment(containingPosition: position)
+        return times[index] + segments[index].start(of: position - positions[index])
+    }
+
+    func program(at position: Int) -> (show: Int, item: Int) {
+        let index = segment(containingPosition: position)
+        return segments[index].program(at: position - positions[index])
+    }
+
+    func position(at offset: Int) -> Int {
+        guard !segments.isEmpty, offset >= times[0] else { return .zero }
+        let index = NominalOrders.lastNotAfter(offset, upper: times.count - 1) { times[$0] }
+        return positions[index] + segments[index].position(at: offset - times[index])
+    }
+
+    private func segment(containingPosition position: Int) -> Int {
+        NominalOrders.lastNotAfter(position, upper: positions.count - 1) { positions[$0] }
+    }
+}
+
 /// Shows in turns, cycle after cycle. Every show gets the same number of
 /// turns per cycle whatever its episode count (a 500-episode show just takes
 /// longer to get through), and each turn airs that show's next episode, in
 /// order. Show Rotation is one turn per show in a fixed order; Shuffle a new
 /// random order of shows each round; Block Shuffle the same with a short
 /// block of episodes per turn; Marathon every episode of a show, then the
-/// next show.
-struct CycleOrder: NominalOrder {
+/// next show. The order of shows comes from each show's own identity, so a
+/// show joining or leaving doesn't move the others.
+struct CycleSegment: OrderSegment {
     enum Tuning {
         /// Rounds of different random show orders per Shuffle and Block Shuffle
         /// cycle, so the pattern of shows doesn't visibly repeat every round.
         static let shuffledRounds = 8
     }
 
-    /// Show indices in airing order: a turn airs that show's next episode.
+    /// One cycle's turns for a set of shows, kept for the next version when
+    /// only episodes changed (the usual case), since the order of shows
+    /// depends only on which shows there are.
+    struct Template: Sendable {
+        let shows: [Int]
+        let canonical: [Int]
+        let canonicalOccurrence: [Int]
+        let perCycle: [Int]
+    }
+
+    /// The turn template, for the next version to reuse.
+    let template: Template
+    /// The channel's show index of each local show.
+    private let shows: [Int]
+    /// Turns in airing order (local show indices), starting with the one due.
     private let turns: [Int]
-    /// Earlier turns of the same show within the cycle, per turn.
+    /// Earlier turns of the same show in this segment's cycle, and in the canonical one.
     private let occurrence: [Int]
+    private let canonicalOccurrence: [Int]
     /// Turns per show per cycle.
     private let perCycle: [Int]
     private let reels: [ShowReel]
@@ -88,60 +249,94 @@ struct CycleOrder: NominalOrder {
     private let timeRate: Int
     private let timeSlack: Int
 
-    /// - Parameter keep: per show, in how many of every ``ShowBudget/Tuning/cycles``
-    ///   cycles it takes its turns (``ShowBudget``); every cycle when nil.
-    init(ordering: ScheduleOrdering, context: ScheduleContext, keep: [Int]? = nil) {
-        turns = Self.turns(for: ordering, context: context)
-        var seen = Array(repeating: 0, count: context.shows.count)
+    init(ordering: ScheduleOrdering, context: ScheduleContext, shelf: EpisodeShelf, keep budget: [Int]?, from state: SpliceState?, reusing previous: Template? = nil) {
+        let shows = shelf.shows
+        self.shows = shows
+        var local: [Int: Int] = [:]
+        for (index, show) in shows.enumerated() {
+            local[show] = index
+        }
+        let template: Template
+        if let previous, previous.shows == shows, ordering != .marathon {
+            template = previous
+        } else {
+            let canonical = Self.turns(for: ordering, context: context, shows: shows, shelf: shelf).map { local[$0] ?? 0 }
+            var seen = Array(repeating: 0, count: shows.count)
+            var canonicalOccurrence: [Int] = []
+            canonicalOccurrence.reserveCapacity(canonical.count)
+            for show in canonical {
+                canonicalOccurrence.append(seen[show])
+                seen[show] += 1
+            }
+            template = Template(shows: shows, canonical: canonical, canonicalOccurrence: canonicalOccurrence, perCycle: seen)
+        }
+        self.template = template
+        let canonical = template.canonical
+        let canonicalOccurrence = template.canonicalOccurrence
+        let seen = template.perCycle
+        perCycle = seen
+        // Carry on from the turn that was due (or the next one still here).
+        var rotation = 0
+        if let state {
+            for turn in state.upcomingTurns {
+                guard let show = local[turn.show], seen[show] > 0 else { continue }
+                let occurrence = min(turn.occurrence, seen[show] - 1)
+                rotation = canonical.indices.first { canonical[$0] == show && canonicalOccurrence[$0] == occurrence } ?? 0
+                break
+            }
+        }
+        turns = Array(canonical[rotation...] + canonical[..<rotation])
+        self.canonicalOccurrence = Array(canonicalOccurrence[rotation...] + canonicalOccurrence[..<rotation])
+        var rotatedSeen = Array(repeating: 0, count: shows.count)
         var occurrence: [Int] = []
         occurrence.reserveCapacity(turns.count)
         for show in turns {
-            occurrence.append(seen[show])
-            seen[show] += 1
+            occurrence.append(rotatedSeen[show])
+            rotatedSeen[show] += 1
         }
         self.occurrence = occurrence
-        perCycle = seen
-        reels = context.shows.indices.map { show in
-            ShowReel(items: context.shows[show], slotLengths: context.slotLengths, start: context.firstEpisode(of: show))
-        }
+        reels = shows.map { shelf.reel(of: $0, after: state?.lastAired[$0]) }
         let cycles = ShowBudget.Tuning.cycles
-        let keep = keep ?? Array(repeating: cycles, count: context.shows.count)
+        let keep = shows.map { budget?[$0] ?? cycles }
         self.keep = keep
-        phase = context.showIDs.map { Int(StableHash.fnv1a($0) % UInt64(cycles)) }
-        let shortest = reels.map { reel in reel.items.map { context.slotLengths[$0] }.min() ?? .zero }
+        phase = shows.map { Int(StableHash.fnv1a(context.showIDs[$0]) % UInt64(cycles)) }
+        let shortest = shows.map { context.shortestSlot[$0] }
         positionRate = max(1, zip(seen, keep).reduce(0) { $0 + $1.0 * $1.1 })
         positionSlack = seen.reduce(0, +)
         timeRate = max(1, seen.indices.reduce(0) { $0 + seen[$1] * keep[$1] * shortest[$1] })
         timeSlack = seen.indices.reduce(0) { $0 + seen[$1] * shortest[$1] }
     }
 
-    /// One cycle of turns for `ordering`.
-    static func turns(for ordering: ScheduleOrdering, context: ScheduleContext) -> [Int] {
-        let shows = Array(context.shows.indices)
-        var generator = SeededGenerator(seed: context.seed)
+    /// One cycle of turns for `ordering` (channel show indices), ordered by
+    /// each show's identity.
+    static func turns(for ordering: ScheduleOrdering, context: ScheduleContext, shows: [Int], shelf: EpisodeShelf) -> [Int] {
+        func ranked(_ salt: String) -> [Int] {
+            let rank = context.ranks(salt: salt)
+            return shows.sorted { rank[$0] < rank[$1] }
+        }
         switch ordering {
         case .syndication:
-            return shows.shuffled(using: &generator)
+            return ranked("")
         case .shuffle:
-            return rounds(of: shows, repeating: 1, using: &generator)
+            return rounds(of: ranked, repeating: 1)
         case .blockShuffle:
-            return rounds(of: shows, repeating: ScheduleConstants.blockShuffleEpisodesPerBlock, using: &generator)
+            return rounds(of: ranked, repeating: ScheduleConstants.blockShuffleEpisodesPerBlock)
         case .marathon:
-            return shows.flatMap { Array(repeating: $0, count: context.shows[$0].count) }
+            return ranked("").flatMap { Array(repeating: $0, count: shelf.episodes[$0]?.count ?? 0) }
         }
     }
 
-    /// ``Tuning/shuffledRounds`` rounds, each every show once in a new random
-    /// order (each turn `repeating` times in a row), never the same show
-    /// either side of a round boundary when there's a choice.
-    private static func rounds(of shows: [Int], repeating: Int, using generator: inout SeededGenerator) -> [Int] {
+    /// ``Tuning/shuffledRounds`` rounds, each every show once in a new order
+    /// (each turn `repeating` times in a row), never the same show either side
+    /// of a round boundary when there's a choice.
+    private static func rounds(of ranked: (String) -> [Int], repeating: Int) -> [Int] {
         var order: [Int] = []
-        for _ in 0..<Tuning.shuffledRounds {
-            var round = shows.shuffled(using: &generator)
-            if round.count > 1, round.first == order.last {
-                round.swapAt(0, round.count - 1)
+        for round in 0..<Tuning.shuffledRounds {
+            var shows = ranked("round\(round)")
+            if shows.count > 1, shows.first == order.last {
+                shows.swapAt(0, shows.count - 1)
             }
-            order += round
+            order += shows
         }
         return order.flatMap { Array(repeating: $0, count: repeating) }
     }
@@ -161,7 +356,7 @@ struct CycleOrder: NominalOrder {
         let cycle = cycle(containingPosition: position)
         let turn = turn(at: position - positions(before: cycle), in: cycle)
         let show = turns[turn]
-        return (show, reels[show].item(ofAiring: airings(of: show, before: cycle) + occurrence[turn]))
+        return (shows[show], reels[show].item(ofAiring: airings(of: show, before: cycle) + occurrence[turn]))
     }
 
     func position(at offset: Int) -> Int {
@@ -177,6 +372,31 @@ struct CycleOrder: NominalOrder {
             position += 1
         }
         return position
+    }
+
+    func state(at position: Int) -> SpliceState {
+        let cycle = cycle(containingPosition: position)
+        var aired = shows.indices.map { airings(of: $0, before: cycle) }
+        var remaining = position - positions(before: cycle)
+        var due = 0
+        for turn in turns.indices where takesTurns(turns[turn], in: cycle) {
+            if remaining == 0 {
+                due = turn
+                break
+            }
+            aired[turns[turn]] += 1
+            remaining -= 1
+        }
+        var state = SpliceState()
+        for index in shows.indices {
+            state.lastAired[shows[index]] = reels[index].item(beforeAiring: aired[index])
+        }
+        // Enough turns to find one whose show is still there after a change.
+        let kept = min(turns.count, 4 * shows.count + 64)
+        state.upcomingTurns = ((0..<kept).map { (due + $0) % turns.count }).map {
+            SpliceState.Turn(show: shows[turns[$0]], occurrence: canonicalOccurrence[$0])
+        }
+        return state
     }
 
     // MARK: - Cycles
@@ -232,8 +452,9 @@ struct CycleOrder: NominalOrder {
 /// time (about a season, or the rest of the show), continuing each where it
 /// left off, so a show can be followed day to day like Bleach on Toonami,
 /// every show gets its turn, and a finished show rests while the others in
-/// its lane have theirs.
-struct LaneOrder: NominalOrder {
+/// its lane have theirs. When content changes, every show keeps its lane; a
+/// new show joins the lightest lane, right after the show on the air there.
+struct LaneSegment: OrderSegment {
     enum Tuning {
         /// Shows on the air at once.
         static let lanes = 6
@@ -244,7 +465,7 @@ struct LaneOrder: NominalOrder {
     }
 
     /// One show in a lane: its runs split a pass of its episodes into
-    /// near-equal pieces, counted from where the channel starts the show.
+    /// near-equal pieces, counted from where the lane picks it up.
     private struct LaneShow: Sendable {
         let show: Int
         let reel: ShowReel
@@ -267,27 +488,57 @@ struct LaneOrder: NominalOrder {
     private let seed: UInt64
     private let shortestRound: Int
 
-    init(ordering: ScheduleOrdering, context: ScheduleContext) {
-        let showCount = context.shows.count
+    init(ordering: ScheduleOrdering, context: ScheduleContext, shelf: EpisodeShelf, from state: SpliceState?) {
+        let present = shelf.shows
         let isMarathon = ordering == .marathon
-        let laneCount = isMarathon ? 1 : max(1, min(Tuning.lanes, max(2, showCount / Tuning.showsPerLane), showCount))
+        let target = isMarathon ? 1 : max(1, min(Tuning.lanes, max(2, present.count / Tuning.showsPerLane), present.count))
         episodesPerTurn = ordering == .blockShuffle ? ScheduleConstants.blockShuffleEpisodesPerBlock : 1
         shufflesTurns = ordering == .blockShuffle
         seed = context.seed
-        var generator = SeededGenerator(seed: context.seed)
-        let order = Array(0..<showCount).shuffled(using: &generator)
-        var lanes = Array(repeating: [LaneShow](), count: laneCount)
-        for (rank, show) in order.enumerated() {
-            let count = context.shows[show].count
-            let pieces = isMarathon ? 1 : max(1, (count + Tuning.episodesPerRun - 1) / Tuning.episodesPerRun)
-            // Each channel starts every show somewhere different, so channels
-            // sharing a show don't move through it in step.
-            let reel = ShowReel(items: context.shows[show], slotLengths: context.slotLengths, start: context.firstEpisode(of: show))
-            lanes[rank % laneCount].append(LaneShow(show: show, reel: reel, pieces: pieces))
+        let presentSet = Set(present)
+        let rank = context.ranks()
+        let byRank = present.sorted { rank[$0] < rank[$1] }
+        var laneShows: [[Int]]
+        var dueLane = 0
+        if let state, !state.lanes.isEmpty {
+            // Every show stays in its lane; new shows join the lightest lane
+            // right after the show on the air there; empty lanes go.
+            laneShows = state.lanes.map { $0.filter(presentSet.contains) }
+            if isMarathon, laneShows.count > 1 {
+                laneShows = [laneShows.flatMap { $0 }]
+            }
+            while laneShows.count < target {
+                laneShows.append([])
+            }
+            let placed = Set(laneShows.joined())
+            func load(_ lane: [Int]) -> Int {
+                lane.reduce(0) { $0 + (shelf.prefixes[$1]?.last ?? 0) }
+            }
+            for show in byRank where !placed.contains(show) {
+                let lane = laneShows.indices.min { load(laneShows[$0]) < load(laneShows[$1]) } ?? 0
+                laneShows[lane].insert(show, at: min(1, laneShows[lane].count))
+            }
+            let kept = laneShows.indices.filter { !laneShows[$0].isEmpty }
+            let due = kept.first { $0 >= state.dueLane } ?? kept.first ?? 0
+            laneShows = kept.map { laneShows[$0] }
+            dueLane = kept.firstIndex(of: due) ?? 0
+        } else {
+            laneShows = Array(repeating: [], count: target)
+            for (rank, show) in byRank.enumerated() {
+                laneShows[rank % target].append(show)
+            }
         }
-        self.lanes = lanes
-        let shortestSlot = context.slotLengths.min() ?? .zero
-        shortestRound = laneCount * episodesPerTurn * shortestSlot
+        // The lane due next goes first.
+        let rotated = Array(laneShows[dueLane...] + laneShows[..<dueLane])
+        lanes = rotated.map { lane in
+            lane.map { show in
+                let reel = shelf.reel(of: show, after: state?.lastAired[show])
+                let pieces = isMarathon ? 1 : max(1, (reel.count + Tuning.episodesPerRun - 1) / Tuning.episodesPerRun)
+                return LaneShow(show: show, reel: reel, pieces: pieces)
+            }
+        }
+        let shortestSlot = present.map { context.shortestSlot[$0] }.min() ?? .zero
+        shortestRound = lanes.count * episodesPerTurn * shortestSlot
     }
 
     private var programsPerRound: Int {
@@ -324,6 +575,46 @@ struct LaneOrder: NominalOrder {
             time = next
         }
         return (round + 1) * programsPerRound
+    }
+
+    func state(at position: Int) -> SpliceState {
+        let round = position / programsPerRound
+        let step = position % programsPerRound
+        let order = laneOrder(round: round)
+        let turn = step / episodesPerTurn
+        var state = SpliceState()
+        state.dueLane = order[turn]
+        state.lanes = lanes.indices.map { lane in
+            // Episodes this lane has aired before `position`.
+            let slot = order.firstIndex(of: lane) ?? 0
+            let extra = slot < turn ? episodesPerTurn : (slot == turn ? step % episodesPerTurn : 0)
+            let episode = round * episodesPerTurn + extra
+            let shows = lanes[lane]
+            let run = cycle(lane: lane, episode: episode)
+            var base = laneEpisodes(lane: lane, cycles: run)
+            var current = shows.count - 1
+            for (index, laneShow) in shows.enumerated() {
+                let length = laneShow.runLength(run)
+                if episode < base + length {
+                    current = index
+                    break
+                }
+                base += length
+            }
+            for (index, laneShow) in shows.enumerated() {
+                let aired: Int
+                if index < current {
+                    aired = laneShow.airings(beforeRun: run + 1)
+                } else if index > current {
+                    aired = laneShow.airings(beforeRun: run)
+                } else {
+                    aired = laneShow.airings(beforeRun: run) + episode - base
+                }
+                state.lastAired[laneShow.show] = laneShow.reel.item(beforeAiring: aired)
+            }
+            return (shows[current...] + shows[..<current]).map(\.show)
+        }
+        return state
     }
 
     // MARK: - Rounds and lanes

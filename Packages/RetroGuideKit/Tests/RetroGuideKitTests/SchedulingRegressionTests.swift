@@ -9,7 +9,7 @@ struct SchedulingRegressionTests {
     @Test func cycleFindsFreeShowBeyondLookahead() {
         let items = TestFactory.show("A", episodes: 600) + TestFactory.show("B", episodes: 1)
         let context = ScheduleContext(channelID: "c", items: items, grid: .continuous)
-        var picker = TrackingPicker(order: CycleOrder(ordering: .syndication, context: context), at: 0)
+        var picker = TrackingPicker(order: NominalOrders.make(ordering: .syndication, context: context), at: 0)
         let showA = context.showOfItem[0]
         // Advance until B has just aired.
         for _ in 0..<2_000 {
@@ -74,7 +74,7 @@ struct SchedulingRegressionTests {
     @Test func madeUpTurnsStayInOrder() {
         let items = TestFactory.show("A", episodes: 12) + TestFactory.show("B", episodes: 12) + TestFactory.show("C", episodes: 12)
         let context = ScheduleContext(channelID: "c", items: items, grid: .continuous)
-        var picker = TrackingPicker(order: CycleOrder(ordering: .syndication, context: context), at: 0)
+        var picker = TrackingPicker(order: NominalOrders.make(ordering: .syndication, context: context), at: 0)
         let showA = context.showOfItem[0]
         var episodes: [Int] = []
         for turn in 0..<36 {

@@ -95,6 +95,12 @@ public enum ScheduleDiagnostics {
         }
         log(String(format: "period switches (%d, %.0f ms): %d of %d channel switches seamless%@", Tuning.switches.count, switching * 1_000, seamless, total, imperfect.isEmpty ? "" : ", imperfect at periods \(imperfect.prefix(10))"))
 
+        // Content versions: how many times each channel's content changed.
+        let versions = visible.map { channel in Set(channel.items.map { ContentVersions.effectiveTime(addedAt: $0.addedAt) }).count }.sorted()
+        let dated = index.items.filter { $0.addedAt != nil }.count
+        log("content versions per visible channel: median \(versions[safe: versions.count / 2] ?? 0), max \(versions.last ?? 0); items with an added date \(dated) of \(index.items.count)")
+        log(stability(index: index, curated: curated, options: options, customization: customization, now: now))
+
         let again = build()
         var generator = SeededGenerator(seed: 42)
         var mismatches = 0
@@ -110,6 +116,61 @@ public enum ScheduleDiagnostics {
         log("lineup report (fixed reference week):")
         log(LineupReport(lineup: lineup, index: index, simulcastLimit: customization.simulcastLimit).description)
         return lines.joined(separator: "\n")
+    }
+
+
+    /// Pretends the items added in the last week were added just now, and
+    /// compares every channel with and without them: nothing before the
+    /// next broadcast-day boundary should differ, and after it shows should
+    /// carry on in order with the new items airing.
+    private static func stability(index: LibraryIndex, curated: [ChannelDefinition], options: LineupOptions, customization: LineupCustomization, now: Date) -> String {
+        let cutoff = now.addingTimeInterval(-7 * 86_400)
+        var recent = index.items.filter { ($0.addedAt ?? .distantPast) > cutoff }
+        if recent.isEmpty {
+            recent = Array(index.items.sorted { ($0.addedAt ?? .distantPast) > ($1.addedAt ?? .distantPast) }.prefix(50))
+        }
+        let recentIDs = Set(recent.map(\.id))
+        let older = index.items.filter { !recentIDs.contains($0.id) }
+        func lineup(_ items: [MediaItem]) -> [Channel] {
+            LineupBuilder(curated: curated, options: options).build(index: LibraryIndex(items: items), customization: customization)
+                .filter { !$0.isHidden }
+        }
+        let without = lineup(older)
+        let with = lineup(older + recent.map { $0.withAddedAt(now) })
+        let boundary = ScheduleTime.date(ContentVersions.effectiveTime(addedAt: now))
+        let before = DateInterval(start: now, end: boundary)
+        let byID = Dictionary(without.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        var compared = 0, changedBefore = 0, breaks = 0, newAirings = 0
+        var changedNames: [String] = []
+        for channel in with {
+            if let old = byID[channel.id] {
+                compared += 1
+                let a = old.timeline.programs(overlapping: before).filter { $0.start < boundary }
+                let b = channel.timeline.programs(overlapping: before).filter { $0.start < boundary }
+                if a.map(\.item.id) != b.map(\.item.id) || a.map(\.start) != b.map(\.start) {
+                    changedBefore += 1
+                    if changedNames.count < 5 { changedNames.append(channel.id) }
+                }
+            }
+            // After the boundary: every show's next episode, in broadcast order as of each program.
+            let after = channel.timeline.programs(overlapping: DateInterval(start: boundary.addingTimeInterval(-86_400), duration: 3 * 86_400))
+            var episodesByShow: [String: [MediaItem]] = [:]
+            for item in channel.items { episodesByShow[item.showID, default: []].append(item) }
+            for key in episodesByShow.keys { episodesByShow[key]?.sort(by: broadcastOrder) }
+            var expected: [String: String] = [:]
+            for program in after {
+                let show = program.item.showID
+                let time = ScheduleTime.milliseconds(since: program.start)
+                let episodes = (episodesByShow[show] ?? []).filter { ContentVersions.effectiveTime(addedAt: $0.addedAt) <= time }
+                guard let index = episodes.firstIndex(where: { $0.id == program.item.id }) else { continue }
+                if let next = expected[show], next != program.item.id { breaks += 1 }
+                expected[show] = episodes[(index + 1) % episodes.count].id
+                if recentIDs.contains(program.item.id) { newAirings += 1 }
+            }
+        }
+        return "stability (\(recent.count) recent items re-added now, boundary in \(Int(boundary.timeIntervalSince(now) / 60)) min): "
+            + "\(changedBefore) of \(compared) channels changed before the boundary\(changedNames.isEmpty ? "" : " \(changedNames)"); "
+            + "after it: \(breaks) continuity breaks (the coordinator may defer a turn; nominal order has none), \(newAirings) airings of the new items in 2 days"
     }
 
     private static func seconds(_ work: () -> Void) -> Double {

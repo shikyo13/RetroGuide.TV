@@ -32,6 +32,10 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     public let versions: [MediaVersion]
     /// The title's public database ids (the show's for an episode).
     public let titleIDs: TitleIDs?
+    /// When the item was added to its server (the earliest copy's, once
+    /// merged). Schedules bring new items in from the next broadcast day
+    /// after this (see ``ContentVersions``); `nil` counts as always there.
+    public let addedAt: Date?
     /// Other libraries (on any server) holding a copy of this episode or
     /// movie that lost out to this one when copies were merged: the item is
     /// still part of those libraries. Set only in the merged library index.
@@ -56,7 +60,8 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         countries: [String] = [],
         artwork: Artwork = Artwork(),
         versions: [MediaVersion] = [],
-        titleIDs: TitleIDs? = nil
+        titleIDs: TitleIDs? = nil,
+        addedAt: Date? = nil
     ) {
         self.id = Self.makeID(serverID: serverID, itemKey: itemKey)
         self.serverID = serverID
@@ -78,6 +83,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.artwork = artwork
         self.versions = versions
         self.titleIDs = titleIDs
+        self.addedAt = addedAt
     }
 
     /// Every library holding a copy of this item.
@@ -91,15 +97,28 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         let libraries = copies.flatMap(\.libraryIDs).filter { $0 != libraryID }
         let otherCollections = copies.flatMap(\.collections).filter { !collections.contains($0) }
         let borrowedIDs = titleIDs == nil && copies.contains { $0.titleIDs != nil }
-        guard !libraries.isEmpty || !otherCollections.isEmpty || borrowedIDs else { return self }
+        let earliest = ([addedAt] + copies.map(\.addedAt)).compactMap { $0 }.min()
+        guard !libraries.isEmpty || !otherCollections.isEmpty || borrowedIDs || earliest != addedAt else { return self }
         var merged = MediaItem(
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
             series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
             genres: genres, networks: networks, collections: collections + Set(otherCollections).sorted(), countries: countries,
-            artwork: artwork, versions: versions, titleIDs: titleIDs ?? copies.lazy.compactMap(\.titleIDs).first
+            artwork: artwork, versions: versions, titleIDs: titleIDs ?? copies.lazy.compactMap(\.titleIDs).first, addedAt: earliest
         )
         merged.otherLibraryIDs = Set(libraries).sorted()
         return merged
+    }
+
+    /// This item as if it had been added to its server at `date`.
+    func withAddedAt(_ date: Date?) -> MediaItem {
+        var copy = MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
+            series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
+            genres: genres, networks: networks, collections: collections, countries: countries, artwork: artwork,
+            versions: versions, titleIDs: titleIDs, addedAt: date
+        )
+        copy.otherLibraryIDs = otherLibraryIDs
+        return copy
     }
 
     /// This item as part of the show with the shared id `showID`.
@@ -110,7 +129,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
             series: SeriesInfo(key: series.key, title: series.title, seasonNumber: series.seasonNumber, episodeNumber: series.episodeNumber, externalID: showID),
             year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience, genres: genres,
             networks: networks, collections: collections, countries: countries, artwork: artwork, versions: versions,
-            titleIDs: titleIDs
+            titleIDs: titleIDs, addedAt: addedAt
         )
     }
 

@@ -18,7 +18,8 @@ enum TestFactory {
         networks: [String] = [],
         rating: String? = nil,
         year: Int? = nil,
-        titleIDs: TitleIDs? = nil
+        titleIDs: TitleIDs? = nil,
+        addedAt: Date? = nil
     ) -> MediaItem {
         MediaItem(
             serverID: serverID,
@@ -33,7 +34,8 @@ enum TestFactory {
             audience: Audience.classify(rating: rating),
             genres: genres,
             networks: networks,
-            titleIDs: titleIDs
+            titleIDs: titleIDs,
+            addedAt: addedAt
         )
     }
 

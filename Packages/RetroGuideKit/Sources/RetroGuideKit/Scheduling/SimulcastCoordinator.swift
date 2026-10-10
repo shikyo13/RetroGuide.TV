@@ -72,9 +72,17 @@ final class SimulcastCoordinator: @unchecked Sendable {
         self.limit = limit
         contexts = channels.map(\.context)
         countsTowardLimit = channels.indices.map { !uncounted.contains($0) }
-        let keeps = ShowBudget.keeps(channels.indices.map { ShowBudget.Channel(context: channels[$0].context, ordering: channels[$0].ordering, counts: !uncounted.contains($0)) }, limit: limit)
-        orders = channels.indices.map { channel in
-            channels[channel].context.isEmpty ? nil : NominalOrders.make(ordering: channels[channel].ordering, context: channels[channel].context, keep: keeps[channel])
+        // Budgets are recalculated at every period start up to the last content change.
+        let lastChange = channels.compactMap { $0.context.versionTimes.last }.max() ?? .zero
+        let budgetTimes = [Int.zero] + (0...max(0, Self.period(containing: lastChange) + 1)).map(Self.periodStart).filter { $0 > .zero }
+        let budgets = BudgetSchedule.make(
+            channels.indices.map { ShowBudget.Channel(context: channels[$0].context, ordering: channels[$0].ordering, counts: !uncounted.contains($0)) },
+            limit: limit,
+            times: budgetTimes
+        )
+        // Channels' orders don't depend on each other: work them out side by side.
+        orders = ParallelMap.map(channels.indices) { channel in
+            channels[channel].context.isEmpty ? nil : NominalOrders.make(ordering: channels[channel].ordering, context: channels[channel].context, budget: budgets[channel])
         }
         var itemIDs: [String: Int] = [:]
         globalItem = channels.map { channel in

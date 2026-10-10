@@ -14,7 +14,16 @@ final class ScheduleContext: Sendable {
     let showIDs: [String]
     /// Show index of every item.
     let showOfItem: [Int]
+    /// When each item joins the schedule (``ContentVersions``), in
+    /// milliseconds after the epoch; zero for items that always have.
+    let effective: [Int]
+    /// Every distinct moment the channel's content changes, ascending.
+    let versionTimes: [Int]
+    /// Each show's shortest slot (a lower bound for any subset of its episodes).
+    let shortestSlot: [Int]
     let seed: UInt64
+    /// Each show's stable rank per salt ("" and each shuffled round), worked out once.
+    private let ranks: [String: [UInt64]]
 
     init(channelID: String, items: [MediaItem], grid: ScheduleGrid) {
         self.channelID = channelID
@@ -40,18 +49,42 @@ final class ScheduleContext: Sendable {
             }
         }
         self.showOfItem = showOfItem
-        self.seed = StableHash.fnv1a(channelID)
+        let effective = items.map { ContentVersions.effectiveTime(addedAt: $0.addedAt) }
+        self.effective = effective
+        self.versionTimes = Set(shows.joined().map { effective[$0] }).sorted()
+        let slotLengths = self.slotLengths
+        self.shortestSlot = shows.map { $0.map { slotLengths[$0] }.min() ?? .zero }
+        let seed = StableHash.fnv1a(channelID)
+        self.seed = seed
+        let ids = showIDs
+        let salts = [""] + (0..<CycleSegment.Tuning.shuffledRounds).map { "round\($0)" }
+        self.ranks = Dictionary(uniqueKeysWithValues: salts.map { salt in
+            (salt, ids.map { StableHash.fnv1a("\(seed)/\(salt)/\($0)") })
+        })
     }
 
     var isEmpty: Bool {
         shows.isEmpty
     }
 
-    /// The episode `show` starts from at the epoch: a different one on every
-    /// channel, so channels sharing a show don't move through it in step and
-    /// air the same episode at the same time.
-    func firstEpisode(of show: Int) -> Int {
-        Int((StableHash.fnv1a(showIDs[show]) ^ seed) % UInt64(shows[show].count))
+    /// The episode `show` starts from when it first comes on (of its
+    /// `count` episodes then): a different one on every channel, so channels
+    /// sharing a show don't move through it in step and air the same episode
+    /// at the same time.
+    func firstEpisode(of show: Int, count: Int) -> Int {
+        Int((StableHash.fnv1a(showIDs[show]) ^ seed) % UInt64(max(count, 1)))
+    }
+
+    /// A stable rank for `show` on this channel, so the order of shows
+    /// depends on which shows there are, never on their positions in a list:
+    /// a show joining or leaving moves nobody else.
+    /// Every show's rank for `salt`, to sort by without looking it up per comparison.
+    func ranks(salt: String = "") -> [UInt64] {
+        ranks[salt] ?? showIDs.map { StableHash.fnv1a("\(seed)/\(salt)/\($0)") }
+    }
+
+    func rank(of show: Int, salt: String = "") -> UInt64 {
+        ranks[salt]?[show] ?? StableHash.fnv1a("\(seed)/\(salt)/\(showIDs[show])")
     }
 
     /// The program airing `item` from `start` (milliseconds since the epoch).

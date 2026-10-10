@@ -12,14 +12,28 @@ struct ShowReel: Sendable {
     let start: Int
 
     init(items: [Int], slotLengths: [Int], start: Int) {
+        self.init(items: items, prefix: Self.prefix(of: items, slotLengths: slotLengths), start: start)
+    }
+
+    /// A reel reusing another reel's items and prefix sums with a new start.
+    init(items: [Int], prefix: [Int], start: Int) {
         self.items = items
+        self.prefix = prefix
+        self.start = items.isEmpty ? .zero : start % items.count
+    }
+
+    static func prefix(of items: [Int], slotLengths: [Int]) -> [Int] {
         var prefix = [0]
         prefix.reserveCapacity(items.count + 1)
         for item in items {
             prefix.append(prefix[prefix.count - 1] + slotLengths[item])
         }
-        self.prefix = prefix
-        self.start = items.isEmpty ? .zero : start % items.count
+        return prefix
+    }
+
+    /// Airing number (from this reel's start) of the item at `index` in ``items``.
+    func airing(ofIndex index: Int) -> Int {
+        (index - start + count) % count
     }
 
     var count: Int { items.count }
@@ -29,6 +43,12 @@ struct ShowReel: Sendable {
     /// The item of the show's `airing`th airing (0-based), episodes in order, wrapping.
     func item(ofAiring airing: Int) -> Int {
         items[(start + airing) % count]
+    }
+
+    /// The item aired just before the show's `airing`th airing (for the
+    /// first, the one before where the reel starts).
+    func item(beforeAiring airing: Int) -> Int {
+        items[((start + airing - 1) % count + count) % count]
     }
 
     /// Slot time of the show's first `airings` airings.

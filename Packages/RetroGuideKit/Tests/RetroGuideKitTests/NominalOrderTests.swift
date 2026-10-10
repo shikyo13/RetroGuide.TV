@@ -54,7 +54,7 @@ struct NominalOrderTests {
     @Test("Show rotation gives every show one turn per cycle, in a fixed order")
     func cycleTurns() {
         let context = Self.context(shows: 5)
-        let order = CycleOrder(ordering: .syndication, context: context)
+        let order = NominalOrders.make(ordering: .syndication, context: context)
         let first = (0..<5).map { order.program(at: $0).show }
         #expect(Set(first).count == 5)
         #expect((5..<10).map { order.program(at: $0).show } == first)
