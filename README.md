@@ -26,8 +26,8 @@ An optional one-time RetroGuide Pro purchase removes mobile ads and unlocks
 multiple servers, unlimited custom channels, all themes and schedule controls
 across all three devices.
 
-[Setup and support](https://zeronexus.net/retroguide/support/) ·
-[Privacy Policy](https://zeronexus.net/retroguide/privacy/)
+[Setup and support](https://www.retroguide.tv/support/) ·
+[Privacy Policy](https://www.retroguide.tv/privacy/)
 
 ## Screenshots
 
@@ -161,7 +161,7 @@ The free iPhone and iPad app requests non-personalized ads from Google AdMob.
 Non-personalized ads still involve data processing for advertising, measurement
 and fraud prevention. Google's consent form appears where required, with
 applicable privacy choices in Settings. Apple TV and RetroGuide Pro show no ads.
-See the [Privacy Policy](https://zeronexus.net/retroguide/privacy/) for details.
+See the [Privacy Policy](https://www.retroguide.tv/privacy/) for details.
 
 ## Building from source
 
