@@ -23,6 +23,13 @@ final class AppModel {
         static let healthCheckInterval: Duration = .seconds(10 * 60)
     }
 
+    private enum Lifecycle {
+        /// How long the app can be in the background before the stream is
+        /// released. Pulling Notification Center all the way down counts as
+        /// the background on iPhone: a glance at it keeps the channel on.
+        static let backgroundGrace: Duration = .seconds(20)
+    }
+
     private(set) var phase: Phase = .launching
     private(set) var lineup: [Channel] = []
     /// True while channel schedules are being rebuilt (seconds with a large library).
@@ -74,6 +81,10 @@ final class AppModel {
     @ObservationIgnored private let store: PreferencesStore
     @ObservationIgnored private let engine = LineupEngine()
     @ObservationIgnored private var healthTask: Task<Void, Never>?
+    /// When the app went to the background, and the release of the stream
+    /// waiting out ``Lifecycle/backgroundGrace``.
+    @ObservationIgnored private var backgroundedAt: ContinuousClock.Instant?
+    @ObservationIgnored private var backgroundRelease: Task<Void, Never>?
     @ObservationIgnored private var isRecheckingServers = false
     @ObservationIgnored private let networkMonitor = NetworkChangeMonitor()
     /// The channel to return to once a slower server brings it into the lineup,
@@ -200,6 +211,34 @@ final class AppModel {
             await refreshLibrary()
             await refreshConnections()
         }
+    }
+
+    // MARK: - Foreground and background
+
+    /// Releases the stream once the app has stayed in the background past
+    /// the grace period (or when it comes back, if it was suspended meanwhile).
+    func enteredBackground() {
+        backgroundedAt = .now
+        backgroundRelease?.cancel()
+        backgroundRelease = Task { [weak self] in
+            try? await Task.sleep(for: Lifecycle.backgroundGrace)
+            guard !Task.isCancelled else { return }
+            self?.tuner.suspend()
+        }
+    }
+
+    /// Back from the background: the stream carries on after a short time
+    /// away, and rejoins live after a longer one.
+    func becameActive() {
+        backgroundRelease?.cancel()
+        backgroundRelease = nil
+        if let backgroundedAt, ContinuousClock.now - backgroundedAt >= Lifecycle.backgroundGrace {
+            tuner.suspend()
+        }
+        backgroundedAt = nil
+        guard phase == .ready else { return }
+        tuner.resume()
+        Task { await refreshConnections() }
     }
 
     /// Re-checks server addresses right away, e.g. when the app comes back to the
