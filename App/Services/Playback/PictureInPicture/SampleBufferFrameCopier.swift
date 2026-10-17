@@ -62,12 +62,15 @@ final class SampleBufferFrameCopier: @unchecked Sendable {
         observers.append(center.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
             self?.isInBackground = false
         })
+        #if !targetEnvironment(simulator)
+        // The simulator has no Picture in Picture (nor presented handlers).
         host.metalLayer.drawableObserver = { [weak self] drawable in
             drawable.addPresentedHandler { [weak self] presented in
                 guard let self, let drawable = presented as? CAMetalDrawable else { return }
                 self.copy(drawable)
             }
         }
+        #endif
     }
 
     // MARK: - Frames (mpv's render thread, then Metal's completion thread)
