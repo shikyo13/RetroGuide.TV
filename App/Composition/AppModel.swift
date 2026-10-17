@@ -85,6 +85,7 @@ final class AppModel {
     /// waiting out ``Lifecycle/backgroundGrace``.
     @ObservationIgnored private var backgroundedAt: ContinuousClock.Instant?
     @ObservationIgnored private var backgroundRelease: Task<Void, Never>?
+    @ObservationIgnored private var isInBackground = false
     @ObservationIgnored private var isRecheckingServers = false
     @ObservationIgnored private let networkMonitor = NetworkChangeMonitor()
     /// The channel to return to once a slower server brings it into the lineup,
@@ -116,6 +117,9 @@ final class AppModel {
         }
         tuner.onVideoFormatChanged = { [weak self] in
             self?.updateDisplayMode()
+        }
+        tuner.onPictureInPictureClosed = { [weak self] in
+            self?.pictureInPictureClosed()
         }
         nowPlaying = NowPlayingPublisher(actions: .init(
             play: { [weak self] in self?.tuner.resume() },
@@ -217,19 +221,28 @@ final class AppModel {
 
     /// Releases the stream once the app has stayed in the background past
     /// the grace period (or when it comes back, if it was suspended meanwhile).
+    /// Picture in Picture keeps the channel on however long the app is away.
     func enteredBackground() {
+        isInBackground = true
+        guard !tuner.isPictureInPictureActive else { return }
         backgroundedAt = .now
+        // Out of sight and not in Picture in Picture: hold the stream rather
+        // than play sound to a picture that can't be drawn.
+        tuner.pauseStream()
         backgroundRelease?.cancel()
         backgroundRelease = Task { [weak self] in
             try? await Task.sleep(for: Lifecycle.backgroundGrace)
-            guard !Task.isCancelled else { return }
-            self?.tuner.suspend()
+            guard !Task.isCancelled, let self, !tuner.isPictureInPictureActive else { return }
+            tuner.suspend()
         }
     }
 
     /// Back from the background: the stream carries on after a short time
     /// away, and rejoins live after a longer one.
     func becameActive() {
+        isInBackground = false
+        // Back in the app: the channel carries on full screen, not twice.
+        tuner.closePictureInPicture()
         backgroundRelease?.cancel()
         backgroundRelease = nil
         if let backgroundedAt, ContinuousClock.now - backgroundedAt >= Lifecycle.backgroundGrace {
@@ -237,8 +250,16 @@ final class AppModel {
         }
         backgroundedAt = nil
         guard phase == .ready else { return }
+        tuner.continueStream()
         tuner.resume()
         Task { await refreshConnections() }
+    }
+
+    /// The Picture in Picture window closed while the app was away: the
+    /// viewer has stopped watching, so the stream goes.
+    private func pictureInPictureClosed() {
+        guard isInBackground else { return }
+        tuner.suspend()
     }
 
     /// Re-checks server addresses right away, e.g. when the app comes back to the

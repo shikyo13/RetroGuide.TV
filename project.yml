@@ -72,6 +72,8 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UIApplicationSupportsIndirectInputEvents: true
+        # Picture in Picture keeps the channel playing with the app in the background.
+        UIBackgroundModes: [audio]
         NSLocalNetworkUsageDescription: RetroGuide.TV connects to your media server on the local network.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
@@ -99,7 +101,30 @@ targets:
           ADMOB_APP_ID: $(ADMOB_RELEASE_APP_ID)
           ADMOB_BANNER_UNIT_ID: $(ADMOB_RELEASE_BANNER_UNIT_ID)
           ADMOB_INTERSTITIAL_UNIT_ID: $(ADMOB_RELEASE_INTERSTITIAL_UNIT_ID)
+  # UI tests that drive a connected iPhone (development only).
+  RetroGuideUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: UITests
+    dependencies:
+      - target: RetroGuide
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.adamhunt.retroguide.uitests
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: RetroGuide
 schemes:
+  RetroGuideUITests:
+    build:
+      targets:
+        RetroGuide: [test]
+        RetroGuideUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - RetroGuideUITests
   RetroGuide:
     build:
       targets:

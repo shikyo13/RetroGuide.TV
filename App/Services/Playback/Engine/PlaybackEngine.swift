@@ -1,3 +1,4 @@
+import AVKit
 import RetroGuideKit
 import UIKit
 
@@ -50,6 +51,8 @@ protocol PlaybackEngine: AnyObject {
     /// Plays `request`, honoring the server's audio/subtitle selection when known.
     func play(_ request: StreamRequest, tracks: TrackSelection?)
     func stop()
+    /// Holds or continues the stream that's loaded, keeping its place.
+    func setPaused(_ paused: Bool)
     /// Whether to output HDR as HDR (the display is in an HDR mode) rather
     /// than converting it to standard range.
     func setPrefersHDROutput(_ prefersHDROutput: Bool)
@@ -60,6 +63,12 @@ protocol PlaybackEngine: AnyObject {
     var adjustsSubtitleTiming: Bool { get }
     /// Shows subtitles `seconds` later (earlier when negative), for this and later files.
     func setSubtitleDelay(_ seconds: TimeInterval)
+    #if os(iOS)
+    /// What Picture in Picture shows for this player (`nil`: it can't).
+    func pictureInPictureSource(playbackDelegate: any AVPictureInPictureSampleBufferPlaybackDelegate) -> AVPictureInPictureController.ContentSource?
+    /// Whether the Picture in Picture window is showing (frames are needed in the background).
+    func setPictureInPictureActive(_ active: Bool)
+    #endif
 }
 
 extension PlaybackEngine {
@@ -76,6 +85,10 @@ extension PlaybackEngine {
     var adjustsSubtitleTiming: Bool { false }
 
     func setSubtitleDelay(_ seconds: TimeInterval) {}
+
+    #if os(iOS)
+    func setPictureInPictureActive(_ active: Bool) {}
+    #endif
 }
 
 @MainActor

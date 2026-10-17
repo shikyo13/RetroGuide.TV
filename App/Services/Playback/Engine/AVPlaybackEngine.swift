@@ -1,4 +1,5 @@
 import AVFoundation
+import AVKit
 import Combine
 import RetroGuideKit
 import UIKit
@@ -52,6 +53,20 @@ final class AVPlaybackEngine: PlaybackEngine {
             player.seek(to: CMTime(seconds: request.startPosition, preferredTimescale: Tuning.seekTimescale))
         }
         player.play()
+    }
+
+    #if os(iOS)
+    func pictureInPictureSource(playbackDelegate: any AVPictureInPictureSampleBufferPlaybackDelegate) -> AVPictureInPictureController.ContentSource? {
+        AVPictureInPictureController.ContentSource(playerLayer: layerView.playerLayer)
+    }
+    #endif
+
+    func setPaused(_ paused: Bool) {
+        if paused {
+            player.pause()
+        } else {
+            player.play()
+        }
     }
 
     func stop() {

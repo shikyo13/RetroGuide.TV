@@ -49,6 +49,13 @@ final class Tuner {
         didSet {
             if signal != oldValue {
                 onSignalChanged?()
+                #if os(iOS)
+                // Picture in Picture may start by itself only while a channel plays.
+                if signal == .live, pictureInPicture == nil {
+                    setUpPictureInPicture()
+                }
+                pictureInPicture?.playbackStateChanged(isPlaying: signal == .live)
+                #endif
             }
         }
     }
@@ -69,6 +76,11 @@ final class Tuner {
     /// Called with a server id when its streams keep failing, so reachability can be re-checked.
     @ObservationIgnored var onServerTrouble: ((String) -> Void)?
     @ObservationIgnored var onVideoFormatChanged: (() -> Void)?
+    /// Called when the Picture in Picture window is closed (not returned to the app from).
+    @ObservationIgnored var onPictureInPictureClosed: (() -> Void)?
+    #if os(iOS)
+    @ObservationIgnored private var pictureInPicture: PictureInPictureController?
+    #endif
     /// Called whenever ``signal`` changes (tuning, live, off…).
     @ObservationIgnored var onSignalChanged: (() -> Void)?
     /// The viewer's account language settings, for items they haven't chosen tracks for.
@@ -112,6 +124,23 @@ final class Tuner {
         attach(engine)
     }
 
+    /// Closes the Picture in Picture window (the viewer is back in the app).
+    func closePictureInPicture() {
+        #if os(iOS)
+        guard pictureInPicture?.isActive == true else { return }
+        pictureInPicture?.stop()
+        #endif
+    }
+
+    /// Whether the channel is showing in the Picture in Picture window.
+    var isPictureInPictureActive: Bool {
+        #if os(iOS)
+        pictureInPicture?.isActive ?? false
+        #else
+        false
+        #endif
+    }
+
     // MARK: - Engine
 
     /// Swaps the playback engine (from Settings) and rejoins the current channel.
@@ -128,7 +157,43 @@ final class Tuner {
         engine.onEvent = { [weak self] event in
             self?.handle(event)
         }
+        #if os(iOS)
+        // Made once the new player shows a channel (see ``setUpPictureInPicture()``).
+        pictureInPicture?.stop()
+        pictureInPicture = nil
+        #endif
     }
+
+    #if os(iOS)
+    /// Picture in Picture for the current player. Made once a channel is on
+    /// screen: iOS only starts it by itself for a source that was showing
+    /// when the controller was made.
+    private func setUpPictureInPicture() {
+        let engine = engine
+        let pictureInPicture = PictureInPictureController(engine: engine)
+        pictureInPicture?.onChangeChannel = { [weak self] direction in
+            if direction > .zero {
+                self?.channelUp()
+            } else {
+                self?.channelDown()
+            }
+        }
+        pictureInPicture?.onSetPlaying = { [weak self] playing in
+            if playing {
+                self?.continueStream()
+            } else {
+                self?.pauseStream()
+            }
+        }
+        pictureInPicture?.onActiveChanged = { [weak engine] active in
+            engine?.setPictureInPictureActive(active)
+        }
+        pictureInPicture?.onClose = { [weak self] in
+            self?.onPictureInPictureClosed?()
+        }
+        self.pictureInPicture = pictureInPicture
+    }
+    #endif
 
     // MARK: - Lineup
 
@@ -292,6 +357,19 @@ final class Tuner {
     }
 
     // MARK: - Lifecycle
+
+    /// Holds the stream where it is while the app is briefly in the background
+    /// (the app may keep running there, but its picture can't be drawn).
+    func pauseStream() {
+        guard isReceiving else { return }
+        engine.setPaused(true)
+    }
+
+    /// Continues a paused stream from where it stopped.
+    func continueStream() {
+        guard isReceiving else { return }
+        engine.setPaused(false)
+    }
 
     /// Releases the stream while the app is in the background.
     func suspend() {

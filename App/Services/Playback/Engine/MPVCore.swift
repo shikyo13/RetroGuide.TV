@@ -96,6 +96,7 @@ final class MPVCore: @unchecked Sendable {
         static let windowID = "wid"
         static let trackListProperty = "track-list"
         static let subtitleDelayProperty = "sub-delay"
+        static let pauseProperty = "pause"
         static let maxBytesProperty = "demuxer-max-bytes"
         static let readaheadProperty = "demuxer-readahead-secs"
         /// libmpv log verbosity forwarded to the unified log in debug builds.
@@ -188,6 +189,11 @@ final class MPVCore: @unchecked Sendable {
         let trackList = String(cString: rawTrackList)
         mpv_free(rawTrackList)
         MPVTrackSelector.commands(for: tracks, trackListJSON: trackList).forEach(command)
+    }
+
+    func setPaused(_ paused: Bool) {
+        guard let handle else { return }
+        mpv_set_property_string(handle, Option.pauseProperty, paused ? "yes" : "no")
     }
 
     /// Shows subtitles `seconds` later (earlier when negative). mpv keeps it across files.
