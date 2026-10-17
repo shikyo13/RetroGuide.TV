@@ -171,6 +171,19 @@ final class AppModel {
         return ThemeCatalog.theme(for: chosen.isIncludedFree || pro.isPro ? chosen : .classicCable)
     }
 
+    /// The theme for the app icon and widget, once Pro is known: until then
+    /// a Pro theme would read as Classic Cable and flip the icon twice.
+    var homeScreenTheme: ThemeID? {
+        pro.hasLoaded ? theme.id : nil
+    }
+
+    func applyHomeScreenTheme() {
+        #if os(iOS)
+        guard pro.hasLoaded else { return }
+        HomeScreenTheme.apply(theme)
+        #endif
+    }
+
     var artworkResolver: ArtworkResolver {
         servers.artworkResolver
     }

@@ -17,7 +17,7 @@ struct WhatsOnWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: WhatsOnStore.widgetKind, provider: WhatsOnProvider()) { entry in
             WhatsOnView(entry: entry)
-                .containerBackground(WidgetStyle.background, for: .widget)
+                .containerBackground(entry.colors.background, for: .widget)
         }
         .configurationDisplayName("What's On")
         .description("What's on your channels right now.")
@@ -30,6 +30,8 @@ struct WhatsOnEntry: TimelineEntry {
     let date: Date
     /// The channel shown, and the rest of the rotation after it (for the large size).
     let channels: [WhatsOnSnapshot.Channel]
+    /// The app's theme colors.
+    var colors = WhatsOnStore.palette.map(WidgetStyle.Colors.init) ?? .classicCable
 }
 
 /// One entry every few minutes, each showing the next channel in the

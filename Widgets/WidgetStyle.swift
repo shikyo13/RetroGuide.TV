@@ -2,16 +2,23 @@ import SwiftUI
 
 /// The widget's look: the Classic Cable theme's colors and the guide's type.
 enum WidgetStyle {
-    enum Palette {
-        static let backgroundTop = Color(hex: "#0A1A5C")
-        static let backgroundBottom = Color(hex: "#050D33")
-        static let surface = Color(hex: "#15287A")
-        static let accent = Color(hex: "#FFD23F")
-        static let accentSecondary = Color(hex: "#6EC6FF")
-        static let textPrimary = Color(hex: "#FFFFFF")
-        static let textSecondary = Color(hex: "#B8C4F0")
-        /// The guide's green channel-number display.
-        static let osd = Color(hex: "#7CFC00")
+    /// The widget's colors: the app's theme, or Classic Cable until one is saved.
+    struct Colors {
+        var backgroundTop = Color(hex: "#0A1A5C")
+        var backgroundBottom = Color(hex: "#050D33")
+        var surface = Color(hex: "#15287A")
+        var accent = Color(hex: "#FFD23F")
+        var accentSecondary = Color(hex: "#6EC6FF")
+        var textPrimary = Color(hex: "#FFFFFF")
+        var textSecondary = Color(hex: "#B8C4F0")
+        /// The guide's channel-number display.
+        var osd = Color(hex: "#7CFC00")
+
+        static let classicCable = Colors()
+
+        var background: LinearGradient {
+            LinearGradient(colors: [backgroundTop, backgroundBottom], startPoint: .top, endPoint: .bottom)
+        }
     }
 
     enum Spacing {
@@ -53,9 +60,19 @@ enum WidgetStyle {
         static let wordmark = SwiftUI.Font.system(size: 17, weight: .semibold, design: .rounded)
     }
 
-    static let background = LinearGradient(
-        colors: [Palette.backgroundTop, Palette.backgroundBottom],
-        startPoint: .top,
-        endPoint: .bottom
-    )
+}
+
+extension WidgetStyle.Colors {
+    init(_ palette: WidgetPalette) {
+        self.init(
+            backgroundTop: Color(palette.backgroundTop),
+            backgroundBottom: Color(palette.backgroundBottom),
+            surface: Color(palette.surface),
+            accent: Color(palette.accent),
+            accentSecondary: Color(palette.accentSecondary),
+            textPrimary: Color(palette.textPrimary),
+            textSecondary: Color(palette.textSecondary),
+            osd: Color(palette.osd)
+        )
+    }
 }

@@ -21,6 +21,7 @@
 		174AB9455C6C50FAA739E0F2 /* DemoCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDF3B69A97C06359C34C23DE /* DemoCatalog.swift */; };
 		19B0BFE4E21F4DBCF6A284BC /* IntermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E4F8A44AB9B3798884A1DF /* IntermissionCard.swift */; };
 		19F27CA37DFBAD13381BFA9A /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; platformFilters = (ios, ); productRef = E4AF18330116601BE9905148 /* GoogleMobileAds */; };
+		1A819A323028700DB6D223BD /* WidgetPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A9FCDB157646BFB4D534C0 /* WidgetPalette.swift */; };
 		1B22F184D9F92EA9941A6E64 /* RetroGuideApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC46D819D23A297C0A6FE728 /* RetroGuideApp.swift */; };
 		1B6773FFF15B1E26D255A775 /* DebugLaunchOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B96343D6443D2CBC02C9A967 /* DebugLaunchOptions.swift */; };
 		1DCEFF3ED55554777BEC0F68 /* ChannelBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E2FADE8D0D4FF56F141FCB /* ChannelBadge.swift */; };
@@ -103,6 +104,7 @@
 		8FF5A5B693EF76B5DF1F280F /* MPVKit in Frameworks */ = {isa = PBXBuildFile; productRef = AF7766867AB8515623736C48 /* MPVKit */; };
 		930B7ED7E49AE404D4FE0B43 /* RemovedTitlesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BCE63CDE2B10FA67A293BE9 /* RemovedTitlesSection.swift */; };
 		94E4C5E01039B184321A2E3E /* TrackSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0601DF37765D3C776688AF60 /* TrackSync.swift */; };
+		9589CA63A17920D1A4A6153C /* WidgetPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A9FCDB157646BFB4D534C0 /* WidgetPalette.swift */; };
 		96EFAD1FAC58EE6D40D218C2 /* LiveVideoStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */; };
 		9AA0329A1FE988E8FEF917EF /* ThemePalettes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8481B109A8DCD793BC1591A /* ThemePalettes.swift */; };
 		9AF228041C1FE7CB6BD7AE27 /* GuideHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E633ECF9952536A0557CC30B /* GuideHeader.swift */; };
@@ -154,6 +156,7 @@
 		D608B8A7C6DA16742A659FCD /* GuideRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 449ED99025C0286E7239069D /* GuideRowView.swift */; };
 		DA0C1C0E6B8087F61A515128 /* PrivacyChoicesRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D961CBC1D1F79931643393 /* PrivacyChoicesRow.swift */; };
 		DB0C2C89B3C95E930769E21A /* GuideLiveControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7453CB93CF6564D403BF756D /* GuideLiveControls.swift */; };
+		DB50B9412E0263891F7A0823 /* HomeScreenTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 855F827BA06EBED4981BBEBB /* HomeScreenTheme.swift */; };
 		DDEDF921EAA3FF540E68EE87 /* BannerAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FFCAFE97BE39E7BD3554DF6 /* BannerAdView.swift */; };
 		DF4C68D78AF1775762716641 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0C26D1723E494C6278D25A4 /* SettingsView.swift */; };
 		DFED066DCAD7DCA8839FD68E /* DisplayMatchingPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49960C6E5611553858B36F83 /* DisplayMatchingPickerView.swift */; };
@@ -306,6 +309,7 @@
 		82759BC73311902FA6622798 /* GuidePreviewPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuidePreviewPanel.swift; sourceTree = "<group>"; };
 		82FF8EDDA9295A1E94B86BF8 /* VideoQualityPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoQualityPickerView.swift; sourceTree = "<group>"; };
 		837678E87635D37172F0F4C4 /* WatchLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLayout.swift; sourceTree = "<group>"; };
+		855F827BA06EBED4981BBEBB /* HomeScreenTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenTheme.swift; sourceTree = "<group>"; };
 		860DC61A99571D86C2C8FBFD /* RetroGuideKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RetroGuideKit; path = Packages/RetroGuideKit; sourceTree = SOURCE_ROOT; };
 		882F8CA7ECA178E614F9241E /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchView.swift; sourceTree = "<group>"; };
 		8A5891962ED332144D11376D /* LGPL-3.0.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LGPL-3.0.txt"; sourceTree = "<group>"; };
@@ -364,6 +368,7 @@
 		DEBCBC697963B90B6FE85490 /* AppIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
 		E33B1740CE9924B2E2D22A6E /* PlatformMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformMetric.swift; sourceTree = "<group>"; };
 		E633ECF9952536A0557CC30B /* GuideHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideHeader.swift; sourceTree = "<group>"; };
+		E6A9FCDB157646BFB4D534C0 /* WidgetPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPalette.swift; sourceTree = "<group>"; };
 		E91331A410DCC822983B10A3 /* ServerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailView.swift; sourceTree = "<group>"; };
 		EBE95A2421FA0C633DD728E8 /* ChannelDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelDetailView.swift; sourceTree = "<group>"; };
 		EFC1B0A525F43C6F9AF3F80C /* InterstitialPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterstitialPresenter.swift; sourceTree = "<group>"; };
@@ -681,6 +686,7 @@
 			isa = PBXGroup;
 			children = (
 				B5702F5542638D67F9A136D7 /* WhatsOnSnapshot.swift */,
+				E6A9FCDB157646BFB4D534C0 /* WidgetPalette.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -842,6 +848,7 @@
 		DADF0B3FCAA9993A5A6D0A9C /* Widgets */ = {
 			isa = PBXGroup;
 			children = (
+				855F827BA06EBED4981BBEBB /* HomeScreenTheme.swift */,
 				F9A5CF9925F77CE12A98CE91 /* WhatsOnWidgetWriter.swift */,
 			);
 			path = Widgets;
@@ -1084,6 +1091,7 @@
 				C746F075491D19A8408B6860 /* GuideTouchGrid.swift in Sources */,
 				4EA683F19A5ACF8B0FCB40DF /* GuideTouchView.swift in Sources */,
 				EE02E369366A08BA4AC32A34 /* GuideView.swift in Sources */,
+				DB50B9412E0263891F7A0823 /* HomeScreenTheme.swift in Sources */,
 				505A3CFA60A3B09373BDCC80 /* ImagePipeline.swift in Sources */,
 				B9806FFA4BFBED302C2FFDF2 /* IndexingView.swift in Sources */,
 				19B0BFE4E21F4DBCF6A284BC /* IntermissionCard.swift in Sources */,
@@ -1183,6 +1191,7 @@
 				3E5BA758E31F9CB8D818F2B0 /* WelcomeStepView.swift in Sources */,
 				C99039B272FE2332EDF146C6 /* WhatsOnSnapshot.swift in Sources */,
 				E91AFAD2CF961952376B5BF7 /* WhatsOnWidgetWriter.swift in Sources */,
+				9589CA63A17920D1A4A6153C /* WidgetPalette.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1195,6 +1204,7 @@
 				3233E3C0A058308118FEFEF9 /* WhatsOnSnapshot.swift in Sources */,
 				A67A4C27535228F2B002A52B /* WhatsOnView.swift in Sources */,
 				3EEA59EEF35990A058B0C635 /* WhatsOnWidget.swift in Sources */,
+				1A819A323028700DB6D223BD /* WidgetPalette.swift in Sources */,
 				9D3ED5CB9F7D632F3A85E9D1 /* WidgetStyle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1315,6 +1325,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=appletv*]" = "App Icon & Top Shelf Image";
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphone*]" = AppIcon;
+				"ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS[sdk=iphone*]" = YES;
 				CODE_SIGN_ENTITLEMENTS = App/Resources/RetroGuide.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
@@ -1448,6 +1459,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=appletv*]" = "App Icon & Top Shelf Image";
 				"ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphone*]" = AppIcon;
+				"ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS[sdk=iphone*]" = YES;
 				CODE_SIGN_ENTITLEMENTS = App/Resources/RetroGuide.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;

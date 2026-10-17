@@ -7,6 +7,7 @@ import WidgetKit
 struct WhatsOnView: View {
     let entry: WhatsOnEntry
     @Environment(\.widgetFamily) private var family
+    private var colors: WidgetStyle.Colors { entry.colors }
 
     var body: some View {
         if let channel = entry.channels.first, let program = channel.program(at: entry.date) {
@@ -85,7 +86,7 @@ struct WhatsOnView: View {
             .slidesBetweenChannels(channel)
             Text("ON NOW")
                 .font(WidgetStyle.Font.section)
-                .foregroundStyle(WidgetStyle.Palette.accentSecondary)
+                .foregroundStyle(colors.accentSecondary)
             ForEach(entry.channels.dropFirst().prefix(WidgetStyle.Size.otherChannels), id: \.id) { other in
                 if let now = other.program(at: entry.date) {
                     otherChannelRow(other, now)
@@ -104,7 +105,7 @@ struct WhatsOnView: View {
             }
             Text("Tune in to see what's on")
                 .font(WidgetStyle.Font.detail)
-                .foregroundStyle(WidgetStyle.Palette.textSecondary)
+                .foregroundStyle(colors.textSecondary)
                 .multilineTextAlignment(.center)
         }
         .padding(WidgetStyle.Spacing.lg)
@@ -116,8 +117,8 @@ struct WhatsOnView: View {
     private func osd(_ channel: WhatsOnSnapshot.Channel) -> some View {
         Text("\(channel.number) \(channel.callSign)")
             .font(WidgetStyle.Font.osd)
-            .foregroundStyle(WidgetStyle.Palette.osd)
-            .shadow(color: WidgetStyle.Palette.osd.opacity(WidgetStyle.Size.glowOpacity), radius: WidgetStyle.Size.glowRadius)
+            .foregroundStyle(colors.osd)
+            .shadow(color: colors.osd.opacity(WidgetStyle.Size.glowOpacity), radius: WidgetStyle.Size.glowRadius)
             .lineLimit(1)
     }
 
@@ -152,7 +153,7 @@ struct WhatsOnView: View {
         } else {
             Text(program.title)
                 .font(WidgetStyle.Font.title)
-                .foregroundStyle(WidgetStyle.Palette.textPrimary)
+                .foregroundStyle(colors.textPrimary)
                 .lineLimit(2)
         }
     }
@@ -162,7 +163,7 @@ struct WhatsOnView: View {
         if let episode = program.episode {
             Text(episode)
                 .font(WidgetStyle.Font.episode)
-                .foregroundStyle(WidgetStyle.Palette.textPrimary)
+                .foregroundStyle(colors.textPrimary)
                 .lineLimit(1)
         }
     }
@@ -173,7 +174,7 @@ struct WhatsOnView: View {
         let text = compact ? left : "\(WidgetTime.range(program.start, program.end)) · \(left)"
         return Text(text)
             .font(compact ? WidgetStyle.Font.clockSmall : WidgetStyle.Font.clock)
-            .foregroundStyle(WidgetStyle.Palette.accent)
+            .foregroundStyle(colors.accent)
             .lineLimit(1)
             .minimumScaleFactor(WidgetStyle.Size.minimumScale)
     }
@@ -185,12 +186,12 @@ struct WhatsOnView: View {
                     .frame(width: WidgetStyle.Size.osdColumn, alignment: .leading)
                 Text(program.title)
                     .font(WidgetStyle.Font.detailEmphasis)
-                    .foregroundStyle(WidgetStyle.Palette.textPrimary)
+                    .foregroundStyle(colors.textPrimary)
                     .lineLimit(1)
                 Spacer(minLength: WidgetStyle.Spacing.xs)
                 Text(WidgetTime.remaining(until: program.end, from: entry.date))
                     .font(WidgetStyle.Font.clockSmall)
-                    .foregroundStyle(WidgetStyle.Palette.accent)
+                    .foregroundStyle(colors.accent)
             }
         }
     }
@@ -206,9 +207,9 @@ struct WhatsOnView: View {
         Button(intent: FlipChannelIntent(step: step)) {
             Image(systemName: symbol)
                 .font(WidgetStyle.Font.button)
-                .foregroundStyle(WidgetStyle.Palette.accent)
+                .foregroundStyle(colors.accent)
                 .frame(width: WidgetStyle.Size.button, height: WidgetStyle.Size.button)
-                .background(WidgetStyle.Palette.surface, in: Circle())
+                .background(colors.surface, in: Circle())
         }
         .buttonStyle(.plain)
     }
@@ -231,13 +232,13 @@ struct WhatsOnView: View {
 
     private func glyph(width: CGFloat) -> some View {
         TVGlyph()
-            .brandFill(WidgetStyle.Palette.accent)
+            .brandFill(colors.accent)
             .frame(width: width)
     }
 
     private var wordmark: some View {
-        (Text("RetroGuide").foregroundStyle(WidgetStyle.Palette.textPrimary)
-            + Text(".TV").foregroundStyle(WidgetStyle.Palette.accent))
+        (Text("RetroGuide").foregroundStyle(colors.textPrimary)
+            + Text(".TV").foregroundStyle(colors.accent))
             .font(WidgetStyle.Font.wordmark)
     }
 

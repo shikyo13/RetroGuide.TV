@@ -25,5 +25,8 @@ struct RootView: View {
         .onOpenURL { url in
             model.open(url)
         }
+        .onChange(of: model.homeScreenTheme, initial: true) {
+            model.applyHomeScreenTheme()
+        }
     }
 }
