@@ -16,7 +16,10 @@ final class PictureInPictureController: NSObject {
     var onActiveChanged: ((Bool) -> Void)?
     /// Called when the window closes (not when the viewer goes back to the app).
     var onClose: (() -> Void)?
-    var isPaused = false
+    /// Whether the channel is held. Automatic start needs it playing, so it
+    /// follows the stream: closing the window pauses it first, and the
+    /// channel coming back on must clear that.
+    private(set) var isPaused = false
     private var isRestoring = false
 
     /// `nil` where the device doesn't support Picture in Picture.
@@ -41,6 +44,7 @@ final class PictureInPictureController: NSObject {
     /// launch, before the picture is on screen, and iOS only arms automatic
     /// start for a source that's showing.
     func playbackStateChanged(isPlaying: Bool) {
+        isPaused = !isPlaying
         if isPlaying, !isActive {
             controller.canStartPictureInPictureAutomaticallyFromInline = false
             controller.canStartPictureInPictureAutomaticallyFromInline = true

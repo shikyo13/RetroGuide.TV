@@ -363,12 +363,18 @@ final class Tuner {
     func pauseStream() {
         guard isReceiving else { return }
         engine.setPaused(true)
+        #if os(iOS)
+        pictureInPicture?.playbackStateChanged(isPlaying: false)
+        #endif
     }
 
     /// Continues a paused stream from where it stopped.
     func continueStream() {
         guard isReceiving else { return }
         engine.setPaused(false)
+        #if os(iOS)
+        pictureInPicture?.playbackStateChanged(isPlaying: signal == .live)
+        #endif
     }
 
     /// Releases the stream while the app is in the background.
