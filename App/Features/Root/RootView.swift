@@ -22,5 +22,8 @@ struct RootView: View {
             }
         }
         .animation(DesignTokens.Motion.relaxedEase, value: model.phase)
+        .onOpenURL { url in
+            model.open(url)
+        }
     }
 }

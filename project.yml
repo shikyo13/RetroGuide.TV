@@ -40,7 +40,11 @@ targets:
     supportedDestinations: [tvOS, iOS]
     sources:
       - path: App
+      - path: Shared
     dependencies:
+      - target: RetroGuideWidgets
+        embed: true
+        destinationFilters: [iOS]
       - package: RetroGuideKit
       # LGPL build of libmpv (not the -GPL product); see NOTICE.
       - package: MPVKit
@@ -59,6 +63,8 @@ targets:
       properties:
         # iCloud key-value storage: audio and subtitle choices sync across devices.
         com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)$(CFBundleIdentifier)
+        # Shared with the What's On widget (its schedule and artwork).
+        com.apple.security.application-groups: [group.com.adamhunt.retroguide]
     info:
       path: App/Resources/Info.plist
       properties:
@@ -72,6 +78,10 @@ targets:
         UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
         UIApplicationSupportsIndirectInputEvents: true
+        # The What's On widget opens a channel with retroguide://channel?id=…
+        CFBundleURLTypes:
+          - CFBundleURLName: com.adamhunt.retroguide
+            CFBundleURLSchemes: [retroguide]
         # Picture in Picture keeps the channel playing with the app in the background.
         UIBackgroundModes: [audio]
         NSLocalNetworkUsageDescription: RetroGuide.TV connects to your media server on the local network.
@@ -101,6 +111,32 @@ targets:
           ADMOB_APP_ID: $(ADMOB_RELEASE_APP_ID)
           ADMOB_BANNER_UNIT_ID: $(ADMOB_RELEASE_BANNER_UNIT_ID)
           ADMOB_INTERSTITIAL_UNIT_ID: $(ADMOB_RELEASE_INTERSTITIAL_UNIT_ID)
+  # The What's On home-screen widget (iPhone and iPad).
+  RetroGuideWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widgets
+      - path: Shared
+      - path: App/DesignSystem/Components/TVGlyph.swift
+      - path: App/DesignSystem/Theme/Color+Hex.swift
+    entitlements:
+      path: Widgets/RetroGuideWidgets.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.adamhunt.retroguide]
+    info:
+      path: Widgets/Info.plist
+      properties:
+        CFBundleDisplayName: RetroGuide.TV
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.adamhunt.retroguide.widgets
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: NO
   # UI tests that drive a connected iPhone (development only).
   RetroGuideUITests:
     type: bundle.ui-testing

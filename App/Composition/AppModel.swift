@@ -73,6 +73,9 @@ final class AppModel {
     /// Saves audio and subtitle choices to the servers in the background.
     let trackSync: TrackSync
     @ObservationIgnored private let cloudTrackRules = CloudTrackRulesStore()
+    #if os(iOS)
+    @ObservationIgnored private let whatsOnWidget = WhatsOnWidgetWriter()
+    #endif
     let servers: ServerLibrary
     @ObservationIgnored private var nowPlaying: NowPlayingPublisher?
     let pro = ProStore()
@@ -111,6 +114,7 @@ final class AppModel {
         }
         tuner.onChannelChanged = { [weak self] channelID in
             self?.store.lastChannelID = channelID
+            self?.updateWhatsOnWidget()
         }
         tuner.onServerTrouble = { [weak self] _ in
             Task { await self?.recheckServers() }
@@ -224,6 +228,7 @@ final class AppModel {
     /// Picture in Picture keeps the channel on however long the app is away.
     func enteredBackground() {
         isInBackground = true
+        updateWhatsOnWidget()
         guard !tuner.isPictureInPictureActive else { return }
         backgroundedAt = .now
         // Out of sight and not in Picture in Picture: hold the stream rather
@@ -253,6 +258,29 @@ final class AppModel {
         tuner.continueStream()
         tuner.resume()
         Task { await refreshConnections() }
+    }
+
+    /// Opens a link to the app: `retroguide://channel?id=…` (the What's On
+    /// widget) tunes that channel, now or once the lineup is ready.
+    func open(_ url: URL) {
+        guard let id = WhatsOnStore.channelID(from: url) else { return }
+        store.lastChannelID = id
+        if let channel = tuner.channel(withID: id) {
+            tuner.tune(to: channel)
+        }
+    }
+
+    /// Saves what's on for the widget: the channel being watched (or
+    /// watched last), then the channels after it in the guide.
+    private func updateWhatsOnWidget() {
+        #if os(iOS)
+        let channels = visibleChannels.sorted { $0.number < $1.number }
+        guard !channels.isEmpty else { return }
+        let lastID = tuner.channel?.id ?? store.lastChannelID
+        let start = channels.firstIndex { channel in lastID.map(channel.isIdentified(by:)) ?? false } ?? .zero
+        let rotation = Array(channels[start...] + channels[..<start])
+        whatsOnWidget.update(channels: rotation, artworkResolver: servers.artworkResolver)
+        #endif
     }
 
     /// The Picture in Picture window closed while the app was away: the
@@ -582,6 +610,7 @@ final class AppModel {
         guard generation == lineupGeneration else { return }
         lineup = built
         lineupRevision += 1
+        updateWhatsOnWidget()
         tuner.setChannels(visibleChannels)
         resumeLastChannelIfAvailable()
         // Search follows on its own: nothing waits for it, least of all the first picture.
