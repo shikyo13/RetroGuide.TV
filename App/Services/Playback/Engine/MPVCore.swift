@@ -58,7 +58,14 @@ final class MPVCore: @unchecked Sendable {
             ("ytdl", "no"),
             ("terminal", "no"),
             ("audio-client-name", "RetroGuide.TV"),
+            // Check the server's certificate: stream addresses carry its access token.
+            // Without this, FFmpeg would hand them to anyone presenting a certificate.
+            ("tls-verify", "yes"),
         ]
+        /// FFmpeg's TLS (GnuTLS) can't read Apple's trust store, so it checks against
+        /// a bundled copy of Mozilla's (see Tools/CABundle).
+        static let certificateAuthoritiesFile = "tls-ca-file"
+        static let certificateAuthorities = (name: "cacert", type: "pem")
         /// Outputs HDR as HDR instead of tone mapping it to standard range.
         static let colorspaceHint = "target-colorspace-hint"
         static let targetPrimaries = "target-prim"
@@ -125,6 +132,12 @@ final class MPVCore: @unchecked Sendable {
         mpv_set_option(handle, Option.windowID, MPV_FORMAT_INT64, &windowID)
         for (name, value) in Option.values + Option.platformValues {
             mpv_set_option_string(handle, name, value)
+        }
+        if let authorities = Bundle.main.path(forResource: Option.certificateAuthorities.name, ofType: Option.certificateAuthorities.type) {
+            mpv_set_option_string(handle, Option.certificateAuthoritiesFile, authorities)
+        } else {
+            // Verification stays on, so streams fail rather than go unchecked.
+            assertionFailure("cacert.pem is missing from the app bundle")
         }
         #if DEBUG
         if DebugLaunchOptions.probesAudio,

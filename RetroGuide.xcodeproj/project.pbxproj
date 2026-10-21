@@ -78,6 +78,7 @@
 		546ED60F3E6CC2C7A0C266EB /* PlayerCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F7880DEA5886D79C537900 /* PlayerCommand.swift */; };
 		550072530FE2537BB8206054 /* InterstitialPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC1B0A525F43C6F9AF3F80C /* InterstitialPresenter.swift */; };
 		58ACF61B2BBF8F2134CEEEB6 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7DA98DAE4D2BF096DEE843 /* FavoritesView.swift */; };
+		59313839CBFAE00CA4414E37 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = DD85868C015BC96DC51B5D7A /* cacert.pem */; };
 		5BDAA992D3DB2FFEF0CE0318 /* TouchGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604801F13D23463BECF5C12F /* TouchGesture.swift */; };
 		5C4C2056C7C14376617BA45D /* DisplayModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EB049DC12D2F608C879BFE /* DisplayModeController.swift */; };
 		5F5685C240D34612130AC559 /* WidgetArtworkActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB9796760986AC3CC93CA122 /* WidgetArtworkActivity.swift */; };
@@ -407,6 +408,7 @@
 		D9306874686ECBC895ABC543 /* PlaybackEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackEngine.swift; sourceTree = "<group>"; };
 		DB5B1E2126C1AAB4447FA0E0 /* WidgetArtworkCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetArtworkCache.swift; sourceTree = "<group>"; };
 		DB9796760986AC3CC93CA122 /* WidgetArtworkActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetArtworkActivity.swift; sourceTree = "<group>"; };
+		DD85868C015BC96DC51B5D7A /* cacert.pem */ = {isa = PBXFileReference; path = cacert.pem; sourceTree = "<group>"; };
 		DE0289837828F959D40440FF /* RemindersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemindersView.swift; sourceTree = "<group>"; };
 		DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlaybackEngine.swift; sourceTree = "<group>"; };
 		DEBCBC697963B90B6FE85490 /* AppIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
@@ -647,6 +649,7 @@
 			children = (
 				6A321694709BD60095C98D30 /* Licenses */,
 				5C5C915609130F57A5F8D278 /* Assets.xcassets */,
+				DD85868C015BC96DC51B5D7A /* cacert.pem */,
 				31FB9BE2708E52D814B10E36 /* Info.plist */,
 				A77B0F3DA9D4FC1402E22BED /* PrivacyInfo.xcprivacy */,
 				7A418261B4F03EED66473C6E /* RetroGuide.entitlements */,
@@ -1126,6 +1129,7 @@
 				1621D2170E71F4484C39983B /* Assets.xcassets in Resources */,
 				F94DC9CD3CA222C4774E154A /* LGPL-3.0.txt in Resources */,
 				7802EC1470B056226DFD541C /* PrivacyInfo.xcprivacy in Resources */,
+				59313839CBFAE00CA4414E37 /* cacert.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
