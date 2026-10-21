@@ -69,13 +69,20 @@ final class AppModel {
         didSet { preferencesChanged(from: oldValue) }
     }
 
+    var viewing: ViewingPreferences {
+        didSet {
+            store.viewing = viewing
+            updatePersonalChannels()
+        }
+    }
+    let sleepTimer = SleepTimer()
+    let reminders = ProgramReminders()
+
     let tuner: Tuner
     /// Saves audio and subtitle choices to the servers in the background.
     let trackSync: TrackSync
     @ObservationIgnored private let cloudTrackRules = CloudTrackRulesStore()
-    #if os(iOS)
     @ObservationIgnored private let whatsOnWidget = WhatsOnWidgetWriter()
-    #endif
     let servers: ServerLibrary
     @ObservationIgnored private var nowPlaying: NowPlayingPublisher?
     let pro = ProStore()
@@ -102,6 +109,7 @@ final class AppModel {
         self.store = store
         self.preferences = store.preferences
         self.customization = store.customization
+        self.viewing = store.viewing
         let identity = AppIdentity.plexIdentity(clientIdentifier: store.plexClientIdentifier)
         self.plexIdentity = identity
         let servers = ServerLibrary(store: store, snapshotStore: snapshotStore, keychain: KeychainStore(), identity: identity)
@@ -114,6 +122,8 @@ final class AppModel {
         }
         tuner.onChannelChanged = { [weak self] channelID in
             self?.store.lastChannelID = channelID
+            self?.sleepTimer.resumeWatching()
+            self?.viewing.remember(channelID)
             self?.updateWhatsOnWidget()
         }
         tuner.onServerTrouble = { [weak self] _ in
@@ -151,12 +161,33 @@ final class AppModel {
             trackSync.setCurrent(rules: rules, preferences: store.languagePreferences)
         }
         cloudTrackRules.start()
+        reminders.onOpen = { [weak self] id in
+            if let url = WhatsOnStore.url(forChannel: id) { self?.open(url) }
+        }
+        sleepTimer.onExpire = { [weak self] in
+            self?.tuner.stopWatching()
+        }
     }
 
     // MARK: - Derived state
 
     var visibleChannels: [Channel] {
         lineup.filter { !$0.isHidden }
+    }
+
+    var browsingChannels: [Channel] {
+        pro.isPro && viewing.favoritesOnly ? visibleChannels.filter(viewing.isFavorite) : visibleChannels
+    }
+
+    func proAccessChanged() {
+        guard !libraryIndex.items.isEmpty || phase == .ready else { return }
+        updatePersonalChannels()
+        Task { await rebuildLineup() }
+    }
+
+    func updatePersonalChannels() {
+        tuner.surfChannelIDs = pro.isPro && viewing.favoritesOnly ? Set(browsingChannels.map(\.id)) : nil
+        updateWhatsOnWidget()
     }
 
     /// `channel` as it is in the current lineup (results can outlive a rebuild),
@@ -242,6 +273,7 @@ final class AppModel {
     func enteredBackground() {
         isInBackground = true
         updateWhatsOnWidget()
+        whatsOnWidget.reloadForHomeScreen()
         guard !tuner.isPictureInPictureActive else { return }
         backgroundedAt = .now
         // Out of sight and not in Picture in Picture: hold the stream rather
@@ -268,8 +300,12 @@ final class AppModel {
         }
         backgroundedAt = nil
         guard phase == .ready else { return }
-        tuner.continueStream()
-        tuner.resume()
+        reminders.check()
+        sleepTimer.checkDeadline()
+        if !sleepTimer.didExpire {
+            tuner.continueStream()
+            tuner.resume()
+        }
         Task { await refreshConnections() }
     }
 
@@ -286,14 +322,32 @@ final class AppModel {
     /// Saves what's on for the widget: the channel being watched (or
     /// watched last), then the channels after it in the guide.
     private func updateWhatsOnWidget() {
-        #if os(iOS)
         let channels = visibleChannels.sorted { $0.number < $1.number }
-        guard !channels.isEmpty else { return }
+        guard !channels.isEmpty else { whatsOnWidget.clear(); return }
         let lastID = tuner.channel?.id ?? store.lastChannelID
         let start = channels.firstIndex { channel in lastID.map(channel.isIdentified(by:)) ?? false } ?? .zero
-        let rotation = Array(channels[start...] + channels[..<start])
-        whatsOnWidget.update(channels: rotation, artworkResolver: servers.artworkResolver)
+        var selected = Array(channels[start...] + channels[..<start])
+        var pinned = false
+        #if os(tvOS)
+        if pro.isPro && viewing.topShelfFavorites {
+            selected = channels.filter(viewing.isFavorite)
+        } else {
+            let recent = viewing.recentChannelIDs.compactMap { id in channels.first { $0.isIdentified(by: id) } }
+            selected = recent + channels.filter { channel in !recent.contains { $0.id == channel.id } }
+        }
+        #else
+        if pro.isPro {
+            switch viewing.widgetSource {
+            case .recent: break
+            case .favorites: selected = channels.filter(viewing.isFavorite)
+            case .selected: selected = channels.filter { channel in viewing.widgetChannelIDs.contains(where: channel.isIdentified) }
+            case .pinned:
+                selected = channels.filter { $0.isIdentified(by: viewing.pinnedChannelID ?? "") }
+                pinned = true
+            }
+        }
         #endif
+        whatsOnWidget.update(channels: selected, artworkResolver: servers.artworkResolver, pinned: pinned)
     }
 
     /// The Picture in Picture window closed while the app was away: the
@@ -368,7 +422,10 @@ final class AppModel {
         refreshPending = false
         isSessionStarted = false
         networkMonitor.stop()
+        whatsOnWidget.clear()
         healthTask?.cancel()
+        reminders.clear()
+        sleepTimer.cancel()
         tuner.powerOff()
         trackSync.cancelAll()
         tuner.replaceTrackRules(TrackRules())
@@ -382,6 +439,7 @@ final class AppModel {
         searchIndex = .empty
         customization = LineupCustomization()
         preferences = UserPreferences()
+        viewing = ViewingPreferences()
         #if os(tvOS)
         displayMode.reset()
         #endif
@@ -467,6 +525,8 @@ final class AppModel {
         healthTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: Refresh.healthCheckInterval)
+                guard !Task.isCancelled else { return }
+                self?.updateWhatsOnWidget()
                 await self?.recheckServers()
             }
         }
@@ -625,6 +685,8 @@ final class AppModel {
         lineupRevision += 1
         updateWhatsOnWidget()
         tuner.setChannels(visibleChannels)
+        updatePersonalChannels()
+        if phase == .ready && pro.hasLoaded && !lineupBuildPending { reminders.reconcile(channels: visibleChannels) }
         resumeLastChannelIfAvailable()
         // Search follows on its own: nothing waits for it, least of all the first picture.
         searchIndexBuild?.cancel()

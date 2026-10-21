@@ -22,15 +22,19 @@ struct SubtitleTimingControl: View {
                 value: SubtitleTiming.description(of: delay),
                 accessory: nil
             )
+            .font(Typography.settingsBody)
             touchControls
             #endif
+            Text("Move subtitles later if they appear before speech, or earlier if they appear after it. Applies to this subtitle track while watching this program.")
+                .font(Typography.settingsCaption)
+                .foregroundStyle(theme.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
     #if !os(tvOS)
     private var touchControls: some View {
-        HStack(spacing: DesignTokens.Spacing.sm) {
-            stepButton(systemImage: "minus", label: "Earlier", by: -SubtitleTiming.fineStep)
+        VStack(spacing: DesignTokens.Spacing.sm) {
             // No `step:`: iOS draws a tick per step. The tuner rounds to the fine step.
             Slider(
                 value: Binding(get: { delay }, set: { tuner.setSubtitleDelay($0) }),
@@ -43,27 +47,47 @@ struct SubtitleTimingControl: View {
                 Text("Later").secondaryText()
             }
             .tint(theme.accent)
-            stepButton(systemImage: "plus", label: "Later", by: SubtitleTiming.fineStep)
-            Button("Reset") { tuner.setSubtitleDelay(.zero) }
-                .buttonStyle(.retro)
-                .disabled(delay == .zero)
+            .accessibilityValue(SubtitleTiming.description(of: delay))
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment: tuner.setSubtitleDelay(delay + SubtitleTiming.fineStep)
+                case .decrement: tuner.setSubtitleDelay(delay - SubtitleTiming.fineStep)
+                @unknown default: break
+                }
+            }
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: DesignTokens.Spacing.sm) { adjustmentButtons }
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) { adjustmentButtons }
+            }
         }
+    }
+
+    @ViewBuilder
+    private var adjustmentButtons: some View {
+        stepButton(systemImage: "minus", label: "Earlier", by: -SubtitleTiming.fineStep)
+            .disabled(delay <= SubtitleTiming.range.lowerBound)
+        stepButton(systemImage: "plus", label: "Later", by: SubtitleTiming.fineStep)
+            .disabled(delay >= SubtitleTiming.range.upperBound)
+        Button("Reset") { tuner.setSubtitleDelay(.zero) }
+            .buttonStyle(.retro)
+            .disabled(delay == .zero)
+            .accessibilityHint("Restores this track's original timing.")
     }
 
     private func stepButton(systemImage: String, label: String, by step: TimeInterval) -> some View {
         Button {
             tuner.setSubtitleDelay(delay + step)
         } label: {
-            Image(systemName: systemImage)
+            Label(label, systemImage: systemImage)
         }
-        .buttonStyle(.retroIcon)
+        .buttonStyle(.retro)
         .accessibilityLabel("\(label) by \(SubtitleTiming.fineStep.formatted()) seconds")
     }
     #endif
 }
 
 #if os(tvOS)
-/// A row the remote's Left and Right move through; Select puts subtitles back in sync.
+/// A row the remote's Left and Right move through; Select restores the original timing.
 private struct RemoteAdjuster: View {
     private enum Timing {
         /// Presses closer together than this count as holding the button.
@@ -93,7 +117,8 @@ private struct RemoteAdjuster: View {
         .buttonStyle(.retroRow)
         .focused($isFocused)
         .onMoveCommand(perform: move)
-        .accessibilityHint("Left and Right move subtitles earlier or later. Select puts them back in sync.")
+        .accessibilityValue(SubtitleTiming.description(of: tuner.subtitleDelay))
+        .accessibilityHint("Left and Right move subtitles earlier or later. Select restores the original timing.")
     }
 
     private func move(_ direction: MoveCommandDirection) {

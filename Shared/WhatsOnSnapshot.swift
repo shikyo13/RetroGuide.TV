@@ -30,6 +30,8 @@ struct WhatsOnSnapshot: Codable, Sendable {
     }
 
     let channels: [Channel]
+    var pinned: Bool? = nil
+    var updatedAt: Date? = nil
 
     /// Until when every channel has a schedule.
     var coveredUntil: Date? {
@@ -53,28 +55,57 @@ enum WhatsOnStore {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)
     }
 
-    static func load() -> WhatsOnSnapshot? {
-        guard let url = container?.appending(path: snapshotFile), let data = try? Data(contentsOf: url) else { return nil }
+    static func load(from directory: URL? = container) -> WhatsOnSnapshot? {
+        guard let url = directory?.appending(path: snapshotFile), let data = try? Data(contentsOf: url) else { return nil }
         return try? JSONDecoder().decode(WhatsOnSnapshot.self, from: data)
     }
 
     /// Saves `snapshot` with its artwork (file name to image data), replacing what was there.
-    static func save(_ snapshot: WhatsOnSnapshot, artwork: [String: Data]) {
-        guard let container else { return }
+    @discardableResult
+    static func save(_ snapshot: WhatsOnSnapshot, artwork: [String: Data], in directory: URL? = container) -> Bool {
+        guard let container = directory else { return false }
+        let previousFiles = Set(load(from: container)?.channels.flatMap { $0.programs.flatMap { [$0.backdropFile, $0.logoFile, $0.stillFile].compactMap { $0 } } } ?? [])
+        let currentFiles = Set(snapshot.channels.flatMap { $0.programs.flatMap { [$0.backdropFile, $0.logoFile, $0.stillFile].compactMap { $0 } } })
         let folder = container.appending(path: artworkFolder)
-        try? FileManager.default.removeItem(at: folder)
-        try? FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-        for (name, data) in artwork {
-            try? data.write(to: folder.appending(path: name), options: .atomic)
-        }
-        if let data = try? JSONEncoder().encode(snapshot) {
-            try? data.write(to: container.appending(path: snapshotFile), options: .atomic)
+        guard saveArtwork(artwork, in: container) else { return false }
+        do {
+            let data = try JSONEncoder().encode(snapshot)
+            try data.write(to: container.appending(path: snapshotFile), options: .atomic)
+            // Keep the previous snapshot's images during publication; bound storage to two snapshots.
+            if let files = try? FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil) {
+                let retained = previousFiles.union(currentFiles)
+                for file in files where !retained.contains(file.lastPathComponent) { try? FileManager.default.removeItem(at: file) }
+            }
+            return true
+        } catch {
+            return false
         }
     }
 
-    static func artworkURL(_ file: String?) -> URL? {
+    /// Publish small batches without keeping the whole guide's image data in memory.
+    static func saveArtwork(_ artwork: [String: Data], in directory: URL? = container) -> Bool {
+        guard let container = directory else { return false }
+        let folder = container.appending(path: artworkFolder)
+        do {
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            for (name, data) in artwork {
+                try data.write(to: folder.appending(path: name), options: .atomic)
+            }
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    static func clear(in directory: URL? = container) {
+        guard let container = directory else { return }
+        try? FileManager.default.removeItem(at: container.appending(path: snapshotFile))
+        try? FileManager.default.removeItem(at: container.appending(path: artworkFolder))
+    }
+
+    static func artworkURL(_ file: String?, in directory: URL? = container) -> URL? {
         guard let file else { return nil }
-        return container?.appending(path: artworkFolder).appending(path: file)
+        return directory?.appending(path: artworkFolder).appending(path: file)
     }
 
     /// How many channels the viewer has flipped the widget on from its rotation.

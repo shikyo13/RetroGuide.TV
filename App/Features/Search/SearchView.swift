@@ -44,6 +44,9 @@ struct SearchView: View {
                             SearchResultRow(result: result)
                         }
                         .buttonStyle(.retroRow)
+                        if let channel = result.channel, let program = result.airing, program.start > .now {
+                            ReminderButton(channel: channel, program: program)
+                        }
                     }
                     if results.isEmpty {
                         Text(query.isEmpty ? "Search every show and movie on your channels." : "Nothing on your channels matches \u{201C}\(query)\u{201D}.")

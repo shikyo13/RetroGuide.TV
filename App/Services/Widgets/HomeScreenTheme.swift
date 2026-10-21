@@ -14,7 +14,7 @@ enum HomeScreenTheme {
     static func apply(_ theme: Theme) {
         applyIcon(theme.id)
         if WhatsOnStore.save(palette(for: theme)) {
-            WidgetCenter.shared.reloadTimelines(ofKind: WhatsOnStore.widgetKind)
+            WidgetCenter.shared.reloadAllTimelines()
         }
     }
 

@@ -27,6 +27,26 @@ struct SettingsView: View {
                     }
                 }
                 SettingsSection("Picture") {
+                    #if os(iOS)
+                    NavigationLink { WidgetSettingsView() } label: {
+                        SettingsRowLabel(title: "Home Screen widgets", systemImage: "square.grid.2x2", value: nil)
+                    }
+                    #else
+                    if app.pro.isPro {
+                        Button { app.viewing.topShelfFavorites.toggle() } label: {
+                            SettingsRowLabel(title: "Top Shelf channels", systemImage: "tv", value: app.viewing.topShelfFavorites ? "Favorites" : "Recent channels", accessory: nil)
+                        }
+                    } else {
+                        SettingsRowLabel(title: "Top Shelf channels", systemImage: "tv", value: "Recent channels", accessory: nil)
+                        ProLockedRow(title: "Use Favorites on Top Shelf", systemImage: "star")
+                    }
+                    if app.pro.isPro && app.viewing.topShelfFavorites && !app.visibleChannels.contains(where: app.viewing.isFavorite) {
+                        Text("No favorite channels are available. Add channels in Favorites below to show them on Top Shelf.")
+                            .font(Typography.caption).foregroundStyle(theme.textSecondary)
+                    }
+                    Text("Move RetroGuide.TV to the top row of your Apple TV Home Screen to see what's on.")
+                        .font(Typography.caption).foregroundStyle(theme.textSecondary)
+                    #endif
                     NavigationLink {
                         ThemePickerView()
                     } label: {
@@ -44,6 +64,9 @@ struct SettingsView: View {
                     }
                 }
                 SettingsSection("Playback") {
+                    NavigationLink { RemindersView() } label: {
+                        SettingsRowLabel(title: "Program reminders", systemImage: "bell", value: app.pro.isPro ? nil : "Pro")
+                    }
                     NavigationLink {
                         PlayerEnginePickerView()
                     } label: {
@@ -58,6 +81,9 @@ struct SettingsView: View {
                     #endif
                 }
                 SettingsSection("Channels") {
+                    NavigationLink { FavoritesView() } label: {
+                        SettingsRowLabel(title: "Favorites", systemImage: "star", value: app.pro.isPro ? "\(app.viewing.favoriteIDs.count)" : "Pro")
+                    }
                     NavigationLink {
                         ChannelManagerView()
                     } label: {
@@ -163,7 +189,7 @@ struct SettingsView: View {
             }
             #endif
         }
-        .confirmationDialog("Sign out and remove all channels from this Apple TV?", isPresented: $isConfirmingSignOut) {
+        .confirmationDialog("Sign out and remove all channels from this device?", isPresented: $isConfirmingSignOut) {
             Button("Sign Out", role: .destructive) { app.signOut() }
             Button("Cancel", role: .cancel) {}
         }

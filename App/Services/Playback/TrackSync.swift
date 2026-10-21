@@ -38,6 +38,7 @@ final class TrackSync {
     @ObservationIgnored private let clientProvider: (String) -> (any MediaServerClient)?
     @ObservationIgnored private var queue: [Job] = []
     @ObservationIgnored private var worker: Task<Void, Never>?
+    @ObservationIgnored private var workerGeneration = 0
     /// The viewer's current choices and language settings, from whichever
     /// source changed them last (this device, another one through iCloud, the
     /// Plex account): retries send these, never an older snapshot.
@@ -82,8 +83,10 @@ final class TrackSync {
     private func enqueue(_ job: Job) {
         queue.append(job)
         guard worker == nil else { return }
+        workerGeneration += 1
+        let generation = workerGeneration
         worker = Task { [weak self] in
-            await self?.drain()
+            await self?.drain(generation: generation)
         }
     }
 
@@ -93,26 +96,29 @@ final class TrackSync {
         failedCount = .zero
         currentRules = TrackRules()
         currentPreferences = nil
+        workerGeneration += 1
         worker?.cancel()
         worker = nil
         progress = nil
     }
 
-    private func drain() async {
-        while !queue.isEmpty, !Task.isCancelled {
-            await run(queue.removeFirst())
+    private func drain(generation: Int) async {
+        while generation == workerGeneration, !queue.isEmpty, !Task.isCancelled {
+            await run(queue.removeFirst(), generation: generation)
         }
+        guard generation == workerGeneration else { return }
         progress = nil
         worker = nil
     }
 
-    private func run(_ job: Job) async {
+    private func run(_ job: Job, generation: Int) async {
         progress = Progress(saved: .zero, failed: .zero, total: job.items.count)
         let clientProvider = clientProvider
         var failedItems: [MediaItem] = []
         await withTaskGroup(of: (MediaItem, Bool).self) { group in
             var next = job.items.makeIterator()
-            func enqueue() {
+            @MainActor func enqueue() {
+                guard generation == workerGeneration, !Task.isCancelled else { return }
                 guard let item = next.next() else { return }
                 let rules = job.rules
                 let client = clientProvider(item.serverID)
@@ -131,7 +137,7 @@ final class TrackSync {
                 enqueue()
             }
             while let (item, saved) = await group.next() {
-                guard !Task.isCancelled else {
+                guard generation == workerGeneration, !Task.isCancelled else {
                     group.cancelAll()
                     return
                 }
@@ -142,6 +148,7 @@ final class TrackSync {
                 enqueue()
             }
         }
+        guard generation == workerGeneration, !Task.isCancelled else { return }
         if !failedItems.isEmpty {
             failedJobs.append(Job(items: failedItems, rules: job.rules, preferences: job.preferences))
             failedCount += failedItems.count

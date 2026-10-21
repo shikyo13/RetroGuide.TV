@@ -21,6 +21,10 @@ enum WidgetStyle {
         }
     }
 
+    enum Motion {
+        static let channelChange: TimeInterval = 0.18
+    }
+
     enum Spacing {
         static let xs: CGFloat = 4
         static let sm: CGFloat = 6
@@ -41,7 +45,7 @@ enum WidgetStyle {
         static let backdropOpacity: Double = 0.6
         static let glowOpacity: Double = 0.6
         static let glowRadius: CGFloat = 4
-        static let button: CGFloat = 28
+        static let button: CGFloat = 44
         static let osdColumn: CGFloat = 74
         static let otherChannels = 3
         static let minimumScale: CGFloat = 0.7

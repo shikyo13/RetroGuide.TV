@@ -10,8 +10,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "1.3"
-    CURRENT_PROJECT_VERSION: "20261016.1"
+    MARKETING_VERSION: "1.4"
+    CURRENT_PROJECT_VERSION: "20261018.5"
     SWIFT_STRICT_CONCURRENCY: complete
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
@@ -42,6 +42,9 @@ targets:
       - path: App
       - path: Shared
     dependencies:
+      - target: RetroGuideTopShelf
+        embed: true
+        destinationFilters: [tvOS]
       - target: RetroGuideWidgets
         embed: true
         destinationFilters: [iOS]
@@ -113,6 +116,30 @@ targets:
           ADMOB_APP_ID: $(ADMOB_RELEASE_APP_ID)
           ADMOB_BANNER_UNIT_ID: $(ADMOB_RELEASE_BANNER_UNIT_ID)
           ADMOB_INTERSTITIAL_UNIT_ID: $(ADMOB_RELEASE_INTERSTITIAL_UNIT_ID)
+  RetroGuideTopShelf:
+    type: app-extension
+    platform: tvOS
+    sources:
+      - path: TopShelf
+      - path: Shared/WhatsOnSnapshot.swift
+    entitlements:
+      path: TopShelf/RetroGuideTopShelf.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.adamhunt.retroguide]
+    info:
+      path: TopShelf/Info.plist
+      properties:
+        CFBundleDisplayName: RetroGuide.TV
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.tv-top-shelf
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ContentProvider
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.adamhunt.retroguide.topshelf
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: NO
   # The What's On home-screen widget (iPhone and iPad).
   RetroGuideWidgets:
     type: app-extension

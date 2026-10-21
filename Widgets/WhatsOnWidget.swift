@@ -6,6 +6,7 @@ import WidgetKit
 struct RetroGuideWidgets: WidgetBundle {
     var body: some Widget {
         WhatsOnWidget()
+        AppIconWidget()
     }
 }
 
@@ -30,8 +31,9 @@ struct WhatsOnEntry: TimelineEntry {
     let date: Date
     /// The channel shown, and the rest of the rotation after it (for the large size).
     let channels: [WhatsOnSnapshot.Channel]
-    /// The app's theme colors.
-    var colors = WhatsOnStore.palette.map(WidgetStyle.Colors.init) ?? .classicCable
+    var canFlip = false
+    /// The app's theme colors, read once per timeline.
+    var colors: WidgetStyle.Colors = .classicCable
 }
 
 /// One entry every few minutes, each showing the next channel in the
@@ -39,43 +41,44 @@ struct WhatsOnEntry: TimelineEntry {
 /// the schedule the app saved, without the app running.
 struct WhatsOnProvider: TimelineProvider {
     private enum Tuning {
-        static let rotation: TimeInterval = 3 * 60
         /// When nothing is saved, or the saved schedule runs out, look again after this.
         static let retry: TimeInterval = 60 * 60
     }
 
     func placeholder(in context: Context) -> WhatsOnEntry {
-        WhatsOnEntry(date: .now, channels: WhatsOnSnapshot.sample.channels)
+        WhatsOnEntry(date: .now, channels: WhatsOnSnapshot.sample.channels, canFlip: true, colors: palette)
     }
 
     func getSnapshot(in context: Context, completion: @escaping (WhatsOnEntry) -> Void) {
-        let snapshot = WhatsOnStore.load() ?? .sample
-        completion(entry(at: .now, snapshot))
+        let snapshot = WhatsOnStore.load() ?? (context.isPreview ? .sample : WhatsOnSnapshot(channels: []))
+        completion(entry(at: .now, snapshot, family: context.family, offset: WhatsOnStore.offset, colors: palette))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<WhatsOnEntry>) -> Void) {
         let now = Date.now
-        guard let snapshot = WhatsOnStore.load(), let end = snapshot.coveredUntil, end > now else {
-            completion(Timeline(entries: [WhatsOnEntry(date: now, channels: [])], policy: .after(now.addingTimeInterval(Tuning.retry))))
+        guard let snapshot = WhatsOnStore.load(), let coveredUntil = snapshot.coveredUntil, coveredUntil > now else {
+            completion(Timeline(entries: [WhatsOnEntry(date: now, channels: [], colors: palette)], policy: .after(now.addingTimeInterval(Tuning.retry))))
             return
         }
-        let firstSlot = (now.timeIntervalSince1970 / Tuning.rotation).rounded(.down) + 1
-        var dates = [now]
-        var slot = firstSlot
-        while case let date = Date(timeIntervalSince1970: slot * Tuning.rotation), date < end {
-            dates.append(date)
-            slot += 1
-        }
-        completion(Timeline(entries: dates.map { entry(at: $0, snapshot) }, policy: .after(end)))
+        let end = min(coveredUntil, now.addingTimeInterval(WidgetTimeline.Tuning.horizon))
+        let offset = WhatsOnStore.offset
+        let colors = palette
+        let dates = WidgetTimeline.dates(from: now, until: end, in: snapshot, offset: offset, visibleChannels: channelLimit(context.family))
+        completion(Timeline(entries: dates.map { entry(at: $0, snapshot, family: context.family, offset: offset, colors: colors) }, policy: .after(end)))
     }
 
-    /// The rotation at `date`: which channel's turn it is, then the others in order.
-    private func entry(at date: Date, _ snapshot: WhatsOnSnapshot) -> WhatsOnEntry {
-        let live = snapshot.channels.filter { $0.program(at: date) != nil }
-        guard !live.isEmpty else { return WhatsOnEntry(date: date, channels: []) }
-        let turn = Int((date.timeIntervalSince1970 / Tuning.rotation).rounded(.down)) + WhatsOnStore.offset
-        let start = ((turn % live.count) + live.count) % live.count
-        return WhatsOnEntry(date: date, channels: Array(live[start...] + live[..<start]))
+    private var palette: WidgetStyle.Colors {
+        WhatsOnStore.palette.map(WidgetStyle.Colors.init) ?? .classicCable
+    }
+
+    private func channelLimit(_ family: WidgetFamily) -> Int {
+        family == .systemLarge ? WidgetStyle.Size.otherChannels + 1 : 1
+    }
+
+    private func entry(at date: Date, _ snapshot: WhatsOnSnapshot, family: WidgetFamily, offset: Int, colors: WidgetStyle.Colors) -> WhatsOnEntry {
+        let channels = WidgetTimeline.channels(at: date, in: snapshot, offset: offset, limit: channelLimit(family))
+        let canFlip = snapshot.channels.filter { $0.program(at: date) != nil }.count > 1
+        return WhatsOnEntry(date: date, channels: channels, canFlip: canFlip, colors: colors)
     }
 }
 

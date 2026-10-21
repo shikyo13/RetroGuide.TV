@@ -168,6 +168,8 @@ final class MPVCore: @unchecked Sendable {
             start = DebugLaunchOptions.playStartOverride ?? Option.debugOverrideStart
         }
         mpv_set_property_string(handle, Option.startPositionProperty, start)
+        // A released background stream may have left the player paused.
+        setPaused(false)
         command(["loadfile", (DebugLaunchOptions.playURLOverride ?? url).absoluteString, "replace"])
     }
 
@@ -199,7 +201,11 @@ final class MPVCore: @unchecked Sendable {
     /// Shows subtitles `seconds` later (earlier when negative). mpv keeps it across files.
     func setSubtitleDelay(_ seconds: TimeInterval) {
         guard let handle else { return }
-        mpv_set_property_string(handle, Option.subtitleDelayProperty, String(format: "%.2f", seconds))
+        var delay = seconds
+        let status = mpv_set_property(handle, Option.subtitleDelayProperty, MPV_FORMAT_DOUBLE, &delay)
+        if status < .zero {
+            Self.logger.error("Could not set subtitle timing: \(String(cString: mpv_error_string(status)), privacy: .public)")
+        }
     }
 
     /// Passes HDR through to the display (`true`) or tone maps it to standard range.

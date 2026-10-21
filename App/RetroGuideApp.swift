@@ -36,6 +36,7 @@ struct RetroGuideApp: App {
                 .environment(\.showsScanlines, model.preferences.showsScanlines)
                 .tint(model.theme.accent)
                 .preferredColorScheme(.dark)
+                .onChange(of: model.pro.hasLoaded ? model.pro.isPro : nil) { model.proAccessChanged() }
                 .task { await model.start() }
         }
         .onChange(of: scenePhase) { _, phase in

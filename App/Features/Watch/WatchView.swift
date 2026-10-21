@@ -60,7 +60,7 @@ struct WatchView: View {
                 EmptyView()
             }
             liveVideo(tuner: tuner)
-            if overlay == .guide, let previewFrame {
+            if overlay == .guide, !app.browsingChannels.isEmpty, let previewFrame {
                 liveControls(tuner: tuner, pictureFrame: previewFrame)
             }
             #if os(iOS)
@@ -68,7 +68,18 @@ struct WatchView: View {
                 returnToFullScreenTarget
             }
             #endif
-            if overlay == .none {
+            if app.sleepTimer.didExpire {
+                VStack(spacing: DesignTokens.Spacing.md) {
+                    Text("Sleep timer finished").font(Typography.title)
+                    Button("Resume watching") {
+                        app.sleepTimer.resumeWatching()
+                        tuner.resume()
+                    }.buttonStyle(.retroPrimary)
+                }
+                .panel()
+                .padding(DesignTokens.Spacing.lg)
+            }
+            if overlay == .none && !app.sleepTimer.didExpire {
                 PlayerChromeView(
                     tuner: tuner,
                     isActive: !isShowingOptions,
@@ -78,6 +89,18 @@ struct WatchView: View {
                     .transition(.opacity)
             }
         }
+        .alert("Program reminder", isPresented: Binding(get: { app.reminders.due != nil }, set: { if !$0 { app.reminders.due = nil } }), presenting: app.reminders.due) { reminder in
+            Button("Watch now") {
+                if let url = WhatsOnStore.url(forChannel: reminder.channelID) { app.open(url); overlay = .none }
+                app.reminders.due = nil
+            }
+            Button("Dismiss", role: .cancel) { app.reminders.due = nil }
+        } message: { reminder in
+            Text("\(reminder.title) is starting on \(reminder.channelName).")
+        }
+        .alert("Reminders", isPresented: Binding(get: { app.reminders.message != nil }, set: { if !$0 { app.reminders.message = nil } })) {
+            Button("OK", role: .cancel) { app.reminders.message = nil }
+        } message: { Text(app.reminders.message ?? "") }
         .watchOptions(isPresented: $isShowingOptions, tuner: tuner)
         #if os(iOS)
         .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)
@@ -113,7 +136,7 @@ struct WatchView: View {
         #if os(iOS)
         .statusBarHidden(overlay == .none)
         .persistentSystemOverlays(overlay == .none ? .hidden : .automatic)
-        .keepsScreenAwake()
+        .keepsScreenAwake(enabled: !app.sleepTimer.didExpire)
         #endif
         .animation(DesignTokens.Motion.pictureInPicture, value: overlay)
         .animation(DesignTokens.Motion.pictureInPicture, value: previewFrame)
@@ -146,13 +169,13 @@ struct WatchView: View {
     private func frame(in screen: CGSize) -> CGRect? {
         switch overlay {
         case .none: nil
-        case .guide: previewFrame
+        case .guide: app.browsingChannels.isEmpty ? WatchLayout.pictureInPictureFrame(in: screen, safeArea: pictureInPictureSafeArea) : previewFrame
         case .settings, .search: WatchLayout.pictureInPictureFrame(in: screen, safeArea: pictureInPictureSafeArea)
         }
     }
 
     private var isPictureInPicture: Bool {
-        overlay == .settings || overlay == .search
+        overlay == .settings || overlay == .search || (overlay == .guide && app.browsingChannels.isEmpty)
     }
 
     /// Apple TV's PiP insets already account for overscan. On iPhone and iPad
@@ -211,7 +234,7 @@ struct WatchView: View {
 
     private func guide(tuner: Tuner) -> some View {
         GuideView(
-            channels: app.visibleChannels,
+            channels: app.browsingChannels,
             lineupRevision: app.lineupRevision,
             isTopBarActive: $isGuideTopBarActive,
             focusRequest: guideFocusRequest,

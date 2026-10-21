@@ -15,6 +15,7 @@ struct WatchOptionsPanel: View {
 
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
+    @Environment(\.dismiss) private var dismiss
     /// Shown right away; rebuilding a large lineup takes a few seconds.
     @State private var pendingOrdering: ScheduleOrdering?
     /// Focus starts on Subtitles, the usual reason to open the panel.
@@ -27,8 +28,10 @@ struct WatchOptionsPanel: View {
                 SettingsSection("Audio & Subtitles") {
                     content
                 }
+                SleepTimerControl()
                 if let channel = tuner.channel {
                     SettingsSection("Channel \(channel.number) · \(channel.name)") {
+                        FavoriteChannelButton(channel: channel)
                         scheduleOrder(for: channel)
                         if let item = tuner.program?.item {
                             ChannelPlacementControls(channel: channel, item: item)
@@ -48,14 +51,21 @@ struct WatchOptionsPanel: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            Text("Options")
-                .font(Typography.title)
-                .foregroundStyle(theme.textPrimary)
+            HStack {
+                Text("Options")
+                    .font(Typography.title)
+                    .foregroundStyle(theme.textPrimary)
+                #if os(iOS)
+                Spacer()
+                Button("Done") { dismiss() }
+                    .buttonStyle(.retro)
+                #endif
+            }
             if let program = tuner.program {
                 Text(program.item.headline)
                     .font(Typography.bodyEmphasis)
                     .foregroundStyle(theme.accent)
-                    .lineLimit(1)
+                    .lineLimit(2)
             }
         }
     }
@@ -127,7 +137,7 @@ struct WatchOptionsPanel: View {
         if let progress = app.trackSync.progress {
             note("Saving to Plex… \(progress.done) of \(progress.total)")
         } else if app.trackSync.failedCount > .zero {
-            note("Couldn't save \(app.trackSync.failedCount) \(app.trackSync.failedCount == 1 ? "episode" : "episodes") to Plex. They still play with your choice here.")
+            note("Couldn't save \(app.trackSync.failedCount) \(app.trackSync.failedCount == 1 ? "title" : "titles") to Plex. Your choices are still saved on this device.")
             Button("Try again", systemImage: "arrow.clockwise") {
                 app.trackSync.retryFailed()
             }

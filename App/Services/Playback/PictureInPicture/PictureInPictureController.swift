@@ -1,6 +1,7 @@
 #if os(iOS)
 import AVKit
 import CoreMedia
+import OSLog
 
 /// Picture in Picture for whichever player is in use. It starts by itself
 /// when the viewer leaves the app while a channel plays. The window shows
@@ -8,6 +9,7 @@ import CoreMedia
 @MainActor
 final class PictureInPictureController: NSObject {
     private let controller: AVPictureInPictureController
+    private let logger = Logger(subsystem: AppIdentity.bundleIdentifier, category: "picture-in-picture")
     private(set) var isActive = false
     /// Called with +1 or -1 when the window's skip buttons are used.
     var onChangeChannel: ((Int) -> Void)?
@@ -54,6 +56,18 @@ final class PictureInPictureController: NSObject {
 
     func stop() {
         controller.stopPictureInPicture()
+    }
+
+    /// Ends the playback session and releases the window's content source.
+    /// A later stream creates a new controller for its visible video layer.
+    func finishPlayback() {
+        logger.info("Finishing Picture in Picture; active=\(self.controller.isPictureInPictureActive)")
+        controller.canStartPictureInPictureAutomaticallyFromInline = false
+        controller.stopPictureInPicture()
+        controller.contentSource = nil
+        controller.delegate = nil
+        isActive = false
+        onActiveChanged?(false)
     }
 
     fileprivate func setPlaying(_ playing: Bool) {

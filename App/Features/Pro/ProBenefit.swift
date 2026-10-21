@@ -8,6 +8,9 @@ struct ProBenefit: Identifiable {
     let detail: String
 
     static let all: [ProBenefit] = [
+        ProBenefit(id: "favorites", systemImage: "star", title: "Favorite channels", detail: "Star your channels and browse or surf just your Favorites."),
+        ProBenefit(id: "reminders", systemImage: "bell", title: "Program reminders", detail: "Choose upcoming airings and get a reminder when they start."),
+        ProBenefit(id: "widgets", systemImage: "square.grid.2x2", title: "Personal widgets", detail: "Use Favorites, select channels or pin one channel in What's On."),
         ProBenefit(
             id: "ads",
             systemImage: "nosign",

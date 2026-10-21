@@ -41,15 +41,17 @@ struct GuideRemoteView: View {
                 isShowingNow: model.isShowingNow,
                 windowStart: model.windowStart,
                 focus: $focus,
-                actions: actions
+                actions: actions,
+                channel: model.focusedChannel,
+                program: model.focusedProgram
             )
             .crtEffect(isFullScreen: false)
             .disabled(!isHeaderFocusable)
             .onMoveCommand { direction in
                 switch direction {
                 case .down: focusGrid()
-                // The picture's controls sit outside the guide, below and left of Search.
-                case .left where focus == .search: actions.onFocusLiveControls()
+                // The picture's controls sit outside the guide, below and left of Favorites.
+                case .left where focus == .favorites: actions.onFocusLiveControls()
                 default: break
                 }
             }
@@ -72,6 +74,7 @@ struct GuideRemoteView: View {
         .onExitCommand(perform: handleBack)
         .onAppear { focus = .grid }
         .onChange(of: lineupRevision) { model.replaceChannels(channels) }
+        .onChange(of: channels.map(\.id)) { model.replaceChannels(channels) }
         .task {
             while !Task.isCancelled {
                 try? await Task.sleep(for: GuideLayout.Time.followInterval)

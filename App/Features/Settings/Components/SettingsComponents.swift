@@ -90,15 +90,26 @@ struct SettingsRowLabel: View {
     let systemImage: String
     let value: String?
     var accessory: String? = "chevron.right"
+    @Environment(\.dynamicTypeSize) private var textSize
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
             Image(systemName: systemImage)
+                .font(Typography.body)
                 .frame(width: DesignTokens.Spacing.xl)
-            Text(title)
+            if textSize.isAccessibilitySize, let value {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+                    Text(title)
+                    Text(value).font(Typography.settingsCaption).secondaryText()
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text(title)
+            }
             Spacer(minLength: DesignTokens.Spacing.md)
-            if let value {
+            if let value, !textSize.isAccessibilitySize {
                 Text(value)
+                    .font(Typography.settingsCaption)
                     .secondaryText()
                     .lineLimit(1)
             }

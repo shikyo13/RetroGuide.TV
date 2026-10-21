@@ -36,7 +36,25 @@ struct GuideView: View {
     let tuner: Tuner
     let actions: GuideActions
 
+    @Environment(AppModel.self) private var app
+
     var body: some View {
+        if channels.isEmpty {
+            ContentUnavailableView {
+                Label("No channels in this view", systemImage: "star")
+            } description: {
+                Text("Choose Favorites in Settings, or switch back to All Channels.")
+            } actions: {
+                Button("Show all channels") { app.viewing.favoritesOnly = false }.buttonStyle(.retroPrimary)
+                Button("Settings", action: actions.onOpenSettings).buttonStyle(.retro)
+                Button("Close guide", action: closeEmptyGuide).buttonStyle(.retro)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .screenBackground()
+            #if os(tvOS)
+            .onExitCommand(perform: closeEmptyGuide)
+            #endif
+        } else {
         #if os(tvOS)
         GuideRemoteView(
             channels: channels,
@@ -49,5 +67,12 @@ struct GuideView: View {
         #else
         GuideTouchView(channels: channels, lineupRevision: lineupRevision, tuner: tuner, actions: actions)
         #endif
+        }
+    }
+
+    private func closeEmptyGuide() {
+        // Clear the empty filter so reopening the guide shows available channels.
+        app.viewing.favoritesOnly = false
+        actions.onClose()
     }
 }

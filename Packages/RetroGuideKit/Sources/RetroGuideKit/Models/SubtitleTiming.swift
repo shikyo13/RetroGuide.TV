@@ -13,6 +13,7 @@ public enum SubtitleTiming {
 
     /// `delay` within ``range``, rounded to ``fineStep``.
     public static func clamped(_ delay: TimeInterval) -> TimeInterval {
+        guard delay.isFinite else { return .zero }
         let bounded = min(max(delay, range.lowerBound), range.upperBound)
         return (bounded / fineStep).rounded() * fineStep
     }
@@ -22,10 +23,10 @@ public enum SubtitleTiming {
         acceleratingSteps[min(max(repeatCount, .zero), acceleratingSteps.count - 1)]
     }
 
-    /// "In sync", "1.5 s later" or "2 s earlier".
+    /// "Original timing", "1.5 s later" or "2 s earlier".
     public static func description(of delay: TimeInterval) -> String {
         let delay = clamped(delay)
-        guard abs(delay) >= fineStep / 2 else { return "In sync" }
+        guard abs(delay) >= fineStep / 2 else { return "Original timing" }
         let seconds = abs(delay).formatted(.number.precision(.fractionLength(0...1)))
         return delay > .zero ? "\(seconds) s later" : "\(seconds) s earlier"
     }

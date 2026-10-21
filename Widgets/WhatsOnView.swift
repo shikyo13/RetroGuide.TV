@@ -51,7 +51,8 @@ struct WhatsOnView: View {
                     Spacer(minLength: .zero)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
-                flipButtons
+                .padding(.bottom, entry.canFlip ? WidgetStyle.Size.button + WidgetStyle.Spacing.xs : .zero)
+                if entry.canFlip { flipButtons }
             }
         }
         .padding(WidgetStyle.Spacing.md)
@@ -67,7 +68,7 @@ struct WhatsOnView: View {
                 glyph(width: WidgetStyle.Size.glyph)
                 wordmark
                 Spacer()
-                flipButtons
+                if entry.canFlip { flipButtons }
             }
             ZStack(alignment: .bottomLeading) {
                 backdrop(program, fade: .bottom)
@@ -84,9 +85,17 @@ struct WhatsOnView: View {
             .frame(height: WidgetStyle.Size.largeHeroHeight)
             .clipShape(RoundedRectangle(cornerRadius: WidgetStyle.Size.corner))
             .slidesBetweenChannels(channel)
-            Text("ON NOW")
+            Text(entry.channels.count > 1 ? "ON NOW" : "UP NEXT")
                 .font(WidgetStyle.Font.section)
                 .foregroundStyle(colors.accentSecondary)
+            if entry.channels.count == 1 {
+                ForEach(channel.programs.filter { $0.start > entry.date }.prefix(WidgetStyle.Size.otherChannels), id: \.start) { upcoming in
+                    HStack {
+                        Text(upcoming.start, style: .time).font(WidgetStyle.Font.clockSmall).foregroundStyle(colors.accent)
+                        Text(upcoming.title).font(WidgetStyle.Font.detailEmphasis).foregroundStyle(colors.textPrimary).lineLimit(1)
+                    }
+                }
+            }
             ForEach(entry.channels.dropFirst().prefix(WidgetStyle.Size.otherChannels), id: \.id) { other in
                 if let now = other.program(at: entry.date) {
                     otherChannelRow(other, now)
@@ -103,7 +112,7 @@ struct WhatsOnView: View {
             if family != .systemSmall {
                 wordmark
             }
-            Text("Tune in to see what's on")
+            Text("Open RetroGuide to refresh your channels")
                 .font(WidgetStyle.Font.detail)
                 .foregroundStyle(colors.textSecondary)
                 .multilineTextAlignment(.center)
@@ -125,13 +134,15 @@ struct WhatsOnView: View {
     /// Where the guide shows live video: the episode still, dimmed, with the channel.
     private func stillPanel(_ channel: WhatsOnSnapshot.Channel, _ program: WhatsOnSnapshot.Program) -> some View {
         let shape = RoundedRectangle(cornerRadius: WidgetStyle.Size.corner)
-        return Color.black
+        return colors.surface
             .overlay {
-                if let image = image(program.stillFile ?? program.backdropFile) {
+                if let image = image(program.stillFile) ?? image(program.backdropFile) {
                     Image(uiImage: image)
                         .resizable()
                         .scaledToFill()
                         .opacity(WidgetStyle.Size.stillOpacity)
+                } else {
+                    glyph(width: WidgetStyle.Size.glyph)
                 }
             }
             .overlay(alignment: .topLeading) {
@@ -150,6 +161,7 @@ struct WhatsOnView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(maxHeight: maxHeight, alignment: .leading)
+                .accessibilityLabel(program.title)
         } else {
             Text(program.title)
                 .font(WidgetStyle.Font.title)
@@ -212,6 +224,7 @@ struct WhatsOnView: View {
                 .background(colors.surface, in: Circle())
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(step > .zero ? "Next channel" : "Previous channel")
     }
 
     /// The backdrop, filling whatever space it's given without changing its
@@ -243,7 +256,7 @@ struct WhatsOnView: View {
     }
 
     private func image(_ file: String?) -> UIImage? {
-        WhatsOnStore.artworkURL(file).flatMap { UIImage(contentsOfFile: $0.path) }
+        WidgetArtworkCache.shared.image(file)
     }
 }
 
@@ -252,6 +265,7 @@ private extension View {
     func slidesBetweenChannels(_ channel: WhatsOnSnapshot.Channel) -> some View {
         id(channel.id)
             .transition(.push(from: .trailing))
+            .animation(.easeOut(duration: WidgetStyle.Motion.channelChange), value: channel.id)
     }
 }
 

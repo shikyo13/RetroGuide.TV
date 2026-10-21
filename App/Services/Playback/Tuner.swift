@@ -91,14 +91,14 @@ final class Tuner {
     private(set) var currentSelection: TrackSelection?
     /// How far subtitles are moved for what's on now (see ``SubtitleTiming``).
     private(set) var subtitleDelay: TimeInterval = .zero
-    /// The item ``subtitleDelay`` was set for: a new program starts in sync.
-    @ObservationIgnored private var subtitleDelayItemID: String?
+    @ObservationIgnored private var subtitleTiming = SubtitleTimingState()
     /// The viewer's audio and subtitle choices, each at its own scope.
     private(set) var trackRules = TrackRules()
     /// Called after the viewer changes a choice: the new rules, the item it
     /// was made on, and how far the change reaches (to save it to the server).
     @ObservationIgnored var onTrackRulesChanged: ((TrackRules, MediaItem, TrackScope) -> Void)?
 
+    var surfChannelIDs: Set<String>?
     @ObservationIgnored private var channels: [Channel] = []
     @ObservationIgnored private var previousChannelID: String?
     @ObservationIgnored private let clientProvider: (String) -> (any MediaServerClient)?
@@ -205,7 +205,12 @@ final class Tuner {
             channel = updated
             refreshProgram(on: updated)
         } else if let first = channels.first {
-            tune(to: first, isAutomatic: true)
+            if signal == .off {
+                channel = first
+                program = first.timeline.program(at: .now)
+            } else {
+                tune(to: first, isAutomatic: true)
+            }
         } else {
             powerOff()
         }
@@ -236,7 +241,9 @@ final class Tuner {
 
     /// Shows subtitles `delay` seconds later (earlier when negative) for what's on now.
     func setSubtitleDelay(_ delay: TimeInterval) {
-        subtitleDelay = SubtitleTiming.clamped(delay)
+        guard engine.adjustsSubtitleTiming else { return }
+        subtitleTiming.setDelay(delay)
+        subtitleDelay = subtitleTiming.delay
         engine.setSubtitleDelay(subtitleDelay)
     }
 
@@ -291,6 +298,9 @@ final class Tuner {
 
     private func apply(_ selection: TrackSelection) {
         currentSelection = selection
+        subtitleTiming.select(selection.subtitle)
+        subtitleDelay = subtitleTiming.delay
+        engine.setSubtitleDelay(subtitleDelay)
         engine.selectTracks(selection)
     }
 
@@ -383,6 +393,15 @@ final class Tuner {
         signal = .off
     }
 
+    /// Ends a viewing session, including its Picture in Picture source.
+    func stopWatching() {
+        #if os(iOS)
+        pictureInPicture?.finishPlayback()
+        pictureInPicture = nil
+        #endif
+        suspend()
+    }
+
     /// Rejoins the current channel live after ``suspend()``. Does nothing
     /// while the channel is still on (the app only went inactive, for
     /// Control Center or the app switcher), so the stream keeps playing.
@@ -409,8 +428,9 @@ final class Tuner {
     // MARK: - Playback
 
     private func step(by offset: Int) {
+        let channels = channels.filter { surfChannelIDs?.contains($0.id) ?? true }
         guard !channels.isEmpty else { return }
-        let currentIndex = channels.firstIndex { $0.id == channel?.id } ?? .zero
+        let currentIndex = channels.firstIndex { $0.id == channel?.id } ?? (offset > .zero ? -1 : .zero)
         let nextIndex = (currentIndex + offset + channels.count) % channels.count
         tune(to: channels[nextIndex], surfing: true)
     }
@@ -488,10 +508,8 @@ final class Tuner {
             currentTracks = tracks
             currentSelection = selection
             playbackGeneration = generation
-            if subtitleDelayItemID != program.item.id {
-                subtitleDelayItemID = program.item.id
-                subtitleDelay = .zero
-            }
+            subtitleTiming.prepare(itemID: program.item.id, versionIndex: request.versionIndex, subtitle: selection?.subtitle ?? .none)
+            subtitleDelay = subtitleTiming.delay
             engine.setSubtitleDelay(subtitleDelay)
             if let tuneStart {
                 logger.notice("stream ready in \((ContinuousClock.now - tuneStart).milliseconds, privacy: .public) ms (\(String(describing: request.method), privacy: .public))")

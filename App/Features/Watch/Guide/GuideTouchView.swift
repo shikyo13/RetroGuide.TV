@@ -29,7 +29,9 @@ struct GuideTouchView: View {
                 isShowingNow: model.isShowingNow,
                 windowStart: model.windowStart,
                 focus: $focus,
-                actions: actions
+                actions: actions,
+                channel: model.focusedChannel,
+                program: model.focusedProgram
             )
             .crtEffect(isFullScreen: false)
 
@@ -52,6 +54,7 @@ struct GuideTouchView: View {
         .onAppear(perform: fitWindowToWidth)
         .onChange(of: isNarrowLayout) { fitWindowToWidth() }
         .onChange(of: lineupRevision) { model.replaceChannels(channels) }
+        .onChange(of: channels.map(\.id)) { model.replaceChannels(channels) }
         .task {
             while !Task.isCancelled {
                 try? await Task.sleep(for: GuideLayout.Time.followInterval)

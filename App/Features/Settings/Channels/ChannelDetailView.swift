@@ -20,6 +20,7 @@ struct ChannelDetailView: View {
                     .font(Typography.body)
                     .foregroundStyle(theme.textSecondary)
                 SettingsSection("Guide") {
+                    FavoriteChannelButton(channel: channel)
                     Button {
                         app.setHidden(!channel.isHidden, channelID: channel.id)
                     } label: {

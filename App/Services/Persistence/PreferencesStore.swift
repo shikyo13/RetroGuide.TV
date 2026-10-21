@@ -40,6 +40,7 @@ struct PreferencesStore {
         static let trackRules = "trackRules.v1"
         static let plexClientIdentifier = "plexClientIdentifier"
         static let lastChannelID = "lastChannelID.v1"
+        static let viewing = "viewing.v1"
     }
 
     private let defaults: UserDefaults
@@ -58,6 +59,11 @@ struct PreferencesStore {
     var lastChannelID: String? {
         get { defaults.string(forKey: Key.lastChannelID) ?? preferences.lastChannelID }
         nonmutating set { defaults.set(newValue, forKey: Key.lastChannelID) }
+    }
+
+    var viewing: ViewingPreferences {
+        get { decode(ViewingPreferences.self, forKey: Key.viewing) ?? ViewingPreferences() }
+        nonmutating set { encode(newValue, forKey: Key.viewing) }
     }
 
     var accounts: [ServerAccount] {
@@ -101,7 +107,7 @@ struct PreferencesStore {
     }
 
     func resetAll() {
-        [Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules].forEach(defaults.removeObject(forKey:))
+        [Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID].forEach(defaults.removeObject(forKey:))
     }
 
     private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {
