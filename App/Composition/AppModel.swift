@@ -153,6 +153,10 @@ final class AppModel {
         tuner.onTrackRulesChanged = { [weak self] rules, item, scope in
             self?.trackRulesChanged(rules, on: item, scope: scope)
         }
+        tuner.restoreShowSubtitleOffsets(store.showSubtitleOffsets)
+        tuner.onShowSubtitleOffsetsChanged = { [weak self] offsets in
+            self?.store.showSubtitleOffsets = offsets
+        }
         trackSync.setCurrent(rules: rules, preferences: store.languagePreferences)
         cloudTrackRules.onChange = { [weak self] rules in
             guard let self else { return }

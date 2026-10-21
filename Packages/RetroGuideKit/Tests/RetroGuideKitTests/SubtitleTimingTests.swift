@@ -70,4 +70,55 @@ struct SubtitleTimingTests {
         state.prepare(itemID: "next", versionIndex: 1, subtitle: subtitle)
         #expect(state.delay == 0)
     }
+
+    @Test("The next episode starts with the show's correction; other shows and movies don't")
+    func showTiming() {
+        var state = SubtitleTimingState()
+        // Each episode has its own stream numbering.
+        state.prepare(itemID: "s1e1", versionIndex: 0, show: "show", subtitle: .embedded(streamIndex: 2))
+        state.setDelay(1.5)
+        state.prepare(itemID: "s1e2", versionIndex: 0, show: "show", subtitle: .embedded(streamIndex: 3))
+        #expect(state.delay == 1.5)
+        state.prepare(itemID: "other", versionIndex: 0, show: "other show", subtitle: .embedded(streamIndex: 2))
+        #expect(state.delay == 0)
+        state.prepare(itemID: "movie", versionIndex: 0, show: nil, subtitle: .embedded(streamIndex: 2))
+        #expect(state.delay == 0)
+        // Subtitles turned on partway through an episode still get the correction.
+        state.prepare(itemID: "s1e3", versionIndex: 0, show: "show", subtitle: .none)
+        #expect(state.delay == 0)
+        state.select(.embedded(streamIndex: 4))
+        #expect(state.delay == 1.5)
+    }
+
+    @Test("Setting an episode back to original timing forgets the show's correction")
+    func showReset() {
+        var state = SubtitleTimingState()
+        let subtitle = SubtitleChoice.embedded(streamIndex: 2)
+        state.prepare(itemID: "s1e1", versionIndex: 0, show: "show", subtitle: subtitle)
+        state.setDelay(2)
+        state.prepare(itemID: "s1e2", versionIndex: 0, show: "show", subtitle: subtitle)
+        state.setDelay(0)
+        #expect(state.delay == 0)
+        state.prepare(itemID: "s1e3", versionIndex: 0, show: "show", subtitle: subtitle)
+        #expect(state.delay == 0)
+    }
+
+    @Test("Show corrections survive saving and stay bounded")
+    func showOffsetsStorage() throws {
+        var offsets = ShowSubtitleOffsets()
+        for index in 0...ShowSubtitleOffsets.capacity {
+            offsets.set(1, for: "show \(index)")
+        }
+        #expect(offsets.count == ShowSubtitleOffsets.capacity)
+        #expect(offsets["show 0"] == nil)
+        // Adjusting a show again keeps it among the remembered ones.
+        offsets.set(-2, for: "show 1")
+        offsets.set(1, for: "one more")
+        #expect(offsets["show 1"] == -2)
+        let saved = try JSONDecoder().decode(ShowSubtitleOffsets.self, from: JSONEncoder().encode(offsets))
+        var state = SubtitleTimingState()
+        state.restore(saved)
+        state.prepare(itemID: "episode", versionIndex: 0, show: "show 1", subtitle: .embedded(streamIndex: 2))
+        #expect(state.delay == -2)
+    }
 }

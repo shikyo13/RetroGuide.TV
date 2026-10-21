@@ -97,6 +97,8 @@ final class Tuner {
     /// Called after the viewer changes a choice: the new rules, the item it
     /// was made on, and how far the change reaches (to save it to the server).
     @ObservationIgnored var onTrackRulesChanged: ((TrackRules, MediaItem, TrackScope) -> Void)?
+    /// Called with every show's subtitle correction after the viewer adjusts one, to save them.
+    @ObservationIgnored var onShowSubtitleOffsetsChanged: ((ShowSubtitleOffsets) -> Void)?
 
     var surfChannelIDs: Set<String>?
     @ObservationIgnored private var channels: [Channel] = []
@@ -245,6 +247,12 @@ final class Tuner {
         subtitleTiming.setDelay(delay)
         subtitleDelay = subtitleTiming.delay
         engine.setSubtitleDelay(subtitleDelay)
+        onShowSubtitleOffsetsChanged?(subtitleTiming.showOffsets)
+    }
+
+    /// The subtitle corrections remembered for each show (saved from earlier sessions).
+    func restoreShowSubtitleOffsets(_ offsets: ShowSubtitleOffsets) {
+        subtitleTiming.restore(offsets)
     }
 
     /// Whether the viewer can pick tracks for what's playing right now.
@@ -508,7 +516,12 @@ final class Tuner {
             currentTracks = tracks
             currentSelection = selection
             playbackGeneration = generation
-            subtitleTiming.prepare(itemID: program.item.id, versionIndex: request.versionIndex, subtitle: selection?.subtitle ?? .none)
+            subtitleTiming.prepare(
+                itemID: program.item.id,
+                versionIndex: request.versionIndex,
+                show: SubtitleTimingState.show(of: program.item),
+                subtitle: selection?.subtitle ?? .none
+            )
             subtitleDelay = subtitleTiming.delay
             engine.setSubtitleDelay(subtitleDelay)
             if let tuneStart {

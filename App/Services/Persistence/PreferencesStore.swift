@@ -41,6 +41,7 @@ struct PreferencesStore {
         static let plexClientIdentifier = "plexClientIdentifier"
         static let lastChannelID = "lastChannelID.v1"
         static let viewing = "viewing.v1"
+        static let showSubtitleOffsets = "showSubtitleOffsets.v1"
     }
 
     private let defaults: UserDefaults
@@ -64,6 +65,12 @@ struct PreferencesStore {
     var viewing: ViewingPreferences {
         get { decode(ViewingPreferences.self, forKey: Key.viewing) ?? ViewingPreferences() }
         nonmutating set { encode(newValue, forKey: Key.viewing) }
+    }
+
+    /// Subtitle timing remembered per show; on this device only.
+    var showSubtitleOffsets: ShowSubtitleOffsets {
+        get { decode(ShowSubtitleOffsets.self, forKey: Key.showSubtitleOffsets) ?? ShowSubtitleOffsets() }
+        nonmutating set { encode(newValue, forKey: Key.showSubtitleOffsets) }
     }
 
     var accounts: [ServerAccount] {
@@ -107,7 +114,7 @@ struct PreferencesStore {
     }
 
     func resetAll() {
-        [Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID].forEach(defaults.removeObject(forKey:))
+        [Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID, Key.showSubtitleOffsets].forEach(defaults.removeObject(forKey:))
     }
 
     private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {

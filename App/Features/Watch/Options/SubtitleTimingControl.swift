@@ -11,6 +11,13 @@ struct SubtitleTimingControl: View {
 
     private var delay: TimeInterval { tuner.subtitleDelay }
 
+    private var caption: String {
+        let how = "Move subtitles later if they appear before speech, or earlier if they appear after it."
+        return tuner.program?.item.series == nil
+            ? "\(how) Applies to this subtitle track while watching this program."
+            : "\(how) The next episodes of this show start with the same timing."
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
             #if os(tvOS)
@@ -25,7 +32,7 @@ struct SubtitleTimingControl: View {
             .font(Typography.settingsBody)
             touchControls
             #endif
-            Text("Move subtitles later if they appear before speech, or earlier if they appear after it. Applies to this subtitle track while watching this program.")
+            Text(caption)
                 .font(Typography.settingsCaption)
                 .foregroundStyle(theme.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
