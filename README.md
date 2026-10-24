@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Your media library, on the air.</strong><br>
-  A native app for Apple TV, iPhone and iPad that turns your Plex library into live TV channels with a classic program guide.
+  A native app for Apple TV, iPhone and iPad that turns your Plex or Jellyfin library into live TV channels with a classic program guide.
 </p>
 
 ---
@@ -21,8 +21,8 @@ next in a cable-style guide.
   channels for each library, TV network, large collection and long-running show.
   Channels with too little content are skipped, duplicates are removed, and the
   lineup scales to the size of your library.
-- **Works with any library.** Genres are normalized across Plex agents and
-  languages (for example "Sci-Fi & Fantasy", "Science Fiction" and "Komödie"), and
+- **Works with any library.** Genres are normalized across Plex agents,
+  Jellyfin and languages (for example "Sci-Fi & Fantasy", "Science Fiction" and "Komödie"), and
   anime is recognized even without an "Anime" genre tag. Servers' genre tags are
   loose ("Mystery" on a fishing documentary), so RetroGuide checks well-known
   titles against its own classification, built from Wikidata and matched by IMDb,
@@ -49,10 +49,11 @@ next in a cable-style guide.
 - **HDR.** HDR10, HLG and Dolby Vision play in HDR on HDR iPhones and iPads. On
   Apple TV, **Match TV mode** switches the TV into HDR (and optionally to each
   program's frame rate) when Match Content is on in the Apple TV's settings.
-- **Respects your Plex settings.** Audio and subtitle tracks follow your Plex
-  account's language preferences and per-show choices.
-- **Multiple servers.** Mix your own server with ones shared with you. The same
-  title on several servers is kept once, offline servers drop out of the guide
+- **Respects your settings.** Audio and subtitle tracks follow your Plex
+  account's or Jellyfin user's language preferences, and your per-show choices.
+- **Multiple servers.** Mix your own server with ones shared with you, Plex and
+  Jellyfin together. The same title on several servers is kept once (matched by
+  IMDb, TMDB or TVDB id when the servers name it differently), offline servers drop out of the guide
   until they're back, and each server has its own quality and buffering
   settings for playback over the internet.
 - **Themes.** Twelve themes, from Classic Cable and Local Forecast to VHS and
@@ -71,18 +72,27 @@ and Apple TV.
 
 - Apple TV with tvOS 17 or later (Apple TV 4K recommended), or iPhone or iPad
   with iOS 17 or later
-- A Plex Media Server you own or that is shared with you. Servers outside your
-  home must have Plex Remote Access enabled.
-
-Jellyfin support is planned.
+- A Plex Media Server you own or that is shared with you (servers outside your
+  home must have Plex Remote Access enabled), or a Jellyfin server you can sign
+  in to.
 
 ## Getting started
+
+**Plex**
 
 1. Open RetroGuide.TV and choose **Connect Plex**.
 2. Go to [plex.tv/link](https://plex.tv/link) and enter the code shown on screen.
    On Apple TV you can scan the QR code; on iPhone and iPad, tap
    **Open plex.tv/link**.
 3. Pick a server and the libraries to include, then choose **Build My Channels**.
+
+**Jellyfin**
+
+1. Open RetroGuide.TV and choose **Connect Jellyfin**. Servers on your network
+   are found automatically; otherwise choose **Enter Address**.
+2. Sign in with Quick Connect (approve the code in another Jellyfin app, under
+   your profile) or with your username and password.
+3. Pick the libraries to include, then choose **Build My Channels**.
 
 Live TV starts as soon as your first server is indexed. Add more servers later in
 **Settings → Servers**.
@@ -113,11 +123,13 @@ Live TV starts as soon as your first server is indexed. Add more servers later i
 
 ## How it works
 
-- **Indexing.** RetroGuide.TV reads your library metadata from Plex once and
-  caches it on the Apple TV, refreshing when it's more than six hours old. It
+- **Indexing.** RetroGuide.TV reads your library metadata from your servers once
+  and caches it on the device, refreshing when it's more than six hours old. It
   doesn't affect watch history. The one thing it writes is your own choice of
   audio and subtitles (Options › Audio & Subtitles), saved to your Plex account
-  as its track selection so every app you use plays the same tracks.
+  as its track selection so every app you use plays the same tracks. Jellyfin
+  has no place for per-show track choices, so with Jellyfin they're kept on the
+  device (and in iCloud, across your devices).
 - **Scheduling.** Schedules are computed from the lineup and the date, never
   stored, so every device agrees. Shows take turns: each gets an equal share of
   turns however many episodes it has, and always continues with its next
@@ -138,7 +150,8 @@ Live TV starts as soon as your first server is indexed. Add more servers later i
 ## Privacy
 
 RetroGuide.TV has no accounts or analytics of its own. It talks to plex.tv (to
-link your account and find your servers) and to your media servers, and access
+link your account and find your servers) and to your media servers; to find
+Jellyfin servers it checks the devices on your local network for one, and access
 tokens are stored in the device keychain. On iPhone and iPad the free version
 shows non-personalized ads from Google AdMob, after Google's consent prompt
 where one is required; Apple TV and RetroGuide Pro show no ads.
@@ -176,7 +189,8 @@ App/                      App for tvOS, iOS and iPadOS (SwiftUI)
   Features/               Onboarding, Watch (player + guide), Search, Settings
   Services/               Playback engines, images, persistence
 Packages/RetroGuideKit/   Platform-independent core: models, channel rules,
-                          scheduling, search and the Plex client (unit tested)
+                          scheduling, search and the Plex and Jellyfin
+                          clients (unit tested)
 Tools/BrandAssets/        Generates the app icon and Top Shelf images
 Scripts/                  Build phase scripts
 ```
@@ -195,4 +209,4 @@ RetroGuide.TV is released under the [MIT License](LICENSE). It bundles
 v3.0; see [NOTICE.md](NOTICE.md).
 
 RetroGuide.TV is an independent project and is not affiliated with or endorsed
-by Plex, Inc. Plex is a trademark of Plex, Inc.
+by Plex, Inc. or the Jellyfin project. Plex is a trademark of Plex, Inc.
