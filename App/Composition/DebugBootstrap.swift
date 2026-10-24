@@ -57,24 +57,24 @@ enum DebugBootstrap {
             seedDemoAccount(catalogURL: URL(fileURLWithPath: path), store: store, keychain: keychain)
             return
         }
-        if store.accounts.isEmpty, let address = environment[Variable.jellyfinURL],
+        // Each kind of server given is added once, Plex first, so both can be seeded together.
+        if !store.accounts.contains(where: { $0.kind == .plex }),
+           let urlString = environment[Variable.url], let url = URL(string: urlString),
+           let token = environment[Variable.token],
+           let serverID = environment[Variable.serverID] {
+            let account = ServerAccount(
+                id: serverID,
+                kind: .plex,
+                name: environment[Variable.serverName] ?? "Plex",
+                baseURL: url
+            )
+            keychain.setToken(token, for: serverID)
+            store.accounts.append(account)
+        }
+        if !store.accounts.contains(where: { $0.kind == .jellyfin }), let address = environment[Variable.jellyfinURL],
            let user = environment[Variable.jellyfinUser], let password = environment[Variable.jellyfinPassword] {
             await seedJellyfinAccount(address: address, user: user, password: password, identity: identities.jellyfin, store: store, keychain: keychain)
-            return
         }
-        guard store.accounts.isEmpty,
-              let urlString = environment[Variable.url], let url = URL(string: urlString),
-              let token = environment[Variable.token],
-              let serverID = environment[Variable.serverID]
-        else { return }
-        let account = ServerAccount(
-            id: serverID,
-            kind: .plex,
-            name: environment[Variable.serverName] ?? "Plex",
-            baseURL: url
-        )
-        keychain.setToken(token, for: serverID)
-        store.accounts = [account]
     }
 
     @MainActor
@@ -92,7 +92,7 @@ enum DebugBootstrap {
         else { return }
         let account = ServerAccount(id: server.id, kind: .jellyfin, name: server.name, baseURL: server.baseURL, userID: session.userID)
         keychain.setToken(session.accessToken, for: server.id)
-        store.accounts = [account]
+        store.accounts.append(account)
     }
 
     /// The demo library's client, when `account` points at a demo catalog file.
