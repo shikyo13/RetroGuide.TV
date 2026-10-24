@@ -37,6 +37,14 @@ public enum NetworkLocation {
         return ip[0] == Pattern.sharedAddressFirstOctet && Pattern.sharedAddressSecondOctets.contains(ip[1])
     }
 
+    /// Whether an IPv4 address (host byte order) is in a private range.
+    static func isPrivateIPv4(_ address: UInt32) -> Bool {
+        let octetBits = 8
+        let octetMask: UInt32 = 0xFF
+        let octets = (0..<Pattern.octetCount).reversed().map { Int((address >> UInt32($0 * octetBits)) & octetMask) }
+        return isPrivate(octets)
+    }
+
     private static func ipv4Octets(from host: String) -> [Int]? {
         var candidate = host
         if host.hasSuffix(Pattern.plexDirectSuffix), let first = host.split(separator: ".").first {

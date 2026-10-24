@@ -102,10 +102,21 @@ public protocol MediaServerClient: Sendable {
         choose: @Sendable (_ tracks: ItemTracks, _ automatic: TrackSelection) -> TrackSelection
     ) async -> Bool
 
+    /// Whether ``saveTracks(for:preferences:choose:)`` stores choices on the
+    /// server. Jellyfin has no way to set them for an item directly; the app's
+    /// own choices still apply there.
+    var savesTrackChoices: Bool { get }
+
     /// Tells the server a stream is no longer needed so it can free transcoder resources.
     func endStream(sessionID: String) async
 
     func imageURL(for reference: String, size: ImageSize) -> URL?
+}
+
+public extension MediaServerClient {
+    var savesTrackChoices: Bool {
+        true
+    }
 }
 
 public enum StreamError: Error, Equatable, LocalizedError {

@@ -38,6 +38,11 @@ public struct HTTPClient: Sendable {
     /// library download's many requests to the same server.
     public static let playback = HTTPClient(session: URLSession(configuration: .playbackRequests))
 
+    /// The same session, decoding JSON with `decoder`.
+    public func decoding(with decoder: JSONDecoder) -> HTTPClient {
+        HTTPClient(session: session, decoder: decoder)
+    }
+
     public func data(for request: URLRequest) async throws -> Data {
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse else {
