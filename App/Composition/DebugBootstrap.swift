@@ -50,7 +50,8 @@ enum DebugBootstrap {
         if let player = environment[Variable.player].flatMap(PlaybackEngineKind.init(rawValue:)) {
             store.preferences.playerEngine = player
         }
-        if let accountToken = environment[Variable.accountToken], keychain.token(for: ServerLibrary.KeychainAccount.plexAccount) == nil {
+        if let accountToken = environment[Variable.accountToken], !accountToken.isEmpty,
+           keychain.token(for: ServerLibrary.KeychainAccount.plexAccount)?.isEmpty ?? true {
             keychain.setToken(accountToken, for: ServerLibrary.KeychainAccount.plexAccount)
         }
         if store.accounts.isEmpty, let path = environment[Variable.demoLibrary] {

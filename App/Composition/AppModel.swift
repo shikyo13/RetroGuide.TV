@@ -245,6 +245,9 @@ final class AppModel {
         customization = store.customization
         #endif
         await servers.restore()
+        if tuner.languagePreferences == nil {
+            tuner.languagePreferences = servers.provisionalLanguagePreferences
+        }
         Task { await pro.start() }
         Task { await refreshLanguagePreferences() }
         guard servers.hasServers else {
@@ -378,6 +381,9 @@ final class AppModel {
     /// Adds a server chosen during onboarding or from Settings, then indexes it.
     func addServer(_ account: ServerAccount, token: String, accountToken: String?) async {
         servers.add(account, token: token, accountToken: accountToken)
+        if tuner.languagePreferences == nil {
+            tuner.languagePreferences = servers.provisionalLanguagePreferences
+        }
         startConnectedSession()
         await refreshLibrary()
     }

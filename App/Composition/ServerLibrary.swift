@@ -48,10 +48,11 @@ final class ServerLibrary {
     }
 
     /// The signed-in account's audio and subtitle settings, or `nil` if
-    /// unavailable: the Plex account's when there is one, otherwise those of
-    /// the user signed in to the first Jellyfin server.
+    /// unavailable: the Plex account's while a Plex server is connected,
+    /// otherwise those of the user signed in to the first Jellyfin server.
     func fetchLanguagePreferences() async -> LanguagePreferences? {
-        if let accountToken = plexAccountToken {
+        if accounts.contains(where: { $0.kind == .plex }) {
+            guard let accountToken = plexAccountToken else { return nil }
             return try? await PlexAccountService(identity: identities.plex).languagePreferences(accountToken: accountToken)
         }
         guard let jellyfin = accounts.first(where: { $0.kind == .jellyfin }), let token = keychain.token(for: jellyfin.id),
@@ -60,9 +61,21 @@ final class ServerLibrary {
         else { return nil }
         // Jellyfin users often never set a language; subtitles then follow the device's.
         if preferences.audioLanguage == nil, preferences.subtitleLanguage == nil {
-            preferences.subtitleLanguage = Locale.current.language.languageCode?.identifier
+            preferences.subtitleLanguage = Self.deviceLanguage
         }
         return preferences
+    }
+
+    /// Settings to use until a Jellyfin user's arrive (they're fetched while
+    /// the first channel tunes): the device's language for foreign audio,
+    /// like Jellyfin's default. Plex servers pick tracks themselves.
+    var provisionalLanguagePreferences: LanguagePreferences? {
+        guard !accounts.contains(where: { $0.kind == .plex }), accounts.contains(where: { $0.kind == .jellyfin }) else { return nil }
+        return LanguagePreferences(audioLanguage: nil, subtitleLanguage: Self.deviceLanguage, subtitleMode: .foreignAudio)
+    }
+
+    private static var deviceLanguage: String? {
+        Locale.current.language.languageCode?.identifier
     }
 
     func client(for serverID: String) -> (any MediaServerClient)? {
