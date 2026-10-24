@@ -1,3 +1,4 @@
+import RetroGuideKit
 import SwiftUI
 
 struct WelcomeStepView: View {
@@ -29,10 +30,13 @@ struct WelcomeStepView: View {
     }
 }
 
-/// "Connect Plex" and "Connect Jellyfin", side by side.
+/// "Connect Plex" and "Connect Jellyfin", side by side. Plex has focus
+/// whenever they appear, including coming back from a cancelled setup.
 struct ServerKindButtons: View {
     let onPlex: () -> Void
     let onJellyfin: () -> Void
+
+    @FocusState private var focused: ServerKind?
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.lg) {
@@ -40,11 +44,14 @@ struct ServerKindButtons: View {
                 Label("Connect Plex", systemImage: "link")
             }
             .buttonStyle(.retroPrimary)
+            .focused($focused, equals: .plex)
             Button(action: onJellyfin) {
                 Label("Connect Jellyfin", systemImage: "link")
             }
             .buttonStyle(.retroPrimary)
+            .focused($focused, equals: .jellyfin)
         }
+        .onAppear { focused = .plex }
     }
 }
 

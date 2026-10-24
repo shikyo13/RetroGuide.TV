@@ -15,9 +15,18 @@ struct JellyfinSignInStepView: View {
     let onUseQuickConnect: () -> Void
     let onCancel: () -> Void
 
+    /// What has focus; set explicitly because the control focused before
+    /// a mode switch disappears with it, which leaves tvOS with no focus at all.
+    private enum Field: Hashable {
+        case username
+        case password
+        case usePassword
+    }
+
     @Environment(\.theme) private var theme
     @State private var username = ""
     @State private var password = ""
+    @FocusState private var focus: Field?
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
@@ -39,6 +48,12 @@ struct JellyfinSignInStepView: View {
         }
         .columnWidth(Layout.columnWidth, alignment: .leading)
         .panel(padding: DesignTokens.Spacing.xl)
+        .onAppear(perform: focusFirstControl)
+        .onChange(of: signIn.usesPassword, focusFirstControl)
+    }
+
+    private func focusFirstControl() {
+        focus = signIn.usesPassword ? .username : .usePassword
     }
 
     private var quickConnect: some View {
@@ -64,6 +79,7 @@ struct JellyfinSignInStepView: View {
             }
             Button("Use Password Instead", systemImage: "key", action: onUsePassword)
                 .buttonStyle(.retro)
+                .focused($focus, equals: .usePassword)
         }
     }
 
@@ -76,11 +92,14 @@ struct JellyfinSignInStepView: View {
                 .textFieldStyle(.roundedBorder)
                 #endif
                 .autocorrectionDisabled()
+                .focused($focus, equals: .username)
+                .onSubmit { focus = .password }
             SecureField("Password", text: $password)
                 .textContentType(.password)
                 #if os(iOS)
                 .textFieldStyle(.roundedBorder)
                 #endif
+                .focused($focus, equals: .password)
                 .onSubmit(submit)
             HStack(spacing: DesignTokens.Spacing.md) {
                 Button(action: submit) {

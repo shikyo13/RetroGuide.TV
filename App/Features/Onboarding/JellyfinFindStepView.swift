@@ -5,6 +5,8 @@ import SwiftUI
 struct JellyfinFindStepView: View {
     private enum Layout {
         static let listWidth = PlatformMetric.value(tv: CGFloat(1_000), touch: 600)
+        /// A home network rarely has more; others can still be typed.
+        static let maxServersShown = 6
     }
 
     let servers: [JellyfinServerInfo]
@@ -15,6 +17,7 @@ struct JellyfinFindStepView: View {
     let onCancel: () -> Void
 
     @Environment(\.theme) private var theme
+    @FocusState private var focusedServer: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
@@ -32,25 +35,7 @@ struct JellyfinFindStepView: View {
                     .secondaryText()
             }
             if !servers.isEmpty {
-                ScrollView {
-                    VStack(spacing: DesignTokens.Spacing.sm) {
-                        ForEach(servers) { server in
-                            Button {
-                                onChoose(server)
-                            } label: {
-                                HStack {
-                                    Image(systemName: "server.rack")
-                                    Text(server.name)
-                                    Spacer()
-                                    Text(ServerAddressText.short(server.baseURL))
-                                        .secondaryText()
-                                }
-                            }
-                            .buttonStyle(.retroRow)
-                        }
-                    }
-                    .padding(DesignTokens.Spacing.md)
-                }
+                serverRows
             }
             HStack(spacing: DesignTokens.Spacing.md) {
                 Button("Enter Address", systemImage: "keyboard", action: onEnterAddress)
@@ -64,5 +49,30 @@ struct JellyfinFindStepView: View {
             }
         }
         .columnWidth(Layout.listWidth)
+        .defaultFocus($focusedServer, servers.first?.id)
+        .onChange(of: servers) {
+            focusedServer = servers.first?.id
+        }
+    }
+
+    private var serverRows: some View {
+        VStack(spacing: DesignTokens.Spacing.sm) {
+            ForEach(servers.prefix(Layout.maxServersShown)) { server in
+                Button {
+                    onChoose(server)
+                } label: {
+                    HStack {
+                        Image(systemName: "server.rack")
+                        Text(server.name)
+                        Spacer()
+                        Text(ServerAddressText.short(server.baseURL))
+                            .secondaryText()
+                    }
+                }
+                .buttonStyle(.retroRow)
+                .focused($focusedServer, equals: server.id)
+            }
+        }
+        .padding(DesignTokens.Spacing.md)
     }
 }
