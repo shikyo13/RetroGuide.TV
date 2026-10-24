@@ -15,7 +15,8 @@ import RetroGuideKit
 ///
 /// `RETROGUIDE_DEMO_LIBRARY` (a ``DemoCatalog`` JSON file) connects the demo
 /// library instead of a real server, for screenshots. `RETROGUIDE_DEV_THEME`
-/// (a ``ThemeID`` raw value) picks the theme.
+/// (a ``ThemeID`` raw value) picks the theme, and `RETROGUIDE_DEV_PLAYER`
+/// (a ``PlaybackEngineKind`` raw value) the player.
 enum DebugBootstrap {
     private enum Variable {
         static let url = "RETROGUIDE_DEV_PLEX_URL"
@@ -26,6 +27,7 @@ enum DebugBootstrap {
         static let reset = "RETROGUIDE_DEV_RESET"
         static let demoLibrary = "RETROGUIDE_DEMO_LIBRARY"
         static let theme = "RETROGUIDE_DEV_THEME"
+        static let player = "RETROGUIDE_DEV_PLAYER"
         static let jellyfinURL = "RETROGUIDE_DEV_JELLYFIN_URL"
         static let jellyfinUser = "RETROGUIDE_DEV_JELLYFIN_USER"
         static let jellyfinPassword = "RETROGUIDE_DEV_JELLYFIN_PASSWORD"
@@ -44,6 +46,9 @@ enum DebugBootstrap {
         }
         if let theme = environment[Variable.theme].flatMap(ThemeID.init(rawValue:)) {
             store.preferences.themeID = theme
+        }
+        if let player = environment[Variable.player].flatMap(PlaybackEngineKind.init(rawValue:)) {
+            store.preferences.playerEngine = player
         }
         if let accountToken = environment[Variable.accountToken], keychain.token(for: ServerLibrary.KeychainAccount.plexAccount) == nil {
             keychain.setToken(accountToken, for: ServerLibrary.KeychainAccount.plexAccount)

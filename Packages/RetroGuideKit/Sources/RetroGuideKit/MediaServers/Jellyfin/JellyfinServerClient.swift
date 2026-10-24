@@ -95,11 +95,11 @@ public struct JellyfinServerClient: MediaServerClient {
     }
 
     /// HLS from the server, copying the video and audio whenever Apple's
-    /// player can decode them, transcoded otherwise. Encoding starts at the
-    /// live position; the playlist still spans the whole item, so the player seeks.
+    /// player can decode them, transcoded otherwise. The playlist spans the
+    /// whole item and the player seeks to the live position. (Asking the
+    /// server to start there instead makes it refuse the first segment.)
     private func remuxRequest(itemID: String, sourceID: String, position: TimeInterval, version: Int) throws -> StreamRequest {
         let sessionID = UUID().uuidString
-        let ticks = Int64(position * JellyfinAPI.Defaults.ticksPerSecond)
         let url = try context.builder.url(path: JellyfinAPI.Path.hlsStream(itemID), query: [
             URLQueryItem(name: "mediaSourceId", value: sourceID),
             URLQueryItem(name: "playSessionId", value: sessionID),
@@ -112,7 +112,6 @@ public struct JellyfinServerClient: MediaServerClient {
             URLQueryItem(name: "allowVideoStreamCopy", value: "true"),
             URLQueryItem(name: "allowAudioStreamCopy", value: "true"),
             URLQueryItem(name: "breakOnNonKeyFrames", value: "true"),
-            URLQueryItem(name: "startTimeTicks", value: String(ticks)),
             context.apiKey,
         ])
         return StreamRequest(

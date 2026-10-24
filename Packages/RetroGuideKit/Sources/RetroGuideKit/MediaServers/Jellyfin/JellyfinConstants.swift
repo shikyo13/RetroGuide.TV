@@ -89,7 +89,8 @@ public enum JellyfinAPI {
     enum Transcode {
         static let videoCodec = "h264,hevc"
         static let audioCodec = "aac,ac3,eac3"
-        static let segmentContainer = "ts"
+        /// Fragmented MP4: Apple's player only takes HEVC in HLS this way.
+        static let segmentContainer = "mp4"
         static let maxAudioChannels = "6"
         static let maxVideoBitrate = "40000000"
     }
