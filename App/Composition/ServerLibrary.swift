@@ -154,6 +154,26 @@ final class ServerLibrary {
         return reachable
     }
 
+    /// What happened when a Jellyfin server's address was changed.
+    enum AddressChange {
+        case moved
+        case notFound
+        case differentServer(name: String)
+    }
+
+    /// Moves a Jellyfin server to the address typed in `text`, if the same
+    /// server answers there. Jellyfin servers have one address, so this is
+    /// their whole connection setting.
+    func changeJellyfinAddress(of serverID: String, to text: String) async -> AddressChange {
+        guard let account = accounts.first(where: { $0.id == serverID }),
+              let server = await JellyfinAccountService(identity: identities.jellyfin).findServer(at: text)
+        else { return .notFound }
+        guard server.isServer(account.id) else { return .differentServer(name: server.name) }
+        apply(server.baseURL, to: account)
+        status[serverID] = .online
+        return .moved
+    }
+
     /// Saves connection settings without switching addresses yet (for example
     /// "Custom address" chosen before an address is typed).
     func saveConnectionWithoutReconnecting(_ connection: ServerConnectionSettings, serverID: String) {

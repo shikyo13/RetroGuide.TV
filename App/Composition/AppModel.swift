@@ -421,6 +421,17 @@ final class AppModel {
         }
     }
 
+    func changeJellyfinAddress(_ text: String, serverID: String) async -> ServerLibrary.AddressChange {
+        let change = await servers.changeJellyfinAddress(of: serverID, to: text)
+        guard case .moved = change else { return change }
+        refreshError = offlineServersMessage
+        await rebuildIndexAndLineup()
+        if let channel = tuner.channel {
+            tuner.tune(to: channel, isAutomatic: true)
+        }
+        return change
+    }
+
     func signOut() {
         sessionGeneration += 1
         refreshPending = false

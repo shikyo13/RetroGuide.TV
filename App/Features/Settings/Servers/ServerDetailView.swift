@@ -41,10 +41,19 @@ struct ServerDetailView: View {
                         .foregroundStyle(theme.textSecondary)
                 }
                 SettingsSection("Server") {
-                    NavigationLink {
-                        ServerConnectionView(serverID: serverID)
-                    } label: {
-                        SettingsRowLabel(title: "Connection", systemImage: "network", value: account.connection.preference.shortName)
+                    switch account.kind {
+                    case .plex:
+                        NavigationLink {
+                            ServerConnectionView(serverID: serverID)
+                        } label: {
+                            SettingsRowLabel(title: "Connection", systemImage: "network", value: account.connection.preference.shortName)
+                        }
+                    case .jellyfin:
+                        NavigationLink {
+                            JellyfinAddressView(serverID: serverID)
+                        } label: {
+                            SettingsRowLabel(title: "Server address", systemImage: "network", value: JellyfinAddressView.displayAddress(account.baseURL))
+                        }
                     }
                     NavigationLink {
                         LibrarySettingsView(account: account)

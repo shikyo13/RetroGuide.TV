@@ -10,6 +10,11 @@ public struct JellyfinServerInfo: Sendable, Hashable, Identifiable {
     /// The address the server reports for its own network, if any.
     public let localAddress: URL?
 
+    /// Whether this is the server with `serverID`, however the id is written.
+    public func isServer(_ serverID: String) -> Bool {
+        Self.sameServer(id, serverID)
+    }
+
     /// Server ids appear with and without dashes and in either case.
     static func sameServer(_ lhs: String, _ rhs: String) -> Bool {
         canonical(lhs) == canonical(rhs)

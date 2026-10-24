@@ -181,7 +181,12 @@ struct SettingsView: View {
                 switch page {
                 case .theme: ThemePickerView()
                 case .pro: ProUpgradeView()
-                case .connection: ServerConnectionView(serverID: app.servers.accounts.first?.id ?? "")
+                case .connection:
+                    if let account = app.servers.accounts.first, account.kind == .jellyfin {
+                        JellyfinAddressView(serverID: account.id)
+                    } else {
+                        ServerConnectionView(serverID: app.servers.accounts.first?.id ?? "")
+                    }
                 case .channel: ChannelDetailView(channelID: app.lineup.first?.id ?? "")
                 case .order: AllChannelsOrderView()
                 case .repeats: SimulcastLimitPickerView()

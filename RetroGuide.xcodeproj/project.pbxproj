@@ -13,6 +13,7 @@
 		0982F4C63893AE7898CF9C5A /* OnboardingFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DFDA25C249B7C1171C5798 /* OnboardingFlowView.swift */; };
 		0A04CD1DA93577BEB6F6D308 /* JellyfinSignInStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E07938E6889F36FA17D189 /* JellyfinSignInStepView.swift */; };
 		0B1208B8BBD9B99984C3898D /* OnboardingModel+Jellyfin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E77B88A04DED5A68588776 /* OnboardingModel+Jellyfin.swift */; };
+		0BC3056AE446A3940735D356 /* JellyfinAddressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A0D5D72FD6F1DA442E2C016 /* JellyfinAddressView.swift */; };
 		0F70EBE0D88DE0438F1BB070 /* AVPlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */; };
 		1081AFCF099951D0532A2C8A /* RemoteCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAACA5FC2EAC37012DF71EE /* RemoteCommands.swift */; };
 		128558BEF0F947A6DED11964 /* ScheduleOrderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217F6E0574F0BA824BD17F4B /* ScheduleOrderSection.swift */; };
@@ -359,6 +360,7 @@
 		860DC61A99571D86C2C8FBFD /* RetroGuideKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RetroGuideKit; path = Packages/RetroGuideKit; sourceTree = SOURCE_ROOT; };
 		882F8CA7ECA178E614F9241E /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchView.swift; sourceTree = "<group>"; };
 		891C8FCB689DEBC577C6DD61 /* SleepTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimer.swift; sourceTree = "<group>"; };
+		8A0D5D72FD6F1DA442E2C016 /* JellyfinAddressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinAddressView.swift; sourceTree = "<group>"; };
 		8A5891962ED332144D11376D /* LGPL-3.0.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LGPL-3.0.txt"; sourceTree = "<group>"; };
 		8AAB9ADD8EF6E37FEB1BAE28 /* GuideTouchGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideTouchGrid.swift; sourceTree = "<group>"; };
 		8F90413A593D82BD4A01F34C /* PlayerEnginePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerEnginePickerView.swift; sourceTree = "<group>"; };
@@ -993,6 +995,7 @@
 			isa = PBXGroup;
 			children = (
 				4FB6B1A4149A228D3D71A1B8 /* AddServerView.swift */,
+				8A0D5D72FD6F1DA442E2C016 /* JellyfinAddressView.swift */,
 				1E70EC001D86A5D672FE0DE6 /* LibrarySettingsView.swift */,
 				2DAD3974654F1556ED363A81 /* ServerConnectionView.swift */,
 				E91331A410DCC822983B10A3 /* ServerDetailView.swift */,
@@ -1217,6 +1220,7 @@
 				550072530FE2537BB8206054 /* InterstitialPresenter.swift in Sources */,
 				F5F63DECAB948A03D4E59491 /* InvisibleButtonStyle.swift in Sources */,
 				1AA70CE7AEBF69F6107C6058 /* JellyfinAddressStepView.swift in Sources */,
+				0BC3056AE446A3940735D356 /* JellyfinAddressView.swift in Sources */,
 				7A23C2D4A3B042C9584F16B6 /* JellyfinFindStepView.swift in Sources */,
 				0A04CD1DA93577BEB6F6D308 /* JellyfinSignInStepView.swift in Sources */,
 				49FD9D86BD76811388D62CF6 /* KeepsScreenAwake.swift in Sources */,
