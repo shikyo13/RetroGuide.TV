@@ -10,8 +10,6 @@ enum JellyfinItemMapper {
         /// their ids only identify a title together with its kind.
         static let tmdbMovie = "tmdb://movie/"
         static let tmdbShow = "tmdb://tv/"
-        static let tmdbEpisode = "tmdb://episode/"
-        static let tvdbEpisode = "tvdb://episode/"
     }
 
     static func movie(_ item: JellyfinItem, library: MediaLibrary, collections: [String: [String]]) -> MediaItem? {
@@ -40,6 +38,7 @@ enum JellyfinItemMapper {
             ),
             versions: versions(of: item),
             titleIDs: titleIDs(item.providerIds),
+            publicIDs: titleIDs(item.providerIds),
             addedAt: JellyfinCoding.date(item.dateCreated)
         )
     }
@@ -58,7 +57,9 @@ enum JellyfinItemMapper {
         return MediaItem(
             serverID: library.serverID,
             itemKey: item.id,
-            externalID: episodeID(item.providerIds),
+            // No global id: episodes match by their public ids, which the merge checks
+            // for repeats (episodes tagged with their show's IMDb id), and by number.
+            externalID: nil,
             libraryID: library.id,
             kind: .episode,
             title: title,
@@ -92,6 +93,7 @@ enum JellyfinItemMapper {
             ),
             versions: versions(of: item),
             titleIDs: titleIDs(series?.providerIds),
+            publicIDs: titleIDs(item.providerIds),
             addedAt: JellyfinCoding.date(item.dateCreated)
         )
     }
@@ -133,12 +135,6 @@ enum JellyfinItemMapper {
         if let tvdb = ids?[JellyfinAPI.Provider.tvdb] { return Scheme.tvdb + tvdb }
         if let tmdb = ids?[JellyfinAPI.Provider.tmdb] { return Scheme.tmdbShow + tmdb }
         return imdbID(ids).map { Scheme.imdb + $0 }
-    }
-
-    static func episodeID(_ ids: [String: String]?) -> String? {
-        if let imdb = imdbID(ids) { return Scheme.imdb + imdb }
-        if let tvdb = ids?[JellyfinAPI.Provider.tvdb] { return Scheme.tvdbEpisode + tvdb }
-        return ids?[JellyfinAPI.Provider.tmdb].map { Scheme.tmdbEpisode + $0 }
     }
 
     /// The title's public database ids, for ``TitleClassification``.

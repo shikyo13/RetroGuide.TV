@@ -40,6 +40,7 @@ enum PlexItemMapper {
             ),
             versions: metadata.versions,
             titleIDs: titleIDs(of: metadata),
+            publicIDs: titleIDs(of: metadata),
             addedAt: metadata.addedAt.map { Date(timeIntervalSince1970: TimeInterval($0)) }
         )
     }
@@ -86,6 +87,7 @@ enum PlexItemMapper {
             ),
             versions: metadata.versions,
             titleIDs: show.flatMap(titleIDs(of:)),
+            publicIDs: titleIDs(of: metadata),
             addedAt: metadata.addedAt.map { Date(timeIntervalSince1970: TimeInterval($0)) }
         )
     }

@@ -4,10 +4,12 @@ import Foundation
 /// (from the highest-priority server, the copy best matching its quality
 /// setting), and a show split across servers becomes one show.
 ///
-/// Copies are the same item when they share a global id, or when they're the
-/// same episode number of the same show. A server that doesn't know a show's
-/// global id learns it from episodes it shares with a server that does. Titles
-/// alone are never trusted: remakes share names.
+/// Copies are the same item when they share a global id or a public database
+/// id (IMDb, TMDB, TVDB: the only ids Plex and Jellyfin have in common), or
+/// when they're the same episode number of the same show. Shows are the same
+/// show when they share an episode or a public show id. A server that doesn't
+/// know a show's global id learns it from the shows linked to it. Titles alone
+/// are never trusted: remakes share names.
 struct CrossServerMerge {
     let items: [MediaItem]
     /// Every server's own show id (kept copies or not) → the show's shared id,
@@ -18,7 +20,8 @@ struct CrossServerMerge {
         let entries = snapshots.enumerated().flatMap { priority, snapshot in
             snapshot.items.map { (priority: priority, preference: quality[snapshot.serverID] ?? .original, item: $0) }
         }
-        let shows = Self.sharedShowIDs(entries.map(\.item))
+        let ambiguous = Self.ambiguousPublicKeys(entries.map(\.item))
+        let shows = Self.sharedShowIDs(entries.map(\.item), ambiguous: ambiguous)
         let resolved = entries.map { entry in
             (entry.priority, entry.preference, entry.item.seriesID.flatMap { shows[$0] }.map { entry.item.withShowExternalID($0) } ?? entry.item)
         }
@@ -29,26 +32,27 @@ struct CrossServerMerge {
             }
         }
         showAliases = aliases
-        items = Self.bestCopies(resolved)
+        items = Self.bestCopies(resolved, ambiguous: ambiguous)
     }
 
     // MARK: - Shows
 
     /// The shared id of every server-specific show that has or can learn one.
     ///
-    /// Server-specific shows linked by an episode they share (directly or
-    /// through a chain of servers) are one show. A group whose linked shows
-    /// know exactly one shared id takes it; a group with conflicting ids is
-    /// left as it is rather than guessed. The result never depends on the
-    /// order items or servers are listed in.
-    private static func sharedShowIDs(_ items: [MediaItem]) -> [String: String] {
+    /// Server-specific shows linked by an episode they share or a public show
+    /// id (directly or through a chain of servers) are one show. A group whose
+    /// linked shows know one shared id per kind of id takes the most widely
+    /// shared one (`plex://` beats `tvdb://`, which beats TMDB and IMDb); a
+    /// group with two different ids of one kind is left as it is rather than
+    /// guessed. The result never depends on the order items or servers are
+    /// listed in.
+    private static func sharedShowIDs(_ items: [MediaItem], ambiguous: Set<String>) -> [String: String] {
         var known: [String: String] = [:]
         for item in items.sorted(by: { $0.id < $1.id }) {
             if let native = item.seriesID, let shared = item.series?.externalID, known[native] == nil {
                 known[native] = shared
             }
         }
-        // Link shows through the episodes they share.
         var natives: [String] = []
         var position: [String: Int] = [:]
         for native in Set(items.compactMap(\.seriesID)).sorted() {
@@ -56,13 +60,15 @@ struct CrossServerMerge {
             natives.append(native)
         }
         var groups = DisjointSets(count: natives.count)
-        var firstShowWithEpisode: [String: Int] = [:]
+        var firstShowWithKey: [String: Int] = [:]
         for item in items {
-            guard let episode = item.externalID, let native = item.seriesID, let show = position[native] else { continue }
-            if let first = firstShowWithEpisode[episode] {
-                groups.union(first, show)
-            } else {
-                firstShowWithEpisode[episode] = show
+            guard let native = item.seriesID, let show = position[native] else { continue }
+            for key in sameTitleKeys(of: item, ambiguous: ambiguous) + showKeys(of: item) {
+                if let first = firstShowWithKey[key] {
+                    groups.union(first, show)
+                } else {
+                    firstShowWithKey[key] = show
+                }
             }
         }
         var sharedIDsByGroup: [Int: Set<String>] = [:]
@@ -71,25 +77,68 @@ struct CrossServerMerge {
                 sharedIDsByGroup[groups.find(index), default: []].insert(shared)
             }
         }
-        for (index, native) in natives.enumerated() where known[native] == nil {
-            if let ids = sharedIDsByGroup[groups.find(index)], ids.count == 1, let shared = ids.first {
+        for (index, native) in natives.enumerated() {
+            if let ids = sharedIDsByGroup[groups.find(index)], let shared = canonicalShowID(ids) {
                 known[native] = shared
             }
         }
         return known
     }
 
+    /// One id for linked shows that know `ids`, or `nil` when two of them are
+    /// different ids of the same kind, which means the link is doubtful.
+    private static func canonicalShowID(_ ids: Set<String>) -> String? {
+        let kinds = Dictionary(grouping: ids, by: Key.scheme)
+        guard kinds.values.allSatisfy({ $0.count == 1 }) else { return nil }
+        return ids.min { (Key.rank(of: $0), $0) < (Key.rank(of: $1), $1) }
+    }
+
+    /// The show's public database ids, which every episode of it carries.
+    private static func showKeys(of item: MediaItem) -> [String] {
+        guard item.series != nil, let ids = item.titleIDs else { return [] }
+        return Key.publicKeys(ids, kind: Key.show)
+    }
+
     // MARK: - Copies
 
-    private static func bestCopies(_ entries: [(priority: Int, preference: VideoQuality, item: MediaItem)]) -> [MediaItem] {
+    /// Groups each server's copies as if it were the only server, then joins
+    /// groups across servers, by id before episode number. A join never puts
+    /// two of one server's titles together, so adding a server can't fold
+    /// another server's library smaller, whatever its episode numbering.
+    private static func bestCopies(
+        _ entries: [(priority: Int, preference: VideoQuality, item: MediaItem)],
+        ambiguous: Set<String>
+    ) -> [MediaItem] {
+        let passes: [(MediaItem) -> [String]] = [{ sameTitleKeys(of: $0, ambiguous: ambiguous) }, episodeNumberKeys]
         var groups = DisjointSets(count: entries.count)
-        var firstWithKey: [String: Int] = [:]
+        var firstOnServer: [String: Int] = [:]
         for (position, entry) in entries.enumerated() {
-            for key in duplicateKeys(of: entry.item) {
-                if let first = firstWithKey[key] {
+            for key in passes.flatMap({ $0(entry.item) }) {
+                let scoped = Key.onServer(key, entry.item.serverID)
+                if let first = firstOnServer[scoped] {
                     groups.union(first, position)
                 } else {
-                    firstWithKey[key] = position
+                    firstOnServer[scoped] = position
+                }
+            }
+        }
+        var servers: [Int: Set<String>] = [:]
+        for position in entries.indices {
+            servers[groups.find(position), default: []].insert(entries[position].item.serverID)
+        }
+        for keys in passes {
+            var firstWithKey: [String: Int] = [:]
+            for (position, entry) in entries.enumerated() {
+                for key in keys(entry.item) {
+                    guard let first = firstWithKey[key] else {
+                        firstWithKey[key] = position
+                        continue
+                    }
+                    let (one, other) = (groups.find(first), groups.find(position))
+                    let joined = servers[one, default: []].union(servers[other, default: []])
+                    guard one != other, joined.count == servers[one, default: []].count + servers[other, default: []].count else { continue }
+                    groups.union(one, other)
+                    servers[groups.find(one)] = joined
                 }
             }
         }
@@ -113,16 +162,44 @@ struct CrossServerMerge {
         }
     }
 
-    /// Ids under which another server's copy would be found.
-    private static func duplicateKeys(of item: MediaItem) -> [String] {
-        var keys: [String] = []
-        if let externalID = item.externalID {
-            keys.append(externalID)
+    /// The episode's number within its show (by the show's shared id).
+    private static func episodeNumberKeys(of item: MediaItem) -> [String] {
+        guard let series = item.series, let show = series.externalID, let season = series.seasonNumber, let episode = series.episodeNumber else {
+            return []
         }
-        if let series = item.series, let show = series.externalID, let season = series.seasonNumber, let episode = series.episodeNumber {
-            keys.append("\(show)#\(season)x\(episode)")
+        return ["\(show)#\(season)x\(episode)"]
+    }
+
+    /// Ids naming exactly this movie or episode on any server: its global id
+    /// and its public database ids, unless its server gives one of those to
+    /// several items (bad metadata that would otherwise fold them into one).
+    private static func sameTitleKeys(of item: MediaItem, ambiguous: Set<String>) -> [String] {
+        var keys = item.externalID.map { [$0] } ?? []
+        if let ids = item.publicIDs {
+            keys += Key.publicKeys(ids, kind: item.kind.rawValue).filter { !ambiguous.contains(Key.onServer($0, item.serverID)) }
         }
         return keys
+    }
+
+    /// Public ids (as ``Key/onServer(_:_:)``) that more than one title on the
+    /// same server claims. Copies sharing a global id (a movie in two
+    /// libraries) are one title, not a conflict.
+    private static func ambiguousPublicKeys(_ items: [MediaItem]) -> Set<String> {
+        var claimedBy: [String: String] = [:]
+        var repeated: Set<String> = []
+        for item in items {
+            guard let ids = item.publicIDs else { continue }
+            let title = item.externalID ?? item.id
+            for key in Key.publicKeys(ids, kind: item.kind.rawValue) {
+                let scoped = Key.onServer(key, item.serverID)
+                if let owner = claimedBy[scoped], owner != title {
+                    repeated.insert(scoped)
+                } else {
+                    claimedBy[scoped] = title
+                }
+            }
+        }
+        return repeated
     }
 
     /// Higher-priority server first; on one server the copy that best fits
@@ -150,6 +227,36 @@ struct CrossServerMerge {
         else { return false }
         return MediaVersionSelector.best(of: [currentVersion, candidateVersion], for: quality) == candidateVersion
             && candidateVersion != currentVersion
+    }
+}
+
+/// How public ids and shared show ids are compared.
+private enum Key {
+    static let show = "show"
+    private static let separator = "/"
+    private static let schemeEnd = "://"
+    /// Kinds of shared show id, most widely shared first.
+    private static let schemeOrder = ["plex", "tvdb", "tmdb", "imdb"]
+
+    /// `ids` qualified by `kind`: TMDB and TVDB number movies, shows and
+    /// episodes separately, so a number alone names nothing.
+    static func publicKeys(_ ids: TitleIDs, kind: String) -> [String] {
+        [("imdb", ids.imdb), ("tmdb", ids.tmdb), ("tvdb", ids.tvdb)].compactMap { name, value in
+            value.map { [kind, name, String($0)].joined(separator: separator) }
+        }
+    }
+
+    static func onServer(_ key: String, _ serverID: String) -> String {
+        serverID + separator + key
+    }
+
+    /// `plex` for `plex://show/…`, `tmdb` for `tmdb://tv/…`.
+    static func scheme(_ id: String) -> String {
+        id.range(of: schemeEnd).map { String(id[..<$0.lowerBound]) } ?? id
+    }
+
+    static func rank(of id: String) -> Int {
+        schemeOrder.firstIndex(of: scheme(id)) ?? schemeOrder.count
     }
 }
 

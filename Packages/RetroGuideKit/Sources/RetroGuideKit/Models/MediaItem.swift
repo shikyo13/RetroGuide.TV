@@ -32,6 +32,10 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     public let versions: [MediaVersion]
     /// The title's public database ids (the show's for an episode).
     public let titleIDs: TitleIDs?
+    /// The item's own public database ids (the episode's, not its show's).
+    /// Servers name items differently (Plex's `plex://` guids, Jellyfin's
+    /// own ids); these recognize the same movie or episode on both.
+    public let publicIDs: TitleIDs?
     /// When the item was added to its server (the earliest copy's, once
     /// merged). Schedules bring new items in from the next broadcast day
     /// after this (see ``ContentVersions``); `nil` counts as always there.
@@ -61,6 +65,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         artwork: Artwork = Artwork(),
         versions: [MediaVersion] = [],
         titleIDs: TitleIDs? = nil,
+        publicIDs: TitleIDs? = nil,
         addedAt: Date? = nil
     ) {
         self.id = Self.makeID(serverID: serverID, itemKey: itemKey)
@@ -83,6 +88,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.artwork = artwork
         self.versions = versions
         self.titleIDs = titleIDs
+        self.publicIDs = publicIDs
         self.addedAt = addedAt
     }
 
@@ -96,14 +102,16 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     func merging(copies: [MediaItem]) -> MediaItem {
         let libraries = copies.flatMap(\.libraryIDs).filter { $0 != libraryID }
         let otherCollections = copies.flatMap(\.collections).filter { !collections.contains($0) }
-        let borrowedIDs = titleIDs == nil && copies.contains { $0.titleIDs != nil }
+        let borrowedIDs = (titleIDs == nil && copies.contains { $0.titleIDs != nil })
+            || (publicIDs == nil && copies.contains { $0.publicIDs != nil })
         let earliest = ([addedAt] + copies.map(\.addedAt)).compactMap { $0 }.min()
         guard !libraries.isEmpty || !otherCollections.isEmpty || borrowedIDs || earliest != addedAt else { return self }
         var merged = MediaItem(
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
             series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
             genres: genres, networks: networks, collections: collections + Set(otherCollections).sorted(), countries: countries,
-            artwork: artwork, versions: versions, titleIDs: titleIDs ?? copies.lazy.compactMap(\.titleIDs).first, addedAt: earliest
+            artwork: artwork, versions: versions, titleIDs: titleIDs ?? copies.lazy.compactMap(\.titleIDs).first,
+            publicIDs: publicIDs ?? copies.lazy.compactMap(\.publicIDs).first, addedAt: earliest
         )
         merged.otherLibraryIDs = Set(libraries).sorted()
         return merged
@@ -115,7 +123,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
             series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
             genres: genres, networks: networks, collections: collections, countries: countries, artwork: artwork,
-            versions: versions, titleIDs: titleIDs, addedAt: date
+            versions: versions, titleIDs: titleIDs, publicIDs: publicIDs, addedAt: date
         )
         copy.otherLibraryIDs = otherLibraryIDs
         return copy
@@ -129,7 +137,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
             series: SeriesInfo(key: series.key, title: series.title, seasonNumber: series.seasonNumber, episodeNumber: series.episodeNumber, externalID: showID),
             year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience, genres: genres,
             networks: networks, collections: collections, countries: countries, artwork: artwork, versions: versions,
-            titleIDs: titleIDs, addedAt: addedAt
+            titleIDs: titleIDs, publicIDs: publicIDs, addedAt: addedAt
         )
     }
 
