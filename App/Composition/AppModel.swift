@@ -86,7 +86,7 @@ final class AppModel {
     let servers: ServerLibrary
     @ObservationIgnored private var nowPlaying: NowPlayingPublisher?
     let pro = ProStore()
-    let plexIdentity: PlexClientIdentity
+    let identities: ServerIdentities
 
     @ObservationIgnored private let store: PreferencesStore
     @ObservationIgnored private let engine = LineupEngine()
@@ -110,9 +110,9 @@ final class AppModel {
         self.preferences = store.preferences
         self.customization = store.customization
         self.viewing = store.viewing
-        let identity = AppIdentity.plexIdentity(clientIdentifier: store.plexClientIdentifier)
-        self.plexIdentity = identity
-        let servers = ServerLibrary(store: store, snapshotStore: snapshotStore, keychain: KeychainStore(), identity: identity)
+        let identities = ServerIdentities(installIdentifier: store.plexClientIdentifier)
+        self.identities = identities
+        let servers = ServerLibrary(store: store, snapshotStore: snapshotStore, keychain: KeychainStore(), identities: identities)
         self.servers = servers
         self.tuner = Tuner(engineKind: store.preferences.playerEngine) { [servers] serverID in
             servers.client(for: serverID)
@@ -232,7 +232,7 @@ final class AppModel {
     func start() async {
         guard phase == .launching else { return }
         #if DEBUG
-        await DebugBootstrap.seedAccountIfRequested(store: store, keychain: KeychainStore(), identity: plexIdentity)
+        await DebugBootstrap.seedAccountIfRequested(store: store, keychain: KeychainStore(), identities: identities)
         if DebugLaunchOptions.probesAudio {
             AudioRouteProbe.run()
             Task {

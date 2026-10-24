@@ -53,7 +53,9 @@ final class TrackSync {
     func save(_ rules: TrackRules, around item: MediaItem, scope: TrackScope, among items: [MediaItem], preferences: LanguagePreferences?) {
         currentRules = rules
         currentPreferences = preferences
+        // Servers with nowhere to keep choices (Jellyfin) just use this device's.
         let covered = TrackRules.items(in: scope, around: item, among: items)
+            .filter { clientProvider($0.serverID)?.savesTrackChoices ?? true }
         guard !covered.isEmpty else { return }
         // A newer choice replaces an older one that failed for the same episodes.
         let coveredIDs = Set(covered.map(\.id))

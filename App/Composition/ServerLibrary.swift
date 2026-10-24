@@ -26,15 +26,15 @@ final class ServerLibrary {
     @ObservationIgnored private let snapshotStore: LibrarySnapshotStore
     @ObservationIgnored private let keychain: KeychainStore
     @ObservationIgnored private let registry: ServerRegistry
-    @ObservationIgnored private let identity: PlexClientIdentity
+    @ObservationIgnored private let identities: ServerIdentities
     @ObservationIgnored private var snapshots: [String: LibrarySnapshot] = [:]
 
-    init(store: PreferencesStore, snapshotStore: LibrarySnapshotStore, keychain: KeychainStore, identity: PlexClientIdentity) {
+    init(store: PreferencesStore, snapshotStore: LibrarySnapshotStore, keychain: KeychainStore, identities: ServerIdentities) {
         self.store = store
         self.snapshotStore = snapshotStore
         self.keychain = keychain
-        self.identity = identity
-        self.registry = ServerRegistry(keychain: keychain, plexIdentity: identity)
+        self.identities = identities
+        self.registry = ServerRegistry(keychain: keychain, identities: identities)
     }
 
     // MARK: - Queries
@@ -47,10 +47,22 @@ final class ServerLibrary {
         keychain.token(for: KeychainAccount.plexAccount)
     }
 
-    /// The signed-in account's audio and subtitle settings, or `nil` if unavailable.
+    /// The signed-in account's audio and subtitle settings, or `nil` if
+    /// unavailable: the Plex account's when there is one, otherwise those of
+    /// the user signed in to the first Jellyfin server.
     func fetchLanguagePreferences() async -> LanguagePreferences? {
-        guard let accountToken = plexAccountToken else { return nil }
-        return try? await PlexAccountService(identity: identity).languagePreferences(accountToken: accountToken)
+        if let accountToken = plexAccountToken {
+            return try? await PlexAccountService(identity: identities.plex).languagePreferences(accountToken: accountToken)
+        }
+        guard let jellyfin = accounts.first(where: { $0.kind == .jellyfin }), let token = keychain.token(for: jellyfin.id),
+              var preferences = try? await JellyfinAccountService(identity: identities.jellyfin)
+                  .languagePreferences(baseURL: jellyfin.baseURL, token: token)
+        else { return nil }
+        // Jellyfin users often never set a language; subtitles then follow the device's.
+        if preferences.audioLanguage == nil, preferences.subtitleLanguage == nil {
+            preferences.subtitleLanguage = Locale.current.language.languageCode?.identifier
+        }
+        return preferences
     }
 
     func client(for serverID: String) -> (any MediaServerClient)? {
@@ -286,11 +298,11 @@ final class ServerLibrary {
 
     private func relocatePlexServer(_ account: ServerAccount) async -> URL? {
         guard let accountToken = plexAccountToken,
-              let candidate = try? await PlexAccountService(identity: identity)
+              let candidate = try? await PlexAccountService(identity: identities.plex)
                   .servers(accountToken: accountToken)
                   .first(where: { $0.id == account.id })
         else { return nil }
-        return try? await PlexConnectionResolver(identity: identity)
+        return try? await PlexConnectionResolver(identity: identities.plex)
             .resolveConnection(candidate, settings: account.connection, isVPNActive: VPNStatus.isActive)
             .url
     }

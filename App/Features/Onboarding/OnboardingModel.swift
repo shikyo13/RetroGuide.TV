@@ -2,18 +2,36 @@ import Foundation
 import Observation
 import RetroGuideKit
 
-/// Drives server setup: link Plex (unless an account token is already known)
-/// → pick a server → pick libraries. Used for onboarding and "Add a server".
+/// Drives server setup, for onboarding and "Add a server": Plex (link the
+/// account unless its token is already known → pick a server) or Jellyfin
+/// (find or type the server → Quick Connect or password), then libraries.
 @MainActor
 @Observable
 final class OnboardingModel {
     enum Step: Equatable {
         case welcome
+        /// "Plex or Jellyfin?" without the welcome text (adding a server).
+        case choosingKind
         case linking(PlexLinkCode?)
         case choosingServer([PlexServerCandidate])
+        case findingJellyfin(servers: [JellyfinServerInfo], isSearching: Bool)
+        case enteringJellyfinAddress(message: String?)
+        case jellyfinSignIn(JellyfinSignIn)
         case connecting(serverName: String)
         case choosingLibraries(PendingServer)
         case failed(String)
+    }
+
+    /// Signing in to a Jellyfin server that was found.
+    struct JellyfinSignIn: Equatable {
+        let server: JellyfinServerInfo
+        /// The Quick Connect code to approve; `nil` while it's requested or
+        /// when the server has Quick Connect turned off.
+        var code: JellyfinQuickConnectCode?
+        var isQuickConnectAvailable = true
+        var usesPassword = false
+        var isSigningIn = false
+        var message: String?
     }
 
     /// A server that is connected but not yet saved.
@@ -29,46 +47,76 @@ final class OnboardingModel {
         static let codeLifetime: Duration = .seconds(14 * 60)
     }
 
-    private(set) var step: Step = .welcome
+    private enum Flow {
+        case plex
+        case jellyfin
+    }
+
+    private(set) var step: Step
 
     @ObservationIgnored private let accountService: PlexAccountService
     @ObservationIgnored private let resolver: PlexConnectionResolver
-    @ObservationIgnored private let identity: PlexClientIdentity
+    @ObservationIgnored let identities: ServerIdentities
+    @ObservationIgnored let jellyfinService: JellyfinAccountService
     @ObservationIgnored private var accountToken: String?
-    @ObservationIgnored private let excludedServerIDs: Set<String>
-    @ObservationIgnored private var linkTask: Task<Void, Never>?
+    @ObservationIgnored let excludedServerIDs: Set<String>
+    @ObservationIgnored var task: Task<Void, Never>?
+    @ObservationIgnored private var flow = Flow.plex
 
     /// - Parameters:
     ///   - accountToken: A saved Plex account token; when present, linking is skipped.
-    ///   - excludedServerIDs: Servers already added, hidden from the picker.
-    init(identity: PlexClientIdentity, accountToken: String? = nil, excludedServerIDs: Set<String> = []) {
-        self.identity = identity
+    ///   - excludedServerIDs: Servers already added, hidden from the pickers.
+    ///   - showsWelcome: Whether to start with the welcome text (first run)
+    ///     rather than just the choice of server.
+    init(identities: ServerIdentities, accountToken: String? = nil, excludedServerIDs: Set<String> = [], showsWelcome: Bool = true) {
+        self.identities = identities
         self.accountToken = accountToken
         self.excludedServerIDs = excludedServerIDs
-        self.accountService = PlexAccountService(identity: identity)
-        self.resolver = PlexConnectionResolver(identity: identity)
+        self.accountService = PlexAccountService(identity: identities.plex)
+        self.resolver = PlexConnectionResolver(identity: identities.plex)
+        self.jellyfinService = JellyfinAccountService(identity: identities.jellyfin)
+        self.step = showsWelcome ? .welcome : .choosingKind
+    }
+
+    func setStep(_ newStep: Step) {
+        step = newStep
     }
 
     // MARK: - Intents
 
-    /// Starts setup: lists servers straight away with a saved account, otherwise links first.
-    func begin() {
-        linkTask?.cancel()
+    /// Starts Plex setup: lists servers straight away with a saved account, otherwise links first.
+    func beginPlex() {
+        flow = .plex
+        task?.cancel()
         if let accountToken {
             step = .connecting(serverName: "your Plex account")
-            linkTask = Task { [weak self] in
+            task = Task { [weak self] in
                 await self?.showServers(accountToken: accountToken)
             }
             return
         }
         step = .linking(nil)
-        linkTask = Task { [weak self] in
+        task = Task { [weak self] in
             await self?.runLinkLoop()
         }
     }
 
+    /// Starts Jellyfin setup by looking for servers on the network.
+    func beginJellyfin() {
+        flow = .jellyfin
+        findJellyfinServers()
+    }
+
+    /// Starts over with whichever server type was being set up.
+    func retry() {
+        switch flow {
+        case .plex: beginPlex()
+        case .jellyfin: beginJellyfin()
+        }
+    }
+
     func cancel() {
-        linkTask?.cancel()
+        task?.cancel()
         step = .welcome
     }
 
@@ -79,7 +127,7 @@ final class OnboardingModel {
         }
     }
 
-    // MARK: - Flow
+    // MARK: - Plex flow
 
     private func runLinkLoop() async {
         while !Task.isCancelled {
@@ -134,7 +182,7 @@ final class OnboardingModel {
                 baseURL: baseURL,
                 playback: connection.isLocal ? .local : .remote
             )
-            let client = PlexServerClient(serverID: server.id, baseURL: baseURL, token: server.accessToken, identity: identity)
+            let client = PlexServerClient(serverID: server.id, baseURL: baseURL, token: server.accessToken, identity: identities.plex)
             let libraries = try await client.fetchLibraries().filter(\.isSchedulable)
             step = .choosingLibraries(
                 PendingServer(account: account, token: server.accessToken, accountToken: accountToken, libraries: libraries)

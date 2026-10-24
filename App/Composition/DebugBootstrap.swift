@@ -10,6 +10,9 @@ import RetroGuideKit
 /// `RETROGUIDE_DEV_PLEX_SERVER_NAME`, optionally `RETROGUIDE_DEV_PLEX_ACCOUNT_TOKEN`
 /// (enables "Add a server" without linking) and `RETROGUIDE_DEV_RESET=1`.
 ///
+/// `RETROGUIDE_DEV_JELLYFIN_URL`, `RETROGUIDE_DEV_JELLYFIN_USER` and
+/// `RETROGUIDE_DEV_JELLYFIN_PASSWORD` sign in to a Jellyfin server instead.
+///
 /// `RETROGUIDE_DEMO_LIBRARY` (a ``DemoCatalog`` JSON file) connects the demo
 /// library instead of a real server, for screenshots. `RETROGUIDE_DEV_THEME`
 /// (a ``ThemeID`` raw value) picks the theme.
@@ -23,13 +26,16 @@ enum DebugBootstrap {
         static let reset = "RETROGUIDE_DEV_RESET"
         static let demoLibrary = "RETROGUIDE_DEMO_LIBRARY"
         static let theme = "RETROGUIDE_DEV_THEME"
+        static let jellyfinURL = "RETROGUIDE_DEV_JELLYFIN_URL"
+        static let jellyfinUser = "RETROGUIDE_DEV_JELLYFIN_USER"
+        static let jellyfinPassword = "RETROGUIDE_DEV_JELLYFIN_PASSWORD"
     }
 
     /// Stands in for the keychain token of the demo server, which needs none.
     private static let demoToken = "demo"
 
     @MainActor
-    static func seedAccountIfRequested(store: PreferencesStore, keychain: KeychainStore, identity: PlexClientIdentity) async {
+    static func seedAccountIfRequested(store: PreferencesStore, keychain: KeychainStore, identities: ServerIdentities) async {
         let environment = ProcessInfo.processInfo.environment
         if environment[Variable.reset] == "1" {
             store.accounts.forEach { keychain.removeToken(for: $0.id) }
@@ -46,6 +52,11 @@ enum DebugBootstrap {
             seedDemoAccount(catalogURL: URL(fileURLWithPath: path), store: store, keychain: keychain)
             return
         }
+        if store.accounts.isEmpty, let address = environment[Variable.jellyfinURL],
+           let user = environment[Variable.jellyfinUser], let password = environment[Variable.jellyfinPassword] {
+            await seedJellyfinAccount(address: address, user: user, password: password, identity: identities.jellyfin, store: store, keychain: keychain)
+            return
+        }
         guard store.accounts.isEmpty,
               let urlString = environment[Variable.url], let url = URL(string: urlString),
               let token = environment[Variable.token],
@@ -58,6 +69,24 @@ enum DebugBootstrap {
             baseURL: url
         )
         keychain.setToken(token, for: serverID)
+        store.accounts = [account]
+    }
+
+    @MainActor
+    private static func seedJellyfinAccount(
+        address: String,
+        user: String,
+        password: String,
+        identity: JellyfinClientIdentity,
+        store: PreferencesStore,
+        keychain: KeychainStore
+    ) async {
+        let service = JellyfinAccountService(identity: identity)
+        guard let server = await service.findServer(at: address),
+              let session = try? await service.signIn(on: server, username: user, password: password)
+        else { return }
+        let account = ServerAccount(id: server.id, kind: .jellyfin, name: server.name, baseURL: server.baseURL, userID: session.userID)
+        keychain.setToken(session.accessToken, for: server.id)
         store.accounts = [account]
     }
 

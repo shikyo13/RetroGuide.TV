@@ -31,7 +31,7 @@ struct OnboardingFlowView: View {
         .crtEffect()
         .onAppear {
             if model == nil {
-                model = OnboardingModel(identity: app.plexIdentity)
+                model = OnboardingModel(identities: app.identities)
             }
         }
     }
