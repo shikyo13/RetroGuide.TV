@@ -28,6 +28,9 @@ final class AVPlaybackEngine: PlaybackEngine {
 
     init() {
         player.automaticallyWaitsToMinimizeStalling = true
+        #if DEBUG
+        player.isMuted = DebugLaunchOptions.isMuted
+        #endif
         layerView.backgroundColor = .black
         layerView.playerLayer.player = player
         layerView.playerLayer.videoGravity = .resizeAspect

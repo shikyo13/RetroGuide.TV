@@ -1,11 +1,11 @@
 import Foundation
 
-/// Converts a Jellyfin media source's streams into ``ItemTracks``. The server
-/// already picks the tracks to play (the viewer's remembered choice, else
-/// their account's language settings), so its defaults are the selection,
-/// except a subtitle in a language the viewer didn't ask for: with no
-/// language set, Jellyfin shows whatever track the file flags as default
-/// (often Chinese on anime releases), so the app's own rule picks instead.
+/// Converts a Jellyfin media source's streams into ``ItemTracks``. Audio is
+/// the server's pick (the viewer's preferred language, else the file's
+/// default track). Subtitles follow the viewer's language settings the way
+/// they do on Plex: Jellyfin's own pick also honors whatever the file flags
+/// as default, so it shows Chinese subtitles on anime releases and English
+/// ones over English audio. Only without any settings is its pick used.
 ///
 /// Jellyfin numbers sidecar subtitle files first and the file's own streams
 /// after them, so a file's audio at container index 1 is Jellyfin's index 2
@@ -36,8 +36,7 @@ enum JellyfinTrackMapper {
         var chosenSubtitle = source.defaultSubtitleStreamIndex.flatMap { index in
             index == noSubtitleIndex ? nil : subtitles.first { $0.0.index == index }?.1
         }
-        if let preferences, let wanted = LanguageCode.normalized(preferences.subtitleLanguage ?? preferences.audioLanguage),
-           let server = chosenSubtitle, LanguageCode.normalized(server.language) != wanted {
+        if let preferences {
             let options = subtitles.compactMap(\.1)
             let candidates = options.map { SubtitleCandidate(language: $0.language, isForced: $0.isForced) }
             chosenSubtitle = SubtitleAutoSelector.choose(from: candidates, audioLanguage: chosenAudio?.language, preferences: preferences)

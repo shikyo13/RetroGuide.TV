@@ -109,6 +109,8 @@ final class MPVCore: @unchecked Sendable {
         /// libmpv log verbosity forwarded to the unified log in debug builds.
         static let debugLogLevel = "info"
         static let logFile = "log-file"
+        static let mute = "mute"
+        static let enabled = "yes"
         static let logFileName = "mpv.log"
         /// Where a debug play-URL override starts, well inside any episode.
         static let debugOverrideStart = "60"
@@ -140,6 +142,9 @@ final class MPVCore: @unchecked Sendable {
             assertionFailure("cacert.pem is missing from the app bundle")
         }
         #if DEBUG
+        if DebugLaunchOptions.isMuted {
+            mpv_set_option_string(handle, Option.mute, Option.enabled)
+        }
         if DebugLaunchOptions.probesAudio,
            let folder = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
             mpv_set_option_string(handle, Option.logFile, folder.appending(path: Option.logFileName).path)

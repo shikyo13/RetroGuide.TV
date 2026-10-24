@@ -49,6 +49,7 @@ enum DebugLaunchOptions {
         static let audioProbe = "RETROGUIDE_DEV_AUDIO_PROBE"
         static let playURL = "RETROGUIDE_DEV_PLAY_URL"
         static let playStart = "RETROGUIDE_DEV_PLAY_START"
+        static let mute = "RETROGUIDE_DEV_MUTE"
     }
 
     private static let landscape = "landscape"
@@ -73,6 +74,11 @@ enum DebugLaunchOptions {
 
     static var bannerDuration: Duration? {
         value(for: Variable.bannerSeconds).flatMap(Double.init).map { .seconds($0) }
+    }
+
+    /// Silent playback, so simulator runs don't fill the room with dialogue.
+    static var isMuted: Bool {
+        value(for: Variable.mute) == enabled
     }
 
     static var settingsPage: SettingsPage? {
