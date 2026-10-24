@@ -71,7 +71,9 @@ struct JellyfinMediaStream: Decodable {
     let isForced: Bool?
     let isDefault: Bool?
     let isExternal: Bool?
+    let isHearingImpaired: Bool?
     let height: Int?
+    let channels: Int?
 }
 
 struct JellyfinPlaybackInfo: Decodable {
