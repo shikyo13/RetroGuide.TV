@@ -77,7 +77,7 @@ struct SearchView: View {
             #endif
         }
         #if os(tvOS)
-        .onExitCommand(perform: onClose)
+        .remoteExitCommand(perform: onClose)
         #else
         // Open ready to type; cancelling the search leaves Search altogether.
         .onAppear { isSearchPresented = true }

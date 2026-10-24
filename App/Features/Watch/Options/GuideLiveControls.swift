@@ -38,7 +38,7 @@ struct GuideLiveControls: View {
             .disabled(!isTopBarActive || isShowingOptions)
             .focused($isButtonFocused)
             .onMoveCommand(perform: onMoveOut)
-            .onExitCommand(perform: onCloseGuide)
+            .remoteExitCommand(perform: onCloseGuide)
             .onChange(of: focusSerial) { isButtonFocused = true }
             // Closing the panel returns to the button that opened it.
             .onChange(of: isShowingOptions) { _, isOpen in

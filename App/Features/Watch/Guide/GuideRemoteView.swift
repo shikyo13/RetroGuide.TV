@@ -68,10 +68,10 @@ struct GuideRemoteView: View {
             .focused($focus, equals: .grid)
             .onMoveCommand(perform: handleGridMove)
             // Play/Pause is the shortcut to Search and Settings from any row.
-            .onPlayPauseCommand(perform: focusHeader)
+            .remotePlayPauseCommand(perform: focusHeader)
         }
         .screenBackground()
-        .onExitCommand(perform: handleBack)
+        .remoteExitCommand(perform: handleBack)
         .onAppear { focus = .grid }
         .onChange(of: lineupRevision) { model.replaceChannels(channels) }
         .onChange(of: channels.map(\.id)) { model.replaceChannels(channels) }

@@ -52,7 +52,7 @@ struct GuideView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .screenBackground()
             #if os(tvOS)
-            .onExitCommand(perform: closeEmptyGuide)
+            .remoteExitCommand(perform: closeEmptyGuide)
             #endif
         } else {
         #if os(tvOS)

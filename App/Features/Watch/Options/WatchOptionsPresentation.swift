@@ -40,7 +40,7 @@ struct WatchOptionsPresentation: ViewModifier {
         }
         .background(Color.black.opacity(DesignTokens.Opacity.muted))
         .focusSection()
-        .onExitCommand { isPresented = false }
+        .remoteExitCommand { isPresented = false }
     }
     #endif
 }

@@ -20,7 +20,7 @@ struct PlayerRemoteInput: View {
         .buttonStyle(InvisibleButtonStyle())
         .focused(focus, equals: .remote)
         .onMoveCommand(perform: handleMove)
-        .onPlayPauseCommand { onCommand(.lastChannel) }
+        .remotePlayPauseCommand { onCommand(.lastChannel) }
         .ignoresSafeArea()
     }
 

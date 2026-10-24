@@ -14,6 +14,7 @@
 		0A04CD1DA93577BEB6F6D308 /* JellyfinSignInStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E07938E6889F36FA17D189 /* JellyfinSignInStepView.swift */; };
 		0B1208B8BBD9B99984C3898D /* OnboardingModel+Jellyfin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E77B88A04DED5A68588776 /* OnboardingModel+Jellyfin.swift */; };
 		0F70EBE0D88DE0438F1BB070 /* AVPlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */; };
+		1081AFCF099951D0532A2C8A /* RemoteCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAACA5FC2EAC37012DF71EE /* RemoteCommands.swift */; };
 		128558BEF0F947A6DED11964 /* ScheduleOrderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217F6E0574F0BA824BD17F4B /* ScheduleOrderSection.swift */; };
 		13535A2983FE766E44C7B60A /* PlacementText.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33F5C6380C978AE3E2616A /* PlacementText.swift */; };
 		14A5B0E5118164FD144DA680 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; platformFilters = (ios, ); productRef = F3A64A1F2A2BBE821A2B26E1 /* GoogleUserMessagingPlatform */; };
@@ -428,6 +429,7 @@
 		E91331A410DCC822983B10A3 /* ServerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailView.swift; sourceTree = "<group>"; };
 		EBE95A2421FA0C633DD728E8 /* ChannelDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelDetailView.swift; sourceTree = "<group>"; };
 		EE261A33A591CEA05CE5E8CC /* AppIconWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconWidget.swift; sourceTree = "<group>"; };
+		EFAACA5FC2EAC37012DF71EE /* RemoteCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCommands.swift; sourceTree = "<group>"; };
 		EFC1B0A525F43C6F9AF3F80C /* InterstitialPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterstitialPresenter.swift; sourceTree = "<group>"; };
 		F0D1CD7CD3D111FBE40C4615 /* SubtitleTimingControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleTimingControl.swift; sourceTree = "<group>"; };
 		F4A0B4FE6D7B95B90E765C77 /* ThemePalettes+Broadcast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThemePalettes+Broadcast.swift"; sourceTree = "<group>"; };
@@ -460,6 +462,7 @@
 			children = (
 				1D9DDD4AB63AB0D2F04F3DC1 /* FailureView.swift */,
 				400321D38B8063B8C8749040 /* IndexingView.swift */,
+				EFAACA5FC2EAC37012DF71EE /* RemoteCommands.swift */,
 				187AFD75F0AE0640CC040E41 /* RootView.swift */,
 				1E217DAFDF55F7D9EF61E378 /* SplashView.swift */,
 			);
@@ -1262,6 +1265,7 @@
 				866A0EB73AB28544D2DCBDB3 /* RatingPrompter.swift in Sources */,
 				45DD5C01F371A34E6C891B3A /* ReminderButton.swift in Sources */,
 				3E7F54EA027AD920BE1A53E2 /* RemindersView.swift in Sources */,
+				1081AFCF099951D0532A2C8A /* RemoteCommands.swift in Sources */,
 				61B84956AE4E2BB297319733 /* RemoteImage.swift in Sources */,
 				BD80567F20BF4EB83FA3CFF5 /* RemovedTitlesPage.swift in Sources */,
 				930B7ED7E49AE404D4FE0B43 /* RemovedTitlesSection.swift in Sources */,

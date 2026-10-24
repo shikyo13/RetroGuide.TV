@@ -131,7 +131,7 @@ struct PlayerChromeView: View {
             .onMoveCommand { direction in
                 if direction == .up { leaveOptionsButton() }
             }
-            .onExitCommand(perform: leaveOptionsButton)
+            .remoteExitCommand(perform: leaveOptionsButton)
     }
 
     private func leaveOptionsButton() {

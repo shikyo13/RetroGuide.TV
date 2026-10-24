@@ -41,7 +41,7 @@ struct SettingsPage<Content: View>: View {
         .scrollClipDisabled()
         .toolbar(.hidden, for: .navigationBar)
         // Menu goes back one level, or closes Settings from its first page.
-        .onExitCommand { (onExit ?? { dismiss() })() }
+        .remoteExitCommand { (onExit ?? { dismiss() })() }
         #else
         .contentMargins(.leading, DesignTokens.Spacing.md, for: .scrollContent)
         .contentMargins(.trailing, DesignTokens.Spacing.md + pictureInPictureClearance.trailing, for: .scrollContent)

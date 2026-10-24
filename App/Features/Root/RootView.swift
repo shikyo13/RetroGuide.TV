@@ -25,6 +25,9 @@ struct RootView: View {
         .onOpenURL { url in
             model.open(url)
         }
+        #if os(tvOS)
+        .debugRemoteLinks()
+        #endif
         .onChange(of: model.homeScreenTheme, initial: true) {
             model.applyHomeScreenTheme()
         }
