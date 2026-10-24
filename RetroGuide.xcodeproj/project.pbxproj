@@ -117,6 +117,7 @@
 		8B5CE523D5B7BA7DA1292AF0 /* ChannelEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0AE37025797A6FA461DDEB /* ChannelEditorView.swift */; };
 		8BE594286CAE810DA1E67E62 /* ServerRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EBB550D625B329BE602117 /* ServerRegistry.swift */; };
 		8C63D109185C00DDB5D208FF /* ThemePalettes+Broadcast.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4A0B4FE6D7B95B90E765C77 /* ThemePalettes+Broadcast.swift */; };
+		8C955EEAFAE30CFB487639CA /* SubtitleFileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68E5AC3DC82C2CD3E3E89AE /* SubtitleFileCache.swift */; };
 		8D00E4D917C2281DC0F6A532 /* DemoServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5637EF46BF1F9602655380 /* DemoServerClient.swift */; };
 		8D4FC6F90CC52CF5F1A2059D /* ProStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA93DD29E354AB8A3A08DF7 /* ProStore.swift */; };
 		8DBC9BF9907BF654E22B1C18 /* FacetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2342F75A3FFB608FE4032CE5 /* FacetPickerView.swift */; };
@@ -385,6 +386,7 @@
 		B4E4F8A44AB9B3798884A1DF /* IntermissionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntermissionCard.swift; sourceTree = "<group>"; };
 		B5702F5542638D67F9A136D7 /* WhatsOnSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsOnSnapshot.swift; sourceTree = "<group>"; };
 		B588766984AE2C0AD5684E00 /* MPVPlaybackEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVPlaybackEngine.swift; sourceTree = "<group>"; };
+		B68E5AC3DC82C2CD3E3E89AE /* SubtitleFileCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleFileCache.swift; sourceTree = "<group>"; };
 		B746D8737282E49C370CF911 /* GuideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideView.swift; sourceTree = "<group>"; };
 		B8DD72EEF3859ADF289BE851 /* JellyfinFindStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinFindStepView.swift; sourceTree = "<group>"; };
 		B8E6421682822DF9EB4C7D65 /* Surfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Surfaces.swift; sourceTree = "<group>"; };
@@ -782,6 +784,7 @@
 				C9B881830F35AE894929CE47 /* MPVTrackSelector.swift */,
 				2E7246A4347CD32EDDBEAE57 /* MPVVideoFormat.swift */,
 				D9306874686ECBC895ABC543 /* PlaybackEngine.swift */,
+				B68E5AC3DC82C2CD3E3E89AE /* SubtitleFileCache.swift */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -1290,6 +1293,7 @@
 				B5078207034B483739FBEE0D /* SnapshotFileWriter.swift in Sources */,
 				A81E12379CDB78335D6E9042 /* SplashView.swift in Sources */,
 				344BBCFC8E4E7130D58A182A /* StaticNoiseView.swift in Sources */,
+				8C955EEAFAE30CFB487639CA /* SubtitleFileCache.swift in Sources */,
 				83534407C63AEF805602EF14 /* SubtitleTimingControl.swift in Sources */,
 				42D421BD47109060D3F3D77E /* Surfaces.swift in Sources */,
 				E12FF8A63EA8CE4599227EF4 /* TVGlyph.swift in Sources */,

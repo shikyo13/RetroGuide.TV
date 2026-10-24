@@ -125,6 +125,9 @@ final class MPVCore: @unchecked Sendable {
     private var currentGeneration = 0
     /// Track selection to apply once the file for `currentGeneration` has loaded.
     private var pendingTracks: TrackSelection?
+    /// The sidecar subtitles being downloaded for the current selection, added when they arrive.
+    private var awaitedSubtitle: URL?
+    private let subtitleFiles = SubtitleFileCache.shared
     private let generationLock = NSLock()
 
     init?(layer: CAMetalLayer) {
@@ -205,10 +208,8 @@ final class MPVCore: @unchecked Sendable {
             pendingTracks = tracks
         }
         generationLock.unlock()
-        guard !isLoading, let rawTrackList = mpv_get_property_string(handle, Option.trackListProperty) else { return }
-        let trackList = String(cString: rawTrackList)
-        mpv_free(rawTrackList)
-        MPVTrackSelector.commands(for: tracks, trackListJSON: trackList).forEach(command)
+        guard !isLoading else { return }
+        apply(tracks, handle: handle)
     }
 
     func setPaused(_ paused: Bool) {
@@ -253,6 +254,7 @@ final class MPVCore: @unchecked Sendable {
         generationLock.lock()
         currentGeneration = generation
         pendingTracks = tracks
+        awaitedSubtitle = nil
         generationLock.unlock()
     }
 
@@ -266,12 +268,56 @@ final class MPVCore: @unchecked Sendable {
 
     /// Selects the server's audio/subtitle tracks for the file that just loaded.
     private func applyPendingTracks(_ handle: OpaquePointer) {
-        guard let tracks = takePendingTracks(),
-              let rawTrackList = mpv_get_property_string(handle, Option.trackListProperty)
-        else { return }
+        guard let tracks = takePendingTracks() else { return }
+        apply(tracks, handle: handle)
+    }
+
+    /// Applies `tracks` to the loaded file. Sidecar subtitles not downloaded yet
+    /// start off and are added once the file arrives, so they never hold up the picture.
+    private func apply(_ tracks: TrackSelection, handle: OpaquePointer) {
+        var selection = tracks
+        var download: URL?
+        if case let .external(url) = tracks.subtitle {
+            if let file = subtitleFiles.cachedFile(for: url) {
+                selection = TrackSelection(audioStreamIndex: tracks.audioStreamIndex, subtitle: .external(file))
+            } else {
+                selection = TrackSelection(audioStreamIndex: tracks.audioStreamIndex, subtitle: .none)
+                download = url
+            }
+        }
+        generationLock.lock()
+        awaitedSubtitle = download
+        let generation = currentGeneration
+        generationLock.unlock()
+        run(selection, handle: handle)
+        guard let download else { return }
+        Task { [weak self, subtitleFiles] in
+            guard let file = await subtitleFiles.download(download) else {
+                Self.logger.error("Subtitles could not be downloaded; playing without them")
+                return
+            }
+            self?.addDownloadedSubtitle(file, for: download, generation: generation)
+        }
+    }
+
+    /// Adds subtitles that finished downloading, unless the channel or the choice changed meanwhile.
+    private func addDownloadedSubtitle(_ file: URL, for url: URL, generation: Int) {
+        guard let handle else { return }
+        generationLock.lock()
+        let isStillWanted = currentGeneration == generation && awaitedSubtitle == url
+        if isStillWanted {
+            awaitedSubtitle = nil
+        }
+        generationLock.unlock()
+        guard isStillWanted else { return }
+        run(TrackSelection(audioStreamIndex: nil, subtitle: .external(file)), handle: handle)
+    }
+
+    private func run(_ selection: TrackSelection, handle: OpaquePointer) {
+        guard let rawTrackList = mpv_get_property_string(handle, Option.trackListProperty) else { return }
         let trackList = String(cString: rawTrackList)
         mpv_free(rawTrackList)
-        MPVTrackSelector.commands(for: tracks, trackListJSON: trackList).forEach(command)
+        MPVTrackSelector.commands(for: selection, trackListJSON: trackList).forEach(command)
     }
 
     private var generation: Int {
