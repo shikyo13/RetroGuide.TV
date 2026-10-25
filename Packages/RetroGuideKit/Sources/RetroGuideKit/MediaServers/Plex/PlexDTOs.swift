@@ -117,7 +117,8 @@ struct PlexMetadata: Decodable {
                 audioCodec: media.audioCodec,
                 filePath: media.parts?.first?.key,
                 height: media.height,
-                bitrateKbps: media.bitrate
+                bitrateKbps: media.bitrate,
+                duration: media.duration.flatMap { $0 > .zero ? TimeInterval($0) / PlexAPI.Defaults.millisecondsPerSecond : nil }
             )
         }
     }
@@ -129,10 +130,12 @@ struct PlexMedia: Decodable {
     let audioCodec: String?
     let height: Int?
     let bitrate: Int?
+    /// Milliseconds.
+    let duration: Int?
     let parts: [PlexPart]?
 
     enum CodingKeys: String, CodingKey {
-        case container, videoCodec, audioCodec, height, bitrate
+        case container, videoCodec, audioCodec, height, bitrate, duration
         case parts = "Part"
     }
 }

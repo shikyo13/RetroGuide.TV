@@ -47,6 +47,22 @@ struct PlexMappingTests {
         #expect(PlexItemMapper.movie(movie, library: movies, memberships: PlexTagMemberships())?.titleIDs == TitleIDs(tmdb: 603))
     }
 
+    @Test("A short clip filed as a version of a movie neither sets its running time nor plays")
+    func ignoresClipVersions() throws {
+        // As Plex lists Out Cold: the clip first, reporting its 71 seconds as the movie's.
+        let movie = try JSONDecoder().decode(PlexMetadata.self, from: Data("""
+            {"ratingKey": "5", "title": "Out Cold", "duration": 71000, "Media": [
+              {"duration": 71000, "height": 336, "Part": [{"key": "/library/parts/1/clip.mkv"}]},
+              {"duration": 5393000, "height": 336, "Part": [{"key": "/library/parts/2/movie.mkv"}]}
+            ]}
+            """.utf8))
+        let movies = MediaLibrary(serverID: "server", key: "1", title: "Movies", kind: .movies)
+        let item = try #require(PlexItemMapper.movie(movie, library: movies, memberships: PlexTagMemberships()))
+        #expect(item.duration == 5_393)
+        #expect(item.versions.map(\.filePath) == ["/library/parts/2/movie.mkv"])
+        #expect(item.versions.map(\.index) == [1])
+    }
+
     @Test("Items without a duration are skipped")
     func skipsUntimed() throws {
         let metadata = try loadFixture()

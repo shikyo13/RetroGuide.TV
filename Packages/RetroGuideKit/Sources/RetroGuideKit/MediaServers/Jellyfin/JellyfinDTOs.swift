@@ -53,6 +53,7 @@ struct JellyfinMediaSource: Decodable {
     let container: String?
     /// Overall bitrate in bits per second.
     let bitrate: Int?
+    let runTimeTicks: Int64?
     let mediaStreams: [JellyfinMediaStream]?
     /// The tracks the server would play for this viewer (their remembered
     /// choice, else their language settings). `-1` means no subtitles.

@@ -13,7 +13,8 @@ enum JellyfinItemMapper {
     }
 
     static func movie(_ item: JellyfinItem, library: MediaLibrary, collections: [String: [String]]) -> MediaItem? {
-        guard let duration = seconds(item.runTimeTicks), let title = item.name else { return nil }
+        let playable = FullLengthVersions.select(versions(of: item), reported: seconds(item.runTimeTicks))
+        guard let duration = playable.duration, let title = item.name else { return nil }
         return MediaItem(
             serverID: library.serverID,
             itemKey: item.id,
@@ -36,7 +37,7 @@ enum JellyfinItemMapper {
                 logo: image(of: item, JellyfinAPI.ImageType.logo),
                 thumbnail: image(of: item, JellyfinAPI.ImageType.primary)
             ),
-            versions: versions(of: item),
+            versions: playable.versions,
             titleIDs: titleIDs(item.providerIds),
             publicIDs: titleIDs(item.providerIds),
             addedAt: JellyfinCoding.date(item.dateCreated)
@@ -50,7 +51,8 @@ enum JellyfinItemMapper {
         library: MediaLibrary,
         collections: [String: [String]]
     ) -> MediaItem? {
-        guard let duration = seconds(item.runTimeTicks), let seriesID = item.seriesId else { return nil }
+        let playable = FullLengthVersions.select(versions(of: item), reported: seconds(item.runTimeTicks))
+        guard let duration = playable.duration, let seriesID = item.seriesId else { return nil }
         let title = item.name ?? item.seriesName ?? series?.name ?? ""
         let rating = item.officialRating ?? series?.officialRating
         let memberships = (collections[seriesID] ?? []) + (collections[item.id] ?? [])
@@ -91,7 +93,7 @@ enum JellyfinItemMapper {
                     ?? series.flatMap { image(of: $0, JellyfinAPI.ImageType.logo) },
                 thumbnail: image(of: item, JellyfinAPI.ImageType.primary)
             ),
-            versions: versions(of: item),
+            versions: playable.versions,
             titleIDs: titleIDs(series?.providerIds),
             publicIDs: titleIDs(item.providerIds),
             addedAt: JellyfinCoding.date(item.dateCreated)
@@ -115,7 +117,8 @@ enum JellyfinItemMapper {
                 audioCodec: audio?.codec,
                 filePath: source.id,
                 height: video?.height,
-                bitrateKbps: source.bitrate.map { $0 / bitsPerKilobit }
+                bitrateKbps: source.bitrate.map { $0 / bitsPerKilobit },
+                duration: seconds(source.runTimeTicks)
             )
         }
     }
