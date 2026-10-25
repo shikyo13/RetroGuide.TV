@@ -90,7 +90,7 @@ public struct ChannelRule: Codable, Sendable, Hashable {
 extension ChannelRule {
     /// Returns the ids of every item in `index` that satisfies the rule.
     public func matchingItems(in index: LibraryIndex) -> [MediaItem] {
-        let compiled = CompiledRule(self, showAliases: index.showAliases)
+        let compiled = CompiledRule(self, showAliases: index.showAliases, libraryTwins: index.libraryTwins)
         guard let candidates = candidatePositions(in: index) else {
             return zip(index.items, index.attributes)
                 .filter { compiled.matches($0, $1) }
@@ -105,7 +105,7 @@ extension ChannelRule {
     private func candidatePositions(in index: LibraryIndex) -> [Int]? {
         let lookup: [[Int]]
         if !libraryIDs.isEmpty {
-            lookup = libraryIDs.map { index.positionsByLibrary[$0] ?? [] }
+            lookup = index.libraryTwins.expanding(libraryIDs).map { index.positionsByLibrary[$0] ?? [] }
         } else if !networks.isEmpty {
             lookup = TextNormalizer.keys(networks).map { index.positionsByNetwork[$0] ?? [] }
         } else if !collections.isEmpty {
@@ -127,10 +127,13 @@ struct CompiledRule {
     private let keywords: [String]
     /// The rule's shows under both their server-specific and shared ids.
     private let seriesIDs: Set<String>
+    /// The rule's libraries and their twins on other servers.
+    private let libraryIDs: Set<String>
 
-    init(_ rule: ChannelRule, showAliases: [String: String] = [:]) {
+    init(_ rule: ChannelRule, showAliases: [String: String] = [:], libraryTwins: LibraryTwins = .none) {
         self.rule = rule
         seriesIDs = rule.seriesIDs.union(rule.seriesIDs.compactMap { showAliases[$0] })
+        libraryIDs = libraryTwins.expanding(rule.libraryIDs)
         genres = TextNormalizer.keys(rule.genres)
         excludedGenres = TextNormalizer.keys(rule.excludedGenres)
         networks = TextNormalizer.keys(rule.networks)
@@ -140,7 +143,7 @@ struct CompiledRule {
 
     func matches(_ item: MediaItem, _ attributes: NormalizedAttributes) -> Bool {
         guard rule.kinds.isEmpty || rule.kinds.contains(item.kind) else { return false }
-        guard rule.libraryIDs.isEmpty || item.libraryIDs.contains(where: rule.libraryIDs.contains) else { return false }
+        guard libraryIDs.isEmpty || item.libraryIDs.contains(where: libraryIDs.contains) else { return false }
         guard rule.audiences.isEmpty || rule.audiences.contains(item.audience) else { return false }
         guard rule.categories.isEmpty || !rule.categories.isDisjoint(with: attributes.categories) else { return false }
         guard rule.excludedCategories.isDisjoint(with: attributes.categories) else { return false }

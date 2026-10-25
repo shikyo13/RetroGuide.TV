@@ -22,7 +22,7 @@ public struct LibraryFacets: Sendable {
     public let decades: [FacetValue]
     public let libraries: [FacetValue]
 
-    init(items: [MediaItem], attributes: [NormalizedAttributes], libraries sourceLibraries: [MediaLibrary]) {
+    init(items: [MediaItem], attributes: [NormalizedAttributes], libraries sourceLibraries: [MediaLibrary], libraryTwins: LibraryTwins = .none) {
         let categoriesByItem = Dictionary(zip(items.map(\.id), attributes.map(\.categories)), uniquingKeysWith: { first, _ in first })
         categories = Self.aggregate(items) { item in
             (categoriesByItem[item.id] ?? []).map { ($0.rawValue, $0.displayName) }
@@ -41,8 +41,9 @@ public struct LibraryFacets: Sendable {
                 return [(String(decade), Decade.label(for: decade))]
             } ?? []
         }
+        // A library's twins on other servers count as that library.
         self.libraries = Self.aggregate(items) { item in
-            item.libraryIDs.map { ($0, libraryTitles[$0] ?? $0) }
+            Set(item.libraryIDs.map { libraryTwins.canonical[$0] ?? $0 }).sorted().map { ($0, libraryTitles[$0] ?? $0) }
         }
     }
 

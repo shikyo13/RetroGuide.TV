@@ -129,6 +129,40 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         return copy
     }
 
+    /// This copy (its server, file, timing and artwork), described the way
+    /// `sources`, every copy of the same title in order of preference,
+    /// describe it: each detail from the first copy that has it.
+    func described(by sources: [MediaItem]) -> MediaItem {
+        let source = sources.first ?? self
+        let rated = sources.first { $0.contentRating != nil }
+        var copy = MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: source.title,
+            series: series.map { SeriesInfo(key: $0.key, title: source.series?.title ?? $0.title, seasonNumber: $0.seasonNumber, episodeNumber: $0.episodeNumber, externalID: $0.externalID) },
+            year: sources.lazy.compactMap(\.year).first, duration: duration, summary: sources.lazy.compactMap(\.summary).first,
+            contentRating: rated?.contentRating, audience: rated?.audience ?? source.audience,
+            genres: source.genres, networks: source.networks, collections: collections, countries: source.countries, artwork: artwork,
+            versions: versions, titleIDs: sources.lazy.compactMap(\.titleIDs).first, publicIDs: publicIDs ?? sources.lazy.compactMap(\.publicIDs).first,
+            addedAt: addedAt
+        )
+        copy.otherLibraryIDs = otherLibraryIDs
+        return copy
+    }
+
+    /// This episode with its show's details (name, genres, networks,
+    /// countries, ids) as `show`, an episode of it, gives them.
+    func withShowDescription(of show: MediaItem) -> MediaItem {
+        guard let series, let showSeries = show.series else { return self }
+        var copy = MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
+            series: SeriesInfo(key: series.key, title: showSeries.title, seasonNumber: series.seasonNumber, episodeNumber: series.episodeNumber, externalID: series.externalID),
+            year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
+            genres: show.genres, networks: show.networks, collections: collections, countries: show.countries, artwork: artwork,
+            versions: versions, titleIDs: show.titleIDs ?? titleIDs, publicIDs: publicIDs, addedAt: addedAt
+        )
+        copy.otherLibraryIDs = otherLibraryIDs
+        return copy
+    }
+
     /// This item as part of the show with the shared id `showID`.
     func withShowExternalID(_ showID: String) -> MediaItem {
         guard let series, series.externalID != showID else { return self }

@@ -11,6 +11,8 @@ public struct LibraryIndex: Sendable {
     private let positionsByID: [String: Int]
     /// Server-specific show ids → the shared show id (see ``CrossServerMerge``).
     let showAliases: [String: String]
+    /// Libraries on different servers that are one library (see ``LibraryTwins``).
+    let libraryTwins: LibraryTwins
     /// Item positions by normalized network and collection name, and by
     /// library id, so a rule naming one finds its items without a full scan.
     let positionsByNetwork: [String: [Int]]
@@ -21,8 +23,15 @@ public struct LibraryIndex: Sendable {
         self.init(items: items, libraries: libraries, showAliases: [:])
     }
 
-    init(items: [MediaItem], libraries: [MediaLibrary], showAliases: [String: String], classification: TitleClassification = .shared) {
+    init(
+        items: [MediaItem],
+        libraries: [MediaLibrary],
+        showAliases: [String: String],
+        libraryTwins: LibraryTwins = .none,
+        classification: TitleClassification = .shared
+    ) {
         self.showAliases = showAliases
+        self.libraryTwins = libraryTwins
         let sorted = items.sorted { $0.id < $1.id }
         self.items = sorted
         let showDecades = Self.showDecades(sorted)
@@ -45,14 +54,14 @@ public struct LibraryIndex: Sendable {
             sorted.enumerated().map { ($1.id, $0) },
             uniquingKeysWith: { first, _ in first }
         )
-        self.facets = LibraryFacets(items: sorted, attributes: attributes, libraries: libraries)
+        self.facets = LibraryFacets(items: sorted, attributes: attributes, libraries: libraries, libraryTwins: libraryTwins)
         var byNetwork: [String: [Int]] = [:]
         var byCollection: [String: [Int]] = [:]
         var byLibrary: [String: [Int]] = [:]
         for (position, item) in sorted.enumerated() {
             attributes[position].networks.forEach { byNetwork[$0, default: []].append(position) }
             attributes[position].collections.forEach { byCollection[$0, default: []].append(position) }
-            item.libraryIDs.forEach { byLibrary[$0, default: []].append(position) }
+            libraryTwins.expanding(Set(item.libraryIDs)).forEach { byLibrary[$0, default: []].append(position) }
         }
         positionsByNetwork = byNetwork
         positionsByCollection = byCollection
@@ -62,14 +71,23 @@ public struct LibraryIndex: Sendable {
     /// Merges snapshots in priority order (see ``CrossServerMerge``).
     public init(snapshots: [LibrarySnapshot], quality: [String: VideoQuality] = [:]) {
         let merged = CrossServerMerge(snapshots: snapshots, quality: quality)
-        self.init(items: merged.items, libraries: Self.displayLibraries(for: snapshots), showAliases: merged.showAliases)
+        let twins = LibraryTwins(libraries: snapshots.flatMap(\.libraries), items: merged.items)
+        self.init(
+            items: merged.items,
+            libraries: Self.displayLibraries(for: snapshots, twins: twins),
+            showAliases: merged.showAliases,
+            libraryTwins: twins
+        )
     }
 
-    /// Libraries with names made unique across servers ("Movies · Home").
-    private static func displayLibraries(for snapshots: [LibrarySnapshot]) -> [MediaLibrary] {
-        let titleCounts = Dictionary(grouping: snapshots.flatMap(\.libraries), by: \.title).mapValues(\.count)
+    /// Libraries with names made unique across servers ("Movies · Home"); a
+    /// library's twins on other servers aren't listed, and don't count as
+    /// another library with its name.
+    private static func displayLibraries(for snapshots: [LibrarySnapshot], twins: LibraryTwins) -> [MediaLibrary] {
+        let listed = snapshots.flatMap(\.libraries).filter { twins.canonical[$0.id] == nil }
+        let titleCounts = Dictionary(grouping: listed, by: \.title).mapValues(\.count)
         return snapshots.flatMap { snapshot in
-            snapshot.libraries.map { library in
+            snapshot.libraries.filter { twins.canonical[$0.id] == nil }.map { library in
                 guard titleCounts[library.title, default: .zero] > 1 else { return library }
                 return MediaLibrary(
                     serverID: library.serverID,

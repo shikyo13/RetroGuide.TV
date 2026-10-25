@@ -21,6 +21,8 @@ struct CrossServerMerge {
             snapshot.items.map { (priority: priority, preference: quality[snapshot.serverID] ?? .original, item: $0) }
         }
         let ambiguous = Self.ambiguousPublicKeys(entries.map(\.item))
+        // Read before shows take their shared ids: how widely each copy's own ids are recognized.
+        let ranks = Dictionary(entries.map { ($0.item.id, DescriptionRank($0.item)) }, uniquingKeysWith: { first, _ in first })
         let shows = Self.sharedShowIDs(entries.map(\.item), ambiguous: ambiguous)
         let resolved = entries.map { entry in
             (entry.priority, entry.preference, entry.item.seriesID.flatMap { shows[$0] }.map { entry.item.withShowExternalID($0) } ?? entry.item)
@@ -32,7 +34,8 @@ struct CrossServerMerge {
             }
         }
         showAliases = aliases
-        items = Self.bestCopies(resolved, ambiguous: ambiguous)
+        let copies = Self.bestCopies(resolved, ambiguous: ambiguous, ranks: ranks)
+        items = Self.withSharedShowDescriptions(copies, allCopies: resolved.map(\.2), ranks: ranks)
     }
 
     // MARK: - Shows
@@ -107,12 +110,17 @@ struct CrossServerMerge {
     /// another server's library smaller, whatever its episode numbering.
     private static func bestCopies(
         _ entries: [(priority: Int, preference: VideoQuality, item: MediaItem)],
-        ambiguous: Set<String>
+        ambiguous: Set<String>,
+        ranks: [String: DescriptionRank]
     ) -> [MediaItem] {
         let passes: [(MediaItem) -> [String]] = [{ sameTitleKeys(of: $0, ambiguous: ambiguous) }, episodeNumberKeys]
+        // Copies are paired in id order, not server order, so the same copies
+        // pair up whichever server is listed first.
+        let byID = entries.indices.sorted { entries[$0].item.id < entries[$1].item.id }
         var groups = DisjointSets(count: entries.count)
         var firstOnServer: [String: Int] = [:]
-        for (position, entry) in entries.enumerated() {
+        for position in byID {
+            let entry = entries[position]
             for key in passes.flatMap({ $0(entry.item) }) {
                 let scoped = Key.onServer(key, entry.item.serverID)
                 if let first = firstOnServer[scoped] {
@@ -128,8 +136,8 @@ struct CrossServerMerge {
         }
         for keys in passes {
             var firstWithKey: [String: Int] = [:]
-            for (position, entry) in entries.enumerated() {
-                for key in keys(entry.item) {
+            for position in byID {
+                for key in keys(entries[position].item) {
                     guard let first = firstWithKey[key] else {
                         firstWithKey[key] = position
                         continue
@@ -155,10 +163,37 @@ struct CrossServerMerge {
                 best[group] = position
             }
         }
-        // One copy plays; the others' libraries and collections still count.
+        // One copy plays, described by the most widely recognized copy; the
+        // others' libraries and collections still count.
         return best.sorted { $0.value < $1.value }.map { group, winner in
             let others = (members[group] ?? []).filter { $0 != winner }.map { entries[$0].item }
-            return others.isEmpty ? entries[winner].item : entries[winner].item.merging(copies: others)
+            guard !others.isEmpty else { return entries[winner].item }
+            let playing = entries[winner].item
+            let sources = ([playing] + others).sorted { ranks[$0.id, default: .unknown] < ranks[$1.id, default: .unknown] }
+            return playing.described(by: sources).merging(copies: others)
+        }
+    }
+
+    /// Gives every episode of a show found on more than one server the show
+    /// details (name, genres, networks) of the copy whose show id is the most
+    /// widely recognized, whichever server each episode plays from.
+    private static func withSharedShowDescriptions(
+        _ items: [MediaItem],
+        allCopies: [MediaItem],
+        ranks: [String: DescriptionRank]
+    ) -> [MediaItem] {
+        var describer: [String: MediaItem] = [:]
+        var servers: [String: Set<String>] = [:]
+        for copy in allCopies where copy.series != nil {
+            servers[copy.showID, default: []].insert(copy.serverID)
+            if let current = describer[copy.showID], !(ranks[copy.id, default: .unknown].show < ranks[current.id, default: .unknown].show) {
+                continue
+            }
+            describer[copy.showID] = copy
+        }
+        return items.map { item in
+            guard item.series != nil, servers[item.showID, default: []].count > 1, let show = describer[item.showID] else { return item }
+            return item.withShowDescription(of: show)
         }
     }
 
@@ -202,13 +237,18 @@ struct CrossServerMerge {
         return repeated
     }
 
-    /// Higher-priority server first; on one server the copy that best fits
-    /// its quality setting; otherwise the lower id, so the choice never
-    /// depends on listing order.
+    /// A copy long enough to schedule first (one server may list only a
+    /// short clip of the title); then the higher-priority server; on one
+    /// server the copy that best fits its quality setting; otherwise the
+    /// lower id, so the choice never depends on listing order.
     private static func isPreferred(
         _ candidate: (priority: Int, preference: VideoQuality, item: MediaItem),
         over current: (priority: Int, preference: VideoQuality, item: MediaItem)
     ) -> Bool {
+        let (candidateAirs, currentAirs) = (isSchedulable(candidate.item), isSchedulable(current.item))
+        if candidateAirs != currentAirs {
+            return candidateAirs
+        }
         if candidate.priority != current.priority {
             return candidate.priority < current.priority
         }
@@ -221,12 +261,48 @@ struct CrossServerMerge {
         return candidate.item.id < current.item.id
     }
 
+    private static func isSchedulable(_ item: MediaItem) -> Bool {
+        item.duration >= ScheduleConstants.minimumProgramDuration
+    }
+
     private static func isBetterFit(_ candidate: MediaItem, than current: MediaItem, for quality: VideoQuality) -> Bool {
         guard let candidateVersion = MediaVersionSelector.best(of: candidate.versions, for: quality),
               let currentVersion = MediaVersionSelector.best(of: current.versions, for: quality)
         else { return false }
         return MediaVersionSelector.best(of: [currentVersion, candidateVersion], for: quality) == candidateVersion
             && candidateVersion != currentVersion
+    }
+}
+
+/// How widely a copy's own ids are recognized, for choosing whose description
+/// a merged title takes: by the title's id, then its show's (or for a show,
+/// the other way round), then by item id. Server order never counts, so the
+/// choice is the same whichever server is listed first.
+private struct DescriptionRank: Comparable {
+    static let unknown = DescriptionRank(title: Key.unrankedID + 1, show: Key.unrankedID + 1, id: "")
+
+    let title: (Int, Int, String)
+    let show: (Int, Int, String)
+
+    init(_ item: MediaItem) {
+        self.init(
+            title: item.externalID.map(Key.rank(of:)) ?? Key.unrankedID,
+            show: item.series?.externalID.map(Key.rank(of:)) ?? Key.unrankedID,
+            id: item.id
+        )
+    }
+
+    private init(title: Int, show: Int, id: String) {
+        self.title = (title, show, id)
+        self.show = (show, title, id)
+    }
+
+    static func < (lhs: DescriptionRank, rhs: DescriptionRank) -> Bool {
+        lhs.title < rhs.title
+    }
+
+    static func == (lhs: DescriptionRank, rhs: DescriptionRank) -> Bool {
+        lhs.title == rhs.title
     }
 }
 
@@ -258,6 +334,9 @@ private enum Key {
     static func rank(of id: String) -> Int {
         schemeOrder.firstIndex(of: scheme(id)) ?? schemeOrder.count
     }
+
+    /// The rank of a title or show with no shared id at all.
+    static let unrankedID = schemeOrder.count + 1
 }
 
 /// Union-find over positions.
