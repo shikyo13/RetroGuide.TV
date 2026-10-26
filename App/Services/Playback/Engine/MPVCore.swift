@@ -102,6 +102,7 @@ final class MPVCore: @unchecked Sendable {
         static let noStartPosition = "none"
         static let windowID = "wid"
         static let trackListProperty = "track-list"
+        static let positionProperty = "time-pos"
         static let subtitleDelayProperty = "sub-delay"
         static let pauseProperty = "pause"
         static let maxBytesProperty = "demuxer-max-bytes"
@@ -117,6 +118,14 @@ final class MPVCore: @unchecked Sendable {
     }
 
     private static let logger = Logger(subsystem: "com.adamhunt.retroguide", category: "mpv")
+
+    var position: TimeInterval? {
+        guard let handle else { return nil }
+        var value: Double = .zero
+        guard mpv_get_property(handle, Option.positionProperty, MPV_FORMAT_DOUBLE, &value) >= .zero,
+              value.isFinite else { return nil }
+        return value
+    }
 
     var onEvent: EventHandler?
 

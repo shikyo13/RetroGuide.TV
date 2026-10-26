@@ -8,6 +8,8 @@ public enum SubtitleMode: String, Codable, Sendable {
     /// When the audio isn't in the preferred subtitle language; forced
     /// subtitles (signs, foreign dialogue) otherwise.
     case foreignAudio
+    /// Forced subtitles in the preferred language, regardless of the audio language.
+    case forcedOnly
     /// Always, in the preferred language.
     case always
 }
@@ -58,6 +60,8 @@ public enum SubtitleAutoSelector {
             return nil
         case .always:
             return full ?? forced
+        case .forcedOnly:
+            return forced
         case .foreignAudio:
             // Unknown audio language: don't guess.
             guard let audio = LanguageCode.normalized(audioLanguage) else { return nil }

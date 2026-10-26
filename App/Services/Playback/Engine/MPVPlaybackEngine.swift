@@ -9,6 +9,7 @@ final class MPVPlaybackEngine: PlaybackEngine {
     let kind = PlaybackEngineKind.universal
     let capabilities = PlaybackCapabilities.universal
     var onEvent: ((PlaybackEvent) -> Void)?
+    var position: TimeInterval? { core?.position }
 
     private let renderView = MPVRenderView()
     private let core: MPVCore?

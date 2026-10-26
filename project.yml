@@ -11,7 +11,7 @@ settings:
   base:
     SWIFT_VERSION: "6.0"
     MARKETING_VERSION: "1.5"
-    CURRENT_PROJECT_VERSION: "20261024.1"
+    CURRENT_PROJECT_VERSION: "20261025.3"
     SWIFT_STRICT_CONCURRENCY: complete
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
@@ -19,10 +19,10 @@ packages:
   RetroGuideKit:
     path: Packages/RetroGuideKit
   # MPVKit 1.0.0 with libmpv patched: audio route changes can't crash playback, and the
-  # AVFoundation audio output (routable from Control Center) is paced (see the fork's README).
+  # AVFoundation audio output is paced. FFmpeg also reads external VobSub pairs on iOS/tvOS.
   MPVKit:
     url: https://github.com/shikyo13/MPVKit
-    exactVersion: 1.0.0-retroguide.2
+    exactVersion: 1.0.0-retroguide.3
   # Ads in the free version on iPhone and iPad (not Apple TV); includes Google's consent SDK.
   GoogleMobileAds:
     url: https://github.com/googleads/swift-package-manager-google-mobile-ads

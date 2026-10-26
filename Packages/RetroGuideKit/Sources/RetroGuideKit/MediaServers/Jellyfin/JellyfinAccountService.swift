@@ -110,13 +110,13 @@ public struct JellyfinAccountService: Sendable {
         )
     }
 
-    /// Jellyfin's modes, mapped to the closest of the app's: "Default" and
-    /// "Smart" show subtitles for foreign audio, "Only forced" shows forced
-    /// ones, which the foreign-audio rule also does for audio in the viewer's language.
+    /// "Default" and "Smart" use the foreign-audio rule; "Only forced"
+    /// never enables ordinary subtitles, even for foreign audio.
     private static func subtitleMode(_ mode: String?) -> SubtitleMode {
         switch mode {
         case JellyfinAPI.SubtitleMode.always: .always
         case JellyfinAPI.SubtitleMode.none: .manual
+        case JellyfinAPI.SubtitleMode.onlyForced: .forcedOnly
         default: .foreignAudio
         }
     }

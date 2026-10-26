@@ -47,6 +47,8 @@ protocol PlaybackEngine: AnyObject {
     var capabilities: PlaybackCapabilities { get }
     var videoView: UIView { get }
     var onEvent: ((PlaybackEvent) -> Void)? { get set }
+    /// Current position in the original item, when the engine knows it.
+    var position: TimeInterval? { get }
 
     /// Plays `request`, honoring the server's audio/subtitle selection when known.
     func play(_ request: StreamRequest, tracks: TrackSelection?)
@@ -72,6 +74,7 @@ protocol PlaybackEngine: AnyObject {
 }
 
 extension PlaybackEngine {
+    var position: TimeInterval? { nil }
     /// Engines that leave HDR handling to the system ignore this.
     func setPrefersHDROutput(_ prefersHDROutput: Bool) {}
 

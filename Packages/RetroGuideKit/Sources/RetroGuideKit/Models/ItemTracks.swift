@@ -15,18 +15,22 @@ public struct TrackOption: Sendable, Hashable, Identifiable {
     /// What the server calls the track, e.g. "English (AAC Stereo)" or "English (Signs & Songs)".
     public let title: String
     public let isForced: Bool
+    /// Original server index, which can differ from the container index
+    /// when a server inserts external subtitle files into its track list.
+    public let serverStreamIndex: Int?
 
     public enum Source: Sendable, Hashable {
         case embedded(streamIndex: Int)
         case external(URL)
     }
 
-    public init(kind: Kind, source: Source, language: String?, title: String, isForced: Bool) {
+    public init(kind: Kind, source: Source, language: String?, title: String, isForced: Bool, serverStreamIndex: Int? = nil) {
         self.kind = kind
         self.source = source
         self.language = language
         self.title = title
         self.isForced = isForced
+        self.serverStreamIndex = serverStreamIndex
     }
 
     public var id: String {

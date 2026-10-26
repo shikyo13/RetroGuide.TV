@@ -57,16 +57,27 @@ next in a cable-style guide.
   until they're back, and each server has its own quality and buffering
   settings for playback over the internet.
 - **Themes.** Twelve themes, from Classic Cable and Local Forecast to VHS and
-  Teletext, and optional CRT scanlines on menus.
+  Teletext, and optional CRT scanlines on menus. On iPhone and iPad, the app
+  icon and What's On widget colors match the chosen theme.
+
+- **Widgets and Picture in Picture.** See current programs in the What's On
+  widget on iPhone and iPad, tap to tune in, and keep watching in a floating
+  window while using other apps. The sleep timer stops at a chosen time or at
+  the end of the current program, including Picture in Picture.
+- **Favorites and reminders (Pro).** Star channels, browse and surf Favorites,
+  and set local notifications for upcoming airings. Personalize widgets with
+  Favorites, up to eight selected channels, or one pinned channel.
 
 ## Free and Pro
 
 The App Store version is free with ads on iPhone and iPad (Apple TV has no
 ads): a standard banner under the menus and, at most once per 90 minutes of
 watching, a full-screen ad at a natural break. RetroGuide Pro is a one-time
-purchase that removes ads and adds multiple servers, unlimited custom
-channels, every theme, and schedule controls. One purchase covers iPhone, iPad
-and Apple TV.
+purchase that removes ads and adds Favorites, program reminders, personalized
+widgets, multiple servers, unlimited custom channels, every theme, schedule
+controls, library-wide track rules and removing individual titles from channels.
+The basic widget, Picture in Picture and sleep timer are free. One purchase
+covers iPhone, iPad and Apple TV.
 
 ## Requirements
 
@@ -123,13 +134,14 @@ Live TV starts as soon as your first server is indexed. Add more servers later i
 
 ## How it works
 
-- **Indexing.** RetroGuide.TV reads your library metadata from your servers once
-  and caches it on the device, refreshing when it's more than six hours old. It
-  doesn't affect watch history. The one thing it writes is your own choice of
-  audio and subtitles (Options › Audio & Subtitles), saved to your Plex account
-  as its track selection so every app you use plays the same tracks. Jellyfin
-  has no place for per-show track choices, so with Jellyfin they're kept on the
-  device (and in iCloud, across your devices).
+- **Indexing and playback reports.** RetroGuide.TV reads library metadata from
+  your servers and caches it on the device, refreshing when it is more than six
+  hours old. Jellyfin receives playback start, progress, pause and stop reports,
+  including the played item, position and selected tracks. Its server settings
+  determine how those reports affect watch progress and remembered choices.
+  Audio and subtitle choices can be saved to Plex. The app keeps shared track
+  rules locally and in iCloud; Jellyfin receives per-playback track choices,
+  rather than a bulk per-show rule.
 - **Scheduling.** Schedules are computed from the lineup and the date, never
   stored, so every device agrees. Shows take turns: each gets an equal share of
   turns however many episodes it has, and always continues with its next

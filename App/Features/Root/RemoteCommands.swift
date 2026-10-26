@@ -19,18 +19,13 @@ extension View {
 
     func remotePlayPauseCommand(perform action: @escaping () -> Void) -> some View {
         onPlayPauseCommand(perform: action)
-            #if DEBUG
-            .focusedValue(\.debugPlayPauseCommand, RemoteCommand(perform: action))
-            #endif
+            .focusedValue(\.playPauseCommand, RemoteCommand(perform: action))
     }
 
-    /// Runs the focused handler for `retroguide://debug/…` links; added once, at the root.
-    func debugRemoteLinks() -> some View {
-        #if DEBUG
-        modifier(DebugRemoteLinks())
-        #else
-        self
-        #endif
+    /// Routes system playback commands to the focused control. Development
+    /// builds also accept remote-button links for simulator checks.
+    func routeRemoteCommands() -> some View {
+        modifier(RemoteCommandRouting())
     }
 }
 
@@ -40,22 +35,27 @@ struct RemoteCommand {
 
 extension FocusedValues {
     @Entry var debugExitCommand: RemoteCommand?
-    @Entry var debugPlayPauseCommand: RemoteCommand?
+    @Entry var playPauseCommand: RemoteCommand?
 }
 
-#if DEBUG
-private struct DebugRemoteLinks: ViewModifier {
+private struct RemoteCommandRouting: ViewModifier {
+    #if DEBUG
     private enum Link {
         static let host = "debug"
         static let back = "/back"
         static let playPause = "/playpause"
     }
+    #endif
 
     @FocusedValue(\.debugExitCommand) private var exitCommand
-    @FocusedValue(\.debugPlayPauseCommand) private var playPauseCommand
+    @FocusedValue(\.playPauseCommand) private var playPauseCommand
 
     func body(content: Content) -> some View {
-        content.onOpenURL { url in
+        content.onReceive(NotificationCenter.default.publisher(for: RemotePlaybackNotification.playPause)) { _ in
+            playPauseCommand?.perform()
+        }
+        #if DEBUG
+        .onOpenURL { url in
             guard url.host == Link.host else { return }
             switch url.path {
             case Link.back: exitCommand?.perform()
@@ -63,7 +63,7 @@ private struct DebugRemoteLinks: ViewModifier {
             default: break
             }
         }
+        #endif
     }
 }
-#endif
 #endif

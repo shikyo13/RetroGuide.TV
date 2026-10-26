@@ -65,6 +65,6 @@ enum JellyfinTrackMapper {
             source = .embedded(streamIndex: index - sidecars.filter { $0 < index }.count)
         }
         let title = JellyfinTrackTitle.title(for: stream)
-        return TrackOption(kind: kind, source: source, language: stream.language, title: title, isForced: stream.isForced == true)
+        return TrackOption(kind: kind, source: source, language: stream.language, title: title, isForced: stream.isForced == true, serverStreamIndex: index)
     }
 }

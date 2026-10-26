@@ -17,6 +17,9 @@ public enum JellyfinAPI {
         static let quickConnectInitiate = "/QuickConnect/Initiate"
         static let quickConnectConnect = "/QuickConnect/Connect"
         static let activeEncodings = "/Videos/ActiveEncodings"
+        static let playbackStart = "/Sessions/Playing"
+        static let playbackProgress = "/Sessions/Playing/Progress"
+        static let playbackStopped = "/Sessions/Playing/Stopped"
         static func item(_ id: String) -> String { "/Items/\(id)" }
         static func playbackInfo(_ id: String) -> String { "/Items/\(id)/PlaybackInfo" }
         static func stream(_ id: String) -> String { "/Videos/\(id)/stream" }
@@ -105,6 +108,9 @@ public enum JellyfinAPI {
         public static let probeTimeout: TimeInterval = 4
         /// Track selection is fetched while tuning, so it must never hold up playback for long.
         static let trackSelectionTimeout: TimeInterval = 2
+        /// Bound checks of a preferred file before trying the next copy.
+        static let availabilityTimeout: TimeInterval = 4
+        static let playbackReportTimeout: TimeInterval = 4
         /// Jellyfin counts time in ticks of 100 nanoseconds.
         static let ticksPerSecond: TimeInterval = 10_000_000
         /// How often to ask whether a Quick Connect code was approved.

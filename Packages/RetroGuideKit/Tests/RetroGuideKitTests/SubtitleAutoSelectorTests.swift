@@ -28,6 +28,23 @@ struct SubtitleAutoSelectorTests {
         #expect(SubtitleAutoSelector.choose(from: [english], audioLanguage: "jpn", preferences: preferences(.manual)) == nil)
     }
 
+    @Test(arguments: ["eng", "jpn", "und", nil] as [String?])
+    func forcedOnlyNeverSelectsOrdinarySubtitles(audioLanguage: String?) {
+        #expect(SubtitleAutoSelector.choose(
+            from: [english, spanish], audioLanguage: audioLanguage, preferences: preferences(.forcedOnly)
+        ) == nil)
+        #expect(SubtitleAutoSelector.choose(
+            from: [english, englishForced], audioLanguage: audioLanguage, preferences: preferences(.forcedOnly)
+        ) == 1)
+    }
+
+    @Test func forcedOnlyRequiresThePreferredLanguage() {
+        let spanishForced = SubtitleCandidate(language: "spa", isForced: true)
+        #expect(SubtitleAutoSelector.choose(
+            from: [spanishForced, english], audioLanguage: "jpn", preferences: preferences(.forcedOnly)
+        ) == nil)
+    }
+
     @Test func alwaysPrefersFullSubtitlesOverForced() {
         let choice = SubtitleAutoSelector.choose(from: [englishForced, english], audioLanguage: "eng", preferences: preferences(.always))
         #expect(choice == 1)

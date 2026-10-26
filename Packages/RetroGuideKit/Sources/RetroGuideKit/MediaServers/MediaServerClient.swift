@@ -107,6 +107,10 @@ public protocol MediaServerClient: Sendable {
     /// own choices still apply there.
     var savesTrackChoices: Bool { get }
 
+    /// Whether this server accepts session and track state during playback.
+    var reportsPlayback: Bool { get }
+    func reportPlayback(_ report: PlaybackReport) async -> Bool
+
     /// Tells the server a stream is no longer needed so it can free transcoder resources.
     func endStream(sessionID: String) async
 
@@ -114,6 +118,9 @@ public protocol MediaServerClient: Sendable {
 }
 
 public extension MediaServerClient {
+    var reportsPlayback: Bool { false }
+    func reportPlayback(_ report: PlaybackReport) async -> Bool { true }
+
     var savesTrackChoices: Bool {
         true
     }

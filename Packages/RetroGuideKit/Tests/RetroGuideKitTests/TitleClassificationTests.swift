@@ -96,6 +96,18 @@ struct ClassifiedChannelTests {
         #expect(try Self.matches(ChannelRule(categories: [.gameShow]), magic, classified: [1: [.comedy]]))
     }
 
+    @Test("Partial server tags do not discard known food, travel, children or horror categories")
+    func partialMetadata() throws {
+        let food = TestFactory.episode("1", show: "Cooking", genres: ["Comedy"], titleIDs: TitleIDs(imdb: 1))
+        let travel = TestFactory.episode("2", show: "Travelling", genres: ["Documentary"], titleIDs: TitleIDs(imdb: 2))
+        let children = TestFactory.episode("3", show: "Children", genres: ["Animation"], titleIDs: TitleIDs(imdb: 3))
+        let horror = TestFactory.movie("4", genres: ["Drama"], titleIDs: TitleIDs(imdb: 4))
+        let classified: [UInt32: Set<GenreCategory>] = [1: [.food], 2: [.travel], 3: [.children], 4: [.horror]]
+        for (item, category) in [(food, GenreCategory.food), (travel, .travel), (children, .children), (horror, .horror)] {
+            #expect(try Self.matches(ChannelRule(categories: [category]), item, classified: classified))
+        }
+    }
+
     @Test("An untagged title takes the classification; an unknown one keeps its tags")
     func fallbacks() throws {
         let untagged = TestFactory.episode("1", show: "Bare", titleIDs: TitleIDs(imdb: 1))

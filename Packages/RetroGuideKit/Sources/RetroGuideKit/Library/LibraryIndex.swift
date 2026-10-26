@@ -153,12 +153,10 @@ struct NormalizedAttributes: Sendable {
         var categories: Set<GenreCategory>
         if let classified {
             // The server's tags, less the loosely applied ones the
-            // classification doesn't confirm; either source's word is enough
-            // that a title is unscripted. Untagged titles take the classification.
-            categories = tagged.isEmpty
-                ? classified
-                : tagged.subtracting(GenreCategory.looselyTagged.subtracting(classified))
-                    .union(classified.intersection(GenreCategory.unscripted))
+            // classification doesn't confirm, plus confirmed categories a
+            // server omits (for example Food on a cooking documentary).
+            categories = tagged.subtracting(GenreCategory.looselyTagged.subtracting(classified))
+                .union(classified)
             categorySource = .classification
         } else {
             categories = tagged

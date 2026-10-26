@@ -16,6 +16,11 @@ final class AVPlaybackEngine: PlaybackEngine {
     let kind = PlaybackEngineKind.appleNative
     let capabilities = PlaybackCapabilities.appleNative
     var onEvent: ((PlaybackEvent) -> Void)?
+    private var positionOffset: TimeInterval = .zero
+    var position: TimeInterval? {
+        let seconds = player.currentTime().seconds
+        return seconds.isFinite ? seconds + positionOffset : nil
+    }
 
     private let player = AVPlayer()
     private let layerView = PlayerLayerView()
@@ -46,6 +51,7 @@ final class AVPlaybackEngine: PlaybackEngine {
     /// `tracks` is not needed here: when the server repackages a stream it applies
     /// its own track selection, and direct-play MP4s use the file's defaults.
     func play(_ request: StreamRequest, tracks: TrackSelection?) {
+        positionOffset = request.startsAtPosition ? request.startPosition : .zero
         let item = AVPlayerItem(url: request.url)
         item.preferredForwardBufferDuration = request.buffer == .extended
             ? Tuning.extendedForwardBufferSeconds

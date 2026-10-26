@@ -1,5 +1,12 @@
 import MediaPlayer
 import RetroGuideKit
+#if os(tvOS)
+import UIKit
+
+enum RemotePlaybackNotification {
+    static let playPause = Notification.Name("com.adamhunt.retroguide.remote.playpause")
+}
+#endif
 
 /// Tells the system what's on (Control Center, the lock screen) and makes
 /// RetroGuide.TV the Now Playing app. On Apple TV this is what lets the
@@ -23,8 +30,18 @@ final class NowPlayingPublisher {
 
     init(actions: Actions) {
         let commands = MPRemoteCommandCenter.shared()
-        register(commands.playCommand) { actions.play() }
-        register(commands.pauseCommand) { actions.pause() }
+        register(commands.playCommand) {
+            #if os(tvOS)
+            if Self.routeForegroundPlayPause() { return }
+            #endif
+            actions.play()
+        }
+        register(commands.pauseCommand) {
+            #if os(tvOS)
+            if Self.routeForegroundPlayPause() { return }
+            #endif
+            actions.pause()
+        }
         register(commands.nextTrackCommand) { actions.channelUp() }
         register(commands.previousTrackCommand) { actions.channelDown() }
     }
@@ -53,6 +70,17 @@ final class NowPlayingPublisher {
         ]
         center.playbackState = isPlaying ? .playing : .paused
     }
+
+    #if os(tvOS)
+    /// System playback commands can take the Siri Remote press before the
+    /// focused view receives it. In the active app it means Last Channel or
+    /// the guide's menu shortcut; Control Center keeps normal play and pause.
+    private static func routeForegroundPlayPause() -> Bool {
+        guard UIApplication.shared.applicationState == .active else { return false }
+        NotificationCenter.default.post(name: RemotePlaybackNotification.playPause, object: nil)
+        return true
+    }
+    #endif
 
     private func register(_ command: MPRemoteCommand, perform action: @escaping @MainActor () -> Void) {
         command.isEnabled = true

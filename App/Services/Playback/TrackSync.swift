@@ -53,7 +53,8 @@ final class TrackSync {
     func save(_ rules: TrackRules, around item: MediaItem, scope: TrackScope, among items: [MediaItem], preferences: LanguagePreferences?) {
         currentRules = rules
         currentPreferences = preferences
-        // Servers with nowhere to keep choices (Jellyfin) just use this device's.
+        // Jellyfin receives choices during playback; it cannot save them in bulk.
+        // The app's shared rules still cover episodes that haven't played yet.
         let covered = TrackRules.items(in: scope, around: item, among: items)
             .filter { clientProvider($0.serverID)?.savesTrackChoices ?? true }
         guard !covered.isEmpty else { return }

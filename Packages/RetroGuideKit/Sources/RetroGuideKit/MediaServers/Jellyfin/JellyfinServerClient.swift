@@ -62,15 +62,30 @@ public struct JellyfinServerClient: MediaServerClient {
         capabilities: PlaybackCapabilities
     ) async throws -> StreamRequest {
         let versions = MediaVersionSelector.ranked(item.versions, for: playback.quality)
-        if let preferred = versions.first(where: { DirectPlayPolicy.canDirectPlay($0, with: capabilities) }),
-           let sourceID = preferred.filePath {
-            return try directPlayRequest(itemID: item.itemKey, sourceID: sourceID, position: position, version: preferred.index)
+        let direct = versions.filter { DirectPlayPolicy.canDirectPlay($0, with: capabilities) }
+        let candidates = direct + (capabilities.playsAnyFile ? [] : versions.filter { !direct.contains($0) })
+        var lastError: (any Error)?
+        for version in candidates {
+            guard let sourceID = version.filePath else { continue }
+            try Task.checkCancellation()
+            do {
+                // The index can outlive a moved/deleted file. Ask for the actual
+                // file's headers before choosing it, including for HLS playback.
+                let original = try directPlayRequest(itemID: item.itemKey, sourceID: sourceID, position: position, version: version.index)
+                var probe = URLRequest(url: original.url, timeoutInterval: JellyfinAPI.Defaults.availabilityTimeout)
+                probe.httpMethod = "HEAD"
+                _ = try await context.playbackHTTP.data(for: probe)
+                if DirectPlayPolicy.canDirectPlay(version, with: capabilities) { return original }
+                return try remuxRequest(itemID: item.itemKey, sourceID: sourceID, position: position, version: version.index)
+            } catch HTTPError.unauthorized {
+                throw HTTPError.unauthorized
+            } catch {
+                try Task.checkCancellation()
+                lastError = error
+            }
         }
-        if capabilities.playsAnyFile {
-            throw StreamError.noPlayableVersion
-        }
-        guard let version = versions.first, let sourceID = version.filePath else { throw StreamError.noPlayableVersion }
-        return try remuxRequest(itemID: item.itemKey, sourceID: sourceID, position: position, version: version.index)
+        if lastError is URLError { throw StreamError.serverUnreachable }
+        throw StreamError.noPlayableVersion
     }
 
     /// The original file; the player seeks to the live position itself.

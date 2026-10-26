@@ -66,6 +66,7 @@
 		459009C3FD10B3FB413B3BA3 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B3620D1BDA643D8841A03F /* Color+Hex.swift */; };
 		45D22ED9DFDC553FDE6FD3D6 /* NetworkChangeMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95843027416E7A2D02D29C52 /* NetworkChangeMonitor.swift */; };
 		45DD5C01F371A34E6C891B3A /* ReminderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01C241652FB5708A41DB4D /* ReminderButton.swift */; };
+		46EFEAF8BBFAD2F5FE3EAE39 /* PlaybackReporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D42864977210441816A9E /* PlaybackReporting.swift */; };
 		49FD9D86BD76811388D62CF6 /* KeepsScreenAwake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A571995B69258A623DBF644 /* KeepsScreenAwake.swift */; };
 		4A061578F61E2DF5BA0B5B61 /* LayoutClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB034C814453DA907E192358 /* LayoutClass.swift */; };
 		4AC0CDB1EBC5A5F652E00C23 /* PlayerEnginePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F90413A593D82BD4A01F34C /* PlayerEnginePickerView.swift */; };
@@ -314,6 +315,7 @@
 		46F65DFF726E08D9C5D9CAD1 /* WelcomeStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeStepView.swift; sourceTree = "<group>"; };
 		49960C6E5611553858B36F83 /* DisplayMatchingPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayMatchingPickerView.swift; sourceTree = "<group>"; };
 		4B23A277D13DDAB3F7138C0D /* ThemeCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalog.swift; sourceTree = "<group>"; };
+		4F1D42864977210441816A9E /* PlaybackReporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackReporting.swift; sourceTree = "<group>"; };
 		4FB6B1A4149A228D3D71A1B8 /* AddServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddServerView.swift; sourceTree = "<group>"; };
 		4FBEA280867125292968A959 /* RetroIconButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroIconButtonStyle.swift; sourceTree = "<group>"; };
 		529E54D5CBE1128C70DF51E6 /* ServerSetupStepsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerSetupStepsView.swift; sourceTree = "<group>"; };
@@ -477,6 +479,7 @@
 				7D6EFF0D26E1F0940918D2A8 /* Engine */,
 				8AA6C69222E71744842BB505 /* PictureInPicture */,
 				620DCE679A3B505A014F908A /* NowPlayingPublisher.swift */,
+				4F1D42864977210441816A9E /* PlaybackReporting.swift */,
 				77FEA5AEE01D65F4ECE6E5B3 /* ProgramReminders.swift */,
 				891C8FCB689DEBC577C6DD61 /* SleepTimer.swift */,
 				0601DF37765D3C776688AF60 /* TrackSync.swift */,
@@ -1248,6 +1251,7 @@
 				13535A2983FE766E44C7B60A /* PlacementText.swift in Sources */,
 				A5ED6B0B3D3D5CF9F874BE34 /* PlatformMetric.swift in Sources */,
 				A1E76CBA8D06CBB33C672891 /* PlaybackEngine.swift in Sources */,
+				46EFEAF8BBFAD2F5FE3EAE39 /* PlaybackReporting.swift in Sources */,
 				1653642F5EE272B581D64B87 /* PlayerChromeView.swift in Sources */,
 				546ED60F3E6CC2C7A0C266EB /* PlayerCommand.swift in Sources */,
 				4AC0CDB1EBC5A5F652E00C23 /* PlayerEnginePickerView.swift in Sources */,
@@ -1450,7 +1454,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 20261024.1;
+				CURRENT_PROJECT_VERSION = 20261025.3;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1577,7 +1581,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 20261024.1;
+				CURRENT_PROJECT_VERSION = 20261025.3;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1773,7 +1777,7 @@
 			repositoryURL = "https://github.com/shikyo13/MPVKit";
 			requirement = {
 				kind = exactVersion;
-				version = "1.0.0-retroguide.2";
+				version = "1.0.0-retroguide.3";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

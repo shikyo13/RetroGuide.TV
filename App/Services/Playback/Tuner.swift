@@ -105,6 +105,7 @@ final class Tuner {
     @ObservationIgnored private var previousChannelID: String?
     @ObservationIgnored private let clientProvider: (String) -> (any MediaServerClient)?
     @ObservationIgnored private var activeStream: ActiveStream?
+    @ObservationIgnored private let playbackReporting = PlaybackReporting()
     @ObservationIgnored private var tuneTask: Task<Void, Never>?
     @ObservationIgnored private var boundaryTask: Task<Void, Never>?
     @ObservationIgnored private var startWatchdog: Task<Void, Never>?
@@ -310,6 +311,7 @@ final class Tuner {
         subtitleDelay = subtitleTiming.delay
         engine.setSubtitleDelay(subtitleDelay)
         engine.selectTracks(selection)
+        playbackReporting.select(selection)
     }
 
     /// The viewer's choices where they made any, otherwise the server's.
@@ -344,8 +346,8 @@ final class Tuner {
         stopTimers()
         // The old stream stops now rather than downloading while the new
         // one is prepared.
-        engine.stop()
         endActiveStream()
+        engine.stop()
         let now = ContinuousClock.now
         tuneStart = now
         logger.notice("tune \(channel.number, privacy: .public)\(isAutomatic ? " (automatic)" : "", privacy: .public)")
@@ -381,6 +383,7 @@ final class Tuner {
     func pauseStream() {
         guard isReceiving else { return }
         engine.setPaused(true)
+        playbackReporting.pause(true)
         #if os(iOS)
         pictureInPicture?.playbackStateChanged(isPlaying: false)
         #endif
@@ -390,6 +393,7 @@ final class Tuner {
     func continueStream() {
         guard isReceiving else { return }
         engine.setPaused(false)
+        playbackReporting.pause(false)
         #if os(iOS)
         pictureInPicture?.playbackStateChanged(isPlaying: signal == .live)
         #endif
@@ -466,21 +470,16 @@ final class Tuner {
         signal = .tuning
         let generation = tuneGeneration
         do {
-            // With a single copy the tracks don't depend on the server's
-            // decision, so both requests go out at once.
             let item = program.item
             let preferences = languagePreferences
-            let hasOneCopy = item.versions.count <= 1
-            async let singleCopyTracks = hasOneCopy ? client.tracks(for: item, version: nil, preferences: preferences) : nil
-            var request = try await client.streamRequest(
+            let prepared = try await client.preparePlayback(
                 for: item,
                 startingAt: program.elapsed(at: now),
-                capabilities: engine.capabilities
+                capabilities: engine.capabilities,
+                preferences: preferences
             )
-            // The tracks of the copy actually being streamed.
-            let tracks = hasOneCopy
-                ? await singleCopyTracks
-                : await client.tracks(for: item, version: request.versionIndex, preferences: preferences)
+            var request = prepared.request
+            var tracks = prepared.tracks
             // A newer tune started while the stream was being prepared.
             guard generation == tuneGeneration, !Task.isCancelled else {
                 if request.needsTeardown {
@@ -501,7 +500,11 @@ final class Tuner {
             }
             if request.startsAtPosition, program.elapsed(at: joinedAt) - request.startPosition >= Timing.serverPositionTolerance {
                 endActiveStream()
+                let previousVersion = request.versionIndex
                 request = try await client.streamRequest(for: program.item, startingAt: program.elapsed(at: .now), capabilities: engine.capabilities)
+                if request.versionIndex != previousVersion {
+                    tracks = await client.tracks(for: item, version: request.versionIndex, preferences: preferences)
+                }
                 guard generation == tuneGeneration, !Task.isCancelled else {
                     if request.needsTeardown {
                         Task { await client.endStream(sessionID: request.sessionID) }
@@ -524,6 +527,10 @@ final class Tuner {
             )
             subtitleDelay = subtitleTiming.delay
             engine.setSubtitleDelay(subtitleDelay)
+            let playingEngine = engine
+            playbackReporting.prepare(client: client, item: item, request: request,
+                tracks: tracks, selection: engine.switchesTracksLive ? selection : nil,
+                position: { playingEngine.position })
             if let tuneStart {
                 logger.notice("stream ready in \((ContinuousClock.now - tuneStart).milliseconds, privacy: .public) ms (\(String(describing: request.method), privacy: .public))")
             }
@@ -550,6 +557,7 @@ final class Tuner {
                 self.tuneStart = nil
             }
             signal = .live
+            playbackReporting.started()
             failedAttempts = .zero
         case .ended:
             // The file ran shorter than its metadata; fill until the next program.
@@ -571,8 +579,8 @@ final class Tuner {
         startWatchdog = Task { [weak self] in
             try? await Task.sleep(for: Timing.startTimeout)
             guard !Task.isCancelled, let self, generation == tuneGeneration, signal == .tuning else { return }
-            engine.stop()
             endActiveStream()
+            engine.stop()
             signal = .noSignal(Message.didNotStart)
             scheduleBoundary(at: program.slotEnd)
         }
@@ -585,8 +593,8 @@ final class Tuner {
     }
 
     private func enterIntermission(until date: Date) {
-        engine.stop()
         endActiveStream()
+        engine.stop()
         signal = .intermission
         scheduleBoundary(at: date)
     }
@@ -608,8 +616,8 @@ final class Tuner {
 
     private func fail(with message: String) {
         startWatchdog?.cancel()
-        engine.stop()
         endActiveStream()
+        engine.stop()
         boundaryTask?.cancel()
         let delay: Duration
         let isQuickRetry = Timing.quickRetryDelays.indices.contains(failedAttempts)
@@ -635,8 +643,8 @@ final class Tuner {
 
     private func stopPlayback() {
         stopTimers()
-        engine.stop()
         endActiveStream()
+        engine.stop()
         UIApplication.shared.isIdleTimerDisabled = false
     }
 
@@ -648,6 +656,7 @@ final class Tuner {
 
     /// Tells the server to release a repackaged stream.
     private func endActiveStream() {
+        playbackReporting.end()
         guard let stream = activeStream else { return }
         activeStream = nil
         Task.detached(priority: .utility) {
