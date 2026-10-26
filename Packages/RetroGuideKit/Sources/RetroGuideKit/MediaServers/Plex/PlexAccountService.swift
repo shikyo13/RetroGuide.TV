@@ -55,14 +55,14 @@ public struct PlexAccountService: Sendable {
             method: "POST",
             query: [URLQueryItem(name: "strong", value: "false")]
         )
-        let pin = try await http.decode(PlexPin.self, for: request)
+        let pin = try await http.decode(PlexPin.self, for: request, rateLimitRetries: PlexAPI.Defaults.accountRateLimitRetries)
         return PlexLinkCode(id: pin.id, code: pin.code, linkURL: PlexAPI.linkPageURL)
     }
 
     /// Returns the account token once the user has entered the code, otherwise `nil`.
     public func token(for code: PlexLinkCode) async throws -> String? {
         let request = try builder.request(path: "\(PlexAPI.Path.pins)/\(code.id)")
-        let pin = try await http.decode(PlexPin.self, for: request)
+        let pin = try await http.decode(PlexPin.self, for: request, rateLimitRetries: PlexAPI.Defaults.accountRateLimitRetries)
         guard let token = pin.authToken, !token.isEmpty else { return nil }
         return token
     }
@@ -77,7 +77,7 @@ public struct PlexAccountService: Sendable {
             ],
             extraHeaders: [PlexAPI.Header.token: accountToken]
         )
-        let resources = try await http.decode([PlexResource].self, for: request)
+        let resources = try await http.decode([PlexResource].self, for: request, rateLimitRetries: PlexAPI.Defaults.accountRateLimitRetries)
         return resources
             .filter { $0.provides.split(separator: ",").contains("server") }
             .compactMap(Self.candidate)
@@ -87,7 +87,7 @@ public struct PlexAccountService: Sendable {
     /// The account's audio and subtitle language settings.
     public func languagePreferences(accountToken: String) async throws -> LanguagePreferences {
         let request = try builder.request(path: PlexAPI.Path.user, extraHeaders: [PlexAPI.Header.token: accountToken])
-        let profile = try await http.decode(PlexUser.self, for: request).profile
+        let profile = try await http.decode(PlexUser.self, for: request, rateLimitRetries: PlexAPI.Defaults.accountRateLimitRetries).profile
         return LanguagePreferences(
             audioLanguage: profile?.defaultAudioLanguage,
             subtitleLanguage: profile?.defaultSubtitleLanguage,

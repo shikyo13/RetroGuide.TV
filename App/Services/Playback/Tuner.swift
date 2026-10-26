@@ -43,6 +43,20 @@ final class Tuner {
         static let didNotStart = "This program won't start. Its file may be damaged."
     }
 
+    private struct IndependentPlayback {
+        let program: ScheduledProgram
+        let originChannelID: String
+        var position: TimeInterval = .zero
+    }
+
+    private var independentPlayback: IndependentPlayback?
+    var isWatchingFromBeginning: Bool { independentPlayback != nil }
+    var independentPlaybackPosition: TimeInterval? {
+        guard let independentPlayback else { return nil }
+        return engine.position ?? independentPlayback.position
+    }
+    private(set) var returnToGuideRequest = 0
+
     private(set) var channel: Channel?
     private(set) var program: ScheduledProgram?
     private(set) var signal: Signal = .off {
@@ -127,6 +141,53 @@ final class Tuner {
         attach(engine)
     }
 
+    init(engine: any PlaybackEngine, clientProvider: @escaping (String) -> (any MediaServerClient)?) {
+        self.clientProvider = clientProvider
+        self.engine = engine
+        attach(engine)
+    }
+
+    /// Plays one selected item independently of its channel's clock.
+    func watchFromBeginning(_ program: ScheduledProgram, on channel: Channel) {
+        stopPlayback()
+        tuneGeneration += 1
+        viewerTuneCount += 1
+        self.channel = channel
+        self.program = program
+        independentPlayback = IndependentPlayback(program: program, originChannelID: channel.id)
+        failedAttempts = .zero
+        signal = .tuning
+        tuneTask = Task { [weak self] in await self?.startPlayback() }
+    }
+
+    func returnToLive() {
+        guard let independentPlayback else { return }
+        let origin = channels.first { $0.id == independentPlayback.originChannelID }
+        self.independentPlayback = nil
+        // Force a transition even when the originating channel is still selected.
+        suspend()
+        if let origin {
+            tune(to: origin)
+        } else {
+            powerOff()
+            returnToGuideRequest += 1
+        }
+    }
+
+    private func rememberIndependentPosition() {
+        guard independentPlayback != nil, playbackGeneration == tuneGeneration,
+              let position = engine.position, position.isFinite, position >= .zero else { return }
+        independentPlayback?.position = position
+    }
+
+    private func restartIndependentPlayback() {
+        rememberIndependentPosition()
+        stopPlayback()
+        tuneGeneration += 1
+        signal = .tuning
+        tuneTask = Task { [weak self] in await self?.startPlayback() }
+    }
+
     /// Closes the Picture in Picture window (the viewer is back in the app).
     func closePictureInPicture() {
         #if os(iOS)
@@ -203,6 +264,12 @@ final class Tuner {
     /// Updates the channels available for surfing, keeping the current channel if it still exists.
     func setChannels(_ channels: [Channel]) {
         self.channels = channels
+        if let independentPlayback {
+            if let updated = channels.first(where: { $0.id == independentPlayback.originChannelID }) {
+                channel = updated
+            }
+            return
+        }
         guard let current = channel else { return }
         if let updated = channels.first(where: { $0.id == current.id }) {
             channel = updated
@@ -324,6 +391,14 @@ final class Tuner {
     /// `isAutomatic`: the app retuned (a rebuilt lineup, a reconnected server),
     /// not the viewer.
     func tune(to channel: Channel, surfing: Bool = false, isAutomatic: Bool = false) {
+        if independentPlayback != nil {
+            if isAutomatic {
+                restartIndependentPlayback()
+                return
+            }
+            independentPlayback = nil
+            suspend()
+        }
         // Choosing the channel that's already on (the guide's picture, its
         // Watch button) keeps the stream; only a dead signal is worth a retry.
         if !isAutomatic, channel.id == self.channel?.id, isReceiving {
@@ -401,6 +476,8 @@ final class Tuner {
 
     /// Releases the stream while the app is in the background.
     func suspend() {
+        rememberIndependentPosition()
+        tuneGeneration += 1
         stopPlayback()
         signal = .off
     }
@@ -418,7 +495,12 @@ final class Tuner {
     /// while the channel is still on (the app only went inactive, for
     /// Control Center or the app switcher), so the stream keeps playing.
     func resume() {
-        guard let channel, signal == .off else { return }
+        guard signal == .off else { return }
+        if independentPlayback != nil {
+            restartIndependentPlayback()
+            return
+        }
+        guard let channel else { return }
         tune(to: channel, isAutomatic: true)
     }
 
@@ -433,6 +515,7 @@ final class Tuner {
 
     func powerOff() {
         suspend()
+        independentPlayback = nil
         channel = nil
         program = nil
     }
@@ -448,7 +531,7 @@ final class Tuner {
     }
 
     private func startPlayback() async {
-        guard let channel, let program = channel.timeline.program(at: .now) else {
+        guard let program = independentPlayback?.program ?? channel?.timeline.program(at: .now) else {
             signal = .noSignal("Nothing is scheduled on this channel.")
             return
         }
@@ -458,7 +541,7 @@ final class Tuner {
         endActiveStream()
 
         let now = Date.now
-        if program.isInIntermission(at: now) {
+        if independentPlayback == nil, program.isInIntermission(at: now) {
             enterIntermission(until: program.slotEnd)
             return
         }
@@ -469,12 +552,13 @@ final class Tuner {
         // Every (re)start shows the tuning state until frames actually play.
         signal = .tuning
         let generation = tuneGeneration
+        let independentPosition = independentPlayback?.position
         do {
             let item = program.item
             let preferences = languagePreferences
             let prepared = try await client.preparePlayback(
                 for: item,
-                startingAt: program.elapsed(at: now),
+                startingAt: independentPosition ?? program.elapsed(at: now),
                 capabilities: engine.capabilities,
                 preferences: preferences
             )
@@ -493,12 +577,12 @@ final class Tuner {
             // Preparing took time: join where the program is now, or move on
             // if it has ended meanwhile.
             let joinedAt = Date.now
-            guard program.contains(joinedAt), !program.isInIntermission(at: joinedAt) else {
+            if independentPosition == nil && (!program.contains(joinedAt) || program.isInIntermission(at: joinedAt)) {
                 endActiveStream()
                 await startPlayback()
                 return
             }
-            if request.startsAtPosition, program.elapsed(at: joinedAt) - request.startPosition >= Timing.serverPositionTolerance {
+            if independentPosition == nil, request.startsAtPosition, program.elapsed(at: joinedAt) - request.startPosition >= Timing.serverPositionTolerance {
                 endActiveStream()
                 let previousVersion = request.versionIndex
                 request = try await client.streamRequest(for: program.item, startingAt: program.elapsed(at: .now), capabilities: engine.capabilities)
@@ -534,9 +618,9 @@ final class Tuner {
             if let tuneStart {
                 logger.notice("stream ready in \((ContinuousClock.now - tuneStart).milliseconds, privacy: .public) ms (\(String(describing: request.method), privacy: .public))")
             }
-            engine.play(request.starting(at: program.elapsed(at: joinedAt)), tracks: selection)
+            engine.play(request.starting(at: independentPosition ?? program.elapsed(at: joinedAt)), tracks: selection)
             UIApplication.shared.isIdleTimerDisabled = true
-            scheduleBoundary(at: program.contentEnd)
+            if independentPosition == nil { scheduleBoundary(at: program.contentEnd) }
             watchStart(of: program, generation: generation)
         } catch {
             guard generation == tuneGeneration, !Task.isCancelled else { return }
@@ -560,6 +644,7 @@ final class Tuner {
             playbackReporting.started()
             failedAttempts = .zero
         case .ended:
+            if independentPlayback != nil { returnToLive(); return }
             // The file ran shorter than its metadata; fill until the next program.
             if let program, signal == .live {
                 enterIntermission(until: program.slotEnd)
@@ -579,6 +664,7 @@ final class Tuner {
         startWatchdog = Task { [weak self] in
             try? await Task.sleep(for: Timing.startTimeout)
             guard !Task.isCancelled, let self, generation == tuneGeneration, signal == .tuning else { return }
+            if independentPlayback != nil { fail(with: Message.didNotStart); return }
             endActiveStream()
             engine.stop()
             signal = .noSignal(Message.didNotStart)
@@ -601,10 +687,11 @@ final class Tuner {
 
     /// Sleeps until `date`, then follows the schedule (intermission or next program).
     private func scheduleBoundary(at date: Date) {
+        guard independentPlayback == nil else { return }
         boundaryTask?.cancel()
         boundaryTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(max(date.timeIntervalSinceNow, .zero)))
-            guard !Task.isCancelled, let self else { return }
+            guard !Task.isCancelled, let self, independentPlayback == nil else { return }
             if let program, program.isInIntermission(at: .now) {
                 enterIntermission(until: program.slotEnd)
             } else {
@@ -615,9 +702,11 @@ final class Tuner {
     }
 
     private func fail(with message: String) {
+        rememberIndependentPosition()
         startWatchdog?.cancel()
         endActiveStream()
         engine.stop()
+        playbackGeneration = nil
         boundaryTask?.cancel()
         let delay: Duration
         let isQuickRetry = Timing.quickRetryDelays.indices.contains(failedAttempts)

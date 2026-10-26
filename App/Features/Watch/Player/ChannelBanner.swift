@@ -16,6 +16,7 @@ struct ChannelBanner: View {
     /// Apple TV: the viewer opened the info (not a channel change), so Down
     /// reaches the Options button.
     var offersOptions = false
+    var isIndependent = false
 
     @Environment(\.theme) private var theme
     /// iPhone in portrait: too narrow for the badge, details and logo side by side.
@@ -76,7 +77,7 @@ struct ChannelBanner: View {
     private func details(_ program: ScheduledProgram, now: Date) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
             HStack(spacing: DesignTokens.Spacing.sm) {
-                Text(isShowingNext ? "UP NEXT" : "NOW")
+                Text(isIndependent ? "FROM BEGINNING" : (isShowingNext ? "UP NEXT" : "NOW"))
                     .font(Typography.captionEmphasis)
                     .foregroundStyle(theme.textOnFocus)
                     .padding(.horizontal, DesignTokens.Spacing.xs)
@@ -103,6 +104,7 @@ struct ChannelBanner: View {
                     .foregroundStyle(theme.textSecondary)
                     .lineLimit(Layout.summaryLines)
             }
+            if !isIndependent {
             HStack(spacing: DesignTokens.Spacing.md) {
                 Text(ScheduleFormatting.range(program))
                     .font(Typography.clock)
@@ -115,6 +117,7 @@ struct ChannelBanner: View {
                         .foregroundStyle(theme.textSecondary)
                         .fixedSize()
                 }
+            }
             }
             #if os(tvOS)
             RemoteHints(offersOptions: offersOptions)
@@ -148,7 +151,7 @@ struct RemoteHints: View {
             hint("circle.circle", "Guide")
             hint("playpause", "Last channel")
             if offersOptions {
-                hint("chevron.down", "Options")
+                hint("chevron.down", "Playback / Options")
             }
         }
         .font(Typography.micro)

@@ -12,6 +12,7 @@ struct GuideRowView: View {
     var onSelectChannel: (() -> Void)?
     var onSelectProgram: ((ScheduledProgram) -> Void)?
 
+    @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     @Environment(\.guideChannelColumnWidth) private var channelColumnWidth
     @Environment(\.isNarrowLayout) private var isNarrowLayout
@@ -28,6 +29,10 @@ struct GuideRowView: View {
                         now: now,
                         isFocused: program.id == focusedProgramID
                     )
+                    .contextMenu {
+                        Button("Watch from Beginning") { app.tuner.watchFromBeginning(program, on: channel) }
+                        Button("Watch Live") { onSelectChannel?() }
+                    }
                     .tapAction(onSelectProgram.map { select in { select(program) } })
                     .offset(x: scale.x(for: program.start))
                 }

@@ -13,7 +13,7 @@ struct WatchOptionsButton: View {
         .buttonStyle(.retro)
         #else
         .buttonStyle(.retroIcon)
-        .accessibilityLabel("Audio, subtitles and schedule order")
+        .accessibilityLabel("Playback options, audio and subtitles")
         #endif
     }
 }

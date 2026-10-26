@@ -61,10 +61,12 @@ struct SleepTimerControl: View {
                 Text("Enter \(SleepDeadline.customRange.lowerBound)–\(SleepDeadline.customRange.upperBound) minutes.")
                     .font(Typography.settingsCaption).foregroundStyle(theme.textSecondary)
             }
+            if !app.tuner.isWatchingFromBeginning {
             Button("End of this program", systemImage: "stop.circle") {
                 if let end = SleepDeadline.endOfProgram(app.tuner.program) { app.sleepTimer.start(until: end) }
             }
             .disabled(SleepDeadline.endOfProgram(app.tuner.program) == nil)
+            }
             Text("Stops video, audio and Picture in Picture. Changing channels keeps the chosen stop time.")
                 .font(Typography.settingsCaption).foregroundStyle(theme.textSecondary)
         }

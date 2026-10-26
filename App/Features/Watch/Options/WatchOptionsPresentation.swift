@@ -31,7 +31,7 @@ struct WatchOptionsPresentation: ViewModifier {
     private var panel: some View {
         HStack {
             Spacer()
-            WatchOptionsPanel(tuner: tuner)
+            WatchOptionsPanel(tuner: tuner, onPlaybackAction: { isPresented = false })
                 .frame(width: Layout.panelWidth)
                 .panel()
                 // Long content scrolls inside the panel rather than past its edge.

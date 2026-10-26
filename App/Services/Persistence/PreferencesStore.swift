@@ -33,6 +33,7 @@ struct UserPreferences: Codable, Equatable, Sendable {
 @MainActor
 struct PreferencesStore {
     private enum Key {
+        static let startupIncomplete = "startupIncomplete.v1"
         static let preferences = "preferences.v1"
         static let accounts = "accounts.v1"
         static let customization = "lineupCustomization.v1"
@@ -48,6 +49,11 @@ struct PreferencesStore {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
+    }
+
+    var startupIncomplete: Bool {
+        get { defaults.bool(forKey: Key.startupIncomplete) }
+        nonmutating set { defaults.set(newValue, forKey: Key.startupIncomplete) }
     }
 
     var preferences: UserPreferences {
@@ -114,7 +120,7 @@ struct PreferencesStore {
     }
 
     func resetAll() {
-        [Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID, Key.showSubtitleOffsets].forEach(defaults.removeObject(forKey:))
+        [Key.startupIncomplete, Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID, Key.showSubtitleOffsets].forEach(defaults.removeObject(forKey:))
     }
 
     private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {

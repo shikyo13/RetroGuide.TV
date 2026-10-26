@@ -25,12 +25,17 @@ struct AddServerView: View {
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             guard model == nil else { return }
-            model = OnboardingModel(
+            let savedToken = app.servers.plexAccountToken
+            let setup = OnboardingModel(
                 identities: app.identities,
-                accountToken: app.servers.plexAccountToken,
+                accountToken: savedToken,
                 excludedServerIDs: Set(app.servers.accounts.map(\.id)),
-                showsWelcome: false
+                showsWelcome: false,
+                onPlexAccountTokenChanged: app.servers.savePlexAccountToken
             )
+            model = setup
+            if savedToken != nil { setup.beginPlex() }
         }
+        .onDisappear { model?.cancel() }
     }
 }

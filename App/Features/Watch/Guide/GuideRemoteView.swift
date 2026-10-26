@@ -63,6 +63,15 @@ struct GuideRemoteView: View {
             } label: {
                 GuideGridView(model: model, tunedChannelID: tuner.channel?.id, showsFocus: focus == .grid)
             }
+            .contextMenu {
+                if let program = model.focusedProgram, let channel = model.focusedChannel {
+                    Button("Watch from Beginning") {
+                        tuner.watchFromBeginning(program, on: channel)
+                        actions.onClose()
+                    }
+                    Button("Watch Live") { actions.onTune(channel) }
+                }
+            }
             .buttonStyle(InvisibleButtonStyle())
             .crtEffect(isFullScreen: false)
             .focused($focus, equals: .grid)

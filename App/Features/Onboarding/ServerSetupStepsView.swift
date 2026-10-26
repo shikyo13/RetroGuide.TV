@@ -6,6 +6,7 @@ import SwiftUI
 struct ServerSetupStepsView: View {
     let model: OnboardingModel
     let onCancel: () -> Void
+    var libraryConfirmTitle = "Build My Channels"
     let onComplete: (OnboardingModel.PendingServer, Set<String>) -> Void
 
     var body: some View {
@@ -18,7 +19,7 @@ struct ServerSetupStepsView: View {
             case let .linking(code):
                 PlexLinkStepView(code: code, onCancel: onCancel)
             case let .choosingServer(servers):
-                ServerPickerStepView(servers: servers, onChoose: model.choose)
+                ServerPickerStepView(servers: servers, onChoose: model.choose, onJellyfin: model.beginJellyfin, onCancel: onCancel)
             case let .findingJellyfin(servers, isSearching):
                 JellyfinFindStepView(
                     servers: servers,
@@ -41,7 +42,7 @@ struct ServerSetupStepsView: View {
             case let .connecting(name):
                 ConnectingStepView(serverName: name)
             case let .choosingLibraries(pending):
-                LibraryPickerView(libraries: pending.libraries, confirmTitle: "Build My Channels") { selected in
+                LibraryPickerView(libraries: pending.libraries, confirmTitle: libraryConfirmTitle) { selected in
                     onComplete(pending, selected)
                 }
             case let .failed(message):

@@ -59,6 +59,7 @@ final class OnboardingModel {
     @ObservationIgnored let identities: ServerIdentities
     @ObservationIgnored let jellyfinService: JellyfinAccountService
     @ObservationIgnored private var accountToken: String?
+    @ObservationIgnored private let onPlexAccountTokenChanged: (String?) -> Void
     @ObservationIgnored let excludedServerIDs: Set<String>
     @ObservationIgnored var task: Task<Void, Never>?
     @ObservationIgnored private var flow = Flow.plex
@@ -68,9 +69,10 @@ final class OnboardingModel {
     ///   - excludedServerIDs: Servers already added, hidden from the pickers.
     ///   - showsWelcome: Whether to start with the welcome text (first run)
     ///     rather than just the choice of server.
-    init(identities: ServerIdentities, accountToken: String? = nil, excludedServerIDs: Set<String> = [], showsWelcome: Bool = true) {
+    init(identities: ServerIdentities, accountToken: String? = nil, excludedServerIDs: Set<String> = [], showsWelcome: Bool = true, onPlexAccountTokenChanged: @escaping (String?) -> Void = { _ in }) {
         self.identities = identities
         self.accountToken = accountToken
+        self.onPlexAccountTokenChanged = onPlexAccountTokenChanged
         self.excludedServerIDs = excludedServerIDs
         self.accountService = PlexAccountService(identity: identities.plex)
         self.resolver = PlexConnectionResolver(identity: identities.plex)
@@ -136,6 +138,7 @@ final class OnboardingModel {
                 step = .linking(code)
                 if let token = try await waitForApproval(of: code) {
                     accountToken = token
+                    onPlexAccountTokenChanged(token)
                     await showServers(accountToken: token)
                     return
                 }
@@ -151,9 +154,11 @@ final class OnboardingModel {
         do {
             let servers = try await accountService.servers(accountToken: accountToken)
                 .filter { !excludedServerIDs.contains($0.id) }
-            step = servers.isEmpty
-                ? .failed("There are no more Plex Media Servers on this account to add.")
-                : .choosingServer(servers)
+            step = .choosingServer(servers)
+        } catch HTTPError.unauthorized {
+            self.accountToken = nil
+            onPlexAccountTokenChanged(nil)
+            beginPlex()
         } catch {
             step = .failed(error.localizedDescription)
         }

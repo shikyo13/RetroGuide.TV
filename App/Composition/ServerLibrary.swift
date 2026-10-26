@@ -47,6 +47,14 @@ final class ServerLibrary {
         keychain.token(for: KeychainAccount.plexAccount)
     }
 
+    func savePlexAccountToken(_ token: String?) {
+        if let token {
+            keychain.setToken(token, for: KeychainAccount.plexAccount)
+        } else {
+            keychain.removeToken(for: KeychainAccount.plexAccount)
+        }
+    }
+
     /// The signed-in account's audio and subtitle settings, or `nil` if
     /// unavailable: the Plex account's while a Plex server is connected,
     /// otherwise those of the user signed in to the first Jellyfin server.
@@ -140,6 +148,9 @@ final class ServerLibrary {
 
     func setSelectedLibraries(_ libraryIDs: Set<String>, serverID: String) {
         guard let index = accounts.firstIndex(where: { $0.id == serverID }) else { return }
+        guard accounts[index].selectedLibraryIDs != libraryIDs else { return }
+        snapshots[serverID] = nil
+        snapshotStore.remove(serverID: serverID)
         accounts[index].selectedLibraryIDs = libraryIDs
         store.accounts = accounts
     }
@@ -207,10 +218,9 @@ final class ServerLibrary {
 
     // MARK: - Indexing
 
-    /// Re-indexes every server in parallel. `onServerReady` runs as each server
-    /// finishes, so the fastest (usually local) server can go on air before
-    /// slower remote ones are done. A server that fails is marked offline; this
-    /// only throws when no server could be indexed at all.
+    /// Downloads servers in parallel, then constructs channels from the completed
+    /// set before saving caches. Cancellation leaves the prior snapshots intact.
+    /// Unreachable servers are excluded; throws if all servers fail.
     /// - Returns: whether any server failed.
     @discardableResult
     func refreshAll(
@@ -220,14 +230,18 @@ final class ServerLibrary {
         let accounts = accounts
         let aggregator = ProgressAggregator(servers: accounts, report: progress)
         var failures: [Error] = []
+        var completed: [(ServerAccount, LibrarySnapshot)] = []
+        var failed: [ServerAccount] = []
         await withTaskGroup(of: (ServerAccount, Result<LibrarySnapshot, Error>).self) { group in
             for account in accounts {
                 guard let client = registry.client(for: account.id) else { continue }
                 group.addTask {
                     do {
+                        try Task.checkCancellation()
                         let snapshot = try await Self.download(account, client: client) { update in
                             Task { @MainActor in aggregator.update(serverID: account.id, with: update) }
                         }
+                        try Task.checkCancellation()
                         return (account, .success(snapshot))
                     } catch {
                         return (account, .failure(error))
@@ -235,31 +249,46 @@ final class ServerLibrary {
                 }
             }
             for await (account, result) in group {
-                // Removed, or its libraries changed, while downloading: this
-                // result is for settings that no longer apply.
+                guard !Task.isCancelled else { group.cancelAll(); continue }
                 guard isCurrent(account) else { continue }
                 switch result {
                 case let .success(snapshot):
-                    snapshots[account.id] = snapshot
-                    status[account.id] = .online
+                    completed.append((account, snapshot))
                     aggregator.finish(serverID: account.id, succeeded: true)
-                    // On air first; the cache is written after.
-                    await onServerReady()
-                    await snapshotStore.save(snapshot)
-                    if !isCurrent(account) {
-                        // Removed while the cache was being written: don't leave it behind.
-                        snapshots[account.id] = nil
-                        snapshotStore.remove(serverID: account.id)
-                    }
                 case let .failure(error):
-                    status[account.id] = .offline
-                    aggregator.finish(serverID: account.id, succeeded: false)
+                    failed.append(account)
                     failures.append(error)
+                    aggregator.finish(serverID: account.id, succeeded: false)
                 }
             }
         }
+        try Task.checkCancellation()
         if let failure = failures.first, failures.count == accounts.count {
             throw failure
+        }
+        // Keep downloads provisional until channel construction completes.
+        // Cancellation restores the prior cache and never writes partial downloads.
+        let previousSnapshots = snapshots
+        let previousStatus = status
+        for (account, snapshot) in completed where isCurrent(account) {
+            snapshots[account.id] = snapshot
+            status[account.id] = .online
+        }
+        for account in failed where isCurrent(account) { status[account.id] = .offline }
+        if !completed.isEmpty { await onServerReady() }
+        if Task.isCancelled {
+            for account in accounts where isCurrent(account) {
+                snapshots[account.id] = previousSnapshots[account.id]
+                status[account.id] = previousStatus[account.id]
+            }
+            throw CancellationError()
+        }
+        for (account, snapshot) in completed where isCurrent(account) {
+            await snapshotStore.save(snapshot)
+            if !isCurrent(account) {
+                snapshots[account.id] = nil
+                snapshotStore.remove(serverID: account.id)
+            }
         }
         return !failures.isEmpty
     }

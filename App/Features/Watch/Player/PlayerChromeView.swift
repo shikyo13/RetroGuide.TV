@@ -7,6 +7,7 @@ enum PlayerChromeFocus: Hashable {
     case remote
     /// The Options button on the info banner.
     case options
+    case playback
 }
 
 /// Transient overlays while watching full screen: the channel number, the info
@@ -57,7 +58,7 @@ struct PlayerChromeView: View {
         .task(id: BannerTrigger(generation: tuner.tuneGeneration, request: bannerRequest)) {
             try? await Task.sleep(for: DebugLaunchOptions.bannerDuration ?? Timing.bannerDuration)
             // Stays up while the viewer is on its button.
-            guard !Task.isCancelled, focus != .options else { return }
+            guard !Task.isCancelled, focus != .options, focus != .playback else { return }
             isBannerVisible = false
             isInfoRequested = false
         }
@@ -73,7 +74,7 @@ struct PlayerChromeView: View {
         PlayerRemoteInput(focus: $focus, onCommand: handle)
             .disabled(!isActive)
         #else
-        PlayerTouchInput(isInfoVisible: isBannerVisible, onCommand: handle)
+        PlayerTouchInput(isInfoVisible: isBannerVisible, isIndependent: tuner.isWatchingFromBeginning, onCommand: handle)
         #endif
     }
 
@@ -81,8 +82,11 @@ struct PlayerChromeView: View {
         VStack(spacing: DesignTokens.Spacing.md) {
             #if os(iOS)
             if isBannerVisible {
-                PlayerTouchControls(onCommand: handle)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+                    PlayerTouchControls(onCommand: handle)
+                    if tuner.program != nil { playbackActionButton }
+                }
+                .transition(.move(edge: .top).combined(with: .opacity))
             }
             #endif
             HStack {
@@ -98,13 +102,21 @@ struct PlayerChromeView: View {
             if offersOptions {
                 HStack {
                     Spacer()
+                    if tuner.program != nil {
+                        playbackActionButton
+                            .focused($focus, equals: .playback)
+                            .onMoveCommand { direction in
+                                if direction == .up { leaveOptionsButton() }
+                            }
+                            .remoteExitCommand(perform: leaveOptionsButton)
+                    }
                     optionsButton
                 }
                 .transition(.opacity)
             }
             #endif
             if isBannerVisible, let channel = tuner.channel {
-                ChannelBanner(channel: channel, program: bannerProgram, isShowingNext: showsNext, offersOptions: offersOptions)
+                ChannelBanner(channel: channel, program: bannerProgram, isShowingNext: showsNext, offersOptions: offersOptions, isIndependent: tuner.isWatchingFromBeginning)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .allowsHitTesting(false)
             }
@@ -112,6 +124,24 @@ struct PlayerChromeView: View {
         .padding(PlatformMetric.value(tv: .zero, touch: DesignTokens.Spacing.md))
         .landscapeTopClearance()
         .ignoresSafeArea(.container, edges: isShortLayout ? .bottom : [])
+    }
+
+    private var playbackActionButton: some View {
+        Button {
+            if tuner.isWatchingFromBeginning {
+                tuner.returnToLive()
+            } else if let program = tuner.program, let channel = tuner.channel {
+                tuner.watchFromBeginning(program, on: channel)
+            }
+            #if os(tvOS)
+            focus = .remote
+            #endif
+        } label: {
+            Label(tuner.isWatchingFromBeginning ? "Return to Live" : "Watch from Beginning",
+                  systemImage: tuner.isWatchingFromBeginning ? "dot.radiowaves.left.and.right" : "backward.end.fill")
+        }
+        .buttonStyle(.retroPrimary)
+        .disabled(!isActive)
     }
 
     /// Apple TV: info the viewer asked for offers Options.
@@ -143,7 +173,7 @@ struct PlayerChromeView: View {
 
     private var bannerProgram: ScheduledProgram? {
         guard let current = tuner.program else { return nil }
-        guard showsNext else { return current }
+        guard showsNext, !tuner.isWatchingFromBeginning else { return current }
         return tuner.channel?.timeline.program(after: current)
     }
 
@@ -153,7 +183,7 @@ struct PlayerChromeView: View {
         case .channelDown:
             #if os(tvOS)
             if offersOptions {
-                focus = .options
+                focus = tuner.program == nil ? .options : .playback
                 return
             }
             #endif

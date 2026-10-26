@@ -30,6 +30,8 @@ final class AppModel {
         static let backgroundGrace: Duration = .seconds(20)
     }
 
+    private(set) var isManagingStartup = false
+
     private(set) var phase: Phase = .launching
     private(set) var lineup: [Channel] = []
     /// True while channel schedules are being rebuilt (seconds with a large library).
@@ -45,6 +47,7 @@ final class AppModel {
     /// A refresh was asked for while one was running (settings changed,
     /// a server was added): run another with the latest settings after.
     @ObservationIgnored private var refreshPending = false
+    @ObservationIgnored private var refreshWork: Task<Void, Never>?
     /// The lineup build in progress, and whether another was asked for
     /// meanwhile: builds run one at a time, and the next one uses the latest
     /// settings, however many changes came in.
@@ -143,7 +146,7 @@ final class AppModel {
         ))
         tuner.onSignalChanged = { [weak self] in
             guard let self else { return }
-            nowPlaying?.update(channel: tuner.channel, program: tuner.program, isPlaying: tuner.signal == .live)
+            nowPlaying?.update(channel: tuner.channel, program: tuner.program, isPlaying: tuner.signal == .live, independentPosition: tuner.independentPlaybackPosition)
         }
         tuner.languagePreferences = store.languagePreferences
         // Another device's rules (via iCloud) win over this one's older copy.
@@ -186,7 +189,11 @@ final class AppModel {
     func proAccessChanged() {
         guard !libraryIndex.items.isEmpty || phase == .ready else { return }
         updatePersonalChannels()
-        Task { await rebuildLineup() }
+        // Purchase status changes personal features; the schedule inputs stay
+        // the same. Rebuilding here duplicated the entire lineup at startup.
+        if phase == .ready && pro.hasLoaded {
+            reminders.reconcile(channels: visibleChannels)
+        }
     }
 
     func updatePersonalChannels() {
@@ -244,7 +251,9 @@ final class AppModel {
         preferences = store.preferences
         customization = store.customization
         #endif
+        let restoreSession = sessionGeneration
         await servers.restore()
+        guard restoreSession == sessionGeneration else { return }
         if tuner.languagePreferences == nil {
             tuner.languagePreferences = servers.provisionalLanguagePreferences
         }
@@ -254,10 +263,18 @@ final class AppModel {
             phase = .onboarding
             return
         }
+        guard !store.startupIncomplete else {
+            phase = .failed("The previous startup did not finish. You can change libraries or remove a server before trying again.")
+            return
+        }
+        store.startupIncomplete = true
         startConnectedSession()
+        let startupSession = sessionGeneration
         if let cachedAt = servers.oldestRefresh {
             lastRefreshed = cachedAt
             await rebuildIndexAndLineup()
+            guard startupSession == sessionGeneration else { return }
+            store.startupIncomplete = false
             phase = .ready
             turnOn()
             // Find each server's current address before refreshing from it,
@@ -371,12 +388,46 @@ final class AppModel {
         await recheckServers()
     }
 
+    func cancelStartup() {
+        isManagingStartup = true
+        refreshWork?.cancel()
+        sessionGeneration += 1
+        indexGeneration += 1
+        lineupGeneration += 1
+        refreshPending = false
+        lineupBuildPending = false
+        healthTask?.cancel()
+        networkMonitor.stop()
+        isSessionStarted = false
+        phase = .failed("Channel loading was cancelled. Your saved servers and library selections have not changed.")
+    }
+
+    func manageStartup() {
+        if !isManagingStartup { cancelStartup() }
+    }
+
     func retryAfterFailure() async {
+        if let refreshWork { await refreshWork.value }
+        isManagingStartup = false
+        store.startupIncomplete = false
         phase = .launching
         await start()
     }
 
     // MARK: - Servers
+
+    func completeInitialSetup(_ selections: [OnboardingModel.PendingServer]) async {
+        guard !selections.isEmpty else { return }
+        guard selections.count == 1 || pro.access.canAddServer(connectedCount: selections.count - 1) else { return }
+        for selection in selections {
+            servers.add(selection.account, token: selection.token, accountToken: selection.accountToken)
+        }
+        if tuner.languagePreferences == nil {
+            tuner.languagePreferences = servers.provisionalLanguagePreferences
+        }
+        startConnectedSession()
+        await refreshLibrary()
+    }
 
     /// Adds a server chosen during onboarding or from Settings, then indexes it.
     func addServer(_ account: ServerAccount, token: String, accountToken: String?) async {
@@ -384,6 +435,7 @@ final class AppModel {
         if tuner.languagePreferences == nil {
             tuner.languagePreferences = servers.provisionalLanguagePreferences
         }
+        guard !isManagingStartup else { return }
         startConnectedSession()
         await refreshLibrary()
     }
@@ -395,11 +447,13 @@ final class AppModel {
             signOut()
             return
         }
+        guard !isManagingStartup else { return }
         await rebuildIndexAndLineup()
     }
 
     func updateLibrarySelection(serverID: String, libraryIDs: Set<String>) async {
         servers.setSelectedLibraries(libraryIDs, serverID: serverID)
+        guard !isManagingStartup else { return }
         await refreshLibrary()
     }
 
@@ -439,6 +493,8 @@ final class AppModel {
     }
 
     func signOut() {
+        isManagingStartup = false
+        store.startupIncomplete = false
         sessionGeneration += 1
         refreshPending = false
         isSessionStarted = false
@@ -472,6 +528,7 @@ final class AppModel {
     /// Re-indexes every server. Shows full-screen progress only when there is
     /// nothing to watch yet; otherwise refreshes quietly.
     func refreshLibrary() async {
+        guard !isManagingStartup else { return }
         guard !isRefreshing else {
             refreshPending = true
             return
@@ -480,8 +537,11 @@ final class AppModel {
         defer { isRefreshing = false }
         repeat {
             refreshPending = false
-            await refreshLibraryOnce()
-        } while refreshPending
+            let work = Task { await refreshLibraryOnce() }
+            refreshWork = work
+            await work.value
+            refreshWork = nil
+        } while refreshPending && !isManagingStartup
     }
 
     private func refreshLibraryOnce() async {
@@ -490,6 +550,7 @@ final class AppModel {
         refreshError = nil
         let showsProgress = lineup.isEmpty
         if showsProgress {
+            store.startupIncomplete = true
             phase = .indexing(LibraryLoadProgress(fraction: .zero, message: "Connecting…"))
         }
         do {
@@ -499,7 +560,7 @@ final class AppModel {
                     phase = .indexing(progress)
                 },
                 onServerReady: { [weak self] in
-                    // Go on air as soon as any server is ready; others merge in as they finish.
+                    // Publish the completed download set together, after channel construction.
                     guard let self, session == sessionGeneration else { return }
                     await rebuildIndexAndLineup()
                     guard session == sessionGeneration else { return }
@@ -661,6 +722,7 @@ final class AppModel {
     }
 
     private func rebuildIndexAndLineup() async {
+        guard !isManagingStartup else { return }
         indexGeneration += 1
         let generation = indexGeneration
         let snapshots = servers.activeSnapshots
@@ -696,6 +758,7 @@ final class AppModel {
     }
 
     private func rebuildLineupOnce() async {
+        guard !isManagingStartup else { return }
         lineupGeneration += 1
         let generation = lineupGeneration
         pendingLineupRebuilds += 1
@@ -719,7 +782,8 @@ final class AppModel {
     }
 
     private func goOnAir() {
-        guard phase != .ready else { return }
+        guard !isManagingStartup, phase != .ready else { return }
+        store.startupIncomplete = false
         phase = .ready
         turnOn()
     }
@@ -760,7 +824,7 @@ final class AppModel {
         if old.scheduleGrid != preferences.scheduleGrid {
             Task {
                 await rebuildLineup()
-                if let channel = tuner.channel {
+                if !tuner.isWatchingFromBeginning, let channel = tuner.channel {
                     tuner.tune(to: channel, isAutomatic: true)
                 }
             }

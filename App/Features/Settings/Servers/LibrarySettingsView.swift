@@ -17,7 +17,7 @@ struct LibrarySettingsView: View {
                 LibraryPickerView(
                     libraries: libraries,
                     initiallySelected: account.selectedLibraryIDs,
-                    confirmTitle: "Save and Rebuild Channels"
+                    confirmTitle: app.isManagingStartup ? "Save Libraries" : "Save and Rebuild Channels"
                 ) { selection in
                     dismiss()
                     Task { await app.updateLibrarySelection(serverID: account.id, libraryIDs: selection) }

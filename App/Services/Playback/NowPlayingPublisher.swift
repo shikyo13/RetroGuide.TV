@@ -53,7 +53,7 @@ final class NowPlayingPublisher {
     }
 
     /// Publishes the program on `channel`, or clears Now Playing when nothing is on.
-    func update(channel: Channel?, program: ScheduledProgram?, isPlaying: Bool) {
+    func update(channel: Channel?, program: ScheduledProgram?, isPlaying: Bool, independentPosition: TimeInterval? = nil) {
         guard let channel, let program else {
             center.nowPlayingInfo = nil
             center.playbackState = .stopped
@@ -63,9 +63,9 @@ final class NowPlayingPublisher {
             MPMediaItemPropertyTitle: program.item.headline,
             MPMediaItemPropertyArtist: channel.name,
             MPMediaItemPropertyPlaybackDuration: program.contentEnd.timeIntervalSince(program.start),
-            MPNowPlayingInfoPropertyElapsedPlaybackTime: Date.now.timeIntervalSince(program.start),
+            MPNowPlayingInfoPropertyElapsedPlaybackTime: independentPosition ?? Date.now.timeIntervalSince(program.start),
             MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? Rate.playing : Rate.stopped,
-            MPNowPlayingInfoPropertyIsLiveStream: true,
+            MPNowPlayingInfoPropertyIsLiveStream: independentPosition == nil,
             MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.video.rawValue,
         ]
         center.playbackState = isPlaying ? .playing : .paused

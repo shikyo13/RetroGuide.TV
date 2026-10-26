@@ -101,6 +101,7 @@ struct WatchView: View {
         .alert("Reminders", isPresented: Binding(get: { app.reminders.message != nil }, set: { if !$0 { app.reminders.message = nil } })) {
             Button("OK", role: .cancel) { app.reminders.message = nil }
         } message: { Text(app.reminders.message ?? "") }
+        .onChange(of: tuner.returnToGuideRequest) { overlay = .guide }
         .watchOptions(isPresented: $isShowingOptions, tuner: tuner)
         #if os(iOS)
         .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)

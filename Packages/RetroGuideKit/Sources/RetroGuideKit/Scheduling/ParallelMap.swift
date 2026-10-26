@@ -7,7 +7,10 @@ enum ParallelMap {
         guard count > 1 else { return indices.map(transform) }
         let results = UnsafeMutableBufferPointer<T?>.allocate(capacity: count)
         results.initialize(repeating: nil)
-        defer { results.deallocate() }
+        defer {
+            results.deinitialize()
+            results.deallocate()
+        }
         nonisolated(unsafe) let slots = results
         let lower = indices.lowerBound
         DispatchQueue.concurrentPerform(iterations: count) { offset in

@@ -12,6 +12,7 @@ public enum HTTPError: Error, Equatable, LocalizedError {
         case .invalidURL: "The server address is not valid."
         case .invalidResponse: "The server sent an unexpected response."
         case .unauthorized: "The server rejected the sign-in. Please sign in again."
+        case .status(429): "Too many requests. Please wait a moment before trying again."
         case let .status(code): "The server responded with error \(code)."
         case let .decoding(detail): "The server's response could not be read (\(detail))."
         }
@@ -43,22 +44,32 @@ public struct HTTPClient: Sendable {
         HTTPClient(session: session, decoder: decoder)
     }
 
-    public func data(for request: URLRequest) async throws -> Data {
-        let (data, response) = try await session.data(for: request)
-        guard let http = response as? HTTPURLResponse else {
-            throw HTTPError.invalidResponse
+    public func data(for request: URLRequest, rateLimitRetries: Int = 0) async throws -> Data {
+        var retries = 0
+        while true {
+            try Task.checkCancellation()
+            let (data, response) = try await session.data(for: request)
+            guard let http = response as? HTTPURLResponse else {
+                throw HTTPError.invalidResponse
+            }
+            if http.statusCode == 429, retries < rateLimitRetries,
+               let delay = RateLimitRetry.delay(header: http.value(forHTTPHeaderField: "Retry-After"), attempt: retries) {
+                retries += 1
+                try await Task.sleep(for: .seconds(delay))
+                continue
+            }
+            if StatusCode.unauthorized.contains(http.statusCode) {
+                throw HTTPError.unauthorized
+            }
+            guard StatusCode.success.contains(http.statusCode) else {
+                throw HTTPError.status(http.statusCode)
+            }
+            return data
         }
-        if StatusCode.unauthorized.contains(http.statusCode) {
-            throw HTTPError.unauthorized
-        }
-        guard StatusCode.success.contains(http.statusCode) else {
-            throw HTTPError.status(http.statusCode)
-        }
-        return data
     }
 
-    public func decode<T: Decodable>(_ type: T.Type, for request: URLRequest) async throws -> T {
-        let data = try await data(for: request)
+    public func decode<T: Decodable>(_ type: T.Type, for request: URLRequest, rateLimitRetries: Int = 0) async throws -> T {
+        let data = try await data(for: request, rateLimitRetries: rateLimitRetries)
         do {
             return try decoder.decode(T.self, from: data)
         } catch {

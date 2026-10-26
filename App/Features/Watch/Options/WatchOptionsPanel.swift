@@ -12,6 +12,7 @@ struct WatchOptionsPanel: View {
     }
 
     let tuner: Tuner
+    var onPlaybackAction: (() -> Void)? = nil
 
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
@@ -20,11 +21,41 @@ struct WatchOptionsPanel: View {
     @State private var pendingOrdering: ScheduleOrdering?
     /// Focus starts on Subtitles, the usual reason to open the panel.
     @FocusState private var isSubtitlesFocused: Bool
+    @FocusState private var isReturnFocused: Bool
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                 header
+                if let program = tuner.program, let channel = tuner.channel {
+                    SettingsSection("Playback") {
+                        if tuner.isWatchingFromBeginning {
+                            Text("Watching from beginning. Your channels are still following their normal schedule.")
+                                .font(Typography.callout)
+                                .foregroundStyle(theme.textSecondary)
+                            Button("Return to Live") {
+                                tuner.returnToLive()
+                                closeAfterPlaybackAction()
+                            }
+                            .buttonStyle(.retroPrimary)
+                            .focused($isReturnFocused)
+                            Button("Restart from Beginning") {
+                                tuner.watchFromBeginning(program, on: channel)
+                                closeAfterPlaybackAction()
+                            }
+                            .buttonStyle(.retro)
+                        } else {
+                            Button("Watch from Beginning") {
+                                tuner.watchFromBeginning(program, on: channel)
+                                closeAfterPlaybackAction()
+                            }
+                            .buttonStyle(.retroPrimary)
+                            Text("Start this program at 0:00. You can return to the live channel at any time.")
+                                .font(Typography.callout)
+                                .foregroundStyle(theme.textSecondary)
+                        }
+                    }
+                }
                 SettingsSection("Audio & Subtitles") {
                     content
                 }
@@ -45,8 +76,15 @@ struct WatchOptionsPanel: View {
         .scrollClipDisabled()
         .onAppear {
             // After the panel is on screen, so the menu can take focus.
-            Task { @MainActor in isSubtitlesFocused = true }
+            Task { @MainActor in
+                if tuner.isWatchingFromBeginning { isReturnFocused = true }
+                else { isSubtitlesFocused = true }
+            }
         }
+    }
+
+    private func closeAfterPlaybackAction() {
+        if let onPlaybackAction { onPlaybackAction() } else { dismiss() }
     }
 
     private var header: some View {

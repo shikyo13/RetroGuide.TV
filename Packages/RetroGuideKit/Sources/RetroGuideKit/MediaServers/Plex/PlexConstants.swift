@@ -116,7 +116,8 @@ public enum PlexAPI {
         /// Asking the server for permission to play a file directly.
         static let playbackDecisionTimeout: TimeInterval = 5
         /// How often to poll plex.tv while waiting for the user to enter a link code.
-        public static let pinPollInterval: Duration = .seconds(2)
+        public static let pinPollInterval: Duration = .seconds(5)
+        static let accountRateLimitRetries = 3
         static let millisecondsPerSecond: TimeInterval = 1_000
     }
 
