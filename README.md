@@ -15,6 +15,31 @@ series, and more. Turn it on and something is already playing. Flip channels wit
 the Siri Remote or a swipe, drop into whatever's on mid-episode, and browse what's
 next in a cable-style guide.
 
+## Download
+
+[Get RetroGuide.TV on the App Store](https://apps.apple.com/app/apple-store/id6816213425?pt=128673019&ct=github_readme&mt=8)
+for Apple TV, iPhone and iPad.
+
+You need a Plex Media Server you own or that is shared with you, or a Jellyfin
+server you can sign in to. **No media is included.** Apple TV is free with no ads; the free iPhone and iPad app shows ads.
+An optional one-time RetroGuide Pro purchase removes mobile ads and unlocks
+multiple servers, unlimited custom channels, all themes and schedule controls
+across all three devices.
+
+[Setup and support](https://www.retroguide.tv/support/) ·
+[Privacy Policy](https://www.retroguide.tv/privacy/)
+
+## Screenshots
+
+![RetroGuide.TV program guide on Apple TV](docs/images/tv-guide.jpg)
+
+<p align="center">
+  <img src="docs/images/iphone-guide.jpg" alt="RetroGuide.TV program guide on iPhone" width="280">
+</p>
+
+Actual interfaces shown with a public-domain demo library. Your channels are
+built from your own Plex or Jellyfin media. [Screenshot credits](docs/images/CREDITS.md).
+
 ## Features
 
 - **Automatic channels.** 50+ built-in genre, decade and format channels, plus
@@ -32,7 +57,8 @@ next in a cable-style guide.
   and with RetroGuide Pro a show can be removed from one channel.
 - **Custom channels.** Combine genres, shows, networks, collections, decades,
   audiences and libraries, with a live preview of what the channel will air.
-- **Real TV scheduling.** Every channel runs on a fixed clock, so with the same
+  One custom channel is free; unlimited custom channels require Pro.
+- **Real TV scheduling (Pro controls).** Every channel runs on a fixed clock, so with the same
   library and settings, the same program is on at the same time on every Apple TV. Choose Shuffle, Block
   Shuffle, Show Rotation or Marathon ordering per channel, and optionally align
   start times to the quarter or half hour.
@@ -44,19 +70,20 @@ next in a cable-style guide.
 - **Apple TV, iPhone and iPad.** Built for the Siri Remote on Apple TV and for
   touch on iPhone and iPad, in portrait or landscape.
 - **Direct play.** A bundled [libmpv](https://mpv.io) player plays MKV, HEVC,
-  AV1, Dolby Vision, DTS, TrueHD and ASS subtitles directly, so your server
-  doesn't have to transcode. Apple's player is available as a fallback.
+  AV1, Dolby Vision, DTS, TrueHD and ASS subtitles. Compatible files play
+  directly; playback requirements depend on the file, device and server settings.
+  Apple's player is available as a fallback.
 - **HDR.** HDR10, HLG and Dolby Vision play in HDR on HDR iPhones and iPads. On
   Apple TV, **Match TV mode** switches the TV into HDR (and optionally to each
   program's frame rate) when Match Content is on in the Apple TV's settings.
 - **Respects your settings.** Audio and subtitle tracks follow your Plex
   account's or Jellyfin user's language preferences, and your per-show choices.
-- **Multiple servers.** Mix your own server with ones shared with you, Plex and
+- **Multiple servers (Pro).** Mix your own server with ones shared with you, Plex and
   Jellyfin together. The same title on several servers is kept once (matched by
   IMDb, TMDB or TVDB id when the servers name it differently), offline servers drop out of the guide
   until they're back, and each server has its own quality and buffering
   settings for playback over the internet.
-- **Themes.** Twelve themes, from Classic Cable and Local Forecast to VHS and
+- **Themes (all twelve with Pro).** Twelve themes, from Classic Cable and Local Forecast to VHS and
   Teletext, and optional CRT scanlines on menus. On iPhone and iPad, the app
   icon and What's On widget colors match the chosen theme.
 
@@ -161,12 +188,18 @@ Live TV starts as soon as your first server is indexed. Add more servers later i
 
 ## Privacy
 
-RetroGuide.TV has no accounts or analytics of its own. It talks to plex.tv (to
-link your account and find your servers) and to your media servers; to find
-Jellyfin servers it checks the devices on your local network for one, and access
-tokens are stored in the device keychain. On iPhone and iPad the free version
-shows non-personalized ads from Google AdMob, after Google's consent prompt
-where one is required; Apple TV and RetroGuide Pro show no ads.
+RetroGuide.TV has no separate account system. It talks to plex.tv to link your
+account and find your servers, and connects to your Plex or Jellyfin servers.
+Jellyfin discovery checks your local network. Access tokens are stored in the
+device keychain. Library metadata and local settings are cached on your device.
+Chosen audio and subtitle preferences can also be saved to Plex, and shared
+track rules can sync through iCloud.
+
+The free iPhone and iPad app requests non-personalized ads from Google AdMob.
+Non-personalized ads still involve data processing for advertising, measurement
+and fraud prevention. Google's consent form appears where required, with
+applicable privacy choices in Settings. Apple TV and RetroGuide Pro show no ads.
+See the [Privacy Policy](https://www.retroguide.tv/privacy/) for details.
 
 ## Building from source
 
