@@ -57,6 +57,12 @@ actor ImagePipeline {
         } else {
             let session = session
             task = Task.detached(priority: .userInitiated) {
+                #if DEBUG
+                if url.isFileURL {
+                    guard let data = try? Data(contentsOf: url), !Task.isCancelled else { return nil }
+                    return Self.downsample(data, maxPixelSize: maxPixelSize)
+                }
+                #endif
                 guard let (data, _) = try? await session.data(from: url), !Task.isCancelled else { return nil }
                 return Self.downsample(data, maxPixelSize: maxPixelSize)
             }
