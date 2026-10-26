@@ -68,14 +68,14 @@ struct CustomAddressTests {
         #expect(PlexCustomAddress.url(from: " 100.101.102.103:64800 ", serverURL: server)?.absoluteString == "https://100-101-102-103.abc123.plex.direct:64800")
     }
 
-    @Test("Without a known plex.direct hash, a bare IP uses plain HTTP")
+    @Test("Without a known plex.direct hash, a bare IP still requires HTTPS")
     func ipWithoutHash() {
-        #expect(PlexCustomAddress.url(from: "100.101.102.103", serverURL: nil)?.absoluteString == "http://100.101.102.103:32400")
+        #expect(PlexCustomAddress.url(from: "100.101.102.103", serverURL: nil)?.absoluteString == "https://100.101.102.103:32400")
     }
 
-    @Test("Full URLs are used as typed; hostnames get HTTPS and the default port")
+    @Test("HTTP URLs are rejected; hostnames get HTTPS and the default port")
     func urlsAndHosts() {
-        #expect(PlexCustomAddress.url(from: "http://komputer:32400", serverURL: server)?.absoluteString == "http://komputer:32400")
+        #expect(PlexCustomAddress.url(from: "http://komputer:32400", serverURL: server) == nil)
         #expect(PlexCustomAddress.url(from: "komputer.tail1234.ts.net", serverURL: server)?.absoluteString == "https://komputer.tail1234.ts.net:32400")
         #expect(PlexCustomAddress.url(from: "   ", serverURL: server) == nil)
     }

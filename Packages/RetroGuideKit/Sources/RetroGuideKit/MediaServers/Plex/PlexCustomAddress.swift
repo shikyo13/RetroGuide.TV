@@ -9,7 +9,6 @@ public enum PlexCustomAddress {
     private enum Defaults {
         static let port = 32_400
         static let secureScheme = "https"
-        static let plainScheme = "http"
         static let plexDirectSuffix = "plex.direct"
         static let octetCount = 4
         static let schemeSeparator = "://"
@@ -19,7 +18,8 @@ public enum PlexCustomAddress {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
         if trimmed.contains(Defaults.schemeSeparator) {
-            return URL(string: trimmed)
+            guard let url = URL(string: trimmed), SecureTransport.permits(url) else { return nil }
+            return url
         }
         let parts = trimmed.split(separator: ":", maxSplits: 1).map(String.init)
         let host = parts[0]
@@ -30,7 +30,7 @@ public enum PlexCustomAddress {
                 let dashed = host.replacingOccurrences(of: ".", with: "-")
                 return URL(string: "\(Defaults.secureScheme)://\(dashed).\(hash).\(Defaults.plexDirectSuffix):\(port)")
             }
-            return URL(string: "\(Defaults.plainScheme)://\(host):\(port)")
+            return URL(string: "\(Defaults.secureScheme)://\(host):\(port)")
         }
         return URL(string: "\(Defaults.secureScheme)://\(host):\(port)")
     }

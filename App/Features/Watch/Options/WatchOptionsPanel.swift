@@ -63,7 +63,7 @@ struct WatchOptionsPanel: View {
                 if let channel = tuner.channel {
                     SettingsSection("Channel \(channel.number) · \(channel.name)") {
                         FavoriteChannelButton(channel: channel)
-                        scheduleOrder(for: channel)
+                        if !app.parentalControls.needsAuthorization { scheduleOrder(for: channel) }
                         if let item = tuner.program?.item {
                             ChannelPlacementControls(channel: channel, item: item)
                         }

@@ -97,6 +97,9 @@ final class ServerLibrary {
         }
     }
 
+    /// Includes offline servers so saved content selections keep their known identities.
+    var knownSnapshots: [LibrarySnapshot] { accounts.compactMap { snapshots[$0.id] } }
+
     /// When the oldest cached library was indexed, or `nil` if any server has no cache.
     var oldestRefresh: Date? {
         let dates = accounts.map { snapshots[$0.id]?.refreshedAt }

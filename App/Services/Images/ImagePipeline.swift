@@ -1,4 +1,5 @@
 import ImageIO
+import RetroGuideKit
 import UIKit
 
 /// Loads, downsamples and caches artwork.
@@ -12,6 +13,7 @@ actor ImagePipeline {
     static let shared = ImagePipeline()
 
     private enum Limits {
+        static let successStatusCodes = 200..<300
         static let bytesPerMegabyte = 1_024 * 1_024
         static let memoryCacheBytes = 96 * bytesPerMegabyte
         static let urlCacheMemoryBytes = 16 * bytesPerMegabyte
@@ -63,7 +65,10 @@ actor ImagePipeline {
                     return Self.downsample(data, maxPixelSize: maxPixelSize)
                 }
                 #endif
-                guard let (data, _) = try? await session.data(from: url), !Task.isCancelled else { return nil }
+                guard SecureTransport.permits(url),
+                      let (data, response) = try? await session.data(from: url, delegate: SecureRedirectDelegate.shared),
+                      let http = response as? HTTPURLResponse, Limits.successStatusCodes.contains(http.statusCode),
+                      !Task.isCancelled else { return nil }
                 return Self.downsample(data, maxPixelSize: maxPixelSize)
             }
             inFlight[key] = task

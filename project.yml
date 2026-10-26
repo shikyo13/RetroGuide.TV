@@ -10,8 +10,8 @@ options:
 settings:
   base:
     SWIFT_VERSION: "6.0"
-    MARKETING_VERSION: "1.5"
-    CURRENT_PROJECT_VERSION: "20261025.5"
+    MARKETING_VERSION: "1.6"
+    CURRENT_PROJECT_VERSION: "20261026.1"
     SWIFT_STRICT_CONCURRENCY: complete
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
@@ -89,7 +89,9 @@ targets:
         UIBackgroundModes: [audio]
         NSLocalNetworkUsageDescription: RetroGuide.TV connects to your media server on the local network.
         NSAppTransportSecurity:
-          NSAllowsLocalNetworking: true
+          NSAllowsLocalNetworking: false
+          NSAllowsArbitraryLoads: false
+          NSAllowsArbitraryLoadsForMedia: false
         # Only standard HTTPS is used, which is exempt from export documentation.
         ITSAppUsesNonExemptEncryption: false
         # AdMob (iPhone and iPad free version). IDs come from Config/Ads.xcconfig.

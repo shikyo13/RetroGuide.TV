@@ -66,9 +66,9 @@ struct JellyfinMappingTests {
     @Test("A typed address becomes the URLs worth trying")
     func addressCandidates() {
         #expect(JellyfinAddress.candidates(from: "10.0.1.5").map(\.absoluteString)
-            == ["http://10.0.1.5:8096", "https://10.0.1.5", "http://10.0.1.5"])
+            == ["https://10.0.1.5", "https://10.0.1.5:8920"])
         #expect(JellyfinAddress.candidates(from: " media.example.com:8920 ").map(\.absoluteString)
-            == ["http://media.example.com:8920", "https://media.example.com:8920"])
+            == ["https://media.example.com:8920"])
         #expect(JellyfinAddress.candidates(from: "https://example.com/jellyfin/").map(\.absoluteString)
             == ["https://example.com/jellyfin"])
         #expect(JellyfinAddress.candidates(from: "  ").isEmpty)

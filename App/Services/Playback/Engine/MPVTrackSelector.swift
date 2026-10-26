@@ -40,6 +40,9 @@ enum MPVTrackSelector {
                 commands.append(["set", Property.subtitle, String(id)])
             }
         case let .external(url):
+            guard url.isFileURL || SecureTransport.permits(url) else {
+                return commands + [["set", Property.subtitle, Property.off]]
+            }
             // Added once; switching back to it later just selects it again.
             if let id = externalTrackID(for: url, in: tracks) {
                 commands.append(["set", Property.subtitle, String(id)])

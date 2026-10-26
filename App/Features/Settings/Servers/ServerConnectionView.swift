@@ -51,7 +51,7 @@ struct ServerConnectionView: View {
             Button("Use this address") { useCustomAddress(account) }
                 .buttonStyle(.retro)
                 .disabled(isApplying || addressText.trimmingCharacters(in: .whitespaces).isEmpty)
-            Text("Enter the server's Tailscale IP or another address it answers on. Port 32400 is used unless you add one, like 100.64.0.5:32400.")
+            Text("Enter an HTTPS address with a trusted certificate. Port 32400 is used unless you add one. A Tailscale IP uses the server’s secure plex.direct hostname when available. HTTP connections are not supported.")
                 .secondaryText()
         }
     }
@@ -69,7 +69,7 @@ struct ServerConnectionView: View {
 
     private func useCustomAddress(_ account: ServerAccount) {
         guard let url = PlexCustomAddress.url(from: addressText, serverURL: account.baseURL) else {
-            message = "That doesn't look like an address."
+            message = "Enter a valid HTTPS server address."
             return
         }
         apply(ServerConnectionSettings(preference: .custom, customAddress: url))

@@ -55,7 +55,7 @@ struct JellyfinAddressView: View {
             case .moved:
                 message = nil
             case .notFound:
-                message = "No Jellyfin server answered at that address."
+                message = "No Jellyfin server answered securely. Use an HTTPS address with a trusted certificate."
             case let .differentServer(name):
                 message = "That address is a different Jellyfin server (\(name)). To use it too, add it as a new server."
             }

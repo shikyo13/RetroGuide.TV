@@ -20,7 +20,7 @@ struct JellyfinAddressStepView: View {
             Text("Enter your server's address")
                 .font(Typography.title)
                 .foregroundStyle(theme.textPrimary)
-            Text("The address you use to open Jellyfin in a browser, like 192.168.1.20 or jellyfin.example.com. Port \(String(JellyfinAPI.defaultPort)) is used unless you add one.")
+            Text("Enter an HTTPS address with a trusted certificate, like https://jellyfin.example.com. For a custom HTTPS port, include it in the address. HTTP connections are not supported.")
                 .secondaryText()
             TextField("Server address", text: $address)
                 #if os(iOS)

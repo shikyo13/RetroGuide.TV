@@ -134,6 +134,11 @@ final class WhatsOnWidgetWriter {
         }
     }
 
+    func clearAndWait() async {
+        clear()
+        await task?.value
+    }
+
     private static func reload() {
         #if os(iOS)
         WidgetCenter.shared.reloadTimelines(ofKind: WhatsOnStore.widgetKind)

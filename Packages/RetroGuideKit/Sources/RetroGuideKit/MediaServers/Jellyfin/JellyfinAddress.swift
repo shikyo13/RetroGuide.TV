@@ -5,6 +5,7 @@ import Foundation
 public enum JellyfinAddress {
     private static let schemeSeparator = "://"
     private static let secureScheme = "https"
+    private static let securePort = 8_920
 
     public static func candidates(from text: String) -> [URL] {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -13,26 +14,16 @@ public enum JellyfinAddress {
         if trimmed.contains(schemeSeparator) {
             return URL(string: trimmed).flatMap(normalized).map { [$0] } ?? []
         }
-        guard let parsed = URL(string: JellyfinAPI.defaultScheme + schemeSeparator + trimmed),
-              let host = parsed.host(), !host.isEmpty
-        else { return [] }
-        var urls: [URL] = []
-        if parsed.port != nil {
-            // A port was given: plain HTTP first (the default for a port), then HTTPS.
-            urls.append(parsed)
-            urls += secure(parsed).map { [$0] } ?? []
-        } else {
-            // Jellyfin's own port first; a name may also sit behind an HTTPS proxy.
-            urls += withPort(parsed, JellyfinAPI.defaultPort).map { [$0] } ?? []
-            urls += secure(parsed).map { [$0] } ?? []
-            urls.append(parsed)
-        }
-        return urls.compactMap(normalized)
+        guard let parsed = URL(string: secureScheme + schemeSeparator + trimmed) else { return [] }
+        if parsed.port != nil { return normalized(parsed).map { [$0] } ?? [] }
+        // Standard HTTPS proxy first, then Jellyfin's native HTTPS port.
+        return [parsed, withPort(parsed, securePort)].compactMap { $0.flatMap(normalized) }
     }
 
     /// Without a trailing slash, so API paths append cleanly.
     private static func normalized(_ url: URL) -> URL? {
-        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false), components.host?.isEmpty == false else { return nil }
+        guard SecureTransport.permits(url),
+              var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
         while components.path.hasSuffix("/") {
             components.path.removeLast()
         }
@@ -47,9 +38,4 @@ public enum JellyfinAddress {
         return components?.url
     }
 
-    private static func secure(_ url: URL) -> URL? {
-        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        components?.scheme = secureScheme
-        return components?.url
-    }
 }

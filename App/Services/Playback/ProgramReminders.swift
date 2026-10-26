@@ -85,10 +85,25 @@ final class ProgramReminders: NSObject {
         #if os(iOS)
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: pending.map(\.id))
         #endif
+        #if os(iOS)
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        #endif
         pending = []
         due = nil
         timer?.cancel()
         save()
+    }
+
+    /// Keep allowed reminders while removing content that is no longer permitted.
+    func restrict(to allowedItemIDs: Set<String>) {
+        generation += 1
+        for reminder in pending where !allowedItemIDs.contains(reminder.itemID) {
+            remove(reminder)
+        }
+        if let due, !allowedItemIDs.contains(due.itemID) { self.due = nil }
+        #if os(iOS)
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        #endif
     }
 
     /// Drop an airing if a library or programming change moved it.

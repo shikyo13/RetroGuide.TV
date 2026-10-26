@@ -1,6 +1,7 @@
 import Foundation
 
 public enum HTTPError: Error, Equatable, LocalizedError {
+    case secureConnectionRequired
     case invalidURL
     case invalidResponse
     case unauthorized
@@ -9,6 +10,7 @@ public enum HTTPError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
+        case .secureConnectionRequired: "A secure HTTPS connection is required. Configure HTTPS with a trusted certificate on your server, then update its address."
         case .invalidURL: "The server address is not valid."
         case .invalidResponse: "The server sent an unexpected response."
         case .unauthorized: "The server rejected the sign-in. Please sign in again."
@@ -45,10 +47,11 @@ public struct HTTPClient: Sendable {
     }
 
     public func data(for request: URLRequest, rateLimitRetries: Int = 0) async throws -> Data {
+        try SecureTransport.requireHTTPS(request.url)
         var retries = 0
         while true {
             try Task.checkCancellation()
-            let (data, response) = try await session.data(for: request)
+            let (data, response) = try await session.data(for: request, delegate: SecureRedirectDelegate.shared)
             guard let http = response as? HTTPURLResponse else {
                 throw HTTPError.invalidResponse
             }
@@ -91,6 +94,7 @@ public struct RequestBuilder: Sendable {
     }
 
     public func url(path: String, query: [URLQueryItem] = []) throws -> URL {
+        try SecureTransport.requireHTTPS(baseURL)
         guard var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false) else {
             throw HTTPError.invalidURL
         }

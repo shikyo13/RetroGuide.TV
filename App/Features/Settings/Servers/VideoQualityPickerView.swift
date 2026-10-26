@@ -11,7 +11,7 @@ struct VideoQualityPickerView: View {
     var body: some View {
         if let account = app.servers.accounts.first(where: { $0.id == serverID }) {
             SettingsPage(title: "Video Quality") {
-                Text("RetroGuide.TV always plays files exactly as they are, so \(account.name) never has to convert video. When it has more than one copy of a title (for example 4K and 1080p), this picks which copy to play.")
+                Text("Choose which existing copy to prefer on \(account.name), such as 4K or 1080p. This does not set a streaming bitrate. Playback may still need conversion for compatibility.")
                     .font(Typography.body)
                     .foregroundStyle(theme.textSecondary)
                 VStack(spacing: DesignTokens.Spacing.sm) {

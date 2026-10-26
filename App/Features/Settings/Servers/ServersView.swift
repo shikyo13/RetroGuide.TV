@@ -8,7 +8,7 @@ struct ServersView: View {
 
     var body: some View {
         SettingsPage(title: "Servers") {
-            Text("Channels mix content from every server. When the same show or movie is on more than one server, it plays from the first server listed.")
+            Text("Channels combine content from your selected libraries. For matching copies, servers higher in this list are preferred. Availability, parental restrictions and playable versions can affect which copy is used.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
             SettingsSection("Connected") {

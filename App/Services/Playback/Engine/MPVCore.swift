@@ -61,6 +61,8 @@ final class MPVCore: @unchecked Sendable {
             // Check the server's certificate: stream addresses carry its access token.
             // Without this, FFmpeg would hand them to anyone presenting a certificate.
             ("tls-verify", "yes"),
+            ("stream-lavf-o", "protocol_whitelist=[https,tls,tcp,crypto,data,file]"),
+            ("demuxer-lavf-o", "protocol_whitelist=[https,tls,tcp,crypto,data,file]"),
         ]
         /// FFmpeg's TLS (GnuTLS) can't read Apple's trust store, so it checks against
         /// a bundled copy of Mozilla's (see Tools/CABundle).
@@ -365,10 +367,10 @@ final class MPVCore: @unchecked Sendable {
            property.format == MPV_FORMAT_INT64,
            let value = property.data?.assumingMemoryBound(to: Int64.self).pointee {
             logger.notice("stat \(String(cString: property.name), privacy: .public)=\(value)")
-        } else if event.event_id == MPV_EVENT_LOG_MESSAGE,
-           let message = event.data?.assumingMemoryBound(to: mpv_event_log_message.self).pointee,
-           let prefix = message.prefix, let text = message.text {
-            logger.notice("[\(String(cString: prefix), privacy: .public)] \(String(cString: text), privacy: .public)")
+        } else if event.event_id == MPV_EVENT_LOG_MESSAGE {
+            // Player messages can contain authenticated URLs or request headers.
+            // Keep raw messages out of logs, including development builds.
+            return
         } else if let name = mpv_event_name(event.event_id) {
             logger.notice("event \(String(cString: name), privacy: .public)")
         }

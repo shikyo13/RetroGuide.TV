@@ -86,6 +86,8 @@ final class Tuner {
     private(set) var videoFormat: VideoFormat?
     private(set) var engine: any PlaybackEngine
 
+    @ObservationIgnored var playbackAllowed: (MediaItem) -> Bool = { _ in true }
+
     @ObservationIgnored var onChannelChanged: ((String) -> Void)?
     /// Called with a server id when its streams keep failing, so reachability can be re-checked.
     @ObservationIgnored var onServerTrouble: ((String) -> Void)?
@@ -149,6 +151,7 @@ final class Tuner {
 
     /// Plays one selected item independently of its channel's clock.
     func watchFromBeginning(_ program: ScheduledProgram, on channel: Channel) {
+        guard playbackAllowed(program.item) else { return }
         stopPlayback()
         tuneGeneration += 1
         viewerTuneCount += 1
@@ -260,6 +263,14 @@ final class Tuner {
     #endif
 
     // MARK: - Lineup
+
+    /// Stops an existing viewing session when refreshed metadata no longer permits it.
+    func enforcePlaybackAccess() {
+        guard let item = (independentPlayback?.program ?? program)?.item,
+              !playbackAllowed(item) else { return }
+        stopWatching()
+        powerOff()
+    }
 
     /// Updates the channels available for surfing, keeping the current channel if it still exists.
     func setChannels(_ channels: [Channel]) {
@@ -391,6 +402,7 @@ final class Tuner {
     /// `isAutomatic`: the app retuned (a rebuilt lineup, a reconnected server),
     /// not the viewer.
     func tune(to channel: Channel, surfing: Bool = false, isAutomatic: Bool = false) {
+        if let candidate = channel.timeline.program(at: .now), !playbackAllowed(candidate.item) { return }
         if independentPlayback != nil {
             if isAutomatic {
                 restartIndependentPlayback()
@@ -535,6 +547,11 @@ final class Tuner {
             signal = .noSignal("Nothing is scheduled on this channel.")
             return
         }
+        guard playbackAllowed(program.item) else {
+            self.program = nil
+            signal = .noSignal("This program is restricted by parental controls.")
+            return
+        }
         self.program = program
         currentTracks = nil
         currentSelection = nil
@@ -598,6 +615,12 @@ final class Tuner {
                 if request.needsTeardown {
                     activeStream = ActiveStream(client: client, sessionID: request.sessionID)
                 }
+            }
+            guard playbackAllowed(program.item) else {
+                endActiveStream()
+                self.program = nil
+                signal = .noSignal("This program is restricted by parental controls.")
+                return
             }
             let selection = tracks.map { resolvedSelection(for: program, tracks: $0) }
             currentTracks = tracks

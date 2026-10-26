@@ -13,8 +13,18 @@ struct ChannelEditorView: View {
     @State private var draft: ChannelDefinition
     @State private var previewItems: [MediaItem] = []
     private let isNew: Bool
+    private let editingIndex: LibraryIndex?
+    private let suggestedNumber: Int?
+    private let onDelete: (() -> Void)?
+    @State private var confirmsDeletion = false
+    private let onSave: ((ChannelDefinition) -> Void)?
 
-    init(existing: ChannelDefinition?) {
+    init(existing: ChannelDefinition?, index: LibraryIndex? = nil, nextNumber: Int? = nil,
+         onSave: ((ChannelDefinition) -> Void)? = nil, onDelete: (() -> Void)? = nil) {
+        editingIndex = index
+        suggestedNumber = nextNumber
+        self.onSave = onSave
+        self.onDelete = onDelete
         isNew = existing == nil
         _draft = State(initialValue: existing ?? ChannelDefinition(
             id: LineupCustomization.customChannelID(),
@@ -50,16 +60,22 @@ struct ChannelEditorView: View {
             Button(isNew ? "Create Channel" : "Save Changes", action: save)
                 .buttonStyle(.retroPrimary)
                 .disabled(!canSave)
+            if onDelete != nil {
+                Button("Delete Channel", role: .destructive) { confirmsDeletion = true }.buttonStyle(.retro)
+            }
+        }
+        .confirmationDialog("Delete this channel?", isPresented: $confirmsDeletion) {
+            Button("Delete Channel", role: .destructive) { onDelete?(); dismiss() }
         }
         .task(id: draft.rule) {
-            previewItems = app.previewItems(for: draft.rule)
+            previewItems = editingIndex.map { LineupBuilder(curated: []).preview(rule: draft.rule, in: $0) } ?? app.previewItems(for: draft.rule)
         }
     }
 
     // MARK: - Pieces
 
     private var facets: LibraryFacets {
-        app.libraryIndex.facets
+        (editingIndex ?? app.libraryIndex).facets
     }
 
     private func filterLink(
@@ -92,7 +108,7 @@ struct ChannelEditorView: View {
     }
 
     private var canSave: Bool {
-        !draft.name.trimmingCharacters(in: .whitespaces).isEmpty && !previewItems.isEmpty
+        !draft.name.trimmingCharacters(in: .whitespaces).isEmpty && (!previewItems.isEmpty || (!isNew && onSave != nil))
     }
 
     private func save() {
@@ -100,9 +116,9 @@ struct ChannelEditorView: View {
         definition.name = draft.name.trimmingCharacters(in: .whitespaces)
         definition.callSign = CallSign.make(from: definition.name)
         if isNew {
-            definition.number = app.customization.nextCustomChannelNumber
+            definition.number = suggestedNumber ?? app.customization.nextCustomChannelNumber
         }
-        app.saveCustomChannel(definition)
+        if let onSave { onSave(definition) } else { app.saveCustomChannel(definition) }
         dismiss()
     }
 

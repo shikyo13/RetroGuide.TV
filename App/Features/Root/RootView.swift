@@ -15,18 +15,26 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            switch model.phase {
-            case .launching:
-                SplashView()
-            case .onboarding:
-                OnboardingFlowView()
-            case let .indexing(progress):
-                IndexingView(progress: progress)
-            case .ready:
-                WatchView()
-            case let .failed(message):
-                FailureView(message: message, isCancelled: model.isManagingStartup) {
-                    Task { await model.retryAfterFailure() }
+            if model.isApplyingParentalControls {
+                ProgressView("Applying parental controls…")
+            } else {
+                switch model.phase {
+                case .launching:
+                    SplashView()
+                case .onboarding:
+                    OnboardingFlowView()
+                case let .indexing(progress):
+                    IndexingView(progress: progress)
+                case .ready:
+                    if model.parentalControls.policy.isEnabled && model.visibleChannels.isEmpty {
+                        ParentalEmptyView()
+                    } else {
+                        WatchView()
+                    }
+                case let .failed(message):
+                    FailureView(message: message, isCancelled: model.isManagingStartup) {
+                        Task { await model.retryAfterFailure() }
+                    }
                 }
             }
         }
@@ -46,13 +54,15 @@ struct RootView: View {
             }
         }
         .sheet(isPresented: $showsStartupSettings) {
-            NavigationStack {
-                ServersView()
-                    .toolbar {
-                        ToolbarItem(placement: .confirmationAction) {
-                            Button("Done") { showsStartupSettings = false }
+            ParentalSettingsGate {
+                NavigationStack {
+                    ServersView()
+                        .toolbar {
+                            ToolbarItem(placement: .confirmationAction) {
+                                Button("Done") { showsStartupSettings = false }
+                            }
                         }
-                    }
+                }
             }
         }
         .animation(DesignTokens.Motion.relaxedEase, value: model.phase)

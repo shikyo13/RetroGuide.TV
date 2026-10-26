@@ -47,7 +47,9 @@ struct ChannelPlacementControls: View {
             .buttonStyle(.retroRow)
         }
         if channel.definition.source != .series {
-            if app.pro.access.canRemoveFromChannels {
+            if app.parentalControls.needsAuthorization {
+                note("Unlock Settings to change this channel.")
+            } else if app.pro.access.canRemoveFromChannels {
                 Button {
                     isConfirmingRemoval = true
                 } label: {

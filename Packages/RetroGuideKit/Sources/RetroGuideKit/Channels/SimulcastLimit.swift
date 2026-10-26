@@ -2,7 +2,7 @@ import Foundation
 
 /// How many channels may air the same show at the same time. 24/7 and custom
 /// channels don't count: airing one show is what 24/7 channels are for.
-/// Whatever the limit, no episode or movie airs on two channels at once.
+/// The scheduler prefers different episodes and movies when alternatives exist.
 public enum SimulcastLimit: String, Codable, Sendable, CaseIterable, Hashable {
     case one
     case two
@@ -30,10 +30,10 @@ public enum SimulcastLimit: String, Codable, Sendable, CaseIterable, Hashable {
 
     public var explanation: String {
         switch self {
-        case .one: "A show airs on only one channel at a time. Most variety while surfing."
-        case .two: "A show airs on at most two channels at the same time."
-        case .three: "A show airs on at most three channels at the same time."
-        case .unlimited: "A show may be on any number of channels at once, always a different episode."
+        case .one: "Aim to show each series on one automatic channel at a time, for more variety."
+        case .two: "Aim to show each series on no more than two automatic channels at a time, using different episodes."
+        case .three: "Aim to show each series on no more than three automatic channels at a time, using different episodes."
+        case .unlimited: "Allow each series on any number of automatic channels at a time. Episode and movie overlap is still avoided when possible."
         }
     }
 }

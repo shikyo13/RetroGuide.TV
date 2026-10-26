@@ -10,13 +10,16 @@ struct SimulcastLimitPickerView: View {
 
     var body: some View {
         let current = pending ?? app.customization.simulcastLimit
-        SettingsPage(title: "Same Show at Once") {
-            Text("Keeps the same show from being on too many channels at the same moment, so flipping through channels finds something different. 24/7 channels and your own channels don't count. Whatever you choose, two channels never air the same episode or movie at the same time.")
-                .font(Typography.body)
-                .foregroundStyle(theme.textSecondary)
+        SettingsPage(title: "Channels per Show") {
+            Text(current.explanation)
+                .font(Typography.body).foregroundStyle(theme.textSecondary)
+            Text("Applies to automatic channels. 24/7 and custom channels are excluded from this limit. If no other show can fill a slot, the limit may be exceeded.")
+                .font(Typography.body).foregroundStyle(theme.textSecondary)
+            Text("The scheduler also avoids airing the exact same episode or movie on multiple channels when alternatives are available.")
+                .font(Typography.body).foregroundStyle(theme.textSecondary)
             VStack(spacing: DesignTokens.Spacing.sm) {
                 ForEach(SimulcastLimit.allCases, id: \.self) { limit in
-                    CheckmarkRow(title: limit.displayName, detail: limit.explanation, isSelected: current == limit) {
+                    CheckmarkRow(title: limit.displayName, isSelected: current == limit) {
                         pending = limit
                         app.setSimulcastLimit(limit)
                     }

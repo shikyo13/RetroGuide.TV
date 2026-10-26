@@ -19,9 +19,9 @@ public struct LineupBuilder: Sendable {
     /// (flagged, numbered last) so the channel manager can show them. Thin
     /// channels, near-duplicates and channels beyond the cap are left out.
     ///
-    /// No show airs on more than ``LineupCustomization/simulcastLimit``
-    /// channels at once (24/7 and custom channels don't count), and no episode
-    /// or movie airs on two channels at once.
+    /// Aims to keep each show within ``LineupCustomization/simulcastLimit``
+    /// automatic channels at once, excluding 24/7 and custom channels.
+    /// Limited alternatives can require overlap to keep channels playing.
     public func build(index: LibraryIndex, customization: LineupCustomization) -> [Channel] {
         let automatic = curated.sorted { $0.number < $1.number }
             + DynamicChannelFactory.definitions(for: index.facets, options: options)

@@ -11,7 +11,7 @@ struct AllChannelsOrderView: View {
     var body: some View {
         let current = pending ?? app.customization.defaultOrdering
         SettingsPage(title: "Schedule Order") {
-            Text("Choose how every channel orders its programs. You can still change a single channel afterwards in Manage channels.")
+            Text("Set the program order for the current lineup. You can change individual channels in Manage channels. Choosing Each channel's own restores automatic-channel defaults and keeps custom-channel orders.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
             VStack(spacing: DesignTokens.Spacing.sm) {
@@ -45,7 +45,7 @@ struct AllChannelsOrderView: View {
 
 enum AllChannelsOrdering {
     static let eachChannelTitle = "Each channel's own"
-    static let eachChannelDetail = "Every channel uses the order that suits it."
+    static let eachChannelDetail = "Restore automatic-channel defaults. Keep custom-channel orders."
 
     /// For the Settings row's value.
     static func summary(_ ordering: ScheduleOrdering?) -> String {

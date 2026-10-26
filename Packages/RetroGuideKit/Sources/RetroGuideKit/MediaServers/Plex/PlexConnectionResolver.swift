@@ -33,7 +33,9 @@ public struct PlexConnectionResolver: Sendable {
         settings: ServerConnectionSettings = .automatic,
         isVPNActive: Bool = false
     ) async throws -> (url: URL, isLocal: Bool) {
-        for group in Self.probeGroups(server, settings: settings, isVPNActive: isVPNActive) {
+        let groups = Self.probeGroups(server, settings: settings, isVPNActive: isVPNActive)
+        guard !groups.isEmpty else { throw HTTPError.secureConnectionRequired }
+        for group in groups {
             let reachable = await reachableConnections(group, token: server.accessToken)
             if let best = reachable.min(by: { $0.preferenceRank < $1.preferenceRank }) {
                 return (best.url, best.isLocal)
@@ -54,16 +56,17 @@ public struct PlexConnectionResolver: Sendable {
         settings: ServerConnectionSettings = .automatic,
         isVPNActive: Bool = false
     ) -> [[PlexConnectionCandidate]] {
-        let home = server.connections.filter(\.isLocal)
-        let remote = server.connections.filter { !$0.isLocal }
+        let secure = server.connections.filter { SecureTransport.permits($0.url) }
+        let home = secure.filter(\.isLocal)
+        let remote = secure.filter { !$0.isLocal }
         var groups: [[PlexConnectionCandidate]]
         switch settings.preference {
         case .preferHome:
             groups = [home, remote]
         case .automatic, .custom:
-            groups = server.isOnSameNetwork == false && !isVPNActive ? [remote, home] : [server.connections]
+            groups = server.isOnSameNetwork == false && !isVPNActive ? [remote, home] : [secure]
         }
-        if let custom = settings.activeCustomAddress {
+        if let custom = settings.activeCustomAddress, SecureTransport.permits(custom) {
             let isNearby = NetworkLocation.isLikelyLocal(custom) || NetworkLocation.isLikelyVPN(custom)
             groups.insert([PlexConnectionCandidate(url: custom, isLocal: isNearby, isRelay: false)], at: .zero)
         }

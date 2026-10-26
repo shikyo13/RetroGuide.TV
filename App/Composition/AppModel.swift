@@ -61,7 +61,10 @@ final class AppModel {
     private(set) var isRefreshing = false
     private(set) var lastRefreshed: Date?
     private(set) var refreshError: String?
-    private(set) var customization: LineupCustomization
+    private var regularCustomization: LineupCustomization
+    var customization: LineupCustomization {
+        parentalControls.policy.activeCustomization(regular: regularCustomization)
+    }
     private(set) var searchIndex = ProgramSearchIndex.empty {
         didSet { searchRevision += 1 }
     }
@@ -78,6 +81,10 @@ final class AppModel {
             updatePersonalChannels()
         }
     }
+    let parentalControls: ParentalControls
+    private(set) var isApplyingParentalControls = false
+    private var parentalAllowedItemIDs: Set<String> = []
+
     let sleepTimer = SleepTimer()
     let reminders = ProgramReminders()
 
@@ -108,10 +115,11 @@ final class AppModel {
     @ObservationIgnored private let displayMode = DisplayModeController()
     #endif
 
-    init(store: PreferencesStore = PreferencesStore(), snapshotStore: LibrarySnapshotStore = LibrarySnapshotStore()) {
+    init(store: PreferencesStore = PreferencesStore(), snapshotStore: LibrarySnapshotStore = LibrarySnapshotStore(), parentalControls: ParentalControls = ParentalControls()) {
+        self.parentalControls = parentalControls
         self.store = store
         self.preferences = store.preferences
-        self.customization = store.customization
+        self.regularCustomization = store.customization
         self.viewing = store.viewing
         let identities = ServerIdentities(installIdentifier: store.plexClientIdentifier)
         self.identities = identities
@@ -122,6 +130,10 @@ final class AppModel {
         }
         self.trackSync = TrackSync { [servers] serverID in
             servers.client(for: serverID)
+        }
+        tuner.playbackAllowed = { [weak self] item in
+            guard let self else { return false }
+            return !isApplyingParentalControls && (!parentalControls.policy.isEnabled || parentalAllowedItemIDs.contains(item.id))
         }
         tuner.onChannelChanged = { [weak self] channelID in
             self?.store.lastChannelID = channelID
@@ -174,6 +186,34 @@ final class AppModel {
         sleepTimer.onExpire = { [weak self] in
             self?.tuner.stopWatching()
         }
+    }
+
+    /// Applies one saved policy without changing the normal server or channel configuration.
+    func applyParentalControls(_ policy: ParentalPolicy, newPIN: String? = nil) async -> Bool {
+        let policy = policy.hasTitleSelections ? policy.resolvingTitles(in: ParentalTitleCatalog(snapshots: servers.knownSnapshots)) : policy
+        guard !isApplyingParentalControls, parentalControls.save(policy, newPIN: newPIN) else { return false }
+        isApplyingParentalControls = true
+        indexGeneration += 1
+        lineupGeneration += 1
+        searchIndexBuild?.cancel()
+        searchIndex = .empty
+        tuner.stopWatching()
+        tuner.powerOff()
+        tuner.setChannels([])
+        parentalAllowedItemIDs = []
+        lineup = []
+        libraryIndex = .empty
+        lineupRevision += 1
+        if policy.isEnabled {
+            let allowedIDs = Set(policy.filtering(servers.activeSnapshots).flatMap { $0.items.map(\.id) })
+            reminders.restrict(to: allowedIDs)
+        }
+        await whatsOnWidget.clearAndWait()
+        await rebuildIndexAndLineup()
+        isApplyingParentalControls = false
+        parentalControls.endAuthorization()
+        if phase == .ready { turnOn() }
+        return true
     }
 
     // MARK: - Derived state
@@ -249,7 +289,7 @@ final class AppModel {
         }
         // The bootstrap may have reset stored settings.
         preferences = store.preferences
-        customization = store.customization
+        regularCustomization = store.customization
         #endif
         let restoreSession = sessionGeneration
         await servers.restore()
@@ -295,6 +335,7 @@ final class AppModel {
     /// the grace period (or when it comes back, if it was suspended meanwhile).
     /// Picture in Picture keeps the channel on however long the app is away.
     func enteredBackground() {
+        parentalControls.endAuthorization()
         isInBackground = true
         updateWhatsOnWidget()
         whatsOnWidget.reloadForHomeScreen()
@@ -417,6 +458,7 @@ final class AppModel {
     // MARK: - Servers
 
     func completeInitialSetup(_ selections: [OnboardingModel.PendingServer]) async {
+        guard !parentalControls.needsAuthorization else { return }
         guard !selections.isEmpty else { return }
         guard selections.count == 1 || pro.access.canAddServer(connectedCount: selections.count - 1) else { return }
         for selection in selections {
@@ -431,6 +473,7 @@ final class AppModel {
 
     /// Adds a server chosen during onboarding or from Settings, then indexes it.
     func addServer(_ account: ServerAccount, token: String, accountToken: String?) async {
+        guard !parentalControls.needsAuthorization else { return }
         servers.add(account, token: token, accountToken: accountToken)
         if tuner.languagePreferences == nil {
             tuner.languagePreferences = servers.provisionalLanguagePreferences
@@ -441,6 +484,7 @@ final class AppModel {
     }
 
     func removeServer(id: String) async {
+        guard !parentalControls.needsAuthorization else { return }
         sessionGeneration += 1
         servers.remove(serverID: id)
         guard servers.hasServers else {
@@ -452,6 +496,7 @@ final class AppModel {
     }
 
     func updateLibrarySelection(serverID: String, libraryIDs: Set<String>) async {
+        guard !parentalControls.needsAuthorization else { return }
         servers.setSelectedLibraries(libraryIDs, serverID: serverID)
         guard !isManagingStartup else { return }
         await refreshLibrary()
@@ -459,6 +504,7 @@ final class AppModel {
 
     /// Applies a server's quality/buffering settings and rejoins the current channel.
     func updatePlayback(_ playback: ServerPlaybackSettings, serverID: String) async {
+        guard !parentalControls.needsAuthorization else { return }
         let qualityChanged = servers.qualityByServer[serverID] != playback.quality
         servers.setPlayback(playback, serverID: serverID)
         // Quality decides which copy of each item plays (and so the library
@@ -473,6 +519,7 @@ final class AppModel {
 
     /// Changes how a server is connected to and re-tunes onto the new address.
     func updateConnection(_ connection: ServerConnectionSettings, serverID: String) async {
+        guard !parentalControls.needsAuthorization else { return }
         await servers.setConnection(connection, serverID: serverID)
         refreshError = offlineServersMessage
         await rebuildIndexAndLineup()
@@ -482,6 +529,7 @@ final class AppModel {
     }
 
     func changeJellyfinAddress(_ text: String, serverID: String) async -> ServerLibrary.AddressChange {
+        guard !parentalControls.needsAuthorization else { return .notFound }
         let change = await servers.changeJellyfinAddress(of: serverID, to: text)
         guard case .moved = change else { return change }
         refreshError = offlineServersMessage
@@ -493,6 +541,7 @@ final class AppModel {
     }
 
     func signOut() {
+        guard !parentalControls.needsAuthorization else { return }
         isManagingStartup = false
         store.startupIncomplete = false
         sessionGeneration += 1
@@ -514,7 +563,7 @@ final class AppModel {
         lineupRevision += 1
         libraryIndex = .empty
         searchIndex = .empty
-        customization = LineupCustomization()
+        regularCustomization = LineupCustomization()
         preferences = UserPreferences()
         viewing = ViewingPreferences()
         #if os(tvOS)
@@ -628,8 +677,17 @@ final class AppModel {
     // MARK: - Lineup
 
     func updateCustomization(_ change: (inout LineupCustomization) -> Void) {
-        change(&customization)
-        store.customization = customization
+        guard !parentalControls.needsAuthorization else { return }
+        var updated = customization
+        change(&updated)
+        if parentalControls.policy.isEnabled && parentalControls.policy.usesCustomLineup {
+            var policy = parentalControls.policy
+            policy.channelCustomization = updated
+            guard parentalControls.save(policy) else { return }
+        } else {
+            regularCustomization = updated
+            store.customization = updated
+        }
         Task { await rebuildLineup() }
     }
 
@@ -725,9 +783,17 @@ final class AppModel {
         guard !isManagingStartup else { return }
         indexGeneration += 1
         let generation = indexGeneration
-        let snapshots = servers.activeSnapshots
+        if parentalControls.policy.hasTitleSelections {
+            parentalControls.refreshTitleMatches(in: ParentalTitleCatalog(snapshots: servers.knownSnapshots))
+        }
+        let policy = parentalControls.policy
+        let snapshots = policy.filtering(servers.activeSnapshots)
+        let allowedIDs = policy.isEnabled ? Set(snapshots.flatMap { $0.items.map(\.id) }) : []
         let index = await engine.makeIndex(from: snapshots, quality: servers.qualityByServer)
         guard generation == indexGeneration else { return }
+        parentalAllowedItemIDs = allowedIDs
+        tuner.enforcePlaybackAccess()
+        if policy.isEnabled { reminders.restrict(to: allowedIDs) }
         libraryIndex = index
         await rebuildLineup()
         #if DEBUG

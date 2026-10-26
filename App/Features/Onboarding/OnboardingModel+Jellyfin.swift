@@ -25,12 +25,16 @@ extension OnboardingModel {
     /// Looks for a Jellyfin server at what the viewer typed.
     func connectToJellyfin(address: String) {
         task?.cancel()
+        guard !JellyfinAddress.candidates(from: address).isEmpty else {
+            setStep(.enteringJellyfinAddress(message: HTTPError.secureConnectionRequired.localizedDescription))
+            return
+        }
         setStep(.connecting(serverName: address.trimmingCharacters(in: .whitespaces)))
         task = Task { [weak self] in
             guard let self else { return }
             guard let server = await jellyfinService.findServer(at: address) else {
                 guard !Task.isCancelled else { return }
-                setStep(.enteringJellyfinAddress(message: "No Jellyfin server answered at that address. Check it and that the server is running."))
+                setStep(.enteringJellyfinAddress(message: "No Jellyfin server answered securely. Check the HTTPS address and that the server has a trusted certificate."))
                 return
             }
             guard !excludedServerIDs.contains(server.id) else {

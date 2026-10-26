@@ -113,6 +113,8 @@ covers iPhone, iPad and Apple TV.
 - A Plex Media Server you own or that is shared with you (servers outside your
   home must have Plex Remote Access enabled), or a Jellyfin server you can sign
   in to.
+- HTTPS with a trusted certificate on every connected server, including local
+  networks and VPNs. HTTP-only servers are not supported.
 
 ## Getting started
 
@@ -191,7 +193,11 @@ Live TV starts as soon as your first server is indexed. Add more servers later i
 RetroGuide.TV has no separate account system. It talks to plex.tv to link your
 account and find your servers, and connects to your Plex or Jellyfin servers.
 Jellyfin discovery checks your local network. Access tokens are stored in the
-device keychain. Library metadata and local settings are cached on your device.
+device keychain. Server API requests, artwork, subtitles and playback require
+HTTPS, including redirects and playlist resources. Both players remain available.
+Apple Player receives media through an authenticated, device-local loopback relay;
+that internal connection never leaves the device. The parental PIN stays on the device as a salted verifier in
+Keychain. Library metadata and local settings are cached on your device.
 Chosen audio and subtitle preferences can also be saved to Plex, and shared
 track rules can sync through iCloud.
 

@@ -1,5 +1,6 @@
 import CryptoKit
 import Foundation
+import RetroGuideKit
 
 /// Downloads sidecars without holding up video. Multi-file formats are cached
 /// as one entry so the player never receives an incomplete subtitle set.
@@ -52,7 +53,8 @@ final class SubtitleFileCache: Sendable {
     }
 
     private func fetch(_ url: URL, to file: URL) async -> Bool {
-        guard let (temporary, response) = try? await session.download(from: url) else { return false }
+        guard SecureTransport.permits(url),
+              let (temporary, response) = try? await session.download(from: url, delegate: SecureRedirectDelegate.shared) else { return false }
         defer { try? FileManager.default.removeItem(at: temporary) }
         guard HTTPStatus.success.contains((response as? HTTPURLResponse)?.statusCode ?? .zero) else { return false }
         return (try? FileManager.default.moveItem(at: temporary, to: file)) != nil

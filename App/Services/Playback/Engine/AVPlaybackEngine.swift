@@ -23,6 +23,9 @@ final class AVPlaybackEngine: PlaybackEngine {
     }
 
     private let player = AVPlayer()
+    private var relay: LoopbackPlaybackRelay?
+    private var opening: Task<Void, Never>?
+    private var wantsPaused = false
     private let layerView = PlayerLayerView()
     private var statusCancellable: AnyCancellable?
     private var itemCancellables = Set<AnyCancellable>()
@@ -33,6 +36,8 @@ final class AVPlaybackEngine: PlaybackEngine {
 
     init() {
         player.automaticallyWaitsToMinimizeStalling = true
+        // The relay address belongs to this device and must never be handed to a remote player.
+        player.allowsExternalPlayback = false
         #if DEBUG
         player.isMuted = DebugLaunchOptions.isMuted
         #endif
@@ -51,17 +56,41 @@ final class AVPlaybackEngine: PlaybackEngine {
     /// `tracks` is not needed here: when the server repackages a stream it applies
     /// its own track selection, and direct-play MP4s use the file's defaults.
     func play(_ request: StreamRequest, tracks: TrackSelection?) {
-        positionOffset = request.startsAtPosition ? request.startPosition : .zero
-        let item = AVPlayerItem(url: request.url)
-        item.preferredForwardBufferDuration = request.buffer == .extended
-            ? Tuning.extendedForwardBufferSeconds
-            : Tuning.forwardBufferSeconds
-        observe(item)
-        player.replaceCurrentItem(with: item)
-        if !request.startsAtPosition {
-            player.seek(to: CMTime(seconds: request.startPosition, preferredTimescale: Tuning.seekTimescale))
+        guard SecureTransport.permits(request.url) else {
+            stop()
+            onEvent?(.failed(HTTPError.secureConnectionRequired.localizedDescription))
+            return
         }
-        player.play()
+        stop()
+        wantsPaused = false
+        positionOffset = request.startsAtPosition ? request.startPosition : .zero
+        opening = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let relay = try LoopbackPlaybackRelay(origin: request.url)
+                self.relay = relay
+                let localURL = try await relay.start()
+                try Task.checkCancellation()
+                let asset = AVURLAsset(url: localURL, options: [
+                    AVURLAssetReferenceRestrictionsKey: AVAssetReferenceRestrictions.forbidAll.rawValue
+                ])
+                let item = AVPlayerItem(asset: asset)
+                item.preferredForwardBufferDuration = request.buffer == .extended
+                    ? Tuning.extendedForwardBufferSeconds : Tuning.forwardBufferSeconds
+                self.observe(item)
+                self.player.replaceCurrentItem(with: item)
+                if !request.startsAtPosition {
+                    await self.player.seek(to: CMTime(seconds: request.startPosition, preferredTimescale: Tuning.seekTimescale))
+                    try Task.checkCancellation()
+                }
+                if !self.wantsPaused { self.player.play() }
+            } catch {
+                guard !Task.isCancelled else { return }
+                self.relay?.stop()
+                self.relay = nil
+                self.onEvent?(.failed("A secure connection to this stream could not be established."))
+            }
+        }
     }
 
     #if os(iOS)
@@ -71,6 +100,7 @@ final class AVPlaybackEngine: PlaybackEngine {
     #endif
 
     func setPaused(_ paused: Bool) {
+        wantsPaused = paused
         if paused {
             player.pause()
         } else {
@@ -79,6 +109,10 @@ final class AVPlaybackEngine: PlaybackEngine {
     }
 
     func stop() {
+        opening?.cancel()
+        opening = nil
+        relay?.stop()
+        relay = nil
         itemCancellables.removeAll()
         player.replaceCurrentItem(with: nil)
     }
