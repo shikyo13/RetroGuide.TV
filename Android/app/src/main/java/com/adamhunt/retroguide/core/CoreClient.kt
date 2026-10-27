@@ -79,6 +79,8 @@ class CoreClient {
     @Serializable private data class LockedParams(val isLocked: Boolean)
     @Serializable private data class ReminderParams(val channelID: String, val programID: String)
     @Serializable private data class ReminderIDParams(val id: String)
+    @Serializable private data class WidgetParams(val lastChannelID: String?)
+    @Serializable private data class WidgetSourceParams(val source: String)
     @Serializable private data class ParentalChannelParams(val channel: ChannelDraft, val policy: ParentalDraft)
     @Serializable private data class TrackCommandParams(val selection: SelectionInfo, val trackList: String)
     @Serializable private data class EndStreamParams(val serverID: String, val sessionID: String)
@@ -198,6 +200,16 @@ class CoreClient {
     suspend fun homeRowSettings() = call("homeRow.settings", HomeRowSettings.serializer())
     suspend fun setHomeRowFavorites(isEnabled: Boolean) =
         call("homeRow.favorites", EnabledParams(isEnabled), EnabledParams.serializer(), HomeRowSettings.serializer())
+
+    // The "What's On" widget
+
+    suspend fun widget(lastChannelID: String?) =
+        call("widget", WidgetParams(lastChannelID), WidgetParams.serializer(), WidgetSnapshot.serializer())
+    suspend fun widgetSettings() = call("widget.settings", WidgetSettings.serializer())
+    suspend fun setWidgetSource(source: String) =
+        call("widget.source", WidgetSourceParams(source), WidgetSourceParams.serializer(), WidgetSettings.serializer())
+    suspend fun toggleWidgetChannel(channelID: String) =
+        call("widget.toggleChannel", ChannelParams(channelID), ChannelParams.serializer(), WidgetSettings.serializer())
 
     // Program reminders
 

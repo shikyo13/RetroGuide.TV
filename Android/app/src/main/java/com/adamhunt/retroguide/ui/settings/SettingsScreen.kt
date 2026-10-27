@@ -72,6 +72,7 @@ sealed interface SettingsRoute {
     data object ParentalControls : SettingsRoute
     data object Reminders : SettingsRoute
     data object MatchTVMode : SettingsRoute
+    data object Widget : SettingsRoute
 }
 
 /** Moves between Settings pages, remembering where each open page was scrolled. */
@@ -151,6 +152,7 @@ fun SettingsScreen(app: AppModel, screen: DpSize, onClose: () -> Unit) {
                 SettingsRoute.ParentalControls -> ParentalControlsPage(app, navigator)
                 SettingsRoute.Reminders -> RemindersPage(app, navigator)
                 SettingsRoute.MatchTVMode -> MatchTVModePage(app)
+                SettingsRoute.Widget -> WidgetPage(app, navigator)
             }
             }
         }
@@ -173,8 +175,12 @@ private fun MainPage(app: AppModel, navigator: SettingsNavigator) {
         item { RetroRow(if (isPro) "RetroGuide Pro" else "Upgrade to Pro", { navigator.open(SettingsRoute.Pro) }, trailing = if (isPro) "Active" else PRO_BADGE) }
 
         item { SectionHeader("Picture") }
-        // Android TV's home screen; phones and tablets get the What's On widget instead.
-        if (!app.formFactor.isTouch) item { HomeRowSetting(app, navigator, isPro) }
+        // Android TV's home screen row, or the What's On widget on phones and tablets.
+        if (app.formFactor.isTouch) {
+            item { RetroRow("Home screen widget", { navigator.open(SettingsRoute.Widget) }) }
+        } else {
+            item { HomeRowSetting(app, navigator, isPro) }
+        }
         item { RetroRow("Theme", { navigator.open(SettingsRoute.Themes) }, trailing = ThemePalettes.first { it.id == themeID }.name) }
         item {
             val showsScanlines by app.showsScanlines.collectAsState()

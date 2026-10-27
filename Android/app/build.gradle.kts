@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.zxing.core)
     implementation(libs.tvprovider)
+    implementation(libs.glance.appwidget)
 }
 
 /** A setting from the Apple app's project.yml (`KEY: "value"`). */

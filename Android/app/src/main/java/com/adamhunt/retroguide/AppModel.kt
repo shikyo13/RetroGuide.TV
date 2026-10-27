@@ -14,10 +14,15 @@ import com.adamhunt.retroguide.core.ServerInfo
 import com.adamhunt.retroguide.core.ServersChange
 import com.adamhunt.retroguide.core.TokenVault
 import com.adamhunt.retroguide.home.HomeScreenRow
+import com.adamhunt.retroguide.widget.WhatsOnStore
+import com.adamhunt.retroguide.widget.WhatsOnWidget
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 import com.adamhunt.retroguide.core.NetworkMonitor
 import com.adamhunt.retroguide.player.MatchTVMode
 import com.adamhunt.retroguide.player.MpvPlayer
 import com.adamhunt.retroguide.player.ProgramReminders
+import com.adamhunt.retroguide.player.ReminderNotifications
 import com.adamhunt.retroguide.player.SleepTimer
 import com.adamhunt.retroguide.player.Tuner
 import com.adamhunt.retroguide.ui.onboarding.OnboardingModel
@@ -124,7 +129,7 @@ class AppModel(context: Context, muted: Boolean) {
     val favoritesOnly: StateFlow<Boolean> = _favoritesOnly.asStateFlow()
 
     val sleepTimer = SleepTimer(scope) { tuner.suspend() }
-    val reminders = ProgramReminders(core, scope)
+    val reminders = ProgramReminders(core, scope, if (formFactor.isTouch) ReminderNotifications(appContext) else null)
 
     private var refreshJob: Job? = null
     private var isInBackground = false
@@ -277,14 +282,28 @@ class AppModel(context: Context, muted: Boolean) {
         scope.launch { checkServers() }
     }
 
-    /** Refreshes the home screen row (what's on, recent or favorite channels); the latest request wins. */
+    /**
+     * Refreshes what the home screen shows: Android TV's row, or the What's On
+     * widget on phones and tablets. The latest request wins.
+     */
     fun updateHomeRow() {
         homeRowJob?.cancel()
         homeRowJob = scope.launch {
-            val entries = runCatching { core.homeRow() }.getOrNull() ?: return@launch
-            homeRow.update(entries)
+            if (formFactor.isTouch) {
+                val lastChannel = tuner.channel.value?.id ?: preferences.getString(Saved.LAST_CHANNEL, null)
+                val snapshot = runCatching { core.widget(lastChannel) }.getOrNull() ?: return@launch
+                withContext(Dispatchers.IO) { whatsOn.save(snapshot, widgetHttp) }
+                whatsOn.offset = 0
+                WhatsOnWidget.reload(appContext)
+            } else {
+                val entries = runCatching { core.homeRow() }.getOrNull() ?: return@launch
+                homeRow.update(entries)
+            }
         }
     }
+
+    private val whatsOn = WhatsOnStore(appContext)
+    private val widgetHttp = OkHttpClient()
 
     /** Tunes a channel from a link (`retroguide://channel?id=…`), now or once the lineup is ready. */
     fun openChannel(id: String) {
@@ -319,6 +338,8 @@ class AppModel(context: Context, muted: Boolean) {
     fun setTheme(id: ThemeId) {
         _themeID.value = id
         preferences.edit().putString(Saved.THEME, id.name).apply()
+        // The widget follows the app's theme.
+        if (formFactor.isTouch) scope.launch { WhatsOnWidget.reload(appContext) }
     }
 
     fun removeServer(serverID: String) {

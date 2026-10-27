@@ -67,11 +67,11 @@ private object Geometry {
 
 /** The wordmark: a small TV glyph, "RetroGuide" and an accented ".TV". */
 @Composable
-fun BrandMark(style: TextStyle = Typography.headline, modifier: Modifier = Modifier) {
+fun BrandMark(style: TextStyle = Typography.headline, modifier: Modifier = Modifier, showsWordmark: Boolean = true) {
     val theme = LocalTheme.current
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         TVGlyph(theme.accent, Modifier.width((style.fontSize.value * GLYPH_TO_TEXT_RATIO).dp))
-        Text(
+        if (showsWordmark) Text(
             buildAnnotatedString {
                 withStyle(SpanStyle(color = theme.textPrimary)) { append(" RetroGuide") }
                 withStyle(SpanStyle(color = theme.accent)) { append(".TV") }

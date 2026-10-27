@@ -12,6 +12,7 @@ coil = "3.6.3"
 okhttp = "5.5.1"
 zxing = "3.5.4"
 tvprovider = "1.1.0"
+glance = "1.2.0"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -31,6 +32,7 @@ coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp"
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 tvprovider = { group = "androidx.tvprovider", name = "tvprovider", version.ref = "tvprovider" }
+glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

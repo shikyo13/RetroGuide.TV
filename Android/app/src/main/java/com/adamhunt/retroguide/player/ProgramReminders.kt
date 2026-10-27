@@ -16,7 +16,12 @@ import kotlin.math.max
  * Program reminders (the Apple app's `ProgramReminders` on Apple TV): they come
  * up while RetroGuide is open, when the program starts. The core keeps them.
  */
-class ProgramReminders(private val core: CoreClient, private val scope: CoroutineScope) {
+class ProgramReminders(
+    private val core: CoreClient,
+    private val scope: CoroutineScope,
+    /** Phones and tablets: notifications that come even when the app is closed. */
+    val notifications: ReminderNotifications?,
+) {
     private val _pending = MutableStateFlow<List<ReminderInfo>>(emptyList())
     val pending: StateFlow<List<ReminderInfo>> = _pending.asStateFlow()
     /** A reminder whose program just started. */
@@ -29,7 +34,19 @@ class ProgramReminders(private val core: CoreClient, private val scope: Coroutin
 
     fun reload() = update { core.reminders() }
 
-    fun toggle(channelID: String, programID: String) = update { core.toggleReminder(channelID, programID) }
+    /** Asks the viewer to allow notifications (phones and tablets, the first time a reminder is set). */
+    var onNeedsPermission: () -> Unit = {}
+
+    fun toggle(channelID: String, programID: String) {
+        if (notifications?.isAllowed == false) onNeedsPermission()
+        update { core.toggleReminder(channelID, programID) }
+    }
+
+    /** After the viewer answered the notification prompt. */
+    fun permissionAnswered(isGranted: Boolean) {
+        if (isGranted) reload()
+        else _message.value = "Notifications are off. Turn them on for RetroGuide.TV in Settings › Notifications to get reminders when the app is closed."
+    }
 
     fun remove(id: String) = update { core.removeReminder(id) }
 
@@ -48,6 +65,7 @@ class ProgramReminders(private val core: CoreClient, private val scope: Coroutin
     }
 
     private fun apply(state: RemindersState) {
+        notifications?.schedule(state.pending, _pending.value)
         _pending.value = state.pending
         state.message?.let { _message.value = it }
         state.due?.let { _due.value = it }

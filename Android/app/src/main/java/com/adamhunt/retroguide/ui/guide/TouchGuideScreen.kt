@@ -115,6 +115,7 @@ fun TouchGuideScreen(
     val selected = remember(focus, schedules) { model.selectedProgram }
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val isPortrait = maxHeight > maxWidth
+        val isCompact = maxWidth < TouchGuideLayout.compactWidth
         val channelColumnWidth = if (maxWidth < TouchGuideLayout.compactWidth) GuideLayout.compactChannelColumnWidth else GuideLayout.channelColumnWidth
         LaunchedEffect(maxWidth) {
             model.setVisibleSlots(if (maxWidth < TouchGuideLayout.compactWidth) GuideModel.Time.COMPACT_VISIBLE_SLOTS else GuideModel.Time.VISIBLE_SLOTS)
@@ -131,7 +132,7 @@ fun TouchGuideScreen(
                 .padding(horizontal = TouchGuideLayout.margin),
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
         ) {
-            Header(now, favoritesOnly, selected?.takeIf { it.start > now }?.let(isReminderSet), actions)
+            Header(now, favoritesOnly, selected?.takeIf { it.start > now }?.let(isReminderSet), actions, isCompact)
             Row(Modifier.height(pictureHeight), horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
                 Box(
                     Modifier
@@ -168,12 +169,13 @@ fun TouchGuideScreen(
 }
 
 @Composable
-private fun Header(now: Double, favoritesOnly: Boolean, isReminderSet: Boolean?, actions: TouchGuideActions) {
+private fun Header(now: Double, favoritesOnly: Boolean, isReminderSet: Boolean?, actions: TouchGuideActions, isCompact: Boolean) {
     val theme = LocalTheme.current
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
-        BrandMark(Typography.headline)
+        // A phone held upright has room for the TV glyph and the buttons; the ruler shows the time.
+        BrandMark(Typography.headline, showsWordmark = !isCompact)
         Spacer(Modifier.weight(1f))
-        Text(ScheduleFormatting.time(now), style = Typography.clock, color = theme.accent)
+        if (!isCompact) Text(ScheduleFormatting.time(now), style = Typography.clock, color = theme.accent)
         IconButton(if (favoritesOnly) "★" else "☆", "Favorites", actions.onToggleFavorites)
         isReminderSet?.let { IconButton(if (it) "🔕" else "🔔", if (it) "Cancel reminder" else "Remind me", actions.onReminder) }
         IconButton("⌕", "Search", actions.onSearch)

@@ -1,6 +1,9 @@
 package com.adamhunt.retroguide
 
+import android.Manifest
 import android.app.PictureInPictureParams
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
 import android.content.Intent
 import android.content.res.Configuration
 import android.util.Rational
@@ -19,10 +22,16 @@ import com.adamhunt.retroguide.player.DisplayModeMatcher
 
 class MainActivity : ComponentActivity() {
     private val app get() = application as RetroGuideApplication
+    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        app.model.reminders.permissionAnswered(isGranted)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app.start(intent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            app.model.reminders.onNeedsPermission = { notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS) }
+        }
         // Live TV keeps the screen on, until the sleep timer stops it.
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

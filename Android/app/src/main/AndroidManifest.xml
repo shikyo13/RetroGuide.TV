@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- The home screen's "What's On" row. -->
     <uses-permission android:name="com.android.providers.tv.permission.WRITE_EPG_DATA" />
+    <!-- Program reminders on phones and tablets. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-feature android:name="android.software.leanback" android:required="false" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
@@ -34,6 +37,20 @@
                 <data android:scheme="retroguide" android:host="channel" />
             </intent-filter>
         </activity>
+        <!-- The "What's On" home screen widget. -->
+        <receiver
+            android:name=".widget.WhatsOnWidgetReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/whats_on_widget" />
+        </receiver>
+        <receiver
+            android:name=".player.ReminderNotifications$ReminderReceiver"
+            android:exported="false" />
         <!-- Artwork for the home screen row, read by the TV launcher. -->
         <provider
             android:name=".home.HomeArtworkProvider"

@@ -349,3 +349,32 @@ data class HomeRowEntry(val channelID: String, val number: Int, val name: String
 
 @Serializable
 data class HomeRowSettings(val usesFavorites: Boolean, val hasFavorites: Boolean)
+
+// The phone and tablet "What's On" widget
+
+@Serializable
+data class WidgetProgram(
+    val title: String,
+    val episode: String? = null,
+    val start: Double,
+    val end: Double,
+    val still: String? = null,
+    val backdrop: String? = null,
+    val logo: String? = null,
+)
+
+@Serializable
+data class WidgetChannel(val id: String, val number: Int, val name: String, val callSign: String, val programs: List<WidgetProgram>)
+
+@Serializable
+data class WidgetSnapshot(val channels: List<WidgetChannel>, val pinned: Boolean)
+
+@Serializable
+data class WidgetSettings(
+    val source: String,
+    val sources: List<Choice>,
+    val selectedIDs: List<String>,
+    val pinnedID: String? = null,
+    val hasFavorites: Boolean,
+    val limit: Int,
+)

@@ -96,13 +96,21 @@ internal fun GuideGrid(
     onTune: (ChannelInfo) -> Unit = {},
 ) {
     val theme = LocalTheme.current
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = if (isTouch) max(0, (focusedRow ?: 0) - 1) else 0)
+    // Opens with the tuned channel in view: near the top on touch screens, as the last visible row on TV.
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = max(0, (focusedRow ?: 0) - if (isTouch) 1 else GuideLayout.VISIBLE_ROWS - 1),
+    )
     if (!isTouch) {
         LaunchedEffect(focusedRow) {
             val row = focusedRow ?: return@LaunchedEffect
             val first = listState.firstVisibleItemIndex
-            if (row < first) listState.animateScrollToItem(row)
-            else if (row >= first + GuideLayout.VISIBLE_ROWS) listState.animateScrollToItem(row - GuideLayout.VISIBLE_ROWS + 1)
+            val target = when {
+                row < first -> row
+                row >= first + GuideLayout.VISIBLE_ROWS -> row - GuideLayout.VISIBLE_ROWS + 1
+                else -> return@LaunchedEffect
+            }
+            // A row at a time glides; a long jump (Play/Pause to the top) doesn't crawl past every row.
+            if (kotlin.math.abs(target - first) > 1) listState.scrollToItem(target) else listState.animateScrollToItem(target)
         }
     }
     val window = GuideModel.Time.SLOT * slots
