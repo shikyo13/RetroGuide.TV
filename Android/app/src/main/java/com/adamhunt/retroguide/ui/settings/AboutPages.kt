@@ -1,5 +1,7 @@
 package com.adamhunt.retroguide.ui.settings
 
+import android.app.Activity
+import com.adamhunt.retroguide.purchases.ProStore
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.items
@@ -34,14 +36,19 @@ private val PRO_BENEFITS = listOf(
     "Schedule controls" to "Pick each channel's order and start programs on the hour and half hour.",
 )
 
-/** What RetroGuide Pro includes (the Apple app's `ProUpgradeView`). Purchases need Google Play Billing, which isn't connected yet. */
+/** What RetroGuide Pro includes, with the purchase and restore buttons (the Apple app's `ProUpgradeView`). */
 @Composable
 fun ProPage(app: AppModel) {
     val theme = LocalTheme.current
+    val activity = LocalContext.current as? Activity
     val isPro by app.isPro.collectAsState()
+    val price by app.pro.price.collectAsState()
+    val isLoading by app.pro.isLoadingProduct.collectAsState()
+    val state by app.pro.state.collectAsState()
+    LaunchedEffect(Unit) { app.pro.loadProductIfNeeded() }
     SettingsPage("RetroGuide Pro") {
         item {
-            Note(if (isPro) "You have RetroGuide Pro. Thank you for supporting the app!" else "One purchase, no subscription.")
+            Note(if (isPro) "You have RetroGuide Pro. Thank you for supporting the app!" else "One purchase, no subscription. It unlocks Pro on every Android device signed in to your Google account.")
         }
         item { SectionHeader("Included") }
         items(PRO_BENEFITS, key = { it.first }) { (title, detail) ->
@@ -49,10 +56,20 @@ fun ProPage(app: AppModel) {
             RetroRow(title, {}, detail = detail, maxLines = Int.MAX_VALUE)
         }
         if (!isPro) {
-            item { RetroButton("Purchases aren't available yet", {}, isPrimary = true, enabled = false) }
             item {
-                Text("RetroGuide Pro will be sold through Google Play.", style = Typography.caption, color = theme.textSecondary)
+                val title = price?.let { "★ Upgrade for $it" } ?: if (isLoading) "Contacting Google Play…" else "Couldn't reach Google Play"
+                RetroButton(title, { activity?.let(app.pro::purchase) }, isPrimary = true,
+                    enabled = price != null && state != ProStore.PurchaseState.Purchasing)
             }
+            if (price == null && !isLoading) item { RetroButton("Try Again", app.pro::loadProductIfNeeded) }
+            item { RetroButton("Restore Purchase", app.pro::restore) }
+            val status = when (val current = state) {
+                ProStore.PurchaseState.Idle -> null
+                ProStore.PurchaseState.Purchasing -> "Contacting Google Play…"
+                ProStore.PurchaseState.Pending -> "Waiting for the payment to go through. Pro unlocks as soon as it does."
+                is ProStore.PurchaseState.Failed -> "The purchase didn't go through: ${current.message}"
+            }
+            status?.let { item { Text(it, style = Typography.caption, color = theme.textSecondary) } }
         }
     }
 }

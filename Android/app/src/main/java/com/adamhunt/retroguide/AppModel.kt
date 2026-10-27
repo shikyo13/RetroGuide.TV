@@ -24,6 +24,7 @@ import com.adamhunt.retroguide.player.MpvPlayer
 import com.adamhunt.retroguide.player.ProgramReminders
 import com.adamhunt.retroguide.player.ReminderNotifications
 import com.adamhunt.retroguide.player.SleepTimer
+import com.adamhunt.retroguide.purchases.ProStore
 import com.adamhunt.retroguide.player.Tuner
 import com.adamhunt.retroguide.ui.onboarding.OnboardingModel
 import com.adamhunt.retroguide.ui.theme.ThemeId
@@ -120,9 +121,11 @@ class AppModel(context: Context, muted: Boolean) {
         preferences.edit().putString(Saved.MATCH_TV_MODE, mode.name).apply()
     }
 
-    /** RetroGuide Pro. Google Play Billing isn't connected yet; debug builds can turn it on for QA. */
+    /** RetroGuide Pro from Google Play; debug builds can also turn it on for QA (`--ez devPro true`). */
+    val pro = ProStore(appContext, scope)
     private val _isPro = MutableStateFlow(false)
     val isPro: StateFlow<Boolean> = _isPro.asStateFlow()
+    private var isDevelopmentPro = false
 
     /** Guide and channel surfing show only favorites (a Pro feature). */
     private val _favoritesOnly = MutableStateFlow(false)
@@ -143,9 +146,15 @@ class AppModel(context: Context, muted: Boolean) {
         return visible.filter { it.isFavorite }.ifEmpty { visible }
     }
 
-    fun setPro(isPro: Boolean) {
+    private fun setPro(isPro: Boolean) {
+        if (_isPro.value == isPro) return
         _isPro.value = isPro
-        scope.launch { runCatching { core.setPro(isPro) } }
+        scope.launch {
+            runCatching { core.setPro(isPro) }
+            // Pro changes what Settings, the widget and the home row offer.
+            _lineupRevision.value += 1
+            updateHomeRow()
+        }
         updateSurfing()
     }
 
@@ -376,7 +385,9 @@ class AppModel(context: Context, muted: Boolean) {
     fun start(development: CoreClient.DevelopmentServer? = null, developmentPro: Boolean = false) {
         scope.launch {
             try {
-                if (developmentPro) setPro(true)
+                isDevelopmentPro = developmentPro
+                scope.launch { pro.isPro.collect { owned -> setPro(owned || isDevelopmentPro) } }
+                pro.start()
                 val started = CoreLauncher.start(appContext, core, vault.load())
                 _servers.value = started.servers
                 if (development != null && started.servers.none { it.id == development.id }) {

@@ -13,6 +13,7 @@ okhttp = "5.5.1"
 zxing = "3.5.4"
 tvprovider = "1.1.0"
 glance = "1.2.0"
+billing = "9.1.0"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -33,6 +34,7 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
 tvprovider = { group = "androidx.tvprovider", name = "tvprovider", version.ref = "tvprovider" }
 glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
+billing = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billing" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

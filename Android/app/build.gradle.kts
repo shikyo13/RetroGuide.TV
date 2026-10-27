@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.zxing.core)
     implementation(libs.tvprovider)
     implementation(libs.glance.appwidget)
+    implementation(libs.billing)
 }
 
 /** A setting from the Apple app's project.yml (`KEY: "value"`). */
