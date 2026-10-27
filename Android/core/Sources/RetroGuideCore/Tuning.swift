@@ -123,6 +123,7 @@ extension CoreState {
     func tune(_ params: TuneParams) async throws -> TuneResult {
         latestTune = max(latestTune, params.generation)
         guard let channel = channel(withID: params.channelID) else { throw CoreError.unknownChannel }
+        if params.programID == nil, viewing.recentChannelIDs.first != channel.id { rememberChannel(channel.id) }
         let now = Date.now
         let independent = params.programID.flatMap { program(withID: $0, on: channel, near: now) }
         if params.programID != nil, independent == nil { throw CoreError.nothingScheduled }

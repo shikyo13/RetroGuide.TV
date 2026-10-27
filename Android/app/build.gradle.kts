@@ -53,4 +53,5 @@ dependencies {
     implementation(libs.coil.network.okhttp)
     implementation(libs.okhttp)
     implementation(libs.zxing.core)
+    implementation(libs.tvprovider)
 }

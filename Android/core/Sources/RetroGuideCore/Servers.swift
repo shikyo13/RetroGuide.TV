@@ -19,6 +19,8 @@ struct StartParams: Decodable, Sendable {
 struct StartResult: Encodable, Sendable {
     let servers: [ServerInfo]
     let channelCount: Int
+    /// When the oldest cached library was read (`nil`: nothing cached).
+    let oldestRefresh: Date?
 }
 
 struct ServerInfo: Encodable, Sendable {
@@ -83,7 +85,11 @@ extension CoreState {
         if !snapshots.isEmpty {
             rebuildLineup()
         }
-        return StartResult(servers: serverList(), channelCount: visibleChannels.count)
+        return StartResult(
+            servers: serverList(),
+            channelCount: visibleChannels.count,
+            oldestRefresh: snapshots.values.map(\.refreshedAt).min()
+        )
     }
 
     func serverList() -> [ServerInfo] {

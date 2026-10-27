@@ -1,6 +1,12 @@
 package com.adamhunt.retroguide.ui.settings
 
 import androidx.activity.compose.BackHandler
+import kotlinx.coroutines.launch
+import com.adamhunt.retroguide.ui.theme.Tokens
+import com.adamhunt.retroguide.core.HomeRowSettings
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -144,6 +150,7 @@ private fun MainPage(app: AppModel, navigator: SettingsNavigator) {
         item { RetroRow(if (isPro) "RetroGuide Pro" else "Upgrade to Pro", { navigator.open(SettingsRoute.Pro) }, trailing = if (isPro) "Active" else PRO_BADGE) }
 
         item { SectionHeader("Picture") }
+        item { HomeRowSetting(app, navigator, isPro) }
         item { RetroRow("Theme", { navigator.open(SettingsRoute.Themes) }, trailing = ThemePalettes.first { it.id == themeID }.name) }
 
         item { SectionHeader("Playback") }
@@ -220,5 +227,31 @@ private fun MainPage(app: AppModel, navigator: SettingsNavigator) {
             Text("RetroGuide.TV ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) · Open source under the MIT License",
                 style = Typography.caption, color = theme.textSecondary, modifier = Modifier.padding(top = SettingsLayout.top))
         }
+    }
+}
+
+/** Which channels the TV's home screen row shows (the Apple app's Top Shelf setting). */
+@Composable
+private fun HomeRowSetting(app: AppModel, navigator: SettingsNavigator, isPro: Boolean) {
+    val scope = rememberCoroutineScope()
+    var settings by remember { mutableStateOf<HomeRowSettings?>(null) }
+    LaunchedEffect(Unit) { settings = runCatching { app.core.homeRowSettings() }.getOrNull() }
+    val usesFavorites = isPro && settings?.usesFavorites == true
+    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
+        if (isPro) {
+            RetroRow("Home screen row", {
+                scope.launch {
+                    settings = runCatching { app.core.setHomeRowFavorites(!usesFavorites) }.getOrNull()
+                    app.updateHomeRow()
+                }
+            }, trailing = if (usesFavorites) "Favorites" else "Recent channels")
+        } else {
+            RetroRow("Home screen row", {}, trailing = "Recent channels")
+            ProLockedRow("Use Favorites on the home screen", { navigator.open(SettingsRoute.Pro) })
+        }
+        if (usesFavorites && settings?.hasFavorites == false) {
+            Note("No favorite channels are available. Add channels in Favorites below to show them on the home screen.")
+        }
+        Note("Android TV home screens that show app rows list what's on in \u201CWhat's On\u201D.")
     }
 }

@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 data class ServerInfo(val id: String, val name: String, val kind: String, val address: String, val isOnline: Boolean)
 
 @Serializable
-data class StartResult(val servers: List<ServerInfo>, val channelCount: Int)
+data class StartResult(val servers: List<ServerInfo>, val channelCount: Int, val oldestRefresh: Double? = null)
 
 @Serializable
 data class ServersChange(val servers: List<ServerInfo>, val tokens: Map<String, String>)
@@ -341,3 +341,11 @@ data class ReminderInfo(val id: String, val channelID: String, val title: String
 
 @Serializable
 data class RemindersState(val pending: List<ReminderInfo>, val message: String? = null, val due: ReminderInfo? = null)
+
+// The TV's home screen row
+
+@Serializable
+data class HomeRowEntry(val channelID: String, val number: Int, val name: String, val program: ProgramInfo? = null)
+
+@Serializable
+data class HomeRowSettings(val usesFavorites: Boolean, val hasFavorites: Boolean)

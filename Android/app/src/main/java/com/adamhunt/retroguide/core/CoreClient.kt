@@ -192,6 +192,13 @@ class CoreClient {
         "servers.checkReachability", ReachabilityParams(isVPNActive), ReachabilityParams.serializer(), ReachabilityResult.serializer(),
     )
 
+    // The TV's home screen row
+
+    suspend fun homeRow() = call("homeRow", ListSerializer(HomeRowEntry.serializer()))
+    suspend fun homeRowSettings() = call("homeRow.settings", HomeRowSettings.serializer())
+    suspend fun setHomeRowFavorites(isEnabled: Boolean) =
+        call("homeRow.favorites", EnabledParams(isEnabled), EnabledParams.serializer(), HomeRowSettings.serializer())
+
     // Program reminders
 
     suspend fun reminders() = call("reminders", RemindersState.serializer())

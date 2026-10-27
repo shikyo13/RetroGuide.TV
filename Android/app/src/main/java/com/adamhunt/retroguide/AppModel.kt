@@ -11,6 +11,8 @@ import com.adamhunt.retroguide.core.ProgressInfo
 import com.adamhunt.retroguide.core.ServerInfo
 import com.adamhunt.retroguide.core.ServersChange
 import com.adamhunt.retroguide.core.TokenVault
+import com.adamhunt.retroguide.home.HomeScreenRow
+import com.adamhunt.retroguide.core.NetworkMonitor
 import com.adamhunt.retroguide.player.MpvPlayer
 import com.adamhunt.retroguide.player.ProgramReminders
 import com.adamhunt.retroguide.player.SleepTimer
@@ -44,6 +46,10 @@ sealed interface Phase {
 class AppModel(context: Context, muted: Boolean) {
     private object Refresh {
         const val PROGRESS_POLL_MS = 400L
+        /** Re-index in the background when the cache is older than this. */
+        const val STALE_AFTER_SECONDS = 6 * 3600.0
+        /** How often server reachability is re-checked while the app is open. */
+        const val HEALTH_CHECK_MS = 10 * 60 * 1000L
     }
 
     private object Saved {
@@ -55,6 +61,9 @@ class AppModel(context: Context, muted: Boolean) {
     private val appContext = context.applicationContext
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val vault = TokenVault(appContext)
+    private val network = NetworkMonitor(appContext)
+    private val homeRow = HomeScreenRow(appContext)
+    private var homeRowJob: Job? = null
     private val preferences = appContext.getSharedPreferences(Saved.PREFERENCES, Context.MODE_PRIVATE)
 
     val core = CoreClient()
@@ -214,16 +223,61 @@ class AppModel(context: Context, muted: Boolean) {
         }
     }
 
-    /** The app left the screen: release the stream (the Apple app does the same after a short grace). */
+    /** The app left the screen: release the stream and lock Settings again. */
     fun enteredBackground() {
         isInBackground = true
+        updateHomeRow()
+        endParentalAuthorization()
         tuner.suspend()
     }
 
+    /** Back on screen: rejoin the channel live, catch up on reminders, and recheck servers. */
     fun becameActive() {
         if (!isInBackground) return
         isInBackground = false
-        if (_phase.value == Phase.Ready && !sleepTimer.didExpire.value) tuner.resume()
+        if (_phase.value != Phase.Ready) return
+        reminders.reload()
+        if (!sleepTimer.didExpire.value) tuner.resume()
+        scope.launch { checkServers() }
+    }
+
+    /** Refreshes the home screen row (what's on, recent or favorite channels); the latest request wins. */
+    fun updateHomeRow() {
+        homeRowJob?.cancel()
+        homeRowJob = scope.launch {
+            val entries = runCatching { core.homeRow() }.getOrNull() ?: return@launch
+            homeRow.update(entries)
+        }
+    }
+
+    /** Tunes a channel from a link (`retroguide://channel?id=…`), now or once the lineup is ready. */
+    fun openChannel(id: String) {
+        preferences.edit().putString(Saved.LAST_CHANNEL, id).apply()
+        tuner.channelWithID(id)?.let { tuner.tune(it) }
+    }
+
+    private var healthJob: Job? = null
+
+    /** Rechecks servers every few minutes and whenever the network changes (the Apple app's health check). */
+    private fun startHealthChecks() {
+        if (healthJob != null) return
+        healthJob = scope.launch {
+            while (isActive) {
+                delay(Refresh.HEALTH_CHECK_MS)
+                if (!isInBackground) checkServers()
+            }
+        }
+        network.start { scope.launch { checkServers() } }
+    }
+
+    /** Probes the servers; when one came back or dropped out the lineup was rebuilt, so show it. */
+    private suspend fun checkServers() {
+        if (_phase.value != Phase.Ready) return
+        val result = runCatching { core.checkReachability(network.isVPNActive) }.getOrNull() ?: return
+        if (!result.changed) return
+        _servers.value = runCatching { core.servers() }.getOrDefault(_servers.value)
+        _offline.value = _servers.value.filter { !it.isOnline }.map { it.name }
+        reloadChannels()
     }
 
     fun setTheme(id: ThemeId) {
@@ -268,10 +322,14 @@ class AppModel(context: Context, muted: Boolean) {
                     started.channelCount > 0 -> {
                         reloadChannels()
                         goOnAir()
-                        refresh(showsProgress = false)
+                        // Find each server's current address first: the network may have changed.
+                        checkServers()
+                        val cachedAt = started.oldestRefresh ?: 0.0
+                        if (System.currentTimeMillis() / 1000.0 - cachedAt > Refresh.STALE_AFTER_SECONDS) refresh(showsProgress = false)
                     }
                     else -> refresh(showsProgress = true)
                 }
+                startHealthChecks()
             } catch (error: Exception) {
                 _phase.value = Phase.Failed(error.message ?: "RetroGuide.TV couldn't start.")
             }
@@ -330,6 +388,7 @@ class AppModel(context: Context, muted: Boolean) {
 
     private fun showChannels(all: List<ChannelInfo>) {
         _lineupRevision.value += 1
+        updateHomeRow()
         // A rebuilt lineup can move or remove reminded airings.
         reminders.reload()
         val visible = all.filter { !it.isHidden }

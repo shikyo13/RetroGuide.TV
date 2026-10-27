@@ -1,5 +1,6 @@
 package com.adamhunt.retroguide
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -29,6 +30,24 @@ class MainActivity : ComponentActivity() {
             }
         }
         setContent { RootScreen(app.model) }
+        openLink(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        openLink(intent)
+    }
+
+    /** `retroguide://channel?id=…` tunes that channel. */
+    private fun openLink(intent: Intent) {
+        val link = intent.data ?: return
+        if (link.scheme == LINK_SCHEME && link.host == LINK_CHANNEL) link.getQueryParameter(LINK_ID)?.let(app.model::openChannel)
+    }
+
+    private companion object {
+        const val LINK_SCHEME = "retroguide"
+        const val LINK_CHANNEL = "channel"
+        const val LINK_ID = "id"
     }
 
     override fun onStart() {
