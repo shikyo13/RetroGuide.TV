@@ -251,6 +251,14 @@ class AppModel(context: Context, muted: Boolean) {
         }
     }
 
+    /** Playing in a Picture in Picture window: only the picture shows. */
+    private val _isPictureInPicture = MutableStateFlow(false)
+    val isPictureInPicture: StateFlow<Boolean> = _isPictureInPicture.asStateFlow()
+
+    fun setPictureInPicture(isOn: Boolean) {
+        _isPictureInPicture.value = isOn
+    }
+
     /** The app left the screen: release the stream and lock Settings again. */
     fun enteredBackground() {
         isInBackground = true

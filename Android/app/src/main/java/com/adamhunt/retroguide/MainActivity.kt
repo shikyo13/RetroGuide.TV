@@ -1,6 +1,10 @@
 package com.adamhunt.retroguide
 
+import android.app.PictureInPictureParams
 import android.content.Intent
+import android.content.res.Configuration
+import android.util.Rational
+import com.adamhunt.retroguide.player.Signal
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
@@ -58,7 +62,28 @@ class MainActivity : ComponentActivity() {
         const val LINK_SCHEME = "retroguide"
         const val LINK_CHANNEL = "channel"
         const val LINK_ID = "id"
+        const val PICTURE_WIDTH = 16
+        const val PICTURE_HEIGHT = 9
     }
+
+    /** Phones and tablets: leaving the app while a channel plays keeps it in a Picture in Picture window. */
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        if (app.model.formFactor.isTouch && app.model.tuner.signal.value != Signal.Off) {
+            runCatching { enterPictureInPictureMode(pictureInPictureParams()) }
+        }
+    }
+
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+        app.model.setPictureInPicture(isInPictureInPictureMode)
+    }
+
+    private fun pictureInPictureParams(): PictureInPictureParams =
+        PictureInPictureParams.Builder()
+            .setAspectRatio(Rational(PICTURE_WIDTH, PICTURE_HEIGHT))
+            .setSeamlessResizeEnabled(true)
+            .build()
 
     override fun onStart() {
         super.onStart()
