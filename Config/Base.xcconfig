@@ -2,6 +2,6 @@
 // (git-ignored). Copy Local.xcconfig.example to Local.xcconfig and set your team.
 DEVELOPMENT_TEAM =
 // HTTPS measurement service base URL. Empty disables purchase attribution.
-ATTRIBUTION_ENDPOINT =
+ATTRIBUTION_ENDPOINT = https:/$()/www.retroguide.tv/api/attribution
 #include "Ads.xcconfig"
 #include? "Local.xcconfig"
