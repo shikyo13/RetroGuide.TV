@@ -14,10 +14,11 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
 /**
- * Server access tokens, encrypted with a key that never leaves the Android
- * Keystore (the Keychain's counterpart). Stored as IV + ciphertext in one file.
+ * Secrets (server access tokens; the parental PIN record), encrypted with a key
+ * that never leaves the Android Keystore (the Keychain's counterpart). Stored
+ * as IV + ciphertext in one file per vault.
  */
-class TokenVault(context: Context) {
+class TokenVault(context: Context, private val fileName: String = FILE_NAME) {
     private companion object {
         const val KEYSTORE = "AndroidKeyStore"
         const val KEY_ALIAS = "retroguide.tokens"
@@ -28,7 +29,10 @@ class TokenVault(context: Context) {
         const val FILE_NAME = "tokens.bin"
     }
 
-    private val file = File(context.noBackupFilesDir, FILE_NAME)
+    private val file = File(context.noBackupFilesDir, fileName)
+
+    /** Whether anything was ever saved here (even if it can't be read now). */
+    val exists get() = file.exists()
     private val serializer = MapSerializer(String.serializer(), String.serializer())
 
     fun load(): Map<String, String> = runCatching {
@@ -44,7 +48,7 @@ class TokenVault(context: Context) {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, key())
         val sealed = cipher.iv + cipher.doFinal(Json.encodeToString(serializer, tokens).encodeToByteArray())
-        val temporary = File(file.parentFile, "$FILE_NAME.tmp")
+        val temporary = File(file.parentFile, "$fileName.tmp")
         temporary.writeBytes(sealed)
         temporary.renameTo(file)
     }

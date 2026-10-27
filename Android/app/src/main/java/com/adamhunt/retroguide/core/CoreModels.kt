@@ -299,3 +299,37 @@ data class ConnectionResult(val server: ServerDetail, val message: String? = nul
 
 @Serializable
 data class ReachabilityResult(val changed: Boolean)
+
+// Settings › Parental Controls
+
+@Serializable
+data class ParentalDraft(
+    val isEnabled: Boolean = false,
+    val usesCustomLineup: Boolean = false,
+    val customChannels: List<ChannelDraft> = emptyList(),
+    val maximumMovieRating: String = "PG",
+    val maximumTVRating: String = "TV-PG",
+    val allowsUnrated: Boolean = false,
+    val allLibraries: Boolean = true,
+    val libraryIDs: List<String> = emptyList(),
+    val allGenres: Boolean = true,
+    val genreNames: List<String> = emptyList(),
+    val selectedContentOnly: Boolean = false,
+    val collectionNames: List<String> = emptyList(),
+    val allowedTitleIDs: List<String> = emptyList(),
+    val blockedTitleIDs: List<String> = emptyList(),
+)
+
+@Serializable
+data class ParentalEditor(
+    val draft: ParentalDraft,
+    val movieRatings: List<String>,
+    val tvRatings: List<String>,
+    val libraries: List<FacetOption>,
+    val genres: List<FacetOption>,
+    val collections: List<FacetOption>,
+    val titles: List<FacetOption>,
+)
+
+@Serializable
+data class ParentalStatus(val isEnabled: Boolean, val usesCustomLineup: Boolean)

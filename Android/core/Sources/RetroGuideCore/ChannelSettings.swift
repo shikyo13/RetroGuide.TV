@@ -256,6 +256,23 @@ extension CoreState {
     }
 
     func previewChannel(_ draft: ChannelDraft) -> ChannelPreview {
+        preview(draft, in: index)
+    }
+
+    /// A custom-lineup channel's preview, from only what the policy draft allows.
+    func previewParentalChannel(_ params: ParentalChannelParams) -> ChannelPreview {
+        let key = (try? CoreCoding.encoder.encode(params.policy)) ?? Data()
+        if parentalPreview?.key != key {
+            var policy = parentalPolicy
+            apply(params.policy, to: &policy)
+            policy.isEnabled = true
+            let filtered = policy.filtering(accounts.compactMap { snapshots[$0.id] })
+            parentalPreview = (key, LibraryIndex(snapshots: filtered, quality: qualityByServer))
+        }
+        return preview(params.channel, in: parentalPreview?.index)
+    }
+
+    private func preview(_ draft: ChannelDraft, in index: LibraryIndex?) -> ChannelPreview {
         guard let index else { return ChannelPreview(programCount: .zero, summary: "Nothing matches yet", shows: []) }
         let items = LineupBuilder(curated: []).preview(rule: rule(from: draft, base: ChannelRule()), in: index)
         let runtime = items.reduce(.zero) { $0 + $1.duration }
@@ -296,7 +313,7 @@ extension CoreState {
         }
     }
 
-    private func draft(of definition: ChannelDefinition) -> ChannelDraft {
+    func draft(of definition: ChannelDefinition) -> ChannelDraft {
         let rule = definition.rule
         return ChannelDraft(
             id: definition.id,
@@ -314,7 +331,7 @@ extension CoreState {
     }
 
     /// `base` with the editor's filters (other rule fields are kept).
-    private func rule(from draft: ChannelDraft, base: ChannelRule) -> ChannelRule {
+    func rule(from draft: ChannelDraft, base: ChannelRule) -> ChannelRule {
         var rule = base
         rule.kinds = Set(draft.kinds.compactMap(MediaKind.init(rawValue:)))
         rule.categories = Set(draft.categories.compactMap(GenreCategory.init(rawValue:)))

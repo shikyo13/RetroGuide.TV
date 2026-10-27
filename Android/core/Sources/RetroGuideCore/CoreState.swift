@@ -17,6 +17,13 @@ actor CoreState {
     var clients: [String: any MediaServerClient] = [:]
     var snapshots: [String: LibrarySnapshot] = [:]
     var offlineServerIDs: Set<String> = []
+    /// Parental controls: the policy, whether Settings are locked (the app checks
+    /// the PIN), and what the policy allowed when the lineup was last built.
+    var parentalPolicy = ParentalPolicy()
+    var isParentalLocked = false
+    var parentalAllowedItemIDs: Set<String> = []
+    /// A policy draft's index for previewing custom-lineup channels, by its encoding.
+    var parentalPreview: (key: Data, index: LibraryIndex)?
     /// The device is on a VPN, as the app last reported (see ``checkReachability(_:)``).
     var isVPNActive = false
     /// The merged library; built after ``start(_:)`` points RetroGuideKit at its data files.
@@ -98,9 +105,17 @@ actor CoreState {
 
     /// Merges the snapshots and builds the lineup from them.
     func rebuildLineup() {
-        let ordered = accounts.compactMap { snapshots[$0.id] }.filter { !offlineServerIDs.contains($0.serverID) }
-        let quality = Dictionary(accounts.map { ($0.id, $0.playback.quality) }, uniquingKeysWith: { first, _ in first })
-        let index = LibraryIndex(snapshots: ordered, quality: quality)
+        if parentalPolicy.hasTitleSelections {
+            // Learn matching copies of chosen titles on every server.
+            let resolved = parentalPolicy.resolvingTitles(in: ParentalTitleCatalog(snapshots: accounts.compactMap { snapshots[$0.id] }))
+            if resolved != parentalPolicy {
+                parentalPolicy = resolved
+                store?.save(resolved, file: CoreStore.File.parental)
+            }
+        }
+        let ordered = allowedSnapshots
+        parentalAllowedItemIDs = parentalPolicy.isEnabled ? Set(ordered.flatMap { $0.items.map(\.id) }) : []
+        let index = LibraryIndex(snapshots: ordered, quality: qualityByServer)
         self.index = index
         rebuildChannels()
     }
@@ -109,8 +124,12 @@ actor CoreState {
     func rebuildChannels() {
         guard let index else { return }
         let builder = LineupBuilder(curated: curated, options: LineupOptions.adapted(to: index, grid: scheduleGrid))
-        channels = builder.build(index: index, customization: customization)
+        channels = builder.build(index: index, customization: parentalPolicy.activeCustomization(regular: customization))
         searchIndex = nil
+    }
+
+    var qualityByServer: [String: VideoQuality] {
+        Dictionary(accounts.map { ($0.id, $0.playback.quality) }, uniquingKeysWith: { first, _ in first })
     }
 
     var visibleChannels: [Channel] {
@@ -137,6 +156,7 @@ struct CoreStore: Sendable {
         static let trackRules = "trackRules.json"
         static let subtitleOffsets = "subtitleOffsets.json"
         static let preferences = "preferences.json"
+        static let parental = "parental.json"
         static let snapshots = "snapshots"
     }
 

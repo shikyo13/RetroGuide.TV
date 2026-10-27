@@ -153,14 +153,14 @@ extension CoreState {
             ordering: ordering.rawValue,
             orderings: ScheduleOrdering.allCases.map { OptionsInfo.Choice(id: $0.rawValue, title: $0.displayName) },
             orderingExplanation: ordering.explanation,
-            canChangeOrdering: access.canChangeScheduling,
+            canChangeOrdering: access.canChangeScheduling && !isParentalLocked,
             placement: PlacementText.explanation(
                 of: index?.placement(of: item, under: channel.definition.rule),
                 title: item.headline,
                 on: channel
             ),
             isRemovable: channel.definition.source != .series,
-            canRemove: access.canRemoveFromChannels,
+            canRemove: access.canRemoveFromChannels && !isParentalLocked,
             showID: item.showID,
             isMovie: item.series == nil
         )

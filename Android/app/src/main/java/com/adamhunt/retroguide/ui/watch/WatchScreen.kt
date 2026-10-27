@@ -232,6 +232,10 @@ fun WatchScreen(app: AppModel) {
             }
         }
         if (sleepExpired) SleepFinishedCard(Modifier.align(Alignment.Center))
+        val parentalEnabled by app.parentalEnabled.collectAsState()
+        if (channels.isEmpty() && parentalEnabled && overlay == Overlay.NONE) {
+            NoAllowedChannelsCard(Modifier.align(Alignment.Center))
+        }
         addingServer?.let { OnboardingScreen(it) }
         if (isShowingOptions) OptionsPanel(app, onClose = { isShowingOptions = false })
     }

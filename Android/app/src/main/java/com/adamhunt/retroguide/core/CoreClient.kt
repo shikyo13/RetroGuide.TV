@@ -76,6 +76,8 @@ class CoreClient {
     @Serializable private data class ConnectionParams(val serverID: String, val preference: String, val address: String? = null)
     @Serializable private data class ServerAddressParams(val serverID: String, val address: String)
     @Serializable private data class ReachabilityParams(val isVPNActive: Boolean)
+    @Serializable private data class LockedParams(val isLocked: Boolean)
+    @Serializable private data class ParentalChannelParams(val channel: ChannelDraft, val policy: ParentalDraft)
     @Serializable private data class TrackCommandParams(val selection: SelectionInfo, val trackList: String)
     @Serializable private data class EndStreamParams(val serverID: String, val sessionID: String)
     @Serializable private class NoParams
@@ -186,6 +188,18 @@ class CoreClient {
     )
     suspend fun checkReachability(isVPNActive: Boolean) = call(
         "servers.checkReachability", ReachabilityParams(isVPNActive), ReachabilityParams.serializer(), ReachabilityResult.serializer(),
+    )
+
+    // Settings › Parental Controls
+
+    suspend fun parentalStatus() = call("parental.status", ParentalStatus.serializer())
+    suspend fun setParentalLocked(isLocked: Boolean) =
+        call("parental.setLocked", LockedParams(isLocked), LockedParams.serializer(), JsonElement.serializer())
+    suspend fun parentalEditor() = call("parental.editor", ParentalEditor.serializer())
+    suspend fun saveParental(draft: ParentalDraft) =
+        call("parental.save", draft, ParentalDraft.serializer(), ListSerializer(ChannelInfo.serializer()))
+    suspend fun previewParentalChannel(channel: ChannelDraft, policy: ParentalDraft) = call(
+        "parental.previewChannel", ParentalChannelParams(channel, policy), ParentalChannelParams.serializer(), ChannelPreview.serializer(),
     )
 
     // Settings › Channels

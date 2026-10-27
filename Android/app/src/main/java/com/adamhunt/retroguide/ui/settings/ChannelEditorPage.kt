@@ -17,6 +17,7 @@ import com.adamhunt.retroguide.core.ChannelDraft
 import com.adamhunt.retroguide.core.ChannelFacets
 import com.adamhunt.retroguide.core.ChannelPreview
 import com.adamhunt.retroguide.core.FacetOption
+import com.adamhunt.retroguide.core.ParentalDraft
 import com.adamhunt.retroguide.ui.components.CheckmarkRow
 import com.adamhunt.retroguide.ui.components.Note
 import com.adamhunt.retroguide.ui.components.ProLockedRow
@@ -63,6 +64,13 @@ private enum class Filter(val title: String) {
     }
 }
 
+/** Editing a channel of the parental custom lineup (saved with the policy, not the lineup). */
+class ParentalChannelEditing(
+    val policy: ParentalDraft,
+    val onSave: (ChannelDraft) -> Unit,
+    val onDelete: (() -> Unit)?,
+)
+
 /** Lists longer than this get a search field. */
 private const val SEARCH_THRESHOLD = 15
 
@@ -71,7 +79,13 @@ private const val SEARCH_THRESHOLD = 15
  * live preview (the Apple app's `ChannelEditorView` and `FacetPickerView`).
  */
 @Composable
-fun ChannelEditorPage(app: AppModel, navigator: SettingsNavigator, initial: ChannelDraft) {
+fun ChannelEditorPage(
+    app: AppModel,
+    navigator: SettingsNavigator,
+    initial: ChannelDraft,
+    /** Parental custom lineup: previews from what the policy allows, and saves into it. */
+    parental: ParentalChannelEditing? = null,
+) {
     val theme = LocalTheme.current
     val isPro by app.isPro.collectAsState()
     var draft by remember { mutableStateOf(initial) }
@@ -81,11 +95,15 @@ fun ChannelEditorPage(app: AppModel, navigator: SettingsNavigator, initial: Chan
     val isNew = initial.id == null
     val settings = rememberLineupSettings(app)
     LaunchedEffect(Unit) { facets = runCatching { app.core.channelFacets() }.getOrNull() }
-    LaunchedEffect(draft.copy(name = "")) { preview = runCatching { app.core.previewChannel(draft) }.getOrNull() }
+    LaunchedEffect(draft.copy(name = "")) {
+        preview = runCatching {
+            if (parental != null) app.core.previewParentalChannel(draft, parental.policy) else app.core.previewChannel(draft)
+        }.getOrNull()
+    }
 
     picking?.let { filter ->
         BackHandler { picking = null }
-        FacetPicker(filter, facets?.let(filter::options).orEmpty(), filter.selection(draft)) { draft = filter.with(draft, it) }
+        FacetPickerPage(filter.title, facets?.let(filter::options).orEmpty(), filter.selection(draft)) { draft = filter.with(draft, it) }
         return
     }
     val canSave = draft.name.isNotBlank() && ((preview?.programCount ?: 0) > 0 || !isNew)
@@ -117,23 +135,34 @@ fun ChannelEditorPage(app: AppModel, navigator: SettingsNavigator, initial: Chan
         preview?.shows?.takeIf { it.isNotEmpty() }?.let { shows -> item { Note(shows.joinToString(" · ")) } }
         item {
             RetroButton(if (isNew) "Create Channel" else "Save Changes", {
-                app.saveCustomChannel(draft)
-                navigator.back()
+                if (parental != null) parental.onSave(draft) else {
+                    app.saveCustomChannel(draft)
+                    navigator.back()
+                }
             }, isPrimary = true, enabled = canSave)
         }
+        parental?.onDelete?.let { delete -> item { RetroButton("Delete Channel", delete) } }
     }
 }
 
-/** A searchable multi-select list for one filter. */
+/** A searchable multi-select list (the Apple app's `FacetPickerView`). */
 @Composable
-private fun FacetPicker(filter: Filter, options: List<FacetOption>, selection: Set<String>, onChange: (Set<String>) -> Unit) {
+internal fun FacetPickerPage(
+    title: String,
+    options: List<FacetOption>,
+    selection: Set<String>,
+    emptySelectionTitle: String = "Any",
+    helpText: String? = null,
+    onChange: (Set<String>) -> Unit,
+) {
     var query by remember { mutableStateOf("") }
     val shown = if (query.isBlank()) options else options.filter { it.title.contains(query.trim(), ignoreCase = true) }
-    SettingsPage(filter.title) {
-        item { Note(if (selection.isEmpty()) "Any" else "${selection.size} selected") }
+    SettingsPage(title) {
+        helpText?.let { item { Note(it) } }
+        item { Note(if (selection.isEmpty()) emptySelectionTitle else "${selection.size} selected") }
         if (selection.isNotEmpty()) item { RetroRow("Clear", { onChange(emptySet()) }) }
         if (options.size > SEARCH_THRESHOLD) {
-            item { RetroTextField(query, { query = it }, "Search ${filter.title.lowercase()}", Modifier, KeyboardType.Text) {} }
+            item { RetroTextField(query, { query = it }, "Search ${title.lowercase()}", Modifier, KeyboardType.Text) {} }
         }
         items(shown, key = { it.id }) { option ->
             CheckmarkRow(option.title, option.id in selection, {

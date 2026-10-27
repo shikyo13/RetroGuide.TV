@@ -3,6 +3,8 @@ package com.adamhunt.retroguide
 import android.content.Context
 import com.adamhunt.retroguide.core.ChannelDraft
 import com.adamhunt.retroguide.core.ChannelInfo
+import com.adamhunt.retroguide.core.ParentalDraft
+import com.adamhunt.retroguide.core.ParentalLock
 import com.adamhunt.retroguide.core.CoreClient
 import com.adamhunt.retroguide.core.CoreLauncher
 import com.adamhunt.retroguide.core.ProgressInfo
@@ -130,6 +132,47 @@ class AppModel(context: Context, muted: Boolean) {
             showChannels(all)
             tuner.channel.value?.let { tuner.tune(it, isAutomatic = true) }
         }
+    }
+
+    // MARK: Parental controls
+
+    val parentalLock = ParentalLock(appContext)
+    private val _parentalEnabled = MutableStateFlow(false)
+    val parentalEnabled: StateFlow<Boolean> = _parentalEnabled.asStateFlow()
+
+    /** Settings need the PIN: parental controls are on (or can't be read) and Settings aren't unlocked. */
+    val needsParentalAuthorization: Boolean
+        get() = parentalLock.isUnavailable || (_parentalEnabled.value && !parentalLock.isAuthorized.value)
+
+    fun authorizeParental(pin: String) {
+        if (parentalLock.authorize(pin)) updateParentalLock()
+    }
+
+    /** Settings closed: the next visit needs the PIN again. */
+    fun endParentalAuthorization() {
+        parentalLock.endAuthorization()
+        updateParentalLock()
+    }
+
+    /**
+     * Saves Settings › Parental Controls; [newPIN] sets the PIN when there isn't
+     * one yet. Returns why it couldn't be saved, or `null`.
+     */
+    suspend fun saveParental(draft: ParentalDraft, newPIN: String?): String? {
+        if (!parentalLock.hasPIN && draft.isEnabled) {
+            if (newPIN == null || !parentalLock.setPIN(newPIN)) return parentalLock.message.value ?: "Create a PIN first."
+        }
+        val all = runCatching { core.saveParental(draft) }.getOrElse { return it.message ?: "Couldn't save parental controls." }
+        _parentalEnabled.value = draft.isEnabled
+        showChannels(all)
+        updateParentalLock()
+        // What's on may no longer be allowed: tune again under the new rules.
+        (tuner.channel.value?.let { tuner.channelWithID(it.id) } ?: _channels.value.firstOrNull())?.let { tuner.tune(it, isAutomatic = true) }
+        return null
+    }
+
+    private fun updateParentalLock() {
+        scope.launch { runCatching { core.setParentalLocked(needsParentalAuthorization) } }
     }
 
     /** Settings › Servers › Add a server: the setup steps, while they're open. */
@@ -277,6 +320,8 @@ class AppModel(context: Context, muted: Boolean) {
     }
 
     private suspend fun reloadChannels() {
+        _parentalEnabled.value = runCatching { core.parentalStatus().isEnabled }.getOrDefault(_parentalEnabled.value)
+        runCatching { core.setParentalLocked(needsParentalAuthorization) }
         _favoritesOnly.value = runCatching { core.viewing().favoritesOnly }.getOrDefault(false)
         showChannels(core.channels())
     }

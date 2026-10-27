@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -56,6 +57,7 @@ sealed interface SettingsRoute {
     data object Servers : SettingsRoute
     data class Server(val id: String) : SettingsRoute
     data object Acknowledgements : SettingsRoute
+    data object ParentalControls : SettingsRoute
 }
 
 /** Moves between Settings pages, remembering where each open page was scrolled. */
@@ -91,9 +93,17 @@ class SettingsNavigator(private val onClose: () -> Unit) {
 fun SettingsScreen(app: AppModel, screen: DpSize, onClose: () -> Unit) {
     val theme = LocalTheme.current
     val navigator = remember { SettingsNavigator(onClose) }
+    val parentalEnabled by app.parentalEnabled.collectAsState()
+    val isAuthorized by app.parentalLock.isAuthorized.collectAsState()
+    // Closing Settings locks them again.
+    DisposableEffect(Unit) { onDispose { app.endParentalAuthorization() } }
     BackHandler(onBack = navigator::back)
     Box(Modifier.fillMaxSize().screenBackground(theme, CornerPicture.window(screen))) {
         Box(Modifier.padding(start = SettingsLayout.margin, top = SettingsLayout.top).width(SettingsLayout.columnWidth)) {
+            if (app.parentalLock.isUnavailable || (parentalEnabled && !isAuthorized)) {
+                ParentalPinPage(app, onCancel = onClose)
+                return@Box
+            }
             when (val route = navigator.current) {
                 SettingsRoute.Main -> MainPage(app, navigator)
                 SettingsRoute.Pro -> ProPage(app)
@@ -110,6 +120,7 @@ fun SettingsScreen(app: AppModel, screen: DpSize, onClose: () -> Unit) {
                 SettingsRoute.Servers -> ServersPage(app, navigator)
                 is SettingsRoute.Server -> ServerPage(app, navigator, route.id)
                 SettingsRoute.Acknowledgements -> AcknowledgementsPage()
+                SettingsRoute.ParentalControls -> ParentalControlsPage(app, navigator)
             }
         }
     }
@@ -181,7 +192,11 @@ private fun MainPage(app: AppModel, navigator: SettingsNavigator) {
         }
         item { RetroRow("Refresh library", { if (!isRefreshing) app.refresh(showsProgress = false) }, trailing = if (isRefreshing) "Refreshing…" else null) }
 
-        item { SectionHeader("Account") }
+        item { SectionHeader("Account and Security") }
+        item {
+            val parentalEnabled by app.parentalEnabled.collectAsState()
+            RetroRow("Parental Controls", { navigator.open(SettingsRoute.ParentalControls) }, trailing = if (parentalEnabled) "On" else "Off")
+        }
         item {
             if (isConfirmingSignOut) {
                 Note("Sign out and remove all channels from this device?")

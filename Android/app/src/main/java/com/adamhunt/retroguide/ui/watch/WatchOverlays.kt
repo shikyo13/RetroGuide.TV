@@ -162,3 +162,14 @@ fun SleepFinishedCard(modifier: Modifier = Modifier) {
         Text("Press Select to resume watching.", style = Typography.body, color = theme.textSecondary)
     }
 }
+
+/** Parental controls leave nothing to show (the Apple app's `ParentalEmptyView`). Select opens the guide's Settings. */
+@Composable
+fun NoAllowedChannelsCard(modifier: Modifier = Modifier) {
+    val theme = LocalTheme.current
+    Panel(modifier, color = theme.surface) {
+        Text("No allowed channels", style = Typography.title, color = theme.textPrimary)
+        Text("No available channels match your parental controls. A parent can change the lineup or content restrictions in Settings › Parental Controls (press Select, then open Settings).",
+            style = Typography.body, color = theme.textSecondary)
+    }
+}

@@ -29,9 +29,17 @@ extension CoreState {
     // MARK: - Lineup
 
     /// Changes the lineup settings, saves them and rebuilds the channels.
+    /// Nothing changes while parental controls lock Settings. With the parental
+    /// custom lineup on, changes go to that lineup.
     func updateCustomization(_ change: (inout LineupCustomization) -> Void) -> [ChannelInfo] {
-        change(&customization)
-        store?.saveCustomization(customization)
+        guard !isParentalLocked else { return channelList() }
+        if parentalPolicy.isEnabled && parentalPolicy.usesCustomLineup {
+            change(&parentalPolicy.channelCustomization)
+            store?.save(parentalPolicy, file: CoreStore.File.parental)
+        } else {
+            change(&customization)
+            store?.saveCustomization(customization)
+        }
         rebuildChannels()
         return channelList()
     }

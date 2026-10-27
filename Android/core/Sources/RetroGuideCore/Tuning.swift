@@ -130,6 +130,7 @@ extension CoreState {
         if independent == nil, program.isInIntermission(at: now) {
             return TuneResult(channelID: channel.id, program: programInfo(program), intermissionUntil: program.slotEnd, stream: nil, tracks: nil, trackState: nil)
         }
+        try checkParental(program.item)
         guard let client = clients[program.item.serverID] else { throw CoreError.unknownServer }
         let independentPosition = independent.map { _ in params.position ?? .zero }
         let prepared = try await client.preparePlayback(
