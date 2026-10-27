@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.tv.material3.ClickableSurfaceDefaults
@@ -64,6 +65,9 @@ fun RetroRow(
     modifier: Modifier = Modifier,
     detail: String? = null,
     trailing: String? = null,
+    /** Lines the title and detail may wrap to (long text such as license paragraphs). */
+    maxLines: Int = 1,
+    titleStyle: TextStyle = Typography.bodyEmphasis,
 ) {
     val theme = LocalTheme.current
     Surface(
@@ -84,8 +88,8 @@ fun RetroRow(
             horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md),
         ) {
             Column(Modifier.weight(1f)) {
-                Text(title, style = Typography.bodyEmphasis, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                detail?.let { Text(it, style = Typography.caption, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                Text(title, style = titleStyle, maxLines = maxLines, overflow = TextOverflow.Ellipsis)
+                detail?.let { Text(it, style = Typography.caption, maxLines = maxLines, overflow = TextOverflow.Ellipsis) }
             }
             trailing?.let { Text(it, style = Typography.callout, maxLines = 1) }
         }

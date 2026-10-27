@@ -186,3 +186,116 @@ data class SelectionInfo(
         else -> copy(subtitle = EMBEDDED, subtitleStreamIndex = track.streamIndex, subtitleURL = null)
     }
 }
+
+// Settings › Channels
+
+@Serializable
+data class Described(val id: String, val title: String, val detail: String)
+
+@Serializable
+data class ChannelGroup(val id: String, val name: String, val isEnabled: Boolean, val channelCount: Int)
+
+@Serializable
+data class LineupSettings(
+    val channelCount: Int,
+    val hiddenCount: Int,
+    val favoriteCount: Int,
+    val removedTitleCount: Int,
+    val simulcastLimit: String,
+    val simulcastLimits: List<Described>,
+    /** `null`: each channel's own order. */
+    val defaultOrdering: String? = null,
+    val orderings: List<Described>,
+    val scheduleGrid: String,
+    val scheduleGrids: List<Choice>,
+    val groups: List<ChannelGroup>,
+    val canCreateCustomChannel: Boolean,
+    val canChangeScheduling: Boolean,
+    val canAddServer: Boolean,
+)
+
+@Serializable
+data class ChannelSummary(
+    val id: String,
+    val number: Int,
+    val name: String,
+    val isHidden: Boolean,
+    val isFavorite: Boolean,
+    val source: String,
+    val sourceName: String,
+    val size: String,
+)
+
+@Serializable
+data class RemovedTitle(val showID: String, val name: String)
+
+@Serializable
+data class RemovedGroup(val channelID: String, val channelName: String, val titles: List<RemovedTitle>)
+
+@Serializable
+data class ChannelDetail(
+    val channel: ChannelSummary,
+    val featuring: List<String>,
+    val ordering: String,
+    val removedTitles: List<RemovedTitle>,
+    val draft: ChannelDraft? = null,
+)
+
+/** A custom channel as the editor sees it; [id] is `null` for a new one. */
+@Serializable
+data class ChannelDraft(
+    val id: String? = null,
+    val name: String = "",
+    val ordering: String = "blockShuffle",
+    val kinds: List<String> = emptyList(),
+    val categories: List<String> = emptyList(),
+    val seriesIDs: List<String> = emptyList(),
+    val networks: List<String> = emptyList(),
+    val collections: List<String> = emptyList(),
+    val decades: List<Int> = emptyList(),
+    val audiences: List<String> = emptyList(),
+    val libraryIDs: List<String> = emptyList(),
+)
+
+@Serializable
+data class FacetOption(val id: String, val title: String, val detail: String? = null)
+
+@Serializable
+data class ChannelFacets(
+    val kinds: List<FacetOption>,
+    val categories: List<FacetOption>,
+    val series: List<FacetOption>,
+    val networks: List<FacetOption>,
+    val collections: List<FacetOption>,
+    val decades: List<FacetOption>,
+    val audiences: List<FacetOption>,
+    val libraries: List<FacetOption>,
+)
+
+@Serializable
+data class ChannelPreview(val programCount: Int, val summary: String, val shows: List<String>)
+
+// Settings › Servers
+
+@Serializable
+data class ServerDetail(
+    val id: String,
+    val name: String,
+    val kind: String,
+    val kindName: String,
+    val isOffline: Boolean,
+    val status: String,
+    val quality: String,
+    val qualities: List<Described>,
+    val extraBuffering: Boolean,
+    val connection: String,
+    val connections: List<Described>,
+    val customAddress: String? = null,
+    val address: String,
+)
+
+@Serializable
+data class ConnectionResult(val server: ServerDetail, val message: String? = null)
+
+@Serializable
+data class ReachabilityResult(val changed: Boolean)

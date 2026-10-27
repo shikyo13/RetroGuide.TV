@@ -38,14 +38,16 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import com.adamhunt.retroguide.AppModel
 import com.adamhunt.retroguide.core.ProgramInfo
+import com.adamhunt.retroguide.ui.components.CornerPicture
 import com.adamhunt.retroguide.ui.components.PictureWindow
 import com.adamhunt.retroguide.ui.guide.GuideHeaderButton
 import com.adamhunt.retroguide.ui.guide.GuideLayout
 import com.adamhunt.retroguide.ui.guide.GuideModel
 import com.adamhunt.retroguide.ui.guide.GuidePreviewChrome
 import com.adamhunt.retroguide.ui.guide.GuideScreen
-import com.adamhunt.retroguide.ui.search.SearchLayout
+import com.adamhunt.retroguide.ui.onboarding.OnboardingScreen
 import com.adamhunt.retroguide.ui.search.SearchScreen
+import com.adamhunt.retroguide.ui.settings.SettingsScreen
 import com.adamhunt.retroguide.ui.theme.Tokens
 import kotlinx.coroutines.delay
 
@@ -55,11 +57,11 @@ private object WatchTiming {
 }
 
 /** What covers the picture. */
-private enum class Overlay { NONE, GUIDE, SEARCH }
+private enum class Overlay { NONE, GUIDE, SEARCH, SETTINGS }
 
 /** Live TV: the picture, channel surfing, the guide, Search and Options (the Apple app's `WatchView`). */
 @Composable
-fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
+fun WatchScreen(app: AppModel) {
     val tuner = app.tuner
     val channel by tuner.channel.collectAsState()
     val program by tuner.program.collectAsState()
@@ -68,6 +70,7 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
     val isPro by app.isPro.collectAsState()
     val favoritesOnly by app.favoritesOnly.collectAsState()
     val sleepExpired by app.sleepTimer.didExpire.collectAsState()
+    val addingServer by app.addingServer.collectAsState()
     val scope = rememberCoroutineScope()
     var overlay by remember { mutableStateOf(Overlay.NONE) }
     var guide by remember { mutableStateOf<GuideModel?>(null) }
@@ -107,7 +110,7 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
         if (overlay == Overlay.GUIDE) guide = GuideModel(app.core, app.browsingChannels(), channel?.id, scope)
     }
     LaunchedEffect(overlay, isShowingOptions, sleepExpired) {
-        if (overlay == Overlay.SEARCH || isShowingOptions) return@LaunchedEffect
+        if (overlay == Overlay.SEARCH || overlay == Overlay.SETTINGS || isShowingOptions) return@LaunchedEffect
         // After the panel that had focus has left the screen.
         withFrameNanos {}
         runCatching { focus.requestFocus() }
@@ -116,21 +119,24 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
     fun pressHeaderButton(button: GuideHeaderButton) {
         when (button) {
             GuideHeaderButton.OPTIONS -> isShowingOptions = true
-            GuideHeaderButton.FAVORITES -> if (isPro) app.setFavoritesOnly(!favoritesOnly) else onOpenSettings()
+            GuideHeaderButton.FAVORITES -> if (isPro) app.setFavoritesOnly(!favoritesOnly) else {
+                guide = null
+                overlay = Overlay.SETTINGS
+            }
             GuideHeaderButton.SEARCH -> {
                 guide = null
                 overlay = Overlay.SEARCH
             }
             GuideHeaderButton.SETTINGS -> {
-                closeOverlay()
-                onOpenSettings()
+                guide = null
+                overlay = Overlay.SETTINGS
             }
         }
     }
 
     fun handle(code: Int): Boolean {
         // Options and Search handle their own keys; nothing they pass up changes channel.
-        if (isShowingOptions || overlay == Overlay.SEARCH) return false
+        if (isShowingOptions || overlay == Overlay.SEARCH || overlay == Overlay.SETTINGS || addingServer != null) return false
         if (sleepExpired) {
             if (code == AndroidKeyEvent.KEYCODE_DPAD_CENTER || code == AndroidKeyEvent.KEYCODE_ENTER) {
                 app.sleepTimer.resumeWatching()
@@ -194,7 +200,7 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
         val window = when (overlay) {
             Overlay.NONE -> PictureWindow(DpOffset(Dp(0f), Dp(0f)), screen, Dp(0f))
             Overlay.GUIDE -> GuideLayout.previewWindow
-            Overlay.SEARCH -> SearchLayout.pictureWindow(screen)
+            Overlay.SEARCH, Overlay.SETTINGS -> CornerPicture.window(screen)
         }
         val motion = tween<Dp>(Tokens.Motion.RELAXED)
         val x by animateDpAsState(window.offset.x, motion, label = "videoX")
@@ -208,6 +214,7 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
                 tuner.channelWithID(id)?.let(tuner::tune)
                 closeOverlay()
             }, onClose = ::closeOverlay)
+            Overlay.SETTINGS -> SettingsScreen(app, screen, onClose = ::closeOverlay)
             Overlay.NONE -> Unit
         }
         Box(Modifier.offset(x, y).size(width, height)) {
@@ -225,6 +232,7 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
             }
         }
         if (sleepExpired) SleepFinishedCard(Modifier.align(Alignment.Center))
+        addingServer?.let { OnboardingScreen(it) }
         if (isShowingOptions) OptionsPanel(app, onClose = { isShowingOptions = false })
     }
 }

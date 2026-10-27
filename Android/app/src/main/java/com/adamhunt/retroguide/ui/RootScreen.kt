@@ -31,7 +31,6 @@ import com.adamhunt.retroguide.ui.components.ProgressTrack
 import com.adamhunt.retroguide.ui.components.RetroButton
 import com.adamhunt.retroguide.ui.onboarding.OnboardingModel
 import com.adamhunt.retroguide.ui.onboarding.OnboardingScreen
-import com.adamhunt.retroguide.ui.settings.SettingsScreen
 import com.adamhunt.retroguide.ui.theme.LocalTheme
 import com.adamhunt.retroguide.ui.theme.Theme
 import com.adamhunt.retroguide.ui.theme.Tokens
@@ -43,19 +42,13 @@ import com.adamhunt.retroguide.ui.watch.WatchScreen
 fun RootScreen(app: AppModel) {
     val phase by app.phase.collectAsState()
     val themeID by app.themeID.collectAsState()
-    var showsSettings by remember { mutableStateOf(false) }
     CompositionLocalProvider(LocalTheme provides Theme.of(themeID)) {
         when (val current = phase) {
             Phase.Launching -> Splash()
             Phase.Onboarding -> OnboardingScreen(remember { OnboardingModel(app) })
             is Phase.Indexing -> Indexing(current)
             is Phase.Failed -> Failed(current.message, app::retry)
-            Phase.Ready -> if (showsSettings) {
-                BackHandler { showsSettings = false }
-                SettingsScreen(app, onClose = { showsSettings = false })
-            } else {
-                WatchScreen(app, onOpenSettings = { showsSettings = true })
-            }
+            Phase.Ready -> WatchScreen(app)
         }
     }
 }

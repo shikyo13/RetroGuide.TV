@@ -19,7 +19,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /** First-run setup: Plex or Jellyfin, sign in, pick a server and its libraries (the Apple app's `OnboardingModel`). */
-class OnboardingModel(private val app: AppModel) {
+class OnboardingModel(
+    private val app: AppModel,
+    /** Settings › Add a server rather than first-run setup: a saved Plex account skips the link code. */
+    val isAddingServer: Boolean = false,
+    private val onFinished: () -> Unit = {},
+) {
     sealed interface Step {
         data object Welcome : Step
         data class PlexLink(val code: LinkCode?) : Step
@@ -58,12 +63,29 @@ class OnboardingModel(private val app: AppModel) {
         _step.value = Step.Welcome
     }
 
+    /** Leaves Add a server without adding one. */
+    fun cancel() {
+        poll?.cancel()
+        onFinished()
+    }
+
     // MARK: Plex
 
     fun beginPlex() {
         poll?.cancel()
         _step.value = Step.PlexLink(null)
         poll = scope.launch {
+            // With a Plex account already linked, go straight to its servers.
+            if (isAddingServer) {
+                runCatching { core.plexServers() }.getOrNull()?.let { servers ->
+                    _step.value = if (servers.isEmpty()) {
+                        Step.Failed("There are no additional Plex servers available on this account.")
+                    } else {
+                        Step.PlexServers(servers)
+                    }
+                    return@launch
+                }
+            }
             val code = attempt { core.plexLinkCode() } ?: return@launch
             _step.value = Step.PlexLink(code)
             while (isActive) {
@@ -164,6 +186,7 @@ class OnboardingModel(private val app: AppModel) {
             val all = selectedIDs.size == step.libraries.size
             attempt { core.selectLibraries(step.serverID, if (all) emptyList() else selectedIDs.toList()) } ?: return@launch
             app.serversChanged(step.change)
+            onFinished()
         }
     }
 

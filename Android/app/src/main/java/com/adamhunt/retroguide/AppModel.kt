@@ -1,6 +1,7 @@
 package com.adamhunt.retroguide
 
 import android.content.Context
+import com.adamhunt.retroguide.core.ChannelDraft
 import com.adamhunt.retroguide.core.ChannelInfo
 import com.adamhunt.retroguide.core.CoreClient
 import com.adamhunt.retroguide.core.CoreLauncher
@@ -11,6 +12,7 @@ import com.adamhunt.retroguide.core.TokenVault
 import com.adamhunt.retroguide.player.MpvPlayer
 import com.adamhunt.retroguide.player.SleepTimer
 import com.adamhunt.retroguide.player.Tuner
+import com.adamhunt.retroguide.ui.onboarding.OnboardingModel
 import com.adamhunt.retroguide.ui.theme.ThemeId
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -85,6 +87,8 @@ class AppModel(context: Context, muted: Boolean) {
 
     private var refreshJob: Job? = null
     private var isInBackground = false
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     /** The channels the guide shows: favorites only when that's on. */
     fun browsingChannels(): List<ChannelInfo> {
@@ -112,6 +116,50 @@ class AppModel(context: Context, muted: Boolean) {
     fun removeTitle(channelID: String, showID: String) = changeLineup { core.removeTitle(channelID, showID) }
     fun restoreTitle(channelID: String, showID: String) = changeLineup { core.restoreTitle(channelID, showID) }
     fun setHidden(channelID: String, isHidden: Boolean) = changeLineup { core.setHidden(channelID, isHidden) }
+
+    fun setSource(source: String, isEnabled: Boolean) = changeLineup { core.setSource(source, isEnabled) }
+    fun setSimulcastLimit(limit: String) = changeLineup { core.setSimulcastLimit(limit) }
+    fun setOrderingForAllChannels(ordering: String?) = changeLineup { core.setOrderingForAllChannels(ordering) }
+    fun saveCustomChannel(draft: ChannelDraft) = changeLineup { core.saveCustomChannel(draft) }
+    fun deleteCustomChannel(channelID: String) = changeLineup { core.deleteCustomChannel(channelID) }
+
+    /** Program start times change every schedule, so the channel on now is tuned again. */
+    fun setScheduleGrid(grid: String) {
+        scope.launch {
+            val all = runCatching { core.setScheduleGrid(grid) }.getOrNull() ?: return@launch
+            showChannels(all)
+            tuner.channel.value?.let { tuner.tune(it, isAutomatic = true) }
+        }
+    }
+
+    /** Settings › Servers › Add a server: the setup steps, while they're open. */
+    private val _addingServer = MutableStateFlow<OnboardingModel?>(null)
+    val addingServer: StateFlow<OnboardingModel?> = _addingServer.asStateFlow()
+
+    fun beginAddingServer() {
+        _addingServer.value = OnboardingModel(this, isAddingServer = true) { _addingServer.value = null }
+    }
+
+    /** Saves a server's library choice and reads its libraries again. */
+    fun selectLibraries(serverID: String, selected: Set<String>, all: Boolean) {
+        scope.launch {
+            runCatching { core.selectLibraries(serverID, if (all) emptyList() else selected.toList()) }
+            refresh(showsProgress = false)
+        }
+    }
+
+    /** A server's quality or address changed: the core rebuilt the lineup, so show it and rejoin the channel. */
+    fun serverSettingsChanged() {
+        scope.launch {
+            _servers.value = runCatching { core.servers() }.getOrDefault(_servers.value)
+            reloadChannels()
+            tuner.channel.value?.let { tuner.tune(it, isAutomatic = true) }
+        }
+    }
+
+    /** Bumped after every lineup change, so open Settings pages reload. */
+    private val _lineupRevision = MutableStateFlow(0)
+    val lineupRevision: StateFlow<Int> = _lineupRevision.asStateFlow()
 
     /** Runs a lineup change in the core and shows its channels. */
     private fun changeLineup(change: suspend () -> List<ChannelInfo>) {
@@ -204,6 +252,7 @@ class AppModel(context: Context, muted: Boolean) {
     fun refresh(showsProgress: Boolean) {
         refreshJob?.cancel()
         refreshJob = scope.launch {
+            _isRefreshing.value = true
             val poll = if (showsProgress) launch {
                 _phase.value = Phase.Indexing(ProgressInfo(0.0, "Connecting…"))
                 while (isActive) {
@@ -218,7 +267,9 @@ class AppModel(context: Context, muted: Boolean) {
                 _servers.value = core.servers()
                 reloadChannels()
                 goOnAir()
+                _isRefreshing.value = false
             } catch (error: Exception) {
+                _isRefreshing.value = false
                 poll?.cancel()
                 if (showsProgress) _phase.value = Phase.Failed(error.message ?: "Couldn't read your library.")
             }
@@ -231,6 +282,7 @@ class AppModel(context: Context, muted: Boolean) {
     }
 
     private fun showChannels(all: List<ChannelInfo>) {
+        _lineupRevision.value += 1
         val visible = all.filter { !it.isHidden }
         _channels.value = visible
         tuner.setChannels(visible)

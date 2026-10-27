@@ -27,6 +27,8 @@ android {
     // RetroGuideKit's data files (channel catalog, genre taxonomy, title
     // classification) ship as assets; the core reads them from app storage.
     sourceSets["main"].assets.directories += "../../Packages/RetroGuideKit/Sources/RetroGuideKit/Resources"
+    // License texts shown in Settings › Acknowledgements.
+    sourceSets["main"].assets.directories += "../../LICENSES"
 
     packaging {
         // libmpv and the Swift runtime both ship libc++_shared.so; keep the app's own (newer NDK) copy.

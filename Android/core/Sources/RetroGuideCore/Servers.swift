@@ -69,6 +69,7 @@ extension CoreState {
         customization = store.loadCustomization()
         viewing = store.load(ViewingPreferences.self, file: CoreStore.File.viewing) ?? ViewingPreferences()
         trackRules = store.load(TrackRules.self, file: CoreStore.File.trackRules) ?? TrackRules()
+        scheduleGrid = store.load(CorePreferences.self, file: CoreStore.File.preferences)?.scheduleGrid ?? .continuous
         subtitleTiming.restore(store.load(ShowSubtitleOffsets.self, file: CoreStore.File.subtitleOffsets) ?? ShowSubtitleOffsets())
         accounts = store.loadAccounts().filter { params.tokens[$0.id] != nil }
         for account in accounts {

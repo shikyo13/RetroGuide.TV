@@ -129,3 +129,24 @@ fun AdjustableRow(
 
 /** Presses closer together than this count as holding the button. */
 private const val REPEAT_WINDOW_MS = 350L
+
+/** A choice in a list, checked when selected (the Apple app's `CheckmarkRow`). */
+@Composable
+fun CheckmarkRow(
+    title: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    detail: String? = null,
+) {
+    RetroRow(title, onClick, modifier, detail = detail, trailing = if (isSelected) "✓" else "")
+}
+
+/** A RetroGuide Pro feature without Pro: opens the upgrade page (the Apple app's `ProLockedRow`). */
+@Composable
+fun ProLockedRow(title: String, onOpenPro: () -> Unit, modifier: Modifier = Modifier) {
+    RetroRow(title, onOpenPro, modifier, trailing = PRO_BADGE)
+}
+
+/** Marks rows that need RetroGuide Pro. */
+const val PRO_BADGE = "Pro 🔒"

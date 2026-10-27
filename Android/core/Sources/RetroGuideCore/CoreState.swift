@@ -17,6 +17,8 @@ actor CoreState {
     var clients: [String: any MediaServerClient] = [:]
     var snapshots: [String: LibrarySnapshot] = [:]
     var offlineServerIDs: Set<String> = []
+    /// The device is on a VPN, as the app last reported (see ``checkReachability(_:)``).
+    var isVPNActive = false
     /// The merged library; built after ``start(_:)`` points RetroGuideKit at its data files.
     var index: LibraryIndex?
     var channels: [Channel] = []
@@ -82,8 +84,12 @@ actor CoreState {
         let configuration = try requireConfiguration()
         tokens[account.id] = token
         clients[account.id] = makeClient(for: account, token: token, configuration: configuration)
-        accounts.removeAll { $0.id == account.id }
-        accounts.append(account)
+        // A changed server keeps its place: order is priority for duplicate copies.
+        if let index = accounts.firstIndex(where: { $0.id == account.id }) {
+            accounts[index] = account
+        } else {
+            accounts.append(account)
+        }
         offlineServerIDs.remove(account.id)
         store?.saveAccounts(accounts)
     }
@@ -130,6 +136,7 @@ struct CoreStore: Sendable {
         static let viewing = "viewing.json"
         static let trackRules = "trackRules.json"
         static let subtitleOffsets = "subtitleOffsets.json"
+        static let preferences = "preferences.json"
         static let snapshots = "snapshots"
     }
 

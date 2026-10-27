@@ -26,7 +26,7 @@ class CoreException(message: String) : Exception(message)
  * check is answered while a refresh waits on the network).
  */
 class CoreClient {
-    private val json = Json { ignoreUnknownKeys = true; explicitNulls = false }
+    private val json = Json { ignoreUnknownKeys = true; explicitNulls = false; encodeDefaults = true }
 
     @Serializable
     private data class StartParams(
@@ -70,6 +70,12 @@ class CoreClient {
     @Serializable private data class HiddenParams(val channelID: String, val isHidden: Boolean)
     @Serializable private data class EnabledParams(val isEnabled: Boolean)
     @Serializable private data class SearchParams(val query: String)
+    @Serializable private data class SourceParams(val source: String, val isEnabled: Boolean)
+    @Serializable private data class ValueParams(val value: String?)
+    @Serializable private data class PlaybackParams(val serverID: String, val quality: String? = null, val extraBuffering: Boolean? = null)
+    @Serializable private data class ConnectionParams(val serverID: String, val preference: String, val address: String? = null)
+    @Serializable private data class ServerAddressParams(val serverID: String, val address: String)
+    @Serializable private data class ReachabilityParams(val isVPNActive: Boolean)
     @Serializable private data class TrackCommandParams(val selection: SelectionInfo, val trackList: String)
     @Serializable private data class EndStreamParams(val serverID: String, val sessionID: String)
     @Serializable private class NoParams
@@ -163,6 +169,47 @@ class CoreClient {
     suspend fun endStream(serverID: String, sessionID: String) = call(
         "endStream", EndStreamParams(serverID, sessionID), EndStreamParams.serializer(), JsonElement.serializer(),
     )
+
+    // Settings › Servers
+
+    suspend fun serverDetail(serverID: String) =
+        call("server.detail", ServerParams(serverID), ServerParams.serializer(), ServerDetail.serializer())
+    suspend fun setPlayback(serverID: String, quality: String? = null, extraBuffering: Boolean? = null) = call(
+        "server.setPlayback", PlaybackParams(serverID, quality, extraBuffering), PlaybackParams.serializer(), ServerDetail.serializer(),
+    )
+    /** [address]: what the viewer typed, for a custom address. */
+    suspend fun setConnection(serverID: String, preference: String, address: String? = null) = call(
+        "server.setConnection", ConnectionParams(serverID, preference, address), ConnectionParams.serializer(), ConnectionResult.serializer(),
+    )
+    suspend fun setJellyfinAddress(serverID: String, address: String) = call(
+        "server.setJellyfinAddress", ServerAddressParams(serverID, address), ServerAddressParams.serializer(), ConnectionResult.serializer(),
+    )
+    suspend fun checkReachability(isVPNActive: Boolean) = call(
+        "servers.checkReachability", ReachabilityParams(isVPNActive), ReachabilityParams.serializer(), ReachabilityResult.serializer(),
+    )
+
+    // Settings › Channels
+
+    private val channelList = ListSerializer(ChannelInfo.serializer())
+
+    suspend fun lineupSettings() = call("lineup.settings", LineupSettings.serializer())
+    suspend fun manageChannels() = call("lineup.channels", ListSerializer(ChannelSummary.serializer()))
+    suspend fun setSource(source: String, isEnabled: Boolean) =
+        call("lineup.setSource", SourceParams(source, isEnabled), SourceParams.serializer(), channelList)
+    suspend fun setSimulcastLimit(limit: String) = call("lineup.simulcastLimit", ValueParams(limit), ValueParams.serializer(), channelList)
+    /** [ordering] `null`: each channel's own. */
+    suspend fun setOrderingForAllChannels(ordering: String?) =
+        call("lineup.orderingAll", ValueParams(ordering), ValueParams.serializer(), channelList)
+    suspend fun setScheduleGrid(grid: String) = call("lineup.scheduleGrid", ValueParams(grid), ValueParams.serializer(), channelList)
+    suspend fun removedTitles() = call("lineup.removedTitles", ListSerializer(RemovedGroup.serializer()))
+    suspend fun channelDetail(channelID: String) =
+        call("channel.detail", ChannelParams(channelID), ChannelParams.serializer(), ChannelDetail.serializer())
+    suspend fun channelFacets() = call("customChannel.facets", ChannelFacets.serializer())
+    suspend fun previewChannel(draft: ChannelDraft) =
+        call("customChannel.preview", draft, ChannelDraft.serializer(), ChannelPreview.serializer())
+    suspend fun saveCustomChannel(draft: ChannelDraft) = call("customChannel.save", draft, ChannelDraft.serializer(), channelList)
+    suspend fun deleteCustomChannel(channelID: String) =
+        call("customChannel.delete", ChannelParams(channelID), ChannelParams.serializer(), channelList)
 
     private suspend fun <R> call(method: String, result: KSerializer<R>): R =
         call(method, NoParams(), NoParams.serializer(), result)

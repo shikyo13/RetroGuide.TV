@@ -1,5 +1,6 @@
 package com.adamhunt.retroguide.ui.onboarding
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -53,6 +54,10 @@ private object Layout {
 fun OnboardingScreen(model: OnboardingModel) {
     val theme = LocalTheme.current
     val step by model.step.collectAsState()
+    // Back steps out of a sign-in; from the first step it leaves Add a server.
+    BackHandler(enabled = model.isAddingServer || step != OnboardingModel.Step.Welcome) {
+        if (step == OnboardingModel.Step.Welcome) model.cancel() else model.back()
+    }
     Box(Modifier.fillMaxSize().background(theme.backgroundBrush), contentAlignment = Alignment.Center) {
         Column(Modifier.width(Layout.columnWidth), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
             when (val current = step) {
@@ -73,16 +78,23 @@ fun OnboardingScreen(model: OnboardingModel) {
 private fun Welcome(model: OnboardingModel) {
     val theme = LocalTheme.current
     val first = remember { FocusRequester() }
-    BrandMark(Typography.display)
-    Text("Your library, on the air.", style = Typography.headline, color = theme.accentSecondary)
-    Text(
-        "RetroGuide.TV turns your Plex or Jellyfin library into live TV channels with a program guide. " +
-            "Flip through channels, drop into whatever is on, and let the schedule do the choosing.",
-        style = Typography.body, color = theme.textSecondary, textAlign = TextAlign.Center,
-    )
+    if (model.isAddingServer) {
+        Text("Add a server", style = Typography.title, color = theme.textPrimary)
+        Text("Its libraries join your channels. Servers added later come after the ones you have.",
+            style = Typography.body, color = theme.textSecondary, textAlign = TextAlign.Center)
+    } else {
+        BrandMark(Typography.display)
+        Text("Your library, on the air.", style = Typography.headline, color = theme.accentSecondary)
+        Text(
+            "RetroGuide.TV turns your Plex or Jellyfin library into live TV channels with a program guide. " +
+                "Flip through channels, drop into whatever is on, and let the schedule do the choosing.",
+            style = Typography.body, color = theme.textSecondary, textAlign = TextAlign.Center,
+        )
+    }
     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
         RetroButton("Connect Plex", model::beginPlex, Modifier.focusRequester(first), isPrimary = true)
         RetroButton("Connect Jellyfin", model::beginJellyfin)
+        if (model.isAddingServer) RetroButton("Cancel", model::cancel)
     }
     LaunchedEffect(Unit) { runCatching { first.requestFocus() } }
 }

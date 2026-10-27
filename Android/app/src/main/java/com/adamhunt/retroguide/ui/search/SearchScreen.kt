@@ -30,7 +30,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.ClickableSurfaceDefaults
@@ -40,7 +39,7 @@ import coil3.compose.AsyncImage
 import com.adamhunt.retroguide.AppModel
 import com.adamhunt.retroguide.core.SearchHit
 import com.adamhunt.retroguide.ui.components.Note
-import com.adamhunt.retroguide.ui.components.PictureWindow
+import com.adamhunt.retroguide.ui.components.CornerPicture
 import com.adamhunt.retroguide.ui.components.RetroTextField
 import com.adamhunt.retroguide.ui.components.screenBackground
 import com.adamhunt.retroguide.ui.theme.LocalTheme
@@ -57,13 +56,6 @@ object SearchLayout {
     val resultsWidth = 575.dp
     val posterWidth = 32.dp
     val posterHeight = 48.dp
-    /** Live TV keeps playing in the bottom-right corner. */
-    val pictureSize = DpSize(240.dp, 135.dp)
-
-    fun pictureWindow(screen: DpSize) = PictureWindow(
-        DpOffset(screen.width - margin - pictureSize.width, screen.height - margin - pictureSize.height),
-        pictureSize,
-    )
 }
 
 private object SearchTiming {
@@ -89,7 +81,7 @@ fun SearchScreen(app: AppModel, screen: DpSize, onTune: (String) -> Unit, onClos
         }
     }
     LaunchedEffect(Unit) { runCatching { field.requestFocus() } }
-    Box(Modifier.fillMaxSize().screenBackground(theme, SearchLayout.pictureWindow(screen))) {
+    Box(Modifier.fillMaxSize().screenBackground(theme, CornerPicture.window(screen))) {
         Column(
             Modifier.padding(start = SearchLayout.margin, top = SearchLayout.top).width(SearchLayout.resultsWidth),
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
@@ -97,7 +89,8 @@ fun SearchScreen(app: AppModel, screen: DpSize, onTune: (String) -> Unit, onClos
             Text("Search", style = Typography.title, color = theme.textPrimary)
             RetroTextField(
                 query, { query = it }, "Shows and movies", Modifier.focusRequester(field),
-                KeyboardType.Text, imeAction = ImeAction.Search,
+                // Search opens ready to type.
+                KeyboardType.Text, imeAction = ImeAction.Search, startsEditing = true,
             ) {}
             LazyColumn(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
                 items(results, key = { it.id }) { hit ->

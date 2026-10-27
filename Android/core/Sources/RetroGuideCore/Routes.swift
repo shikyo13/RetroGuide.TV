@@ -12,6 +12,11 @@ enum Routes {
         "server.addDevelopment": route(DevelopmentServerParams.self) { state, params in try await state.addDevelopmentServer(params) },
         "libraries": route(ServerParams.self) { state, params in try await state.libraries(serverID: params.serverID) },
         "libraries.select": route(LibrarySelectionParams.self) { state, params in await state.selectLibraries(params) },
+        "server.detail": route(ServerParams.self) { state, params in try await state.serverDetail(params) },
+        "server.setPlayback": route(PlaybackParams.self) { state, params in try await state.setPlayback(params) },
+        "server.setConnection": route(ConnectionParams.self) { state, params in try await state.setConnection(params) },
+        "server.setJellyfinAddress": route(AddressParams.self) { state, params in try await state.changeJellyfinAddress(params) },
+        "servers.checkReachability": route(ReachabilityParams.self) { state, params in await state.checkReachability(params) },
 
         "plex.linkCode": route { state in try await state.plexLinkCode() },
         "plex.checkLink": route(PlexLinkParams.self) { state, params in try await state.checkPlexLink(id: params.id) },
@@ -47,6 +52,19 @@ enum Routes {
         "viewing.favoritesOnly": route(EnabledParams.self) { state, params in await state.setFavoritesOnly(params) },
         "pro.set": route(EnabledParams.self) { state, params in await state.setPro(params) },
         "search": route(SearchParams.self) { state, params in await state.search(params) },
+
+        "lineup.settings": route { state in await state.lineupSettings() },
+        "lineup.channels": route { state in await state.manageChannels() },
+        "lineup.setSource": route(SourceParams.self) { state, params in try await state.setSource(params) },
+        "lineup.simulcastLimit": route(ValueParams.self) { state, params in await state.setSimulcastLimit(params) },
+        "lineup.orderingAll": route(ValueParams.self) { state, params in await state.setOrderingForAllChannels(params) },
+        "lineup.scheduleGrid": route(ValueParams.self) { state, params in await state.setScheduleGrid(params) },
+        "lineup.removedTitles": route { state in await state.removedTitleGroups() },
+        "channel.detail": route(ChannelParams.self) { state, params in try await state.channelDetail(params) },
+        "customChannel.facets": route { state in await state.channelFacets() },
+        "customChannel.preview": route(ChannelDraft.self) { state, params in await state.previewChannel(params) },
+        "customChannel.save": route(ChannelDraft.self) { state, params in await state.saveCustomChannel(params) },
+        "customChannel.delete": route(ChannelParams.self) { state, params in await state.deleteCustomChannel(params) },
     ]
 
     private struct Request<Params: Decodable>: Decodable {

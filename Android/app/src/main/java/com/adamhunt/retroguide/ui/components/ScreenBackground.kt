@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import com.adamhunt.retroguide.ui.theme.Theme
 import com.adamhunt.retroguide.ui.theme.Tokens
 
@@ -38,4 +39,15 @@ fun Modifier.screenBackground(theme: Theme, window: PictureWindow?): Modifier = 
         )
     }
     clipPath(hole, ClipOp.Difference) { drawRect(theme.backgroundBrush) }
+}
+
+/** Live TV in the bottom-right corner while Search or Settings covers the screen. */
+object CornerPicture {
+    private val margin = 40.dp
+    private val size = DpSize(240.dp, 135.dp)
+
+    fun window(screen: DpSize) = PictureWindow(
+        DpOffset(screen.width - margin - size.width, screen.height - margin - size.height),
+        size,
+    )
 }
