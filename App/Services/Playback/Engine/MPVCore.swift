@@ -21,14 +21,26 @@ final class MPVCore: @unchecked Sendable {
             ("gpu-api", "vulkan"),
             ("gpu-context", "moltenvk"),
             ("hwdec", "videotoolbox"),
+            // Audio through AVSampleBufferAudioRenderer: it's what Control Center's speaker
+            // picker (HomePod, AirPlay) can route, and it follows route changes. Our libmpv
+            // patch paces it and accounts for the route's latency. The AudioUnit output
+            // (also patched to survive route changes) is the fallback.
+            ("ao", "avfoundation,audiounit"),
+            // Don't register as mixable audio: Control Center only routes the Now Playing
+            // app's audio, and mixable audio never is.
+            ("audio-exclusive", "yes"),
             ("video-rotate", "no"),
-            // Per-frame HDR peak analysis is expensive; static metadata is good enough on TV.
-            ("hdr-compute-peak", "no"),
+            // Measure each scene's real brightness when tone mapping HDR to SDR. Static
+            // metadata (mastered for 1000–4000 nits) makes most scenes far too dark.
+            ("hdr-compute-peak", "yes"),
             // Bounded network cache keeps memory predictable on Apple TV.
             ("cache", "yes"),
             ("demuxer-max-bytes", "64MiB"),
             ("demuxer-max-back-bytes", "16MiB"),
-            ("network-timeout", "20"),
+            ("network-timeout", "10"),
+            // Join a channel at the keyframe before the live position instead of
+            // decoding up to the exact second: starts sooner, a second or two early.
+            ("hr-seek", "no"),
             // Fallback only: the server's per-user track selection (see MPVTrackSelector)
             // overrides these once the file loads. Without it, behave like Plex's
             // "shown with foreign audio": subtitles in
@@ -46,9 +58,33 @@ final class MPVCore: @unchecked Sendable {
             ("ytdl", "no"),
             ("terminal", "no"),
             ("audio-client-name", "RetroGuide.TV"),
+            // Check the server's certificate: stream addresses carry its access token.
+            // Without this, FFmpeg would hand them to anyone presenting a certificate.
+            ("tls-verify", "yes"),
+            ("stream-lavf-o", "protocol_whitelist=[https,tls,tcp,crypto,data,file]"),
+            ("demuxer-lavf-o", "protocol_whitelist=[https,tls,tcp,crypto,data,file]"),
         ]
+        /// FFmpeg's TLS (GnuTLS) can't read Apple's trust store, so it checks against
+        /// a bundled copy of Mozilla's (see Tools/CABundle).
+        static let certificateAuthoritiesFile = "tls-ca-file"
+        static let certificateAuthorities = (name: "cacert", type: "pem")
         /// Outputs HDR as HDR instead of tone mapping it to standard range.
         static let colorspaceHint = "target-colorspace-hint"
+        static let targetPrimaries = "target-prim"
+        static let targetTransfer = "target-trc"
+        static let referenceWhite = "hdr-reference-white"
+        enum TargetColorspace {
+            case display
+            case standardRange
+
+            /// Rec. 709 colors with a TV's standard gamma, or whatever the display reports.
+            var primaries: String { self == .standardRange ? "bt.709" : "auto" }
+            var transfer: String { self == .standardRange ? "bt.1886" : "auto" }
+            /// The HDR brightness (nits) shown as SDR white. mpv's default (203) leaves
+            /// most scenes flat and dim on an SDR TV; 120 lifts faces and highlights
+            /// without clipping (measured on Dolby Vision and HDR10 test frames).
+            var referenceWhite: String { self == .standardRange ? "120" : "auto" }
+        }
         /// The Simulator's Metal driver rejects the large shared buffers libplacebo
         /// (vo=gpu-next) allocates when uploading software-decoded frames (AV1,
         /// MPEG-4, RealVideo…), aborting the app. The classic renderer uploads
@@ -68,13 +104,30 @@ final class MPVCore: @unchecked Sendable {
         static let noStartPosition = "none"
         static let windowID = "wid"
         static let trackListProperty = "track-list"
+        static let positionProperty = "time-pos"
+        static let subtitleDelayProperty = "sub-delay"
+        static let pauseProperty = "pause"
         static let maxBytesProperty = "demuxer-max-bytes"
         static let readaheadProperty = "demuxer-readahead-secs"
         /// libmpv log verbosity forwarded to the unified log in debug builds.
         static let debugLogLevel = "info"
+        static let logFile = "log-file"
+        static let mute = "mute"
+        static let enabled = "yes"
+        static let logFileName = "mpv.log"
+        /// Where a debug play-URL override starts, well inside any episode.
+        static let debugOverrideStart = "60"
     }
 
     private static let logger = Logger(subsystem: "com.adamhunt.retroguide", category: "mpv")
+
+    var position: TimeInterval? {
+        guard let handle else { return nil }
+        var value: Double = .zero
+        guard mpv_get_property(handle, Option.positionProperty, MPV_FORMAT_DOUBLE, &value) >= .zero,
+              value.isFinite else { return nil }
+        return value
+    }
 
     var onEvent: EventHandler?
 
@@ -83,6 +136,9 @@ final class MPVCore: @unchecked Sendable {
     private var currentGeneration = 0
     /// Track selection to apply once the file for `currentGeneration` has loaded.
     private var pendingTracks: TrackSelection?
+    /// The sidecar subtitles being downloaded for the current selection, added when they arrive.
+    private var awaitedSubtitle: URL?
+    private let subtitleFiles = SubtitleFileCache.shared
     private let generationLock = NSLock()
 
     init?(layer: CAMetalLayer) {
@@ -93,7 +149,20 @@ final class MPVCore: @unchecked Sendable {
         for (name, value) in Option.values + Option.platformValues {
             mpv_set_option_string(handle, name, value)
         }
+        if let authorities = Bundle.main.path(forResource: Option.certificateAuthorities.name, ofType: Option.certificateAuthorities.type) {
+            mpv_set_option_string(handle, Option.certificateAuthoritiesFile, authorities)
+        } else {
+            // Verification stays on, so streams fail rather than go unchecked.
+            assertionFailure("cacert.pem is missing from the app bundle")
+        }
         #if DEBUG
+        if DebugLaunchOptions.isMuted {
+            mpv_set_option_string(handle, Option.mute, Option.enabled)
+        }
+        if DebugLaunchOptions.probesAudio,
+           let folder = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
+            mpv_set_option_string(handle, Option.logFile, folder.appending(path: Option.logFileName).path)
+        }
         mpv_request_log_messages(handle, Option.debugLogLevel)
         for property in Diagnostics.observedProperties {
             mpv_observe_property(handle, .zero, property, MPV_FORMAT_INT64)
@@ -126,19 +195,60 @@ final class MPVCore: @unchecked Sendable {
         let cache = MPVBufferSettings(buffer)
         mpv_set_property_string(handle, Option.maxBytesProperty, cache.maxBytes)
         mpv_set_property_string(handle, Option.readaheadProperty, cache.readaheadSeconds)
-        let start = startPosition.map { String(format: "%.1f", $0) } ?? Option.noStartPosition
+        var start = startPosition.map { String(format: "%.1f", $0) } ?? Option.noStartPosition
+        if DebugLaunchOptions.playURLOverride != nil {
+            start = DebugLaunchOptions.playStartOverride ?? Option.debugOverrideStart
+        }
         mpv_set_property_string(handle, Option.startPositionProperty, start)
-        command(["loadfile", url.absoluteString, "replace"])
+        // A released background stream may have left the player paused.
+        setPaused(false)
+        command(["loadfile", (DebugLaunchOptions.playURLOverride ?? url).absoluteString, "replace"])
     }
 
     func stop() {
         command(["stop"])
     }
 
+    /// Switches audio and subtitles on the file that's playing (or, while it's
+    /// still loading, replaces the selection it will start with).
+    func selectTracks(_ tracks: TrackSelection) {
+        guard let handle else { return }
+        generationLock.lock()
+        let isLoading = pendingTracks != nil
+        if isLoading {
+            pendingTracks = tracks
+        }
+        generationLock.unlock()
+        guard !isLoading else { return }
+        apply(tracks, handle: handle)
+    }
+
+    func setPaused(_ paused: Bool) {
+        guard let handle else { return }
+        mpv_set_property_string(handle, Option.pauseProperty, paused ? "yes" : "no")
+    }
+
+    /// Shows subtitles `seconds` later (earlier when negative). mpv keeps it across files.
+    func setSubtitleDelay(_ seconds: TimeInterval) {
+        guard let handle else { return }
+        var delay = seconds
+        let status = mpv_set_property(handle, Option.subtitleDelayProperty, MPV_FORMAT_DOUBLE, &delay)
+        if status < .zero {
+            Self.logger.error("Could not set subtitle timing: \(String(cString: mpv_error_string(status)), privacy: .public)")
+        }
+    }
+
     /// Passes HDR through to the display (`true`) or tone maps it to standard range.
+    /// For standard range the target is stated explicitly: left to guess from the
+    /// Metal layer, mpv outputs wide-gamut HDR values that look dark and washed out
+    /// on an SDR TV (Dolby Vision profile 5 especially).
     func setHDROutput(_ enabled: Bool) {
         guard let handle else { return }
         mpv_set_property_string(handle, Option.colorspaceHint, enabled ? "yes" : "no")
+        let target = enabled ? Option.TargetColorspace.display : Option.TargetColorspace.standardRange
+        mpv_set_property_string(handle, Option.targetPrimaries, target.primaries)
+        mpv_set_property_string(handle, Option.targetTransfer, target.transfer)
+        mpv_set_property_string(handle, Option.referenceWhite, target.referenceWhite)
     }
 
     private func command(_ arguments: [String]) {
@@ -155,6 +265,7 @@ final class MPVCore: @unchecked Sendable {
         generationLock.lock()
         currentGeneration = generation
         pendingTracks = tracks
+        awaitedSubtitle = nil
         generationLock.unlock()
     }
 
@@ -168,12 +279,56 @@ final class MPVCore: @unchecked Sendable {
 
     /// Selects the server's audio/subtitle tracks for the file that just loaded.
     private func applyPendingTracks(_ handle: OpaquePointer) {
-        guard let tracks = takePendingTracks(),
-              let rawTrackList = mpv_get_property_string(handle, Option.trackListProperty)
-        else { return }
+        guard let tracks = takePendingTracks() else { return }
+        apply(tracks, handle: handle)
+    }
+
+    /// Applies `tracks` to the loaded file. Sidecar subtitles not downloaded yet
+    /// start off and are added once the file arrives, so they never hold up the picture.
+    private func apply(_ tracks: TrackSelection, handle: OpaquePointer) {
+        var selection = tracks
+        var download: URL?
+        if case let .external(url) = tracks.subtitle {
+            if let file = subtitleFiles.cachedFile(for: url) {
+                selection = TrackSelection(audioStreamIndex: tracks.audioStreamIndex, subtitle: .external(file))
+            } else {
+                selection = TrackSelection(audioStreamIndex: tracks.audioStreamIndex, subtitle: .none)
+                download = url
+            }
+        }
+        generationLock.lock()
+        awaitedSubtitle = download
+        let generation = currentGeneration
+        generationLock.unlock()
+        run(selection, handle: handle)
+        guard let download else { return }
+        Task { [weak self, subtitleFiles] in
+            guard let file = await subtitleFiles.download(download) else {
+                Self.logger.error("Subtitles could not be downloaded; playing without them")
+                return
+            }
+            self?.addDownloadedSubtitle(file, for: download, generation: generation)
+        }
+    }
+
+    /// Adds subtitles that finished downloading, unless the channel or the choice changed meanwhile.
+    private func addDownloadedSubtitle(_ file: URL, for url: URL, generation: Int) {
+        guard let handle else { return }
+        generationLock.lock()
+        let isStillWanted = currentGeneration == generation && awaitedSubtitle == url
+        if isStillWanted {
+            awaitedSubtitle = nil
+        }
+        generationLock.unlock()
+        guard isStillWanted else { return }
+        run(TrackSelection(audioStreamIndex: nil, subtitle: .external(file)), handle: handle)
+    }
+
+    private func run(_ selection: TrackSelection, handle: OpaquePointer) {
+        guard let rawTrackList = mpv_get_property_string(handle, Option.trackListProperty) else { return }
         let trackList = String(cString: rawTrackList)
         mpv_free(rawTrackList)
-        MPVTrackSelector.commands(for: tracks, trackListJSON: trackList).forEach(command)
+        MPVTrackSelector.commands(for: selection, trackListJSON: trackList).forEach(command)
     }
 
     private var generation: Int {
@@ -212,10 +367,10 @@ final class MPVCore: @unchecked Sendable {
            property.format == MPV_FORMAT_INT64,
            let value = property.data?.assumingMemoryBound(to: Int64.self).pointee {
             logger.notice("stat \(String(cString: property.name), privacy: .public)=\(value)")
-        } else if event.event_id == MPV_EVENT_LOG_MESSAGE,
-           let message = event.data?.assumingMemoryBound(to: mpv_event_log_message.self).pointee,
-           let prefix = message.prefix, let text = message.text {
-            logger.notice("[\(String(cString: prefix), privacy: .public)] \(String(cString: text), privacy: .public)")
+        } else if event.event_id == MPV_EVENT_LOG_MESSAGE {
+            // Player messages can contain authenticated URLs or request headers.
+            // Keep raw messages out of logs, including development builds.
+            return
         } else if let name = mpv_event_name(event.event_id) {
             logger.notice("event \(String(cString: name), privacy: .public)")
         }

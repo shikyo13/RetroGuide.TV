@@ -11,6 +11,8 @@ public struct ChannelRule: Codable, Sendable, Hashable {
     /// Canonical genre categories: work across servers, agents and languages.
     public var categories: Set<GenreCategory>
     public var excludedCategories: Set<GenreCategory>
+    /// Scripted or unscripted titles only (``TitleFormat``); empty takes both.
+    public var formats: Set<TitleFormat>
     /// Raw genre names exactly as the server reports them.
     public var genres: Set<String>
     public var excludedGenres: Set<String>
@@ -26,6 +28,7 @@ public struct ChannelRule: Codable, Sendable, Hashable {
         libraryIDs: Set<String> = [],
         categories: Set<GenreCategory> = [],
         excludedCategories: Set<GenreCategory> = [],
+        formats: Set<TitleFormat> = [],
         genres: Set<String> = [],
         excludedGenres: Set<String> = [],
         networks: Set<String> = [],
@@ -39,6 +42,7 @@ public struct ChannelRule: Codable, Sendable, Hashable {
         self.libraryIDs = libraryIDs
         self.categories = categories
         self.excludedCategories = excludedCategories
+        self.formats = formats
         self.genres = genres
         self.excludedGenres = excludedGenres
         self.networks = networks
@@ -57,6 +61,7 @@ public struct ChannelRule: Codable, Sendable, Hashable {
         libraryIDs = try container.decodeIfPresent(Set<String>.self, forKey: .libraryIDs) ?? []
         categories = try container.decodeIfPresent(Set<GenreCategory>.self, forKey: .categories) ?? []
         excludedCategories = try container.decodeIfPresent(Set<GenreCategory>.self, forKey: .excludedCategories) ?? []
+        formats = try container.decodeIfPresent(Set<TitleFormat>.self, forKey: .formats) ?? []
         genres = try container.decodeIfPresent(Set<String>.self, forKey: .genres) ?? []
         excludedGenres = try container.decodeIfPresent(Set<String>.self, forKey: .excludedGenres) ?? []
         networks = try container.decodeIfPresent(Set<String>.self, forKey: .networks) ?? []
@@ -71,6 +76,13 @@ public struct ChannelRule: Codable, Sendable, Hashable {
     public var isUnconstrained: Bool {
         self == ChannelRule()
     }
+
+    /// Whether the rule takes everything of its kinds (Everything, All Shows, Movies).
+    public var isCatchAll: Bool {
+        var others = self
+        others.kinds = []
+        return others.isUnconstrained
+    }
 }
 
 // MARK: - Matching
@@ -78,10 +90,30 @@ public struct ChannelRule: Codable, Sendable, Hashable {
 extension ChannelRule {
     /// Returns the ids of every item in `index` that satisfies the rule.
     public func matchingItems(in index: LibraryIndex) -> [MediaItem] {
-        let compiled = CompiledRule(self)
-        return zip(index.items, index.attributes)
-            .filter { compiled.matches($0, $1) }
-            .map(\.0)
+        let compiled = CompiledRule(self, showAliases: index.showAliases, libraryTwins: index.libraryTwins)
+        guard let candidates = candidatePositions(in: index) else {
+            return zip(index.items, index.attributes)
+                .filter { compiled.matches($0, $1) }
+                .map(\.0)
+        }
+        // Every matching item is among the candidates; the full rule still decides.
+        return candidates.filter { compiled.matches(index.items[$0], index.attributes[$0]) }.map { index.items[$0] }
+    }
+
+    /// Positions that could match, when the rule requires a network,
+    /// collection or library the index can look up; `nil` to check everything.
+    private func candidatePositions(in index: LibraryIndex) -> [Int]? {
+        let lookup: [[Int]]
+        if !libraryIDs.isEmpty {
+            lookup = index.libraryTwins.expanding(libraryIDs).map { index.positionsByLibrary[$0] ?? [] }
+        } else if !networks.isEmpty {
+            lookup = TextNormalizer.keys(networks).map { index.positionsByNetwork[$0] ?? [] }
+        } else if !collections.isEmpty {
+            lookup = TextNormalizer.keys(collections).map { index.positionsByCollection[$0] ?? [] }
+        } else {
+            return nil
+        }
+        return lookup.count == 1 ? lookup[0] : Set(lookup.joined()).sorted()
     }
 }
 
@@ -93,9 +125,15 @@ struct CompiledRule {
     private let networks: Set<String>
     private let collections: Set<String>
     private let keywords: [String]
+    /// The rule's shows under both their server-specific and shared ids.
+    private let seriesIDs: Set<String>
+    /// The rule's libraries and their twins on other servers.
+    private let libraryIDs: Set<String>
 
-    init(_ rule: ChannelRule) {
+    init(_ rule: ChannelRule, showAliases: [String: String] = [:], libraryTwins: LibraryTwins = .none) {
         self.rule = rule
+        seriesIDs = rule.seriesIDs.union(rule.seriesIDs.compactMap { showAliases[$0] })
+        libraryIDs = libraryTwins.expanding(rule.libraryIDs)
         genres = TextNormalizer.keys(rule.genres)
         excludedGenres = TextNormalizer.keys(rule.excludedGenres)
         networks = TextNormalizer.keys(rule.networks)
@@ -105,17 +143,19 @@ struct CompiledRule {
 
     func matches(_ item: MediaItem, _ attributes: NormalizedAttributes) -> Bool {
         guard rule.kinds.isEmpty || rule.kinds.contains(item.kind) else { return false }
-        guard rule.libraryIDs.isEmpty || rule.libraryIDs.contains(item.libraryID) else { return false }
+        guard libraryIDs.isEmpty || item.libraryIDs.contains(where: libraryIDs.contains) else { return false }
         guard rule.audiences.isEmpty || rule.audiences.contains(item.audience) else { return false }
         guard rule.categories.isEmpty || !rule.categories.isDisjoint(with: attributes.categories) else { return false }
         guard rule.excludedCategories.isDisjoint(with: attributes.categories) else { return false }
+        guard rule.formats.isEmpty || rule.formats.contains(attributes.format) else { return false }
         guard genres.isEmpty || !genres.isDisjoint(with: attributes.genres) else { return false }
         guard excludedGenres.isDisjoint(with: attributes.genres) else { return false }
         guard networks.isEmpty || !networks.isDisjoint(with: attributes.networks) else { return false }
         guard collections.isEmpty || !collections.isDisjoint(with: attributes.collections) else { return false }
         guard rule.decades.isEmpty || attributes.decade.map(rule.decades.contains) == true else { return false }
         if !rule.seriesIDs.isEmpty {
-            guard let seriesID = item.seriesID, rule.seriesIDs.contains(seriesID) else { return false }
+            // Saved rules may name a show by its server-specific id or its global one.
+            guard let seriesID = item.seriesID, seriesIDs.contains(seriesID) || seriesIDs.contains(item.showID) else { return false }
         }
         if !keywords.isEmpty {
             guard keywords.contains(where: attributes.searchableText.contains) else { return false }

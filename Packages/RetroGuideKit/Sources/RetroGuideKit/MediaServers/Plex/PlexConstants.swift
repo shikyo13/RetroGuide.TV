@@ -18,9 +18,11 @@ public enum PlexAPI {
         static func sectionCollections(_ section: String) -> String { "/library/sections/\(section)/collections" }
         static func collectionChildren(_ key: String) -> String { "/library/collections/\(key)/children" }
         static let transcodeStart = "/video/:/transcode/universal/start.m3u8"
+        static let playbackDecision = "/video/:/transcode/universal/decision"
         static let transcodeStop = "/video/:/transcode/universal/stop"
         static let photoTranscode = "/photo/:/transcode"
         static func metadata(_ key: String) -> String { "/library/metadata/\(key)" }
+        static func part(_ id: Int) -> String { "/library/parts/\(id)" }
     }
 
     enum Header {
@@ -28,6 +30,9 @@ public enum PlexAPI {
         static let product = "X-Plex-Product"
         static let version = "X-Plex-Version"
         static let clientIdentifier = "X-Plex-Client-Identifier"
+        static let sessionIdentifier = "X-Plex-Session-Identifier"
+        static let clientProfileExtra = "X-Plex-Client-Profile-Extra"
+        static let clientProfileName = "X-Plex-Client-Profile-Name"
         static let platform = "X-Plex-Platform"
         static let platformVersion = "X-Plex-Platform-Version"
         static let device = "X-Plex-Device"
@@ -63,6 +68,14 @@ public enum PlexAPI {
             URLQueryItem(name: excludeFields, value: "file,tagline"),
         ]
 
+        /// For show and movie listings: the listing, plus each title's agent
+        /// ids (IMDb, TMDB, TVDB) for ``TitleClassification``.
+        static let listingWithIDs = [
+            URLQueryItem(name: "includeGuids", value: "1"),
+            URLQueryItem(name: excludeElements, value: "Role,Director,Writer,Producer,Similar,Label,UltraBlurColors,Marker,Chapter"),
+            URLQueryItem(name: excludeFields, value: "file,tagline"),
+        ]
+
         /// For membership lookups, where only `ratingKey` is used.
         static let keysOnly = [
             URLQueryItem(name: excludeElements, value: "Media,Genre,Country,Collection,Role,Director,Writer,Producer,Similar,Label,Guid,Image,UltraBlurColors,Marker,Chapter"),
@@ -94,14 +107,42 @@ public enum PlexAPI {
         static let probeTimeout: TimeInterval = 4
         /// Track selection is fetched while tuning, so it must never hold up playback for long.
         static let trackSelectionTimeout: TimeInterval = 2
+        /// Saving a track choice happens in the background, so it can wait longer.
+        static let trackSaveTimeout: TimeInterval = 10
+        /// `subtitleStreamID` meaning "no subtitles".
+        static let noSubtitleStreamID = "0"
+        /// Name for a track Plex gives no title or language for.
+        static let unknownTrackTitle = "Unknown"
+        /// Asking the server for permission to play a file directly.
+        static let playbackDecisionTimeout: TimeInterval = 5
         /// How often to poll plex.tv while waiting for the user to enter a link code.
-        public static let pinPollInterval: Duration = .seconds(2)
+        public static let pinPollInterval: Duration = .seconds(5)
+        static let accountRateLimitRetries = 3
         static let millisecondsPerSecond: TimeInterval = 1_000
     }
 
     /// Parameters for the universal transcoder. The client profile extra asks
     /// the server to remux into HLS whenever the video/audio can be copied,
     /// and to transcode only what the Apple TV cannot decode.
+    /// Playback decisions: the server authorizes a session to play a file directly.
+    enum Subtitle {
+        static let vobSubIndexCodec = "idx"
+        static let vobSubIndexExtension = ".idx"
+    }
+
+    enum Decision {
+        /// Plex's built-in profiles for Apple platforms describe Apple's own player
+        /// (for example stereo only, or at most 1080p), which would reject files
+        /// the bundled player handles. The generic profile has no such limits.
+        static let genericProfile = "Generic"
+        /// Tells the server this client plays any container and codec itself.
+        static let directPlayAnythingProfile =
+            "add-direct-play-profile(type=videoProfile&protocol=http&container=*&videoCodec=*&audioCodec=*&subtitleCodec=*)"
+        static let protocolHTTP = "http"
+        /// `generalDecisionCode` when the file can be played as is.
+        static let directPlayOK = 1000
+    }
+
     enum Transcode {
         static let protocolHLS = "hls"
         static let maxVideoBitrateKbps = 40_000

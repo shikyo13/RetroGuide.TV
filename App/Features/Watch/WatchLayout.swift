@@ -40,14 +40,19 @@ enum WatchLayout {
         )
     }
 
-    /// Scrolling content under the PiP window needs this much room at the
-    /// bottom on iPhone and iPad so its last rows can be scrolled clear of it.
-    static func pictureInPictureClearance(in screen: CGSize) -> CGFloat {
+    /// Room scrolling menus leave for the PiP window on iPhone and iPad: below
+    /// the content in portrait (so the last rows can scroll clear of it), and
+    /// beside it in landscape (so rows never pass underneath). Apple TV menus
+    /// are already laid out beside the window.
+    static func pictureInPictureClearance(in screen: CGSize) -> EdgeInsets {
         #if os(tvOS)
-        // Apple TV menus are laid out beside the PiP window instead.
-        .zero
+        EdgeInsets()
         #else
-        pictureInPictureWidth(in: screen) / pictureInPictureAspectRatio + pictureInPictureVerticalInset * 2
+        let width = pictureInPictureWidth(in: screen)
+        if screen.width > screen.height {
+            return EdgeInsets(top: .zero, leading: .zero, bottom: .zero, trailing: width + pictureInPictureHorizontalInset)
+        }
+        return EdgeInsets(top: .zero, leading: .zero, bottom: width / pictureInPictureAspectRatio + pictureInPictureVerticalInset * 2, trailing: .zero)
         #endif
     }
 
@@ -58,6 +63,6 @@ enum WatchLayout {
 }
 
 extension EnvironmentValues {
-    /// Bottom room scrolling menus should leave for the picture-in-picture window.
-    @Entry var pictureInPictureClearance: CGFloat = .zero
+    /// Room scrolling menus should leave for the picture-in-picture window.
+    @Entry var pictureInPictureClearance = EdgeInsets()
 }

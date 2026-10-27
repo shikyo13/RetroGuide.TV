@@ -11,6 +11,7 @@ enum MPVTrackSelector {
         static let id = "id"
         static let type = "type"
         static let containerIndex = "ff-index"
+        static let externalFile = "external-filename"
     }
 
     private enum TrackType {
@@ -39,7 +40,15 @@ enum MPVTrackSelector {
                 commands.append(["set", Property.subtitle, String(id)])
             }
         case let .external(url):
-            commands.append(["sub-add", url.absoluteString, "select"])
+            guard url.isFileURL || SecureTransport.permits(url) else {
+                return commands + [["set", Property.subtitle, Property.off]]
+            }
+            // Added once; switching back to it later just selects it again.
+            if let id = externalTrackID(for: url, in: tracks) {
+                commands.append(["set", Property.subtitle, String(id)])
+            } else {
+                commands.append(["sub-add", url.absoluteString, "select"])
+            }
         }
         return commands
     }
@@ -49,6 +58,12 @@ enum MPVTrackSelector {
               let tracks = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]]
         else { return [] }
         return tracks
+    }
+
+    private static func externalTrackID(for url: URL, in tracks: [[String: Any]]) -> Int? {
+        tracks.first {
+            ($0[TrackListKey.type] as? String) == TrackType.subtitle && ($0[TrackListKey.externalFile] as? String) == url.absoluteString
+        }?[TrackListKey.id] as? Int
     }
 
     private static func trackID(of type: String, containerIndex: Int, in tracks: [[String: Any]]) -> Int? {

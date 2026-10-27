@@ -9,6 +9,7 @@ import SwiftUI
 /// - Tap: show or hide the info banner and on-screen controls
 struct PlayerTouchInput: View {
     let isInfoVisible: Bool
+    var isIndependent = false
     let onCommand: (PlayerCommand) -> Void
 
     var body: some View {
@@ -30,7 +31,7 @@ struct PlayerTouchInput: View {
         }
         .ignoresSafeArea()
             .accessibilityElement()
-            .accessibilityLabel("Live TV")
+            .accessibilityLabel(isIndependent ? "Watching from beginning" : "Live TV")
             .accessibilityHint("Double-tap for controls. Swipe up or down to change channel.")
             .accessibilityAction {
                 onCommand(isInfoVisible ? .hideInfo : .showNow)
@@ -71,6 +72,12 @@ struct PlayerTouchControls: View {
                 Label("Guide", systemImage: "list.bullet.rectangle")
             }
             .buttonStyle(.retroPrimary)
+            Button {
+                onCommand(.openOptions)
+            } label: {
+                Label("Options", systemImage: "slider.horizontal.3")
+            }
+            .buttonStyle(.retroIcon)
             Spacer(minLength: DesignTokens.Spacing.md)
             Button {
                 onCommand(.lastChannel)

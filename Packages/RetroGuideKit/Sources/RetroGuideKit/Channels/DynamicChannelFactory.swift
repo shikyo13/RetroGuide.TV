@@ -54,11 +54,9 @@ enum DynamicChannelFactory {
     }
 
     private static func marathonChannels(_ values: [FacetValue], options: LineupOptions) -> [ChannelDefinition] {
+        // Candidates only: the lineup checks seasons and how many fit.
         let eligible = values
-            .filter { $0.itemCount >= options.marathonMinimumEpisodes }
-            .sorted { $0.itemCount > $1.itemCount }
-            .prefix(options.maximumMarathonChannels)
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            .sorted { ($0.name.lowercased(), $0.id) < ($1.name.lowercased(), $1.id) }
         return numbered(Array(eligible), in: ChannelNumbering.marathons) { value, number in
             ChannelDefinition(
                 id: "series.\(value.id)",
@@ -72,12 +70,14 @@ enum DynamicChannelFactory {
         }
     }
 
-    /// Assigns consecutive numbers from `range`, dropping values that do not fit.
+    /// Numbers consecutively from the start of `range`. The numbers only order
+    /// channels within the lineup (which renumbers them), so none are dropped
+    /// when there are more values than the range holds.
     private static func numbered(
         _ values: [FacetValue],
         in range: Range<Int>,
         make: (FacetValue, Int) -> ChannelDefinition
     ) -> [ChannelDefinition] {
-        zip(values, range).map(make)
+        values.enumerated().map { make($1, range.lowerBound + $0) }
     }
 }

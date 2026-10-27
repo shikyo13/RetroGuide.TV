@@ -4,10 +4,18 @@ import SwiftUI
 @main
 struct RetroGuideApp: App {
     @State private var model = AppModel()
+    #if os(iOS)
+    @State private var ads = AdsController()
+    #endif
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
+        #if os(iOS)
+        // Follow the output other video apps use (AirPlay, HomePod) when the system routes there.
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback, policy: .longFormVideo)
+        #else
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
+        #endif
         #if DEBUG && os(iOS)
         DebugSnapshot.install()
         #endif
@@ -16,18 +24,27 @@ struct RetroGuideApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                #if os(iOS)
+                .debugLaunchOrientation()
+                #endif
                 .environment(model)
+                #if os(iOS)
+                .environment(ads)
+                #endif
                 .environment(\.theme, model.theme)
                 .environment(\.artworkResolver, model.artworkResolver)
                 .environment(\.showsScanlines, model.preferences.showsScanlines)
                 .tint(model.theme.accent)
                 .preferredColorScheme(.dark)
+                .onChange(of: model.pro.hasLoaded ? model.pro.isPro : nil) { model.proAccessChanged() }
                 .task { await model.start() }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
-            case .background: model.tuner.suspend()
-            case .active: if model.phase == .ready { model.tuner.resume() }
+            case .background: model.enteredBackground()
+            case .active:
+                model.becameActive()
+                PurchaseAttribution.shared.start()
             default: break
             }
         }

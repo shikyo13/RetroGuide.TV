@@ -8,103 +8,213 @@ struct SettingsView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     @State private var isConfirmingSignOut = false
+    #if DEBUG
+    @State private var debugPage = DebugLaunchOptions.settingsPage
+    #endif
 
     var body: some View {
-        NavigationStack {
-            SettingsPage(title: "Settings", onExit: onClose) {
-                SettingsSection("Picture") {
-                    NavigationLink {
-                        ThemePickerView()
-                    } label: {
-                        SettingsRowLabel(title: "Theme", systemImage: "paintpalette", value: app.theme.name)
+        ParentalSettingsGate(onCancel: onClose) {
+            NavigationStack {
+                SettingsPage(title: "Settings", onExit: onClose) {
+                    SettingsSection("RetroGuide Pro") {
+                        NavigationLink {
+                            ProUpgradeView()
+                        } label: {
+                            SettingsRowLabel(
+                                title: app.pro.isPro ? "RetroGuide Pro" : "Upgrade to Pro",
+                                systemImage: "star.circle",
+                                value: proSummary
+                            )
+                        }
                     }
-                    Button {
-                        app.preferences.showsScanlines.toggle()
-                    } label: {
-                        SettingsRowLabel(
-                            title: "Scanlines on menus",
-                            systemImage: "tv",
-                            value: app.preferences.showsScanlines ? "On" : "Off",
-                            accessory: nil
-                        )
+                    SettingsSection("Picture") {
+                        #if os(iOS)
+                        NavigationLink { WidgetSettingsView() } label: {
+                            SettingsRowLabel(title: "Home Screen widgets", systemImage: "square.grid.2x2", value: nil)
+                        }
+                        #else
+                        if app.pro.isPro {
+                            Button { app.viewing.topShelfFavorites.toggle() } label: {
+                                SettingsRowLabel(title: "Top Shelf channels", systemImage: "tv", value: app.viewing.topShelfFavorites ? "Favorites" : "Recent channels", accessory: nil)
+                            }
+                        } else {
+                            SettingsRowLabel(title: "Top Shelf channels", systemImage: "tv", value: "Recent channels", accessory: nil)
+                            ProLockedRow(title: "Use Favorites on Top Shelf", systemImage: "star")
+                        }
+                        if app.pro.isPro && app.viewing.topShelfFavorites && !app.visibleChannels.contains(where: app.viewing.isFavorite) {
+                            Text("No favorite channels are available. Add channels in Favorites below to show them on Top Shelf.")
+                                .font(Typography.caption).foregroundStyle(theme.textSecondary)
+                        }
+                        Text("Move RetroGuide.TV to the top row of your Apple TV Home Screen to see what's on.")
+                            .font(Typography.caption).foregroundStyle(theme.textSecondary)
+                        #endif
+                        NavigationLink {
+                            ThemePickerView()
+                        } label: {
+                            SettingsRowLabel(title: "Theme", systemImage: "paintpalette", value: app.theme.name)
+                        }
+                        Button {
+                            app.preferences.showsScanlines.toggle()
+                        } label: {
+                            SettingsRowLabel(
+                                title: "Scanlines on menus",
+                                systemImage: "tv",
+                                value: app.preferences.showsScanlines ? "On" : "Off",
+                                accessory: nil
+                            )
+                        }
+                    }
+                    SettingsSection("Playback") {
+                        NavigationLink { PlayerEnginePickerView() } label: {
+                            SettingsRowLabel(title: "Player", systemImage: "play.rectangle", value: app.preferences.playerEngine.displayName)
+                        }
+                        NavigationLink { RemindersView() } label: {
+                            SettingsRowLabel(title: "Program reminders", systemImage: "bell", value: app.pro.isPro ? nil : "Pro")
+                        }
+                        #if os(tvOS)
+                        NavigationLink {
+                            DisplayMatchingPickerView()
+                        } label: {
+                            SettingsRowLabel(title: "Match TV mode", systemImage: "4k.tv", value: app.preferences.displayMatching.displayName)
+                        }
+                        #endif
+                    }
+                    SettingsSection("Channels") {
+                        NavigationLink { FavoritesView() } label: {
+                            SettingsRowLabel(title: "Favorites", systemImage: "star", value: app.pro.isPro ? "\(app.viewing.favoriteIDs.count)" : "Pro")
+                        }
+                        NavigationLink {
+                            ChannelManagerView()
+                        } label: {
+                            SettingsRowLabel(title: "Manage channels", systemImage: "list.number", value: channelSummary)
+                        }
+                        if !app.parentalControls.policy.isEnabled || !app.parentalControls.policy.usesCustomLineup {
+                        NavigationLink {
+                            ChannelGroupsView()
+                        } label: {
+                            SettingsRowLabel(title: "Channel groups", systemImage: "square.grid.2x2", value: nil)
+                        }
+                        NavigationLink {
+                            SimulcastLimitPickerView()
+                        } label: {
+                            SettingsRowLabel(title: "Channels per show", systemImage: "rectangle.stack", value: app.customization.simulcastLimit.displayName)
+                        }
+                        }
+                        if removedTitleCount > .zero {
+                            NavigationLink {
+                                RemovedTitlesPage()
+                            } label: {
+                                SettingsRowLabel(title: "Removed from channels", systemImage: "minus.circle", value: "\(removedTitleCount)")
+                            }
+                        }
+                        if app.pro.access.canCreateCustomChannel(existingCount: app.customization.customChannels.count) {
+                            NavigationLink {
+                                ChannelEditorView(existing: nil)
+                            } label: {
+                                SettingsRowLabel(title: "Create a channel", systemImage: "plus.rectangle.on.rectangle", value: nil)
+                            }
+                        } else {
+                            ProLockedRow(title: "Create another channel", systemImage: "plus.rectangle.on.rectangle")
+                        }
+                        if app.pro.access.canChangeScheduling {
+                            NavigationLink {
+                                AllChannelsOrderView()
+                            } label: {
+                                SettingsRowLabel(
+                                    title: "Schedule order",
+                                    systemImage: "shuffle",
+                                    value: AllChannelsOrdering.summary(app.customization.defaultOrdering)
+                                )
+                            }
+                        } else {
+                            ProLockedRow(title: "Schedule order", systemImage: "shuffle")
+                        }
+                        if app.pro.access.canChangeScheduling {
+                            NavigationLink {
+                                ScheduleGridPickerView()
+                            } label: {
+                                SettingsRowLabel(
+                                    title: "Program start times",
+                                    systemImage: "clock",
+                                    value: app.preferences.scheduleGrid.displayName
+                                )
+                            }
+                        } else {
+                            ProLockedRow(title: "Program start times", systemImage: "clock")
+                        }
+                    }
+                    SettingsSection("Library") {
+                        NavigationLink {
+                            ServersView()
+                        } label: {
+                            SettingsRowLabel(title: "Servers", systemImage: "server.rack", value: serversSummary)
+                        }
+                        Button {
+                            Task { await app.refreshLibrary() }
+                        } label: {
+                            SettingsRowLabel(title: "Refresh library", systemImage: "arrow.clockwise", value: refreshSummary, accessory: nil)
+                        }
+                        .disabled(app.isRefreshing)
+                    }
+                    SettingsSection("Account and Security") {
+                        NavigationLink { ParentalControlsView() } label: {
+                            SettingsRowLabel(title: "Parental Controls", systemImage: "lock.shield", value: app.parentalControls.policy.isEnabled ? "On" : "Off")
+                        }
+
+                        Button {
+                            isConfirmingSignOut = true
+                        } label: {
+                            SettingsRowLabel(title: "Sign out", systemImage: "rectangle.portrait.and.arrow.right", value: nil, accessory: nil)
+                        }
+                    }
+                    SettingsSection("About") {
+                        #if os(iOS)
+                        PrivacyChoicesRow()
+                        #endif
+                        NavigationLink {
+                            AcknowledgementsView()
+                        } label: {
+                            SettingsRowLabel(title: "Acknowledgements", systemImage: "doc.text", value: nil)
+                        }
+                    }
+                    Text("\(AppIdentity.productName) \(AppIdentity.version) (\(AppIdentity.build)) · Open source under the MIT License")
+                        .font(Typography.caption)
+                        .foregroundStyle(theme.textSecondary)
+                }
+                #if DEBUG
+                .navigationDestination(item: $debugPage) { page in
+                    switch page {
+                    case .theme: ThemePickerView()
+                    case .pro: ProUpgradeView()
+                    case .connection:
+                        if let account = app.servers.accounts.first, account.kind == .jellyfin {
+                            JellyfinAddressView(serverID: account.id)
+                        } else {
+                            ServerConnectionView(serverID: app.servers.accounts.first?.id ?? "")
+                        }
+                    case .channel: ChannelDetailView(channelID: app.lineup.first?.id ?? "")
+                    case .order: AllChannelsOrderView()
+                    case .repeats: SimulcastLimitPickerView()
                     }
                 }
-                SettingsSection("Playback") {
-                    NavigationLink {
-                        PlayerEnginePickerView()
-                    } label: {
-                        SettingsRowLabel(title: "Player", systemImage: "play.rectangle", value: app.preferences.playerEngine.displayName)
-                    }
-                    #if os(tvOS)
-                    NavigationLink {
-                        DisplayMatchingPickerView()
-                    } label: {
-                        SettingsRowLabel(title: "Match TV mode", systemImage: "4k.tv", value: app.preferences.displayMatching.displayName)
-                    }
-                    #endif
-                }
-                SettingsSection("Channels") {
-                    NavigationLink {
-                        ChannelManagerView()
-                    } label: {
-                        SettingsRowLabel(title: "Manage channels", systemImage: "list.number", value: channelSummary)
-                    }
-                    NavigationLink {
-                        ChannelGroupsView()
-                    } label: {
-                        SettingsRowLabel(title: "Channel groups", systemImage: "square.grid.2x2", value: nil)
-                    }
-                    NavigationLink {
-                        ChannelEditorView(existing: nil)
-                    } label: {
-                        SettingsRowLabel(title: "Create a channel", systemImage: "plus.rectangle.on.rectangle", value: nil)
-                    }
-                    NavigationLink {
-                        ScheduleGridPickerView()
-                    } label: {
-                        SettingsRowLabel(
-                            title: "Program start times",
-                            systemImage: "clock",
-                            value: app.preferences.scheduleGrid.displayName
-                        )
-                    }
-                }
-                SettingsSection("Library") {
-                    NavigationLink {
-                        ServersView()
-                    } label: {
-                        SettingsRowLabel(title: "Servers", systemImage: "server.rack", value: serversSummary)
-                    }
-                    Button {
-                        Task { await app.refreshLibrary() }
-                    } label: {
-                        SettingsRowLabel(title: "Refresh library", systemImage: "arrow.clockwise", value: refreshSummary, accessory: nil)
-                    }
-                    .disabled(app.isRefreshing)
-                }
-                SettingsSection("Account") {
-                    Button {
-                        isConfirmingSignOut = true
-                    } label: {
-                        SettingsRowLabel(title: "Sign out", systemImage: "rectangle.portrait.and.arrow.right", value: nil, accessory: nil)
-                    }
-                }
-                SettingsSection("About") {
-                    NavigationLink {
-                        AcknowledgementsView()
-                    } label: {
-                        SettingsRowLabel(title: "Acknowledgements", systemImage: "doc.text", value: nil)
-                    }
-                }
-                Text("\(AppIdentity.productName) \(AppIdentity.version) (\(AppIdentity.build)) · Open source under the MIT License")
-                    .font(Typography.caption)
-                    .foregroundStyle(theme.textSecondary)
+                #endif
             }
         }
-        .confirmationDialog("Sign out and remove all channels from this Apple TV?", isPresented: $isConfirmingSignOut) {
+        .onDisappear { app.parentalControls.endAuthorization() }
+        .confirmationDialog("Sign out and remove all channels from this device?", isPresented: $isConfirmingSignOut) {
             Button("Sign Out", role: .destructive) { app.signOut() }
             Button("Cancel", role: .cancel) {}
         }
+    }
+
+    private var proSummary: String {
+        if app.pro.isPro { return "Active" }
+        return app.pro.product?.displayPrice ?? ProLockedRow.badge
+    }
+
+    /// Shows and movies removed from channels by hand, across every channel.
+    private var removedTitleCount: Int {
+        app.customization.removedTitles.values.reduce(.zero) { $0 + $1.count }
     }
 
     private var channelSummary: String {

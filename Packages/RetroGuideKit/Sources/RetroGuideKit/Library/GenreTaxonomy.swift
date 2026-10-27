@@ -75,15 +75,13 @@ public struct GenreTaxonomy: Sendable {
 /// Recognizes anime even when a library has no "Anime" genre tag.
 enum AnimeDetector {
     private static let japanKeys: Set<String> = ["japan", "jp", "japon", "japao", "giappone"]
-    private static let libraryKeyword = "anime"
 
-    static func isAnime(categories: Set<GenreCategory>, countries: [String], libraryTitle: String?) -> Bool {
+    /// From metadata only (genres and country), never library names: how
+    /// someone names their libraries says nothing reliable about the content.
+    static func isAnime(categories: Set<GenreCategory>, countries: [String]) -> Bool {
         if categories.contains(.anime) {
             return true
         }
-        if categories.contains(.animation), countries.contains(where: { japanKeys.contains(GenreTaxonomy.key($0)) }) {
-            return true
-        }
-        return libraryTitle.map { GenreTaxonomy.key($0).contains(libraryKeyword) } ?? false
+        return categories.contains(.animation) && countries.contains { japanKeys.contains(GenreTaxonomy.key($0)) }
     }
 }

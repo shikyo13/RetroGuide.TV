@@ -27,6 +27,16 @@ enum Typography {
     static let captionEmphasis = Font.system(size: Size.caption, weight: .bold)
     static let micro = Font.system(size: Size.micro, weight: .semibold)
 
+    #if os(iOS)
+    static let settingsBody = Font.body
+    static let settingsBodyEmphasis = Font.body.weight(.semibold)
+    static let settingsCaption = Font.footnote
+    #else
+    static let settingsBody = body
+    static let settingsBodyEmphasis = bodyEmphasis
+    static let settingsCaption = caption
+    #endif
+
     /// Time and channel digits use a monospaced face so columns don't jitter.
     static let clock = Font.system(size: Size.callout, weight: .semibold, design: .monospaced)
     static let channelNumber = Font.system(size: Size.headline, weight: .heavy, design: .monospaced)

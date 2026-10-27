@@ -1,3 +1,4 @@
+import AVKit
 import RetroGuideKit
 import UIKit
 
@@ -46,18 +47,51 @@ protocol PlaybackEngine: AnyObject {
     var capabilities: PlaybackCapabilities { get }
     var videoView: UIView { get }
     var onEvent: ((PlaybackEvent) -> Void)? { get set }
+    /// Current position in the original item, when the engine knows it.
+    var position: TimeInterval? { get }
 
     /// Plays `request`, honoring the server's audio/subtitle selection when known.
     func play(_ request: StreamRequest, tracks: TrackSelection?)
     func stop()
+    /// Holds or continues the stream that's loaded, keeping its place.
+    func setPaused(_ paused: Bool)
     /// Whether to output HDR as HDR (the display is in an HDR mode) rather
     /// than converting it to standard range.
     func setPrefersHDROutput(_ prefersHDROutput: Bool)
+    /// Whether ``selectTracks(_:)`` switches audio and subtitles while playing.
+    var switchesTracksLive: Bool { get }
+    func selectTracks(_ tracks: TrackSelection)
+    /// Whether ``setSubtitleDelay(_:)`` moves subtitles on what's playing.
+    var adjustsSubtitleTiming: Bool { get }
+    /// Shows subtitles `seconds` later (earlier when negative), for this and later files.
+    func setSubtitleDelay(_ seconds: TimeInterval)
+    #if os(iOS)
+    /// What Picture in Picture shows for this player (`nil`: it can't).
+    func pictureInPictureSource(playbackDelegate: any AVPictureInPictureSampleBufferPlaybackDelegate) -> AVPictureInPictureController.ContentSource?
+    /// Whether the Picture in Picture window is showing (frames are needed in the background).
+    func setPictureInPictureActive(_ active: Bool)
+    #endif
 }
 
 extension PlaybackEngine {
+    var position: TimeInterval? { nil }
     /// Engines that leave HDR handling to the system ignore this.
     func setPrefersHDROutput(_ prefersHDROutput: Bool) {}
+
+    /// Apple's player gets streams the server has already packaged.
+    var switchesTracksLive: Bool { false }
+
+    /// Switches audio and subtitles on what's playing, when the engine can.
+    func selectTracks(_ tracks: TrackSelection) {}
+
+    /// Apple's player shows subtitles the server has timed.
+    var adjustsSubtitleTiming: Bool { false }
+
+    func setSubtitleDelay(_ seconds: TimeInterval) {}
+
+    #if os(iOS)
+    func setPictureInPictureActive(_ active: Bool) {}
+    #endif
 }
 
 @MainActor

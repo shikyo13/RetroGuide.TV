@@ -12,7 +12,12 @@ struct GuideTouchView: View {
     @FocusState private var focus: GuideFocus?
     @Environment(\.isNarrowLayout) private var isNarrowLayout
 
-    init(channels: [Channel], tuner: Tuner, actions: GuideActions) {
+    let channels: [Channel]
+    let lineupRevision: Int
+
+    init(channels: [Channel], lineupRevision: Int, tuner: Tuner, actions: GuideActions) {
+        self.channels = channels
+        self.lineupRevision = lineupRevision
         self.tuner = tuner
         self.actions = actions
         _model = State(initialValue: GuideModel(channels: channels, focusedChannelID: tuner.channel?.id))
@@ -24,7 +29,9 @@ struct GuideTouchView: View {
                 isShowingNow: model.isShowingNow,
                 windowStart: model.windowStart,
                 focus: $focus,
-                actions: actions
+                actions: actions,
+                channel: model.focusedChannel,
+                program: model.focusedProgram
             )
             .crtEffect(isFullScreen: false)
 
@@ -38,11 +45,22 @@ struct GuideTouchView: View {
             GuideTouchGrid(model: model, tunedChannelID: tuner.channel?.id, onTune: actions.onTune)
                 .crtEffect(isFullScreen: false)
         }
+        #if os(iOS)
+        .guideHeaderAd()
+        #endif
         .padding(.horizontal, DesignTokens.Spacing.md)
         .padding(.top, DesignTokens.Spacing.xs)
         .screenBackground()
         .onAppear(perform: fitWindowToWidth)
         .onChange(of: isNarrowLayout) { fitWindowToWidth() }
+        .onChange(of: lineupRevision) { model.replaceChannels(channels) }
+        .onChange(of: channels.map(\.id)) { model.replaceChannels(channels) }
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: GuideLayout.Time.followInterval)
+                model.followLiveTime()
+            }
+        }
         .animation(DesignTokens.Motion.quickEase, value: model.windowStart)
         .animation(DesignTokens.Motion.quickEase, value: model.focusAnchor)
     }

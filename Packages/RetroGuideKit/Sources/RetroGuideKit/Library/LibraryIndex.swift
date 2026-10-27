@@ -9,58 +9,85 @@ public struct LibraryIndex: Sendable {
     public let facets: LibraryFacets
     let attributes: [NormalizedAttributes]
     private let positionsByID: [String: Int]
+    /// Server-specific show ids → the shared show id (see ``CrossServerMerge``).
+    let showAliases: [String: String]
+    /// Libraries on different servers that are one library (see ``LibraryTwins``).
+    let libraryTwins: LibraryTwins
+    /// Item positions by normalized network and collection name, and by
+    /// library id, so a rule naming one finds its items without a full scan.
+    let positionsByNetwork: [String: [Int]]
+    let positionsByCollection: [String: [Int]]
+    let positionsByLibrary: [String: [Int]]
 
     public init(items: [MediaItem], libraries: [MediaLibrary] = []) {
+        self.init(items: items, libraries: libraries, showAliases: [:])
+    }
+
+    init(
+        items: [MediaItem],
+        libraries: [MediaLibrary],
+        showAliases: [String: String],
+        libraryTwins: LibraryTwins = .none,
+        classification: TitleClassification = .shared
+    ) {
+        self.showAliases = showAliases
+        self.libraryTwins = libraryTwins
         let sorted = items.sorted { $0.id < $1.id }
-        let libraryTitles = Dictionary(libraries.map { ($0.id, $0.title) }, uniquingKeysWith: { first, _ in first })
         self.items = sorted
-        self.attributes = sorted.map { NormalizedAttributes($0, libraryTitle: libraryTitles[$0.libraryID]) }
+        let showDecades = Self.showDecades(sorted)
+        // A show's episodes share its ids: look each show up once.
+        var classifications: [String: Set<GenreCategory>] = [:]
+        var unclassified = Set<String>()
+        self.attributes = sorted.map { item in
+            var classified = classifications[item.showID]
+            if classified == nil, !unclassified.contains(item.showID) {
+                classified = item.titleIDs.flatMap { classification.categories(for: $0, kind: item.kind) }
+                if let classified {
+                    classifications[item.showID] = classified
+                } else {
+                    unclassified.insert(item.showID)
+                }
+            }
+            return NormalizedAttributes(item, decade: showDecades[item.showID] ?? item.year.map(Decade.containing(year:)), classified: classified)
+        }
         self.positionsByID = Dictionary(
             sorted.enumerated().map { ($1.id, $0) },
             uniquingKeysWith: { first, _ in first }
         )
-        self.facets = LibraryFacets(items: sorted, attributes: attributes, libraries: libraries)
-    }
-
-    /// Merges snapshots in priority order. The same title found on several
-    /// servers is kept once, from the highest-priority server; when one server
-    /// has it more than once (say a 4K and a 1080p library), the copy that best
-    /// matches that server's quality setting wins.
-    public init(snapshots: [LibrarySnapshot], quality: [String: VideoQuality] = [:]) {
-        var chosen: [String: (priority: Int, item: MediaItem)] = [:]
-        var items: [MediaItem] = []
-        for (priority, snapshot) in snapshots.enumerated() {
-            let preference = quality[snapshot.serverID] ?? .original
-            for item in snapshot.items {
-                guard let externalID = item.externalID else {
-                    items.append(item)
-                    continue
-                }
-                if let existing = chosen[externalID] {
-                    guard existing.priority == priority,
-                          Self.isBetterFit(item, than: existing.item, for: preference)
-                    else { continue }
-                }
-                chosen[externalID] = (priority, item)
-            }
+        self.facets = LibraryFacets(items: sorted, attributes: attributes, libraries: libraries, libraryTwins: libraryTwins)
+        var byNetwork: [String: [Int]] = [:]
+        var byCollection: [String: [Int]] = [:]
+        var byLibrary: [String: [Int]] = [:]
+        for (position, item) in sorted.enumerated() {
+            attributes[position].networks.forEach { byNetwork[$0, default: []].append(position) }
+            attributes[position].collections.forEach { byCollection[$0, default: []].append(position) }
+            libraryTwins.expanding(Set(item.libraryIDs)).forEach { byLibrary[$0, default: []].append(position) }
         }
-        items.append(contentsOf: chosen.values.map(\.item))
-        self.init(items: items, libraries: Self.displayLibraries(for: snapshots))
+        positionsByNetwork = byNetwork
+        positionsByCollection = byCollection
+        positionsByLibrary = byLibrary
     }
 
-    private static func isBetterFit(_ candidate: MediaItem, than current: MediaItem, for quality: VideoQuality) -> Bool {
-        guard let candidateVersion = MediaVersionSelector.best(of: candidate.versions, for: quality),
-              let currentVersion = MediaVersionSelector.best(of: current.versions, for: quality)
-        else { return false }
-        return MediaVersionSelector.best(of: [currentVersion, candidateVersion], for: quality) == candidateVersion
-            && candidateVersion != currentVersion
+    /// Merges snapshots in priority order (see ``CrossServerMerge``).
+    public init(snapshots: [LibrarySnapshot], quality: [String: VideoQuality] = [:]) {
+        let merged = CrossServerMerge(snapshots: snapshots, quality: quality)
+        let twins = LibraryTwins(libraries: snapshots.flatMap(\.libraries), items: merged.items)
+        self.init(
+            items: merged.items,
+            libraries: Self.displayLibraries(for: snapshots, twins: twins),
+            showAliases: merged.showAliases,
+            libraryTwins: twins
+        )
     }
 
-    /// Libraries with names made unique across servers ("Movies · Home").
-    private static func displayLibraries(for snapshots: [LibrarySnapshot]) -> [MediaLibrary] {
-        let titleCounts = Dictionary(grouping: snapshots.flatMap(\.libraries), by: \.title).mapValues(\.count)
+    /// Libraries with names made unique across servers ("Movies · Home"); a
+    /// library's twins on other servers aren't listed, and don't count as
+    /// another library with its name.
+    private static func displayLibraries(for snapshots: [LibrarySnapshot], twins: LibraryTwins) -> [MediaLibrary] {
+        let listed = snapshots.flatMap(\.libraries).filter { twins.canonical[$0.id] == nil }
+        let titleCounts = Dictionary(grouping: listed, by: \.title).mapValues(\.count)
         return snapshots.flatMap { snapshot in
-            snapshot.libraries.map { library in
+            snapshot.libraries.filter { twins.canonical[$0.id] == nil }.map { library in
                 guard titleCounts[library.title, default: .zero] > 1 else { return library }
                 return MediaLibrary(
                     serverID: library.serverID,
@@ -69,6 +96,27 @@ public struct LibraryIndex: Sendable {
                     kind: library.kind
                 )
             }
+        }
+    }
+
+    /// The decade each show belongs to on decade channels: the one most of its
+    /// regular episodes aired in (the earlier on a tie), so a show that ran
+    /// across decades is on one decade channel. Specials count only for a
+    /// show with no dated regular episodes. Movies keep their own year.
+    private static func showDecades(_ items: [MediaItem]) -> [String: Int] {
+        var regular: [String: [Int: Int]] = [:]
+        var specials: [String: [Int: Int]] = [:]
+        for item in items {
+            guard let series = item.series, let year = item.year else { continue }
+            let decade = Decade.containing(year: year)
+            if series.isSpecial {
+                specials[item.showID, default: [:]][decade, default: 0] += 1
+            } else {
+                regular[item.showID, default: [:]][decade, default: 0] += 1
+            }
+        }
+        return specials.merging(regular) { _, regular in regular }.compactMapValues { counts in
+            counts.max { lhs, rhs in lhs.value != rhs.value ? lhs.value < rhs.value : lhs.key > rhs.key }?.key
         }
     }
 
@@ -81,28 +129,48 @@ public struct LibraryIndex: Sendable {
     public func item(withID id: String) -> MediaItem? {
         positionsByID[id].map { items[$0] }
     }
+
+    func attributes(of item: MediaItem) -> NormalizedAttributes? {
+        positionsByID[item.id].map { attributes[$0] }
+    }
 }
 
 /// Pre-normalized lookup keys for one item.
 struct NormalizedAttributes: Sendable {
     let genres: Set<String>
     let categories: Set<GenreCategory>
+    let categorySource: CategorySource
+    let format: TitleFormat
     let networks: Set<String>
     let collections: Set<String>
     let searchableText: String
     let decade: Int?
 
-    init(_ item: MediaItem, libraryTitle: String?, taxonomy: GenreTaxonomy = .shared) {
+    /// `classified`: the title's categories from ``TitleClassification``, if it knows the title.
+    init(_ item: MediaItem, decade: Int?, classified: Set<GenreCategory>?, taxonomy: GenreTaxonomy = .shared) {
         genres = TextNormalizer.keys(item.genres)
-        var categories = taxonomy.categories(for: item.genres)
-        if AnimeDetector.isAnime(categories: categories, countries: item.countries, libraryTitle: libraryTitle) {
+        let tagged = taxonomy.categories(for: item.genres)
+        var categories: Set<GenreCategory>
+        if let classified {
+            // The server's tags, less the loosely applied ones the
+            // classification doesn't confirm, plus confirmed categories a
+            // server omits (for example Food on a cooking documentary).
+            categories = tagged.subtracting(GenreCategory.looselyTagged.subtracting(classified))
+                .union(classified)
+            categorySource = .classification
+        } else {
+            categories = tagged
+            categorySource = .server
+        }
+        if AnimeDetector.isAnime(categories: categories, countries: item.countries) {
             categories.formUnion([.anime, .animation])
         }
         self.categories = categories
+        format = categories.isDisjoint(with: GenreCategory.unscripted) ? .scripted : .unscripted
         networks = TextNormalizer.keys(item.networks)
         collections = TextNormalizer.keys(item.collections)
         searchableText = TextNormalizer.key([item.series?.title, item.title].compactMap { $0 }.joined(separator: " "))
-        decade = item.year.map(Decade.containing(year:))
+        self.decade = decade
     }
 }
 

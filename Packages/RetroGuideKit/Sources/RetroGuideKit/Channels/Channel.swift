@@ -5,18 +5,40 @@ public struct Channel: Sendable, Identifiable, Hashable {
     public let definition: ChannelDefinition
     public let items: [MediaItem]
     public let isHidden: Bool
-    public let timeline: ChannelTimeline
+    public let timeline: any ChannelSchedule
+    /// Ids this channel had in earlier versions, so saved references still find it.
+    public let formerIDs: Set<String>
 
     public init(definition: ChannelDefinition, items: [MediaItem], isHidden: Bool, grid: ScheduleGrid) {
+        self.init(definition: definition, items: items, isHidden: isHidden, timeline: Self.schedule(for: definition, items: items, grid: grid))
+    }
+
+    init(definition: ChannelDefinition, items: [MediaItem], isHidden: Bool, timeline: any ChannelSchedule, formerIDs: Set<String> = []) {
         self.definition = definition
         self.items = items
         self.isHidden = isHidden
-        self.timeline = ChannelTimeline(
-            channelID: definition.id,
-            items: items,
-            ordering: definition.ordering,
-            grid: grid
-        )
+        self.timeline = timeline
+        self.formerIDs = formerIDs
+    }
+
+    /// Whether `id` names this channel, now or in an earlier version.
+    public func isIdentified(by id: String) -> Bool {
+        id == definition.id || formerIDs.contains(id)
+    }
+
+    /// A schedule for a channel on its own (see ``NominalOrder``). Channels
+    /// that share a simulcast limit are scheduled by a ``SimulcastCoordinator``.
+    static func schedule(for definition: ChannelDefinition, items: [MediaItem], grid: ScheduleGrid) -> any ChannelSchedule {
+        // One show (a 24/7 channel) needs no turns: plain arithmetic finds its episode.
+        guard !airsOneShow(items) else {
+            return ChannelTimeline(channelID: definition.id, items: items, ordering: definition.ordering, grid: grid)
+        }
+        return NominalTimeline(context: ScheduleContext(channelID: definition.id, items: items, grid: grid), ordering: definition.ordering)
+    }
+
+    /// Whether the items are all one show (or one movie).
+    static func airsOneShow(_ items: [MediaItem]) -> Bool {
+        Set(items.map(\.showID)).count <= 1
     }
 
     public var id: String { definition.id }

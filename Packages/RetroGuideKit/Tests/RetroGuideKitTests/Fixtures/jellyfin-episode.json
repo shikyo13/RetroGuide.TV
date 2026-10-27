@@ -1,0 +1,181 @@
+{
+ "Episode": {
+  "Id": "fb00d45f70a10d87c37f752b7b24112a",
+  "Name": "The Door of Hope",
+  "Type": "Episode",
+  "SeriesId": "10761596ccf447919a83885a7aff42c1",
+  "SeriesName": "Attack on Titan",
+  "ParentIndexNumber": 4,
+  "IndexNumber": 3,
+  "RunTimeTicks": 14364350000,
+  "ProductionYear": 2020,
+  "OfficialRating": "TV-MA",
+  "Genres": [
+   "Animation",
+   "Action",
+   "Adventure"
+  ],
+  "Studios": [],
+  "OriginalLanguage": "ja",
+  "ProviderIds": {
+   "Imdb": "tt13611850",
+   "Tmdb": "2548771",
+   "Tvdb": "8068625"
+  },
+  "DateCreated": "2025-07-27T13:53:25.6663583Z",
+  "ImageTags": {
+   "Primary": "ec5dc765dbd7c331a56e69c9a82cb2e9"
+  },
+  "BackdropImageTags": [],
+  "SeriesPrimaryImageTag": "fdd698227158286283ecc261cf1899db",
+  "ParentBackdropItemId": "10761596ccf447919a83885a7aff42c1",
+  "ParentBackdropImageTags": [
+   "6fe45cb3bdcee0605440c32ba9fcee36"
+  ],
+  "ParentLogoItemId": "10761596ccf447919a83885a7aff42c1",
+  "ParentLogoImageTag": "fc80a05eb02114401f5667384f52821d",
+  "MediaSources": [
+   {
+    "Id": "fb00d45f70a10d87c37f752b7b24112a",
+    "Container": "mkv",
+    "Bitrate": 24548331,
+    "MediaStreams": [
+     {
+      "Type": "Subtitle",
+      "Index": 0,
+      "Codec": "subrip",
+      "Language": "eng",
+      "DisplayTitle": "English - SUBRIP - External",
+      "IsForced": false,
+      "IsDefault": false,
+      "IsExternal": true
+     },
+     {
+      "Type": "Video",
+      "Index": 1,
+      "Codec": "hevc",
+      "Language": "jpn",
+      "DisplayTitle": "4K HEVC SDR",
+      "IsForced": false,
+      "IsDefault": true,
+      "IsExternal": false,
+      "Height": 2160
+     },
+     {
+      "Type": "Audio",
+      "Index": 2,
+      "Codec": "flac",
+      "Language": "jpn",
+      "DisplayTitle": "Japanese - FLAC - Stereo - Default",
+      "IsForced": false,
+      "IsDefault": true,
+      "IsExternal": false
+     }
+    ],
+    "DefaultAudioStreamIndex": 2,
+    "DefaultSubtitleStreamIndex": 0
+   }
+  ]
+ },
+ "Series": {
+  "Id": "10761596ccf447919a83885a7aff42c1",
+  "Name": "Attack on Titan",
+  "Type": "Series",
+  "RunTimeTicks": 0,
+  "ProductionYear": 2013,
+  "OfficialRating": "TV-MA",
+  "Genres": [
+   "Animation",
+   "Sci-Fi & Fantasy",
+   "Action & Adventure"
+  ],
+  "Studios": [
+   {
+    "Name": "MBS"
+   },
+   {
+    "Name": "NHK G"
+   },
+   {
+    "Name": "TOKYO MX"
+   },
+   {
+    "Name": "Production I.G"
+   },
+   {
+    "Name": "MAPPA"
+   },
+   {
+    "Name": "WIT STUDIO"
+   },
+   {
+    "Name": "Pony Canyon"
+   },
+   {
+    "Name": "Kodansha"
+   },
+   {
+    "Name": "dentsu"
+   },
+   {
+    "Name": "Pony Canyon Enterprise"
+   }
+  ],
+  "OriginalLanguage": "ja",
+  "ProviderIds": {
+   "Tmdb": "1429",
+   "Imdb": "tt2560140",
+   "Tvdb": "267440"
+  },
+  "DateCreated": "2026-10-24T16:09:49.012365Z",
+  "ImageTags": {
+   "Primary": "fdd698227158286283ecc261cf1899db",
+   "Banner": "e5f83e8f5825ca4ab7b7d2594e2ead7a",
+   "Logo": "fc80a05eb02114401f5667384f52821d",
+   "Thumb": "43e2b169afed7af3efd29d6811c738dd"
+  },
+  "BackdropImageTags": [
+   "6fe45cb3bdcee0605440c32ba9fcee36"
+  ]
+ },
+ "PlaybackSource": {
+  "Id": "fb00d45f70a10d87c37f752b7b24112a",
+  "Container": "mkv",
+  "Bitrate": 24548331,
+  "MediaStreams": [
+   {
+    "Type": "Subtitle",
+    "Index": 0,
+    "Codec": "subrip",
+    "Language": "eng",
+    "DisplayTitle": "English - SUBRIP - External",
+    "IsForced": false,
+    "IsDefault": false,
+    "IsExternal": true
+   },
+   {
+    "Type": "Video",
+    "Index": 1,
+    "Codec": "hevc",
+    "Language": "jpn",
+    "DisplayTitle": "4K HEVC SDR",
+    "IsForced": false,
+    "IsDefault": true,
+    "IsExternal": false,
+    "Height": 2160
+   },
+   {
+    "Type": "Audio",
+    "Index": 2,
+    "Codec": "flac",
+    "Language": "jpn",
+    "DisplayTitle": "Japanese - FLAC - Stereo - Default",
+    "IsForced": false,
+    "IsDefault": true,
+    "IsExternal": false
+   }
+  ],
+  "DefaultAudioStreamIndex": 2,
+  "DefaultSubtitleStreamIndex": 0
+ }
+}

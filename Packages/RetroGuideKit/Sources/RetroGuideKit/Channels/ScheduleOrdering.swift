@@ -23,7 +23,7 @@ public enum ScheduleOrdering: String, Codable, Sendable, CaseIterable, Hashable 
 
     public var explanation: String {
         switch self {
-        case .shuffle: "Everything in random order."
+        case .shuffle: "Shows in random order; each show's episodes stay in order."
         case .blockShuffle: "Shows take turns in short blocks, episodes stay in order."
         case .syndication: "One episode from each show in turn, in order."
         case .marathon: "Every episode of a show in order, then the next show."

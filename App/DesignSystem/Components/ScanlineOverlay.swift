@@ -8,8 +8,10 @@ struct ScanlineOverlay: View {
         static let lineThickness: CGFloat = 1.5
         static let lineOpacity: Double = 0.16
         static let vignetteOpacity: Double = 0.55
-        static let vignetteStartRadius = PlatformMetric.value(tv: CGFloat(500), touch: 260)
-        static let vignetteEndRadius = PlatformMetric.value(tv: CGFloat(1_300), touch: 680)
+        /// Vignette radii as fractions of the distance from the center to a
+        /// corner, so every screen size gets the same falloff.
+        static let vignetteStartFraction: CGFloat = 0.45
+        static let vignetteEndFraction: CGFloat = 1.2
     }
 
     var includesVignette = true
@@ -26,12 +28,15 @@ struct ScanlineOverlay: View {
                 context.fill(path, with: .color(.black.opacity(Spec.lineOpacity)))
             }
             if includesVignette {
-                RadialGradient(
-                    colors: [.clear, .black.opacity(Spec.vignetteOpacity)],
-                    center: .center,
-                    startRadius: Spec.vignetteStartRadius,
-                    endRadius: Spec.vignetteEndRadius
-                )
+                GeometryReader { proxy in
+                    let halfDiagonal = hypot(proxy.size.width, proxy.size.height) / 2
+                    RadialGradient(
+                        colors: [.clear, .black.opacity(Spec.vignetteOpacity)],
+                        center: .center,
+                        startRadius: halfDiagonal * Spec.vignetteStartFraction,
+                        endRadius: halfDiagonal * Spec.vignetteEndFraction
+                    )
+                }
                 .ignoresSafeArea()
             }
         }

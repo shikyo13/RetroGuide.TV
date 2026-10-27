@@ -13,7 +13,7 @@ struct GuideTouchGrid: View {
     @Environment(\.guideChannelColumnWidth) private var channelColumnWidth
 
     var body: some View {
-        TimelineView(.periodic(from: .now, by: ScheduleConstants.secondsPerMinute)) { context in
+        TimelineView(.everyMinute) { context in
             GeometryReader { proxy in
                 let scale = GuideTimeScale(
                     window: model.window,

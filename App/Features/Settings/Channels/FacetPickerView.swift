@@ -23,6 +23,8 @@ struct FacetPickerView: View {
     }
 
     let title: String
+    var emptySelectionTitle = "Any"
+    var helpText: String? = nil
     let options: [FacetOption]
     @Binding var selection: Set<String>
 
@@ -31,8 +33,11 @@ struct FacetPickerView: View {
 
     var body: some View {
         SettingsPage(title: title) {
+            if let helpText {
+                Text(helpText).font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
+            }
             HStack(spacing: DesignTokens.Spacing.md) {
-                Text(selection.isEmpty ? "Any" : "\(selection.count) selected")
+                Text(selection.isEmpty ? emptySelectionTitle : "\(selection.count) selected")
                     .font(Typography.callout)
                     .foregroundStyle(theme.textSecondary)
                 Spacer()

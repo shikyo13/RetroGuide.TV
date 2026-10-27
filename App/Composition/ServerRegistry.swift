@@ -6,11 +6,11 @@ import RetroGuideKit
 final class ServerRegistry {
     private var clients: [String: any MediaServerClient] = [:]
     private let keychain: KeychainStore
-    private let plexIdentity: PlexClientIdentity
+    private let identities: ServerIdentities
 
-    init(keychain: KeychainStore, plexIdentity: PlexClientIdentity) {
+    init(keychain: KeychainStore, identities: ServerIdentities) {
         self.keychain = keychain
-        self.plexIdentity = plexIdentity
+        self.identities = identities
     }
 
     func client(for serverID: String) -> (any MediaServerClient)? {
@@ -57,13 +57,27 @@ final class ServerRegistry {
     }
 
     private func makeClient(for account: ServerAccount, token: String) -> any MediaServerClient {
-        switch account.kind {
+        #if DEBUG
+        if let demo = DebugBootstrap.demoClient(for: account) {
+            return demo
+        }
+        #endif
+        return switch account.kind {
         case .plex:
             PlexServerClient(
                 serverID: account.id,
                 baseURL: account.baseURL,
                 token: token,
-                identity: plexIdentity,
+                identity: identities.plex,
+                playback: account.playback
+            )
+        case .jellyfin:
+            JellyfinServerClient(
+                serverID: account.id,
+                baseURL: account.baseURL,
+                token: token,
+                userID: account.userID ?? "",
+                identity: identities.jellyfin,
                 playback: account.playback
             )
         }

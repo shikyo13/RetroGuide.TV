@@ -26,15 +26,15 @@ final class ServerLibrary {
     @ObservationIgnored private let snapshotStore: LibrarySnapshotStore
     @ObservationIgnored private let keychain: KeychainStore
     @ObservationIgnored private let registry: ServerRegistry
-    @ObservationIgnored private let identity: PlexClientIdentity
+    @ObservationIgnored private let identities: ServerIdentities
     @ObservationIgnored private var snapshots: [String: LibrarySnapshot] = [:]
 
-    init(store: PreferencesStore, snapshotStore: LibrarySnapshotStore, keychain: KeychainStore, identity: PlexClientIdentity) {
+    init(store: PreferencesStore, snapshotStore: LibrarySnapshotStore, keychain: KeychainStore, identities: ServerIdentities) {
         self.store = store
         self.snapshotStore = snapshotStore
         self.keychain = keychain
-        self.identity = identity
-        self.registry = ServerRegistry(keychain: keychain, plexIdentity: identity)
+        self.identities = identities
+        self.registry = ServerRegistry(keychain: keychain, identities: identities)
     }
 
     // MARK: - Queries
@@ -47,10 +47,43 @@ final class ServerLibrary {
         keychain.token(for: KeychainAccount.plexAccount)
     }
 
-    /// The signed-in account's audio and subtitle settings, or `nil` if unavailable.
+    func savePlexAccountToken(_ token: String?) {
+        if let token {
+            keychain.setToken(token, for: KeychainAccount.plexAccount)
+        } else {
+            keychain.removeToken(for: KeychainAccount.plexAccount)
+        }
+    }
+
+    /// The signed-in account's audio and subtitle settings, or `nil` if
+    /// unavailable: the Plex account's while a Plex server is connected,
+    /// otherwise those of the user signed in to the first Jellyfin server.
     func fetchLanguagePreferences() async -> LanguagePreferences? {
-        guard let accountToken = plexAccountToken else { return nil }
-        return try? await PlexAccountService(identity: identity).languagePreferences(accountToken: accountToken)
+        if accounts.contains(where: { $0.kind == .plex }) {
+            guard let accountToken = plexAccountToken else { return nil }
+            return try? await PlexAccountService(identity: identities.plex).languagePreferences(accountToken: accountToken)
+        }
+        guard let jellyfin = accounts.first(where: { $0.kind == .jellyfin }), let token = keychain.token(for: jellyfin.id),
+              var preferences = try? await JellyfinAccountService(identity: identities.jellyfin)
+                  .languagePreferences(baseURL: jellyfin.baseURL, token: token)
+        else { return nil }
+        // Jellyfin users often never set a language; subtitles then follow the device's.
+        if preferences.audioLanguage == nil, preferences.subtitleLanguage == nil {
+            preferences.subtitleLanguage = Self.deviceLanguage
+        }
+        return preferences
+    }
+
+    /// Settings to use until a Jellyfin user's arrive (they're fetched while
+    /// the first channel tunes): the device's language for foreign audio,
+    /// like Jellyfin's default. Plex servers pick tracks themselves.
+    var provisionalLanguagePreferences: LanguagePreferences? {
+        guard !accounts.contains(where: { $0.kind == .plex }), accounts.contains(where: { $0.kind == .jellyfin }) else { return nil }
+        return LanguagePreferences(audioLanguage: nil, subtitleLanguage: Self.deviceLanguage, subtitleMode: .foreignAudio)
+    }
+
+    private static var deviceLanguage: String? {
+        Locale.current.language.languageCode?.identifier
     }
 
     func client(for serverID: String) -> (any MediaServerClient)? {
@@ -63,6 +96,9 @@ final class ServerLibrary {
             status[account.id] == .offline ? nil : snapshots[account.id]
         }
     }
+
+    /// Includes offline servers so saved content selections keep their known identities.
+    var knownSnapshots: [LibrarySnapshot] { accounts.compactMap { snapshots[$0.id] } }
 
     /// When the oldest cached library was indexed, or `nil` if any server has no cache.
     var oldestRefresh: Date? {
@@ -115,6 +151,9 @@ final class ServerLibrary {
 
     func setSelectedLibraries(_ libraryIDs: Set<String>, serverID: String) {
         guard let index = accounts.firstIndex(where: { $0.id == serverID }) else { return }
+        guard accounts[index].selectedLibraryIDs != libraryIDs else { return }
+        snapshots[serverID] = nil
+        snapshotStore.remove(serverID: serverID)
         accounts[index].selectedLibraryIDs = libraryIDs
         store.accounts = accounts
     }
@@ -123,6 +162,50 @@ final class ServerLibrary {
         guard let index = accounts.firstIndex(where: { $0.id == serverID }) else { return }
         accounts[index].playback = playback
         registry.refreshClient(for: accounts[index])
+        store.accounts = accounts
+    }
+
+    /// Saves how a server should be connected to, then switches to the best
+    /// address under the new settings. Returns whether the server is reachable.
+    @discardableResult
+    func setConnection(_ connection: ServerConnectionSettings, serverID: String) async -> Bool {
+        guard let index = accounts.firstIndex(where: { $0.id == serverID }) else { return false }
+        accounts[index].connection = connection
+        store.accounts = accounts
+        let account = accounts[index]
+        if account.kind == .plex, let newURL = await relocatePlexServer(account), newURL != account.baseURL {
+            apply(newURL, to: account)
+        }
+        let reachable = await registry.client(for: serverID)?.isReachable() ?? false
+        status[serverID] = reachable ? .online : .offline
+        return reachable
+    }
+
+    /// What happened when a Jellyfin server's address was changed.
+    enum AddressChange {
+        case moved
+        case notFound
+        case differentServer(name: String)
+    }
+
+    /// Moves a Jellyfin server to the address typed in `text`, if the same
+    /// server answers there. Jellyfin servers have one address, so this is
+    /// their whole connection setting.
+    func changeJellyfinAddress(of serverID: String, to text: String) async -> AddressChange {
+        guard let account = accounts.first(where: { $0.id == serverID }),
+              let server = await JellyfinAccountService(identity: identities.jellyfin).findServer(at: text)
+        else { return .notFound }
+        guard server.isServer(account.id) else { return .differentServer(name: server.name) }
+        apply(server.baseURL, to: account)
+        status[serverID] = .online
+        return .moved
+    }
+
+    /// Saves connection settings without switching addresses yet (for example
+    /// "Custom address" chosen before an address is typed).
+    func saveConnectionWithoutReconnecting(_ connection: ServerConnectionSettings, serverID: String) {
+        guard let index = accounts.firstIndex(where: { $0.id == serverID }) else { return }
+        accounts[index].connection = connection
         store.accounts = accounts
     }
 
@@ -138,10 +221,9 @@ final class ServerLibrary {
 
     // MARK: - Indexing
 
-    /// Re-indexes every server in parallel. `onServerReady` runs as each server
-    /// finishes, so the fastest (usually local) server can go on air before
-    /// slower remote ones are done. A server that fails is marked offline; this
-    /// only throws when no server could be indexed at all.
+    /// Downloads servers in parallel, then constructs channels from the completed
+    /// set before saving caches. Cancellation leaves the prior snapshots intact.
+    /// Unreachable servers are excluded; throws if all servers fail.
     /// - Returns: whether any server failed.
     @discardableResult
     func refreshAll(
@@ -151,14 +233,18 @@ final class ServerLibrary {
         let accounts = accounts
         let aggregator = ProgressAggregator(servers: accounts, report: progress)
         var failures: [Error] = []
+        var completed: [(ServerAccount, LibrarySnapshot)] = []
+        var failed: [ServerAccount] = []
         await withTaskGroup(of: (ServerAccount, Result<LibrarySnapshot, Error>).self) { group in
             for account in accounts {
                 guard let client = registry.client(for: account.id) else { continue }
                 group.addTask {
                     do {
+                        try Task.checkCancellation()
                         let snapshot = try await Self.download(account, client: client) { update in
                             Task { @MainActor in aggregator.update(serverID: account.id, with: update) }
                         }
+                        try Task.checkCancellation()
                         return (account, .success(snapshot))
                     } catch {
                         return (account, .failure(error))
@@ -166,24 +252,53 @@ final class ServerLibrary {
                 }
             }
             for await (account, result) in group {
+                guard !Task.isCancelled else { group.cancelAll(); continue }
+                guard isCurrent(account) else { continue }
                 switch result {
                 case let .success(snapshot):
-                    snapshots[account.id] = snapshot
-                    status[account.id] = .online
+                    completed.append((account, snapshot))
                     aggregator.finish(serverID: account.id, succeeded: true)
-                    await snapshotStore.save(snapshot)
-                    await onServerReady()
                 case let .failure(error):
-                    status[account.id] = .offline
-                    aggregator.finish(serverID: account.id, succeeded: false)
+                    failed.append(account)
                     failures.append(error)
+                    aggregator.finish(serverID: account.id, succeeded: false)
                 }
             }
         }
+        try Task.checkCancellation()
         if let failure = failures.first, failures.count == accounts.count {
             throw failure
         }
+        // Keep downloads provisional until channel construction completes.
+        // Cancellation restores the prior cache and never writes partial downloads.
+        let previousSnapshots = snapshots
+        let previousStatus = status
+        for (account, snapshot) in completed where isCurrent(account) {
+            snapshots[account.id] = snapshot
+            status[account.id] = .online
+        }
+        for account in failed where isCurrent(account) { status[account.id] = .offline }
+        if !completed.isEmpty { await onServerReady() }
+        if Task.isCancelled {
+            for account in accounts where isCurrent(account) {
+                snapshots[account.id] = previousSnapshots[account.id]
+                status[account.id] = previousStatus[account.id]
+            }
+            throw CancellationError()
+        }
+        for (account, snapshot) in completed where isCurrent(account) {
+            await snapshotStore.save(snapshot)
+            if !isCurrent(account) {
+                snapshots[account.id] = nil
+                snapshotStore.remove(serverID: account.id)
+            }
+        }
         return !failures.isEmpty
+    }
+
+    /// Whether `account` is still connected with the same library selection.
+    private func isCurrent(_ account: ServerAccount) -> Bool {
+        accounts.first { $0.id == account.id }?.selectedLibraryIDs == account.selectedLibraryIDs
     }
 
     private nonisolated static func download(
@@ -201,8 +316,10 @@ final class ServerLibrary {
     // MARK: - Reachability
 
     /// Probes every server. Unreachable Plex servers are re-located through the
-    /// Plex account (their address may have changed). Returns whether any
-    /// server's availability changed.
+    /// Plex account (their address may have changed, or the viewer left home),
+    /// and servers reached through a worse address (internet rather than home
+    /// or VPN, or anything other than a chosen custom address) switch back when
+    /// the better one answers again. Returns whether any server's availability changed.
     @discardableResult
     func checkReachability() async -> Bool {
         var changed = false
@@ -218,28 +335,41 @@ final class ServerLibrary {
     }
 
     private func isReachable(_ account: ServerAccount) async -> Bool {
-        if let client = registry.client(for: account.id), await client.isReachable() {
+        let currentWorks = await registry.client(for: account.id)?.isReachable() ?? false
+        let currentRank = PlexConnectionResolver.rank(of: account.baseURL, settings: account.connection)
+        if currentWorks, currentRank <= PlexConnectionResolver.bestPossibleRank(for: account.connection) {
             return true
         }
-        guard account.kind == .plex, let newURL = await relocatePlexServer(account.id) else { return false }
+        guard account.kind == .plex, let newURL = await relocatePlexServer(account) else { return currentWorks }
+        // A working address is only replaced by a better one.
+        let isBetter = PlexConnectionResolver.rank(of: newURL, settings: account.connection) < currentRank
+        if currentWorks, !isBetter || newURL == account.baseURL {
+            return true
+        }
+        apply(newURL, to: account)
+        return await registry.client(for: account.id)?.isReachable() ?? false
+    }
+
+    private func apply(_ baseURL: URL, to account: ServerAccount) {
         var updated = account
-        updated.baseURL = newURL
+        updated.baseURL = baseURL
         registry.refreshClient(for: updated)
         artworkResolver = registry.artworkResolver
         if let index = accounts.firstIndex(where: { $0.id == account.id }) {
             accounts[index] = updated
             store.accounts = accounts
         }
-        return await registry.client(for: account.id)?.isReachable() ?? false
     }
 
-    private func relocatePlexServer(_ serverID: String) async -> URL? {
+    private func relocatePlexServer(_ account: ServerAccount) async -> URL? {
         guard let accountToken = plexAccountToken,
-              let candidate = try? await PlexAccountService(identity: identity)
+              let candidate = try? await PlexAccountService(identity: identities.plex)
                   .servers(accountToken: accountToken)
-                  .first(where: { $0.id == serverID })
+                  .first(where: { $0.id == account.id })
         else { return nil }
-        return try? await PlexConnectionResolver(identity: identity).resolve(candidate)
+        return try? await PlexConnectionResolver(identity: identities.plex)
+            .resolveConnection(candidate, settings: account.connection, isVPNActive: VPNStatus.isActive)
+            .url
     }
 }
 

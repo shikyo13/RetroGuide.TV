@@ -9,6 +9,14 @@ import RetroGuideKit
 /// `RETROGUIDE_DEV_PLEX_URL`, `RETROGUIDE_DEV_PLEX_TOKEN`, `RETROGUIDE_DEV_PLEX_SERVER_ID`,
 /// `RETROGUIDE_DEV_PLEX_SERVER_NAME`, optionally `RETROGUIDE_DEV_PLEX_ACCOUNT_TOKEN`
 /// (enables "Add a server" without linking) and `RETROGUIDE_DEV_RESET=1`.
+///
+/// `RETROGUIDE_DEV_JELLYFIN_URL`, `RETROGUIDE_DEV_JELLYFIN_USER` and
+/// `RETROGUIDE_DEV_JELLYFIN_PASSWORD` sign in to a Jellyfin server instead.
+///
+/// `RETROGUIDE_DEMO_LIBRARY` (a ``DemoCatalog`` JSON file) connects the demo
+/// library instead of a real server, for screenshots. `RETROGUIDE_DEV_THEME`
+/// (a ``ThemeID`` raw value) picks the theme, and `RETROGUIDE_DEV_PLAYER`
+/// (a ``PlaybackEngineKind`` raw value) the player.
 enum DebugBootstrap {
     private enum Variable {
         static let url = "RETROGUIDE_DEV_PLEX_URL"
@@ -17,31 +25,88 @@ enum DebugBootstrap {
         static let serverName = "RETROGUIDE_DEV_PLEX_SERVER_NAME"
         static let accountToken = "RETROGUIDE_DEV_PLEX_ACCOUNT_TOKEN"
         static let reset = "RETROGUIDE_DEV_RESET"
+        static let demoLibrary = "RETROGUIDE_DEMO_LIBRARY"
+        static let theme = "RETROGUIDE_DEV_THEME"
+        static let player = "RETROGUIDE_DEV_PLAYER"
+        static let jellyfinURL = "RETROGUIDE_DEV_JELLYFIN_URL"
+        static let jellyfinUser = "RETROGUIDE_DEV_JELLYFIN_USER"
+        static let jellyfinPassword = "RETROGUIDE_DEV_JELLYFIN_PASSWORD"
     }
 
+    /// Stands in for the keychain token of the demo server, which needs none.
+    private static let demoToken = "demo"
+
     @MainActor
-    static func seedAccountIfRequested(store: PreferencesStore, keychain: KeychainStore, identity: PlexClientIdentity) async {
+    static func seedAccountIfRequested(store: PreferencesStore, keychain: KeychainStore, identities: ServerIdentities) async {
         let environment = ProcessInfo.processInfo.environment
         if environment[Variable.reset] == "1" {
             store.accounts.forEach { keychain.removeToken(for: $0.id) }
             store.resetAll()
             keychain.removeToken(for: ServerLibrary.KeychainAccount.plexAccount)
         }
-        if let accountToken = environment[Variable.accountToken], keychain.token(for: ServerLibrary.KeychainAccount.plexAccount) == nil {
+        if let theme = environment[Variable.theme].flatMap(ThemeID.init(rawValue:)) {
+            store.preferences.themeID = theme
+        }
+        if let player = environment[Variable.player].flatMap(PlaybackEngineKind.init(rawValue:)) {
+            store.preferences.playerEngine = player
+        }
+        if let accountToken = environment[Variable.accountToken], !accountToken.isEmpty,
+           keychain.token(for: ServerLibrary.KeychainAccount.plexAccount)?.isEmpty ?? true {
             keychain.setToken(accountToken, for: ServerLibrary.KeychainAccount.plexAccount)
         }
-        guard store.accounts.isEmpty,
-              let urlString = environment[Variable.url], let url = URL(string: urlString),
-              let token = environment[Variable.token],
-              let serverID = environment[Variable.serverID]
+        if store.accounts.isEmpty, let path = environment[Variable.demoLibrary] {
+            seedDemoAccount(catalogURL: URL(fileURLWithPath: path), store: store, keychain: keychain)
+            return
+        }
+        // Each kind of server given is added once, Plex first, so both can be seeded together.
+        if !store.accounts.contains(where: { $0.kind == .plex }),
+           let urlString = environment[Variable.url], let url = URL(string: urlString),
+           let token = environment[Variable.token],
+           let serverID = environment[Variable.serverID] {
+            let account = ServerAccount(
+                id: serverID,
+                kind: .plex,
+                name: environment[Variable.serverName] ?? "Plex",
+                baseURL: url
+            )
+            keychain.setToken(token, for: serverID)
+            store.accounts.append(account)
+        }
+        if !store.accounts.contains(where: { $0.kind == .jellyfin }), let address = environment[Variable.jellyfinURL],
+           let user = environment[Variable.jellyfinUser], let password = environment[Variable.jellyfinPassword] {
+            await seedJellyfinAccount(address: address, user: user, password: password, identity: identities.jellyfin, store: store, keychain: keychain)
+        }
+    }
+
+    @MainActor
+    private static func seedJellyfinAccount(
+        address: String,
+        user: String,
+        password: String,
+        identity: JellyfinClientIdentity,
+        store: PreferencesStore,
+        keychain: KeychainStore
+    ) async {
+        let service = JellyfinAccountService(identity: identity)
+        guard let server = await service.findServer(at: address),
+              let session = try? await service.signIn(on: server, username: user, password: password)
         else { return }
-        let account = ServerAccount(
-            id: serverID,
-            kind: .plex,
-            name: environment[Variable.serverName] ?? "Plex",
-            baseURL: url
-        )
-        keychain.setToken(token, for: serverID)
+        let account = ServerAccount(id: server.id, kind: .jellyfin, name: server.name, baseURL: server.baseURL, userID: session.userID)
+        keychain.setToken(session.accessToken, for: server.id)
+        store.accounts.append(account)
+    }
+
+    /// The demo library's client, when `account` points at a demo catalog file.
+    static func demoClient(for account: ServerAccount) -> (any MediaServerClient)? {
+        guard account.baseURL.isFileURL, let catalog = DemoCatalog.load(from: account.baseURL) else { return nil }
+        return DemoServerClient(catalog: catalog)
+    }
+
+    @MainActor
+    private static func seedDemoAccount(catalogURL: URL, store: PreferencesStore, keychain: KeychainStore) {
+        guard let catalog = DemoCatalog.load(from: catalogURL) else { return }
+        let account = ServerAccount(id: catalog.server.id, kind: .plex, name: catalog.server.name, baseURL: catalogURL)
+        keychain.setToken(demoToken, for: account.id)
         store.accounts = [account]
     }
 }

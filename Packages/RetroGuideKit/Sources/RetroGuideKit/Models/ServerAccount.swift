@@ -3,10 +3,12 @@ import Foundation
 /// The media server backends RetroGuide can talk to.
 public enum ServerKind: String, Codable, Sendable, CaseIterable {
     case plex
+    case jellyfin
 
     public var displayName: String {
         switch self {
         case .plex: "Plex"
+        case .jellyfin: "Jellyfin"
         }
     }
 }
@@ -22,6 +24,9 @@ public struct ServerAccount: Codable, Sendable, Hashable, Identifiable {
     /// Library ids (``MediaLibrary/id``) the user chose to build channels from.
     public var selectedLibraryIDs: Set<String>
     public var playback: ServerPlaybackSettings
+    public var connection: ServerConnectionSettings
+    /// The signed-in user on servers whose requests name one (Jellyfin).
+    public var userID: String?
 
     public init(
         id: String,
@@ -29,7 +34,9 @@ public struct ServerAccount: Codable, Sendable, Hashable, Identifiable {
         name: String,
         baseURL: URL,
         selectedLibraryIDs: Set<String> = [],
-        playback: ServerPlaybackSettings = .local
+        playback: ServerPlaybackSettings = .local,
+        connection: ServerConnectionSettings = .automatic,
+        userID: String? = nil
     ) {
         self.id = id
         self.kind = kind
@@ -37,6 +44,8 @@ public struct ServerAccount: Codable, Sendable, Hashable, Identifiable {
         self.baseURL = baseURL
         self.selectedLibraryIDs = selectedLibraryIDs
         self.playback = playback
+        self.connection = connection
+        self.userID = userID
     }
 
     /// Tolerant decoding so servers saved by older versions keep working.
@@ -50,5 +59,7 @@ public struct ServerAccount: Codable, Sendable, Hashable, Identifiable {
         // Servers saved before playback settings existed get defaults for where they are.
         playback = try container.decodeIfPresent(ServerPlaybackSettings.self, forKey: .playback)
             ?? (NetworkLocation.isLikelyLocal(baseURL) ? .local : .remote)
+        connection = try container.decodeIfPresent(ServerConnectionSettings.self, forKey: .connection) ?? .automatic
+        userID = try container.decodeIfPresent(String.self, forKey: .userID)
     }
 }

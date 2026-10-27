@@ -3,17 +3,33 @@ import RetroGuideKit
 import SwiftUI
 
 /// The program guide driven by the Siri Remote: the grid is one focusable
-/// element that interprets moves like a cable box, and Play/Pause jumps to
-/// Search and Settings.
+/// element that interprets moves like a cable box. As elsewhere on Apple TV,
+/// Back first goes to the top (Search and Settings) and then closes the
+/// guide; Play/Pause jumps to the top too.
 struct GuideRemoteView: View {
     let tuner: Tuner
     let actions: GuideActions
 
     @State private var model: GuideModel
-    @State private var isHeaderFocusable = false
+    @Binding private var isHeaderFocusable: Bool
     @FocusState private var focus: GuideFocus?
 
-    init(channels: [Channel], tuner: Tuner, actions: GuideActions) {
+    let channels: [Channel]
+    let lineupRevision: Int
+    let focusRequest: GuideFocusRequest?
+
+    init(
+        channels: [Channel],
+        lineupRevision: Int,
+        isHeaderFocusable: Binding<Bool>,
+        focusRequest: GuideFocusRequest?,
+        tuner: Tuner,
+        actions: GuideActions
+    ) {
+        self.channels = channels
+        self.focusRequest = focusRequest
+        _isHeaderFocusable = isHeaderFocusable
+        self.lineupRevision = lineupRevision
         self.tuner = tuner
         self.actions = actions
         _model = State(initialValue: GuideModel(channels: channels, focusedChannelID: tuner.channel?.id))
@@ -25,12 +41,19 @@ struct GuideRemoteView: View {
                 isShowingNow: model.isShowingNow,
                 windowStart: model.windowStart,
                 focus: $focus,
-                actions: actions
+                actions: actions,
+                channel: model.focusedChannel,
+                program: model.focusedProgram
             )
             .crtEffect(isFullScreen: false)
             .disabled(!isHeaderFocusable)
             .onMoveCommand { direction in
-                if direction == .down { focusGrid() }
+                switch direction {
+                case .down: focusGrid()
+                // The picture's controls sit outside the guide, below and left of Favorites.
+                case .left where focus == .favorites: actions.onFocusLiveControls()
+                default: break
+                }
             }
 
             GuidePreviewPanel(tuner: tuner, channel: model.focusedChannel, program: model.focusedProgram)
@@ -40,16 +63,40 @@ struct GuideRemoteView: View {
             } label: {
                 GuideGridView(model: model, tunedChannelID: tuner.channel?.id, showsFocus: focus == .grid)
             }
+            .contextMenu {
+                if let program = model.focusedProgram, let channel = model.focusedChannel {
+                    Button("Watch from Beginning") {
+                        tuner.watchFromBeginning(program, on: channel)
+                        actions.onClose()
+                    }
+                    Button("Watch Live") { actions.onTune(channel) }
+                }
+            }
             .buttonStyle(InvisibleButtonStyle())
             .crtEffect(isFullScreen: false)
             .focused($focus, equals: .grid)
             .onMoveCommand(perform: handleGridMove)
             // Play/Pause is the shortcut to Search and Settings from any row.
-            .onPlayPauseCommand(perform: focusHeader)
+            .remotePlayPauseCommand(perform: focusHeader)
         }
         .screenBackground()
-        .onExitCommand(perform: actions.onClose)
+        .remoteExitCommand(perform: handleBack)
         .onAppear { focus = .grid }
+        .onChange(of: lineupRevision) { model.replaceChannels(channels) }
+        .onChange(of: channels.map(\.id)) { model.replaceChannels(channels) }
+        .task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: GuideLayout.Time.followInterval)
+                model.followLiveTime()
+            }
+        }
+        .onChange(of: focusRequest) { _, request in
+            switch request?.target {
+            case .topBar: focusHeader()
+            case .grid: focusGrid()
+            case nil: break
+            }
+        }
         .onChange(of: focus) { _, newFocus in
             if newFocus == .grid { isHeaderFocusable = false }
         }
@@ -65,6 +112,14 @@ struct GuideRemoteView: View {
         case .left: model.moveLeft()
         case .right: model.moveRight()
         @unknown default: break
+        }
+    }
+
+    private func handleBack() {
+        if focus == .grid {
+            focusHeader()
+        } else {
+            actions.onClose()
         }
     }
 

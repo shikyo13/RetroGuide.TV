@@ -6,11 +6,21 @@ import SwiftUI
 struct SearchView: View {
     private enum Layout {
         static let resultsWidth = PlatformMetric.value(tv: CGFloat(1_150), touch: 720)
+        /// Left on Apple TV beside the picture-in-picture window; centered on touch screens.
+        static let columnAlignment = PlatformMetric.value(tv: Alignment.leading, touch: .center)
     }
 
     private enum Timing {
         /// Brief pause after a keystroke before searching, so fast typing stays smooth.
         static let debounce: Duration = .milliseconds(150)
+        /// How often open results refresh, so "on now" stays true as programs end.
+        static let refreshInterval: Duration = .seconds(60)
+    }
+
+    /// Everything that should rerun the search: the text and the lineup's index.
+    private struct SearchKey: Equatable {
+        let query: String
+        let revision: Int
     }
 
     let onClose: () -> Void
@@ -19,7 +29,7 @@ struct SearchView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     @Environment(\.pictureInPictureClearance) private var pictureInPictureClearance
-    @State private var query = ""
+    @State private var query = DebugLaunchOptions.searchText
     @State private var results: [SearchResult] = []
     @State private var isSearchPresented = false
 
@@ -29,11 +39,14 @@ struct SearchView: View {
                 LazyVStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
                     ForEach(results) { result in
                         Button {
-                            if let channel = result.channel { onTune(channel) }
+                            if let channel = result.channel.flatMap(app.currentChannel) { onTune(channel) }
                         } label: {
                             SearchResultRow(result: result)
                         }
                         .buttonStyle(.retroRow)
+                        if let channel = result.channel, let program = result.airing, program.start > .now {
+                            ReminderButton(channel: channel, program: program)
+                        }
                     }
                     if results.isEmpty {
                         Text(query.isEmpty ? "Search every show and movie on your channels." : "Nothing on your channels matches \u{201C}\(query)\u{201D}.")
@@ -43,7 +56,7 @@ struct SearchView: View {
                 }
                 .columnWidth(Layout.resultsWidth, alignment: .leading)
                 .padding(.vertical, DesignTokens.Spacing.lg)
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: Layout.columnAlignment)
             }
             .searchField(text: $query, isPresented: $isSearchPresented)
             .screenBackground()
@@ -51,8 +64,9 @@ struct SearchView: View {
             #if os(tvOS)
             .scrollClipDisabled()
             #else
-            .contentMargins(.horizontal, DesignTokens.Spacing.md, for: .scrollContent)
-            .contentMargins(.bottom, pictureInPictureClearance, for: .scrollContent)
+            .contentMargins(.leading, DesignTokens.Spacing.md, for: .scrollContent)
+            .contentMargins(.trailing, DesignTokens.Spacing.md + pictureInPictureClearance.trailing, for: .scrollContent)
+            .contentMargins(.bottom, pictureInPictureClearance.bottom, for: .scrollContent)
             .navigationTitle("Search")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -63,7 +77,7 @@ struct SearchView: View {
             #endif
         }
         #if os(tvOS)
-        .onExitCommand(perform: onClose)
+        .remoteExitCommand(perform: onClose)
         #else
         // Open ready to type; cancelling the search leaves Search altogether.
         .onAppear { isSearchPresented = true }
@@ -71,10 +85,18 @@ struct SearchView: View {
             if wasPresented, !isPresented { onClose() }
         }
         #endif
-        .task(id: query) {
+        .task(id: SearchKey(query: query, revision: app.searchRevision)) {
             try? await Task.sleep(for: Timing.debounce)
-            guard !Task.isCancelled else { return }
-            results = app.searchIndex.search(query, at: .now)
+            while !Task.isCancelled {
+                // Off the main thread, so typing never stutters on a large lineup.
+                let index = app.searchIndex
+                let found = await Task.detached(priority: .userInitiated) { [query] in
+                    index.search(query, at: .now)
+                }.value
+                guard !Task.isCancelled else { return }
+                results = found
+                try? await Task.sleep(for: Timing.refreshInterval)
+            }
         }
     }
 }

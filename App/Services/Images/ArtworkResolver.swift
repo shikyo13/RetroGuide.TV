@@ -30,5 +30,7 @@ enum ArtworkSize {
     static let backdrop = ImageSize(width: 1_280, height: 720)
     static let logo = ImageSize(width: 800, height: 310)
     static let poster = ImageSize(width: 400, height: 600)
+    /// Posters in lists (search results), shown a few dozen points wide.
+    static let posterThumbnail = ImageSize(width: 200, height: 300)
     static let thumbnail = ImageSize(width: 480, height: 270)
 }

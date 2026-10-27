@@ -14,7 +14,11 @@ let package = Package(
     targets: [
         .target(
             name: "RetroGuideKit",
-            resources: [.process("Resources")]
+            resources: [.process("Resources")],
+            // Scheduling simulates every channel from the schedule epoch at
+            // launch; unoptimized, that's ~25x slower. Optimizing Debug builds
+            // too keeps development and test builds representative.
+            swiftSettings: [.unsafeFlags(["-O"], .when(configuration: .debug))]
         ),
         .testTarget(
             name: "RetroGuideKitTests",

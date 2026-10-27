@@ -55,15 +55,14 @@ public final class ChannelTimeline: @unchecked Sendable {
         return makeProgram(cycle: nextCycle, slot: .zero, layout: self.layout(forCycle: nextCycle))
     }
 
-    /// Every program overlapping `interval`, in airing order.
-    public func programs(overlapping interval: DateInterval) -> [ScheduledProgram] {
-        guard var current = program(at: interval.start) else { return [] }
-        var result = [current]
-        while current.slotEnd < interval.end, let next = program(after: current) {
-            result.append(next)
-            current = next
+    /// Every item's slot in the cycle, which repeats unchanged every
+    /// ``cycleLength`` from the epoch.
+    func repeatingSlots() -> [(item: MediaItem, slot: RepeatingSlot)] {
+        guard !isEmpty else { return [] }
+        let layout = layout(forCycle: .zero)
+        return layout.order.enumerated().map { slot, index in
+            (items[index], RepeatingSlot(offset: layout.startOffsets[slot], length: slotLengths[index], period: cycleLength))
         }
-        return result
     }
 
     // MARK: - Layout
@@ -91,7 +90,10 @@ public final class ChannelTimeline: @unchecked Sendable {
             touch(cycle)
             return cached
         }
-        var generator = SeededGenerator(seed: baseSeed ^ StableHash.fnv1a(String(cycle)))
+        // One fixed order for every cycle: nothing repeats until everything has aired.
+        // (Reshuffling each cycle let items from the end of one cycle air again
+        // right at the start of the next.)
+        var generator = SeededGenerator(seed: baseSeed)
         let order = PlaylistArranger.arrange(items, ordering: ordering, using: &generator)
         let layout = CycleLayout(order: order, slotLengths: slotLengths)
         layoutCache[cycle] = layout

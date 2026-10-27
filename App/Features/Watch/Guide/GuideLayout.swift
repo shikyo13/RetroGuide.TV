@@ -4,17 +4,19 @@ import SwiftUI
 
 /// Dimensions and time scale of the program guide.
 enum GuideLayout {
-    static let channelColumnWidth = PlatformMetric.value(tv: CGFloat(300), touch: 132)
+    static let channelColumnWidth = PlatformMetric.value(tv: CGFloat(300), touch: 176)
     /// iPhone in portrait: the channel column shows only the number badge.
     static let narrowChannelColumnWidth: CGFloat = 96
-    static let rowHeight = PlatformMetric.value(tv: CGFloat(78), touch: 54)
+    static let rowHeight = PlatformMetric.value(tv: CGFloat(78), touch: 50)
     static let rowSpacing = PlatformMetric.value(tv: CGFloat(6), touch: 4)
     static let cellSpacing = PlatformMetric.value(tv: CGFloat(4), touch: 2)
     static let visibleRows = 6
-    static let rulerHeight = PlatformMetric.value(tv: CGFloat(44), touch: 36)
+    static let rulerHeight = PlatformMetric.value(tv: CGFloat(44), touch: 30)
     static let previewHeight = PlatformMetric.value(tv: CGFloat(340), touch: 190)
-    /// Preview height on phones in landscape, where vertical space is scarce.
-    static let compactPreviewHeight: CGFloat = 120
+    /// Preview height on phones, where vertical space belongs to the channel grid.
+    static let compactPreviewHeight: CGFloat = 110
+    /// Preview height on phones in landscape, the shortest layout.
+    static let shortPreviewHeight: CGFloat = 90
     static let previewAspectRatio: CGFloat = 16 / 9
     static let audienceStripeWidth = PlatformMetric.value(tv: CGFloat(5), touch: 3)
     static let nowLineWidth = PlatformMetric.value(tv: CGFloat(3), touch: 2)
@@ -40,6 +42,8 @@ enum GuideLayout {
         static let minimumVisible: TimeInterval = 15 * ScheduleConstants.secondsPerMinute
         /// Nudges focus anchors inside a program rather than on its boundary.
         static let epsilon: TimeInterval = 1
+        /// How often an open guide moves along with the clock.
+        static let followInterval: Duration = .seconds(ScheduleConstants.secondsPerMinute)
     }
 
     /// Floors `date` to the start of its guide slot (e.g. 8:47 → 8:30).

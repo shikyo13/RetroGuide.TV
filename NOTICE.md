@@ -5,7 +5,11 @@ the following third-party software.
 
 ## MPVKit (libmpv, FFmpeg and bundled dependencies)
 
-- Source: https://github.com/mpvkit/MPVKit (version pinned in `project.yml`)
+- Source: https://github.com/shikyo13/MPVKit, a fork of https://github.com/mpvkit/MPVKit
+  (version pinned in `project.yml`). The fork rebuilds libmpv with two patches in
+  `Sources/BuildScripts/patch/libmpv/` (0004: audio route changes can't crash the
+  AudioUnit output; 0005: the AVFoundation output is paced and respects output
+  latency); all other binaries are MPVKit's own.
 - License: GNU Lesser General Public License v3.0 (`LICENSES/LGPL-3.0.txt`)
 - Upstream projects: mpv (https://mpv.io), FFmpeg (https://ffmpeg.org)
 
@@ -13,3 +17,11 @@ RetroGuide.TV links the LGPL build of MPVKit (the `MPVKit` product, not
 `MPVKit-GPL`). Because RetroGuide.TV is open source, you can rebuild it against a
 modified version of these libraries: replace the MPVKit package version or path in
 `project.yml`, run `xcodegen generate`, and build.
+
+## Title classification data
+
+- Source: Wikidata (https://www.wikidata.org), available under the Creative Commons
+  CC0 1.0 Universal Public Domain Dedication.
+- `Packages/RetroGuideKit/Sources/RetroGuideKit/Resources/title-classification.bin`
+  is derived from it by `Tools/TitleClassifier`, which maps Wikidata's types and
+  genres onto RetroGuide's genre categories.

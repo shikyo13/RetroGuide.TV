@@ -1,6 +1,8 @@
 #!/usr/bin/env swift
 // Generates the tvOS app icon (layered image stacks) and Top Shelf images
-// from the in-app RetroGuide.TV wordmark (see App/DesignSystem/Components/BrandMark.swift).
+// from the in-app RetroGuide.TV wordmark (see App/DesignSystem/Components/BrandMark.swift),
+// plus the iPhone/iPad icon and one alternate icon per Pro theme, in that
+// theme's colors (read from App/DesignSystem/Theme/ThemePalettes+*.swift).
 //
 // Usage (from the repository root, on macOS):
 //   swift Tools/BrandAssets/generate-brand-assets.swift App/Resources/Assets.xcassets
@@ -12,10 +14,11 @@ import Foundation
 // MARK: - Brand constants (mirror the app's Classic Cable theme and BrandMark)
 
 enum Palette {
-    static let backgroundTop = rgb(0x0A1A5C)
-    static let backgroundBottom = rgb(0x050D33)
-    static let accent = rgb(0xFFD23F)
-    static let text = rgb(0xFFFFFF)
+    // Classic Cable; the alternate icons swap in their theme's colors.
+    static var backgroundTop = rgb(0x0A1A5C)
+    static var backgroundBottom = rgb(0x050D33)
+    static var accent = rgb(0xFFD23F)
+    static var text = rgb(0xFFFFFF)
     static let secondaryText = rgb(0xB8C4F0)
     static let scanline = rgb(0x000000)
 
@@ -273,3 +276,52 @@ writeContents([
     "info": info,
 ], to: appIcon)
 print("Wrote brand assets to \(catalog.path)")
+
+// MARK: - Alternate icons, one per Pro theme
+
+/// A theme's icon colors, as written in the app's palette files.
+struct ThemeColors {
+    let id: String
+    let backgroundTop: Int
+    let backgroundBottom: Int
+    let accent: Int
+    let text: Int
+}
+
+func themeColors(in folder: URL) -> [ThemeColors] {
+    let files = (try? fileManager.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)) ?? []
+    let source = files.filter { $0.lastPathComponent.hasPrefix("ThemePalettes+") }
+        .compactMap { try? String(contentsOf: $0, encoding: .utf8) }
+        .joined(separator: "\n")
+    func hexes(_ text: Substring) -> [Int] {
+        text.matches(of: #/Color\(hex: "#([0-9A-Fa-f]{6})"\)/#).compactMap { Int($0.1, radix: 16) }
+    }
+    return source.components(separatedBy: "= Theme(").dropFirst().compactMap { block -> ThemeColors? in
+        let text = Substring(block)
+        guard let id = text.firstMatch(of: #/id: \.(\w+)/#)?.1,
+              let background = text.firstMatch(of: #/backgroundColors: \[([^\]]*)\]/#)?.1,
+              let primary = text.firstMatch(of: #/textPrimary: (Color\(hex: "#\w+"\))/#)?.1,
+              let accent = text.firstMatch(of: #/\n\s*accent: (Color\(hex: "#\w+"\))/#)?.1,
+              let top = hexes(background).first, let bottom = hexes(background).last,
+              let textColor = hexes(primary).first, let accentColor = hexes(accent).first
+        else { return nil }
+        return ThemeColors(id: String(id), backgroundTop: top, backgroundBottom: bottom, accent: accentColor, text: textColor)
+    }
+}
+
+let themes = themeColors(in: URL(fileURLWithPath: "App/DesignSystem/Theme"))
+guard !themes.isEmpty else { fatalError("No themes found: run from the repository root") }
+for theme in themes where theme.id != "classicCable" {
+    Palette.backgroundTop = Palette.rgb(theme.backgroundTop)
+    Palette.backgroundBottom = Palette.rgb(theme.backgroundBottom)
+    Palette.accent = Palette.rgb(theme.accent)
+    Palette.text = Palette.rgb(theme.text)
+    let set = catalog.appendingPathComponent("AppIcon-\(theme.id).appiconset")
+    try! fileManager.createDirectory(at: set, withIntermediateDirectories: true)
+    try! render(Canvas.touchIcon, scale: 1, opaque: true, touchIcon).write(to: set.appendingPathComponent("icon-1024.png"))
+    writeContents([
+        "images": [["filename": "icon-1024.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"]],
+        "info": info,
+    ], to: set)
+}
+print("Wrote \(themes.count - 1) theme icons")

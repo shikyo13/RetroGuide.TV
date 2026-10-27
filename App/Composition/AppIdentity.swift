@@ -35,4 +35,23 @@ enum AppIdentity {
             deviceName: UIDevice.current.name
         )
     }
+
+    /// `deviceID` is the same per-install identifier Plex gets, so each
+    /// server lists this device once.
+    @MainActor
+    static func jellyfinIdentity(deviceID: String) -> JellyfinClientIdentity {
+        JellyfinClientIdentity(deviceID: deviceID, deviceName: UIDevice.current.name, client: productName, version: version)
+    }
+}
+
+/// How the app identifies itself to each kind of media server.
+struct ServerIdentities: Sendable {
+    let plex: PlexClientIdentity
+    let jellyfin: JellyfinClientIdentity
+
+    @MainActor
+    init(installIdentifier: String) {
+        plex = AppIdentity.plexIdentity(clientIdentifier: installIdentifier)
+        jellyfin = AppIdentity.jellyfinIdentity(deviceID: installIdentifier)
+    }
 }

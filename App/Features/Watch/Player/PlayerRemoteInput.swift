@@ -8,9 +8,8 @@ import SwiftUI
 /// - Click: open the guide
 /// - Play/Pause: jump back to the last channel
 struct PlayerRemoteInput: View {
+    let focus: FocusState<PlayerChromeFocus?>.Binding
     let onCommand: (PlayerCommand) -> Void
-
-    @FocusState private var hasRemoteFocus: Bool
 
     var body: some View {
         Button {
@@ -19,11 +18,10 @@ struct PlayerRemoteInput: View {
             Color.clear
         }
         .buttonStyle(InvisibleButtonStyle())
-        .focused($hasRemoteFocus)
+        .focused(focus, equals: .remote)
         .onMoveCommand(perform: handleMove)
-        .onPlayPauseCommand { onCommand(.lastChannel) }
+        .remotePlayPauseCommand { onCommand(.lastChannel) }
         .ignoresSafeArea()
-        .onAppear { hasRemoteFocus = true }
     }
 
     private func handleMove(_ direction: MoveCommandDirection) {
