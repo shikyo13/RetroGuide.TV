@@ -14,10 +14,38 @@ android {
         applicationId = "com.adamhunt.retroguide"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        // One version for every platform: project.yml's MARKETING_VERSION, and its
+        // build number (20261027.1) as 2026102701.
+        versionCode = appleVersion("CURRENT_PROJECT_VERSION").split(".").let { (day, build) -> "$day${build.padStart(2, '0')}".toInt() }
+        versionName = appleVersion("MARKETING_VERSION")
         // Exactly the ABIs Scripts/build-core.sh built the Swift core for.
         ndk { abiFilters += file("src/main/jniLibs").list().orEmpty().toList() }
+    }
+
+    // Play upload signing, from the developer's own Gradle properties
+    // (~/.gradle/gradle.properties: retroguide.uploadStoreFile, …StorePassword,
+    // …KeyAlias, …KeyPassword); never in the repository. Without them a release
+    // build is signed with the debug key, for testing on a device only.
+    val upload = listOf("StoreFile", "StorePassword", "KeyAlias", "KeyPassword")
+        .associateWith { providers.gradleProperty("retroguide.upload$it").orNull }
+    signingConfigs {
+        if (upload.values.all { it != null }) {
+            create("upload") {
+                storeFile = file(upload.getValue("StoreFile")!!)
+                storePassword = upload.getValue("StorePassword")
+                keyAlias = upload.getValue("KeyAlias")
+                keyPassword = upload.getValue("KeyPassword")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.getByName("debug")
+        }
     }
 
     buildFeatures {
@@ -55,3 +83,8 @@ dependencies {
     implementation(libs.zxing.core)
     implementation(libs.tvprovider)
 }
+
+/** A setting from the Apple app's project.yml (`KEY: "value"`). */
+fun appleVersion(key: String): String =
+    rootProject.file("../project.yml").readLines()
+        .firstNotNullOf { line -> Regex("""^\s*$key:\s*"([^"]+)"""").find(line)?.groupValues?.get(1) }
