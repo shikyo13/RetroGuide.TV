@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -18,7 +19,14 @@ android {
         ndk { abiFilters += listOf("arm64-v8a") }
     }
 
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    // RetroGuideKit's data files (channel catalog, genre taxonomy, title
+    // classification) ship as assets; the core reads them from app storage.
+    sourceSets["main"].assets.directories += "../../Packages/RetroGuideKit/Sources/RetroGuideKit/Resources"
 
     packaging {
         // libmpv and the Swift runtime both ship libc++_shared.so; keep the app's own (newer NDK) copy.
@@ -34,4 +42,12 @@ dependencies {
     implementation(libs.tv.material)
     implementation(libs.activity.compose)
     implementation(libs.libmpv)
+    implementation(libs.serialization.json)
+    implementation(libs.coroutines.android)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.okhttp)
+    implementation(libs.zxing.core)
 }

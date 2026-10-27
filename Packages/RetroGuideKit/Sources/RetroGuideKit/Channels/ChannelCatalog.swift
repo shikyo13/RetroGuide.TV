@@ -8,7 +8,7 @@ public enum ChannelCatalog {
     private static let resourceName = "curated-channels"
 
     public static func curated() throws -> [ChannelDefinition] {
-        guard let url = Bundle.module.url(forResource: resourceName, withExtension: "json") else {
+        guard let url = KitResources.url(forResource: resourceName, withExtension: "json") else {
             throw CatalogError.missingResource(resourceName)
         }
         let data = try Data(contentsOf: url)

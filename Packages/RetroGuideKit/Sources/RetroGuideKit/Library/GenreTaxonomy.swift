@@ -16,7 +16,7 @@ public struct GenreTaxonomy: Sendable {
     }
 
     static func bundled() throws -> GenreTaxonomy {
-        guard let url = Bundle.module.url(forResource: resourceName, withExtension: "json") else {
+        guard let url = KitResources.url(forResource: resourceName, withExtension: "json") else {
             throw ChannelCatalog.CatalogError.missingResource(resourceName)
         }
         let file = try JSONDecoder().decode(TaxonomyFile.self, from: Data(contentsOf: url))

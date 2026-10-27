@@ -53,7 +53,7 @@ public struct TitleClassification: Sendable {
     }
 
     static func bundled() throws -> TitleClassification {
-        guard let url = Bundle.module.url(forResource: resourceName, withExtension: "bin") else {
+        guard let url = KitResources.url(forResource: resourceName, withExtension: "bin") else {
             throw TableError.missingResource(resourceName)
         }
         return try TitleClassification(contentsOf: url)

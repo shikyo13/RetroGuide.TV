@@ -1,12 +1,11 @@
 import Foundation
-import RetroGuideKit
 
 /// Translates a server's ``TrackSelection`` into mpv commands.
 ///
 /// Servers identify tracks by container stream index; mpv numbers tracks per
 /// type. mpv's `track-list` exposes each track's `ff-index` (the container
 /// index), which links the two.
-enum MPVTrackSelector {
+public enum MPVTrackSelector {
     private enum TrackListKey {
         static let id = "id"
         static let type = "type"
@@ -26,7 +25,7 @@ enum MPVTrackSelector {
     }
 
     /// Commands that apply `selection` to the loaded file described by `trackListJSON`.
-    static func commands(for selection: TrackSelection, trackListJSON: String) -> [[String]] {
+    public static func commands(for selection: TrackSelection, trackListJSON: String) -> [[String]] {
         let tracks = parse(trackListJSON)
         var commands: [[String]] = []
         if let index = selection.audioStreamIndex, let id = trackID(of: TrackType.audio, containerIndex: index, in: tracks) {
