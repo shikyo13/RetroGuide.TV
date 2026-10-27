@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 public enum HTTPError: Error, Equatable, LocalizedError {
     case secureConnectionRequired

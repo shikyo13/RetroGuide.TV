@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 /// Server requests must use authenticated TLS, including redirect destinations.
 public enum SecureTransport {

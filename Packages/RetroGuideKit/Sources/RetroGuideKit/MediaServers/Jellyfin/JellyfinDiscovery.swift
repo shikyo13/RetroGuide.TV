@@ -1,4 +1,10 @@
+#if canImport(Darwin)
 import Darwin
+#elseif canImport(Android)
+import Android
+#elseif canImport(Glibc)
+import Glibc
+#endif
 import Foundation
 
 /// Finds Jellyfin servers on the local network by asking every address of
@@ -58,8 +64,8 @@ public struct JellyfinDiscovery: Sendable {
         for pointer in sequence(first: first, next: { $0.pointee.ifa_next }) {
             let interface = pointer.pointee
             let flags = Int32(interface.ifa_flags)
-            guard flags & IFF_UP != 0, flags & IFF_LOOPBACK == 0,
-                  let raw = interface.ifa_addr, raw.pointee.sa_family == UInt8(AF_INET)
+            guard flags & InterfaceFlag.up != 0, flags & InterfaceFlag.loopback == 0,
+                  let raw = interface.ifa_addr, Int32(raw.pointee.sa_family) == AF_INET
             else { continue }
             let address = raw.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { UInt32(bigEndian: $0.pointee.sin_addr.s_addr) }
             if NetworkLocation.isPrivateIPv4(address) {
@@ -72,4 +78,15 @@ public struct JellyfinDiscovery: Sendable {
     private static func dotted(_ address: UInt32) -> String {
         [24, 16, 8, 0].map { String((address >> $0) & 0xFF) }.joined(separator: ".")
     }
+}
+
+/// Network interface flags: macros on Apple platforms, an enum on Android.
+private enum InterfaceFlag {
+    #if canImport(Darwin)
+    static let up = Int32(IFF_UP)
+    static let loopback = Int32(IFF_LOOPBACK)
+    #else
+    static let up = Int32(IFF_UP.rawValue)
+    static let loopback = Int32(IFF_LOOPBACK.rawValue)
+    #endif
 }

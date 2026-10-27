@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 /// ``MediaServerClient`` implementation for Jellyfin.
 public struct JellyfinServerClient: MediaServerClient {
