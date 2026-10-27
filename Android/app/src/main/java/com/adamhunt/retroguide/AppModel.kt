@@ -293,7 +293,6 @@ class AppModel(context: Context, muted: Boolean) {
                 val lastChannel = tuner.channel.value?.id ?: preferences.getString(Saved.LAST_CHANNEL, null)
                 val snapshot = runCatching { core.widget(lastChannel) }.getOrNull() ?: return@launch
                 withContext(Dispatchers.IO) { whatsOn.save(snapshot, widgetHttp) }
-                whatsOn.offset = 0
                 WhatsOnWidget.reload(appContext)
             } else {
                 val entries = runCatching { core.homeRow() }.getOrNull() ?: return@launch
@@ -305,10 +304,20 @@ class AppModel(context: Context, muted: Boolean) {
     private val whatsOn = WhatsOnStore(appContext)
     private val widgetHttp = OkHttpClient()
 
-    /** Tunes a channel from a link (`retroguide://channel?id=…`), now or once the lineup is ready. */
+    /** Bumped when a link opens a channel, so the watch screen returns to the picture. */
+    private val _linkOpened = MutableStateFlow(0)
+    val linkOpened: StateFlow<Int> = _linkOpened.asStateFlow()
+
+    /**
+     * Tunes a channel from a link (`retroguide://channel?id=…`: the widget, the
+     * TV home row or a reminder notification), now or once the lineup is ready.
+     */
     fun openChannel(id: String) {
         preferences.edit().putString(Saved.LAST_CHANNEL, id).apply()
+        // The notification already said it's starting.
+        reminders.dismissDue()
         tuner.channelWithID(id)?.let { tuner.tune(it) }
+        _linkOpened.value += 1
     }
 
     private var healthJob: Job? = null
@@ -339,7 +348,7 @@ class AppModel(context: Context, muted: Boolean) {
         _themeID.value = id
         preferences.edit().putString(Saved.THEME, id.name).apply()
         // The widget follows the app's theme.
-        if (formFactor.isTouch) scope.launch { WhatsOnWidget.reload(appContext) }
+        if (formFactor.isTouch) updateHomeRow()
     }
 
     fun removeServer(serverID: String) {

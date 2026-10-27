@@ -105,6 +105,14 @@ fun WatchScreen(app: AppModel) {
         overlay = Overlay.NONE
     }
 
+    // A link (widget, home row, notification) shows its channel full screen.
+    val linkOpened by app.linkOpened.collectAsState()
+    LaunchedEffect(linkOpened) {
+        if (linkOpened == 0) return@LaunchedEffect
+        isShowingOptions = false
+        closeOverlay()
+    }
+
     // Every channel change brings up the banner, like a TV's info bar.
     LaunchedEffect(channel?.id) { if (channel != null) bannerRequest += 1 }
     LaunchedEffect(bannerRequest) {

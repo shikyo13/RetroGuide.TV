@@ -19,7 +19,11 @@ object DevelopmentLaunch {
         const val ACCOUNT_TOKEN = "devPlexAccountToken"
         const val DEFAULT_KIND = "plex"
         const val PRO = "devPro"
+        const val PIN_WIDGET = "devPinWidget"
     }
+
+    /** Asks the launcher to add the What's On widget (`--ez devPinWidget true`), for QA on phones. */
+    fun pinsWidget(intent: Intent): Boolean = intent.getBooleanExtra(Extra.PIN_WIDGET, false)
 
     /** Turns RetroGuide Pro on for QA (`--ez devPro true`), until Google Play Billing is connected. */
     fun isPro(intent: Intent): Boolean = intent.getBooleanExtra(Extra.PRO, false)

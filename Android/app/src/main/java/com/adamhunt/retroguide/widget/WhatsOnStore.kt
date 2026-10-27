@@ -37,8 +37,6 @@ class WhatsOnStore(private val context: Context) {
     private object Files {
         const val SNAPSHOT = "whats-on.json"
         const val ARTWORK = "whats-on-artwork"
-        const val OFFSET = "whatsOnOffset"
-        const val PREFERENCES = "whatsOn"
         const val DIGEST = "SHA-256"
         /** Artwork is fetched for this many programs per channel (the ones on soonest). */
         const val ARTWORK_PROGRAMS = 3
@@ -46,7 +44,6 @@ class WhatsOnStore(private val context: Context) {
 
     private val json = Json { ignoreUnknownKeys = true }
     private val folder = File(context.filesDir, Files.ARTWORK)
-    private val preferences = context.getSharedPreferences(Files.PREFERENCES, Context.MODE_PRIVATE)
 
     fun load(): Saved? = runCatching {
         json.decodeFromString(Saved.serializer(), File(context.filesDir, Files.SNAPSHOT).readText())
@@ -77,11 +74,6 @@ class WhatsOnStore(private val context: Context) {
     }
 
     fun artwork(name: String?): File? = name?.let { File(folder, it) }?.takeIf(File::exists)
-
-    /** Which channel the flip buttons have moved to. */
-    var offset: Int
-        get() = preferences.getInt(Files.OFFSET, 0)
-        set(value) = preferences.edit().putInt(Files.OFFSET, value).apply()
 
     private fun download(url: String, http: OkHttpClient): String? = runCatching {
         val name = MessageDigest.getInstance(Files.DIGEST).digest(url.toByteArray()).joinToString("") { "%02x".format(it) } + ".jpg"

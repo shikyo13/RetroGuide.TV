@@ -22,7 +22,11 @@ import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
-import androidx.glance.appwidget.updateAll
+import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.state.updateAppWidgetState
+import androidx.glance.currentState
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
@@ -70,13 +74,17 @@ private object WidgetStyle {
 class WhatsOnWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val store = WhatsOnStore(context)
-        val saved = store.load()
-        val theme = Theme.of(themeOf(context))
-        provideContent { Content(context, store, saved, theme) }
+        provideContent {
+            // Widget state: the flip position, and a revision the app bumps after
+            // saving, so the saved guide is read again.
+            val state = currentState<Preferences>()
+            state[Keys.revision]
+            Content(context, store, store.load(), state[Keys.offset] ?: 0, Theme.of(themeOf(context)))
+        }
     }
 
     @Composable
-    private fun Content(context: Context, store: WhatsOnStore, saved: WhatsOnStore.Saved?, theme: Theme) {
+    private fun Content(context: Context, store: WhatsOnStore, saved: WhatsOnStore.Saved?, offset: Int, theme: Theme) {
         val now = System.currentTimeMillis() / 1000.0
         val channels = saved?.channels.orEmpty().filter { it.programAt(now) != null }
         val background = GlanceModifier.fillMaxSize().background(theme.surface).cornerRadius(WidgetStyle.corner)
@@ -87,7 +95,7 @@ class WhatsOnWidget : GlanceAppWidget() {
             }
             return
         }
-        val channel = channels[Math.floorMod(store.offset, channels.size)]
+        val channel = channels[Math.floorMod(offset, channels.size)]
         val program = channel.programAt(now) ?: return
         val open = Intent(Intent.ACTION_VIEW, Uri.parse(CHANNEL_LINK + Uri.encode(channel.id))).setPackage(context.packageName)
         Row(background.padding(WidgetStyle.padding).clickable(actionStartActivity(open)), verticalAlignment = Alignment.CenterVertically) {
@@ -107,8 +115,10 @@ class WhatsOnWidget : GlanceAppWidget() {
             Column(GlanceModifier.defaultWeight().fillMaxHeight()) {
                 val logo = store.artwork(program.logoFile)?.let { BitmapFactory.decodeFile(it.path) }
                 if (logo != null) {
+                    // As wide as its height allows, from the left edge.
+                    val width = WidgetStyle.logoHeight * (logo.width.toFloat() / logo.height.coerceAtLeast(1))
                     Image(ImageProvider(logo), contentDescription = program.title, contentScale = ContentScale.Fit,
-                        modifier = GlanceModifier.height(WidgetStyle.logoHeight).fillMaxWidth())
+                        modifier = GlanceModifier.height(WidgetStyle.logoHeight).width(width))
                 } else {
                     Text(program.title, maxLines = 1, style = TextStyle(color = ColorProvider(theme.textPrimary), fontWeight = FontWeight.Bold, fontSize = WidgetStyle.titleSize))
                 }
@@ -151,24 +161,40 @@ class WhatsOnWidget : GlanceAppWidget() {
             context.getSharedPreferences(THEME_PREFERENCES, Context.MODE_PRIVATE).getString(THEME_KEY, null)
                 ?.let { saved -> ThemeId.entries.firstOrNull { it.name == saved } } ?: ThemeId.CLASSIC_CABLE
 
-        suspend fun reload(context: Context) = WhatsOnWidget().updateAll(context)
+        /** After the app saved a new guide: back to the first channel, drawn from the new guide. */
+        suspend fun reload(context: Context) {
+            for (id in GlanceAppWidgetManager(context).getGlanceIds(WhatsOnWidget::class.java)) {
+                updateAppWidgetState(context, id) { state ->
+                    state[Keys.revision] = (state[Keys.revision] ?: 0) + 1
+                    state[Keys.offset] = 0
+                }
+                WhatsOnWidget().update(context, id)
+            }
+        }
+
+        /** Moves the widget [by] channels. */
+        suspend fun flip(context: Context, id: GlanceId, by: Int) {
+            updateAppWidgetState(context, id) { state -> state[Keys.offset] = (state[Keys.offset] ?: 0) + by }
+            WhatsOnWidget().update(context, id)
+        }
+    }
+
+    private object Keys {
+        val offset = intPreferencesKey("offset")
+        val revision = intPreferencesKey("revision")
     }
 }
 
 /** The widget's ▶: the next channel. */
 class FlipForward : ActionCallback {
-    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        WhatsOnStore(context).apply { offset += 1 }
-        WhatsOnWidget().update(context, glanceId)
-    }
+    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) =
+        WhatsOnWidget.flip(context, glanceId, 1)
 }
 
 /** The widget's ◀: the previous channel. */
 class FlipBack : ActionCallback {
-    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        WhatsOnStore(context).apply { offset -= 1 }
-        WhatsOnWidget().update(context, glanceId)
-    }
+    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) =
+        WhatsOnWidget.flip(context, glanceId, -1)
 }
 
 class WhatsOnWidgetReceiver : GlanceAppWidgetReceiver() {

@@ -4,7 +4,11 @@ import android.Manifest
 import android.app.PictureInPictureParams
 import android.os.Build
 import androidx.activity.result.contract.ActivityResultContracts
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import com.adamhunt.retroguide.widget.WhatsOnWidgetReceiver
 import android.content.res.Configuration
 import android.util.Rational
 import com.adamhunt.retroguide.player.Signal
@@ -54,11 +58,20 @@ class MainActivity : ComponentActivity() {
         }
         setContent { RootScreen(app.model) }
         openLink(intent)
+        pinWidgetIfRequested(intent)
+    }
+
+    /** Debug builds: `--ez devPinWidget true` asks the launcher to add the What's On widget. */
+    private fun pinWidgetIfRequested(intent: Intent) {
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE == 0 || !DevelopmentLaunch.pinsWidget(intent)) return
+        val manager = getSystemService(AppWidgetManager::class.java)
+        if (manager.isRequestPinAppWidgetSupported) manager.requestPinAppWidget(ComponentName(this, WhatsOnWidgetReceiver::class.java), null, null)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         openLink(intent)
+        pinWidgetIfRequested(intent)
     }
 
     /** `retroguide://channel?id=…` tunes that channel. */
