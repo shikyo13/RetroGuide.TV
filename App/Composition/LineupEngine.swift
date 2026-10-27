@@ -18,7 +18,14 @@ struct LineupEngine: Sendable {
     func makeLineup(index: LibraryIndex, customization: LineupCustomization, grid: ScheduleGrid) async -> [Channel] {
         let builder = LineupBuilder(curated: curated, options: LineupOptions.adapted(to: index, grid: grid))
         return await Task.detached(priority: .userInitiated) {
-            builder.build(index: index, customization: customization)
+            let lineup = builder.build(index: index, customization: customization)
+            // Channels sharing a simulcast limit are simulated together on
+            // first use; do that here rather than when the guide first opens.
+            // Hidden channels are never shown or tuned, so they're left cold.
+            for channel in lineup where !channel.isHidden {
+                _ = channel.timeline.program(at: .now)
+            }
+            return lineup
         }.value
     }
 

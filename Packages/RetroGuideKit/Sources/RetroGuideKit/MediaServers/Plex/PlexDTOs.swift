@@ -39,6 +39,11 @@ struct PlexTag: Decodable {
     let tag: String
 }
 
+/// An agent id such as `imdb://tt0944947` (listings include these with `includeGuids`).
+struct PlexGuid: Decodable {
+    let id: String
+}
+
 struct PlexImage: Decodable {
     let type: String
     let url: String
@@ -51,10 +56,13 @@ struct PlexMetadata: Decodable {
     let title: String
     let grandparentRatingKey: String?
     let grandparentTitle: String?
+    let grandparentGuid: String?
     let parentIndex: Int?
     let index: Int?
     let year: Int?
     let duration: Int?
+    /// When the item was added to the server (Unix seconds).
+    let addedAt: Int?
     let summary: String?
     let contentRating: String?
     let contentRatingAge: Int?
@@ -68,19 +76,30 @@ struct PlexMetadata: Decodable {
     let countries: [PlexTag]?
     let images: [PlexImage]?
     let media: [PlexMedia]?
+    let guids: [PlexGuid]?
 
     enum CodingKeys: String, CodingKey {
-        case ratingKey, guid, type, title, grandparentRatingKey, grandparentTitle
-        case parentIndex, index, year, duration, summary, contentRating, contentRatingAge
+        case ratingKey, guid, type, title, grandparentRatingKey, grandparentTitle, grandparentGuid
+        case parentIndex, index, year, duration, addedAt, summary, contentRating, contentRatingAge
         case studio, thumb, art, grandparentThumb, grandparentArt, childCount
         case genres = "Genre"
         case countries = "Country"
         case images = "Image"
         case media = "Media"
+        case guids = "Guid"
     }
 
     /// Plex agent guids (`plex://…`) are global; local and legacy guids are not.
     var globalGuid: String? {
+        Self.global(guid)
+    }
+
+    /// The episode's show's global guid, when the listing includes it.
+    var grandparentGlobalGuid: String? {
+        Self.global(grandparentGuid)
+    }
+
+    private static func global(_ guid: String?) -> String? {
         guard let guid, guid.hasPrefix(PlexAPI.globalGuidPrefix) else { return nil }
         return guid
     }
@@ -98,7 +117,8 @@ struct PlexMetadata: Decodable {
                 audioCodec: media.audioCodec,
                 filePath: media.parts?.first?.key,
                 height: media.height,
-                bitrateKbps: media.bitrate
+                bitrateKbps: media.bitrate,
+                duration: media.duration.flatMap { $0 > .zero ? TimeInterval($0) / PlexAPI.Defaults.millisecondsPerSecond : nil }
             )
         }
     }
@@ -110,20 +130,23 @@ struct PlexMedia: Decodable {
     let audioCodec: String?
     let height: Int?
     let bitrate: Int?
+    /// Milliseconds.
+    let duration: Int?
     let parts: [PlexPart]?
 
     enum CodingKeys: String, CodingKey {
-        case container, videoCodec, audioCodec, height, bitrate
+        case container, videoCodec, audioCodec, height, bitrate, duration
         case parts = "Part"
     }
 }
 
 struct PlexPart: Decodable {
+    let id: Int?
     let key: String?
     let streams: [PlexStream]?
 
     enum CodingKeys: String, CodingKey {
-        case key
+        case id, key
         case streams = "Stream"
     }
 }
@@ -131,6 +154,8 @@ struct PlexPart: Decodable {
 /// One audio, video or subtitle stream of a media part. `selected` reflects the
 /// requesting user's language preferences and per-item choices.
 struct PlexStream: Decodable {
+    /// The server's id for the stream, used to save a track choice.
+    var id: Int?
     let streamType: Int
     let index: Int?
     let key: String?
@@ -139,6 +164,26 @@ struct PlexStream: Decodable {
     var languageTag: String?
     var languageCode: String?
     var forced: Bool?
+    /// Plex's names for the track: "English (AAC Stereo)", "English (SRT External)"…
+    var displayTitle: String?
+    var extendedDisplayTitle: String?
+    /// The file marks this track as the one to play by default.
+    var isDefault: Bool?
+    /// "srt", "ass", "idx" (VobSub)…
+    var codec: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, streamType, index, key, selected, languageTag, languageCode, forced, displayTitle, extendedDisplayTitle, codec
+        case isDefault = "default"
+    }
+
+    /// Where to fetch an external subtitle file. A VobSub `.idx` names its
+    /// images in a `.sub` beside it, found by swapping the extension, so the
+    /// path needs the extension too (Plex serves `/library/streams/<id>.sub`).
+    var externalKey: String? {
+        guard let key else { return nil }
+        return codec == PlexAPI.Subtitle.vobSubIndexCodec ? key + PlexAPI.Subtitle.vobSubIndexExtension : key
+    }
 }
 
 /// The signed-in plex.tv user (only the language settings are read).
@@ -166,6 +211,8 @@ struct PlexResource: Decodable {
     let provides: String
     let owned: Bool?
     let accessToken: String?
+    /// Whether this device and the server share a public address (same network).
+    let publicAddressMatches: Bool?
     let connections: [PlexConnection]?
 }
 

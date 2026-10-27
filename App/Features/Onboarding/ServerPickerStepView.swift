@@ -8,6 +8,8 @@ struct ServerPickerStepView: View {
 
     let servers: [PlexServerCandidate]
     let onChoose: (PlexServerCandidate) -> Void
+    let onJellyfin: () -> Void
+    let onCancel: () -> Void
 
     @Environment(\.theme) private var theme
 
@@ -18,6 +20,10 @@ struct ServerPickerStepView: View {
                 .foregroundStyle(theme.textPrimary)
             ScrollView {
                 VStack(spacing: DesignTokens.Spacing.sm) {
+                    if servers.isEmpty {
+                        Text("There are no additional Plex servers available on this account.")
+                            .secondaryText()
+                    }
                     ForEach(servers) { server in
                         Button {
                             onChoose(server)
@@ -35,6 +41,10 @@ struct ServerPickerStepView: View {
                 }
                 .padding(DesignTokens.Spacing.md)
             }
+            Button("Connect Jellyfin", action: onJellyfin)
+                .buttonStyle(.retro)
+            Button("Cancel", action: onCancel)
+                .buttonStyle(.retro)
         }
         .columnWidth(Layout.listWidth)
     }

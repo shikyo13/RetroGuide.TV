@@ -20,6 +20,7 @@ private struct RetroButtonBody: View {
     let prominence: RetroButtonStyle.Prominence
 
     @Environment(\.isFocused) private var isFocused
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.theme) private var theme
 
     var body: some View {
@@ -28,6 +29,7 @@ private struct RetroButtonBody: View {
             .foregroundStyle(isFocused ? theme.textOnFocus : theme.textPrimary)
             .padding(.horizontal, DesignTokens.Spacing.lg)
             .padding(.vertical, DesignTokens.Spacing.sm)
+            .frame(minHeight: DesignTokens.Control.minimumHeight)
             .background(background)
             .clipShape(Capsule())
             .scaleEffect(scale)
@@ -38,6 +40,7 @@ private struct RetroButtonBody: View {
             )
             .animation(DesignTokens.Motion.quickEase, value: isFocused)
             .animation(DesignTokens.Motion.quickEase, value: configuration.isPressed)
+            .opacity(isEnabled ? 1 : DesignTokens.Opacity.muted)
     }
 
     private var background: Color {

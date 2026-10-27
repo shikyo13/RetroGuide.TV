@@ -17,7 +17,9 @@ enum TestFactory {
         genres: [String] = [],
         networks: [String] = [],
         rating: String? = nil,
-        year: Int? = nil
+        year: Int? = nil,
+        titleIDs: TitleIDs? = nil,
+        addedAt: Date? = nil
     ) -> MediaItem {
         MediaItem(
             serverID: serverID,
@@ -31,11 +33,13 @@ enum TestFactory {
             contentRating: rating,
             audience: Audience.classify(rating: rating),
             genres: genres,
-            networks: networks
+            networks: networks,
+            titleIDs: titleIDs,
+            addedAt: addedAt
         )
     }
 
-    static func movie(_ key: String, duration: TimeInterval = 2 * 3_600, genres: [String] = [], year: Int? = nil) -> MediaItem {
+    static func movie(_ key: String, duration: TimeInterval = 2 * 3_600, genres: [String] = [], year: Int? = nil, titleIDs: TitleIDs? = nil) -> MediaItem {
         MediaItem(
             serverID: serverID,
             itemKey: key,
@@ -44,7 +48,8 @@ enum TestFactory {
             title: "Movie \(key)",
             year: year,
             duration: duration,
-            genres: genres
+            genres: genres,
+            titleIDs: titleIDs
         )
     }
 

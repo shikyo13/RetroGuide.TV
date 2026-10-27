@@ -1,8 +1,8 @@
 import RetroGuideKit
 import SwiftUI
 
-/// Adds another server, reusing the onboarding steps. With a saved Plex account
-/// it goes straight to the server list; otherwise it shows a link code first.
+/// Adds another server, reusing the onboarding steps: Plex (straight to the
+/// server list with a saved Plex account, otherwise a link code first) or Jellyfin.
 struct AddServerView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
@@ -25,13 +25,17 @@ struct AddServerView: View {
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             guard model == nil else { return }
+            let savedToken = app.servers.plexAccountToken
             let setup = OnboardingModel(
-                identity: app.plexIdentity,
-                accountToken: app.servers.plexAccountToken,
-                excludedServerIDs: Set(app.servers.accounts.map(\.id))
+                identities: app.identities,
+                accountToken: savedToken,
+                excludedServerIDs: Set(app.servers.accounts.map(\.id)),
+                showsWelcome: false,
+                onPlexAccountTokenChanged: app.servers.savePlexAccountToken
             )
             model = setup
-            setup.begin()
+            if savedToken != nil { setup.beginPlex() }
         }
+        .onDisappear { model?.cancel() }
     }
 }

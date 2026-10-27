@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import RetroGuideKit
 
@@ -25,6 +26,23 @@ struct SubtitleAutoSelectorTests {
 
     @Test func manualNeverTurnsSubtitlesOn() {
         #expect(SubtitleAutoSelector.choose(from: [english], audioLanguage: "jpn", preferences: preferences(.manual)) == nil)
+    }
+
+    @Test(arguments: ["eng", "jpn", "und", nil] as [String?])
+    func forcedOnlyNeverSelectsOrdinarySubtitles(audioLanguage: String?) {
+        #expect(SubtitleAutoSelector.choose(
+            from: [english, spanish], audioLanguage: audioLanguage, preferences: preferences(.forcedOnly)
+        ) == nil)
+        #expect(SubtitleAutoSelector.choose(
+            from: [english, englishForced], audioLanguage: audioLanguage, preferences: preferences(.forcedOnly)
+        ) == 1)
+    }
+
+    @Test func forcedOnlyRequiresThePreferredLanguage() {
+        let spanishForced = SubtitleCandidate(language: "spa", isForced: true)
+        #expect(SubtitleAutoSelector.choose(
+            from: [spanishForced, english], audioLanguage: "jpn", preferences: preferences(.forcedOnly)
+        ) == nil)
     }
 
     @Test func alwaysPrefersFullSubtitlesOverForced() {
@@ -75,8 +93,44 @@ struct PlexTrackSelectionMapperTests {
         #expect(selection.subtitle == .embedded(streamIndex: 4))
     }
 
+    @Test("External VobSub subtitles are fetched as .idx, so the player finds the .sub beside them")
+    func vobSubKeepsItsExtension() {
+        var vobSub = PlexStream(streamType: subtitle, index: nil, key: "/library/streams/77", selected: true, languageCode: "eng")
+        vobSub.codec = "idx"
+        var srt = PlexStream(streamType: subtitle, index: nil, key: "/library/streams/78", selected: true, languageCode: "eng")
+        srt.codec = "srt"
+        let url = { (key: String) in URL(string: "http://server" + key) }
+        #expect(PlexTrackSelectionMapper.selection(from: [vobSub], preferences: nil, externalURL: url).subtitle == .external(URL(string: "http://server/library/streams/77.idx")!))
+        #expect(PlexTrackSelectionMapper.selection(from: [srt], preferences: nil, externalURL: url).subtitle == .external(URL(string: "http://server/library/streams/78")!))
+    }
+
     @Test func withoutPreferencesOnlyChosenTracksAreUsed() {
         let selection = PlexTrackSelectionMapper.selection(from: episode, preferences: nil) { _ in nil }
         #expect(selection.subtitle == SubtitleChoice.none)
+    }
+}
+
+@Suite("Plex track list")
+struct PlexTrackListTests {
+    @Test("Every audio and subtitle track is offered, named the way Plex names it")
+    func listsTracks() throws {
+        let json = """
+        [
+          {"streamType": 1, "index": 0},
+          {"streamType": 2, "index": 1, "languageCode": "jpn", "selected": true, "extendedDisplayTitle": "Japanese (AAC Stereo)"},
+          {"streamType": 2, "index": 2, "languageCode": "eng", "displayTitle": "English (AAC Stereo)"},
+          {"streamType": 3, "index": 3, "languageCode": "eng", "displayTitle": "English (ASS)", "selected": true},
+          {"streamType": 3, "key": "/library/streams/9", "languageCode": "eng", "forced": true, "displayTitle": "English Forced (SRT External)"}
+        ]
+        """
+        let streams = try JSONDecoder().decode([PlexStream].self, from: Data(json.utf8))
+        let url = URL(string: "https://server/library/streams/9")!
+        let tracks = PlexTrackSelectionMapper.tracks(from: streams, preferences: nil) { _ in url }
+        #expect(tracks.audio.map(\.title) == ["Japanese (AAC Stereo)", "English (AAC Stereo)"])
+        #expect(tracks.subtitles.map(\.title) == ["English (ASS)", "English Forced (SRT External)"])
+        #expect(tracks.subtitles[1].isForced)
+        #expect(tracks.subtitles[1].source == .external(url))
+        #expect(tracks.audioOption(for: tracks.selection)?.title == "Japanese (AAC Stereo)")
+        #expect(tracks.subtitleOption(for: tracks.selection)?.title == "English (ASS)")
     }
 }

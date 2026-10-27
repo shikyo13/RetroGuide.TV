@@ -7,6 +7,8 @@ struct PlexRequestContext: Sendable {
     let token: String
     let identity: PlexClientIdentity
     let http: HTTPClient
+    /// Requests a viewer waits on (see ``HTTPClient/playback``).
+    let playbackHTTP: HTTPClient
 
     var builder: RequestBuilder {
         RequestBuilder(

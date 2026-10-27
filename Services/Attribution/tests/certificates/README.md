@@ -1,0 +1,1 @@
+Apple Root CA - G3 public certificate, obtained from [Apple PKI](https://www.apple.com/certificateauthority/AppleRootCA-G3.cer). Used to verify that forged transactions cannot establish an Apple trust chain. This is a public trust anchor, not a private signing key.

@@ -51,8 +51,24 @@ final class GuideModel {
         focusedChannel?.timeline.program(at: focusAnchor)
     }
 
+    /// Whether the window starts at the current time (not earlier, as a
+    /// guide left open becomes, nor later, when browsing ahead).
     var isShowingNow: Bool {
-        windowStart <= .now
+        windowStart == GuideLayout.slotStart(containing: .now)
+    }
+
+    /// Whether the guide moves along with the clock: until the viewer pages
+    /// ahead, and again after returning to Now.
+    private(set) var isFollowingLive = true
+
+    /// Keeps a guide that's following live time on the current slot, and
+    /// brings back one whose whole window has passed.
+    func followLiveTime(now: Date = .now) {
+        let current = GuideLayout.slotStart(containing: now)
+        guard windowStart != current, isFollowingLive || windowEnd <= now else { return }
+        windowStart = current
+        focusAnchor = max(focusAnchor, now)
+        isFollowingLive = true
     }
 
     // MARK: - Navigation
@@ -79,6 +95,7 @@ final class GuideModel {
         let visibleSpan = min(GuideLayout.Time.minimumVisible, next.slotEnd.timeIntervalSince(next.start))
         while next.start.addingTimeInterval(visibleSpan) > windowEnd {
             windowStart = windowStart.addingTimeInterval(GuideLayout.Time.slot)
+            isFollowingLive = false
         }
         focusAnchor = next.start.addingTimeInterval(GuideLayout.Time.epsilon)
     }
@@ -90,6 +107,7 @@ final class GuideModel {
             // The focused program is clipped on the left: reveal more of it first.
             guard windowStart > earliest else { return }
             windowStart = windowStart.addingTimeInterval(-GuideLayout.Time.slot)
+            isFollowingLive = windowStart == earliest
             return
         }
         guard let previous = timeline.program(at: current.start.addingTimeInterval(-GuideLayout.Time.epsilon)),
@@ -98,6 +116,7 @@ final class GuideModel {
         while previous.start < windowStart, windowStart > earliest {
             windowStart = windowStart.addingTimeInterval(-GuideLayout.Time.slot)
         }
+        isFollowingLive = windowStart == earliest
         focusAnchor = anchor(for: previous)
     }
 
@@ -105,6 +124,7 @@ final class GuideModel {
     func jumpToNow() {
         windowStart = GuideLayout.slotStart(containing: .now)
         focusAnchor = .now
+        isFollowingLive = true
     }
 
     // MARK: - Touch
@@ -123,8 +143,20 @@ final class GuideModel {
         let latest = GuideLayout.slotStart(containing: Date.now.addingTimeInterval(GuideLayout.Time.lookahead))
         let shifted = windowStart.addingTimeInterval(TimeInterval(slots) * GuideLayout.Time.slot)
         windowStart = min(max(shifted, earliest), latest)
+        isFollowingLive = windowStart == earliest
         // Land on what's playing a little into the window, not a sliver at its edge.
         focusAnchor = max(windowStart.addingTimeInterval(GuideLayout.Time.minimumVisible), .now)
+    }
+
+    /// Takes a rebuilt lineup, staying on the same channel (or the nearest
+    /// row if it's gone) and time window.
+    func replaceChannels(_ newChannels: [Channel]) {
+        let focusedID = focusedChannel?.id
+        channels = newChannels
+        let row = newChannels.firstIndex { $0.id == focusedID } ?? min(focusedRow, max(newChannels.count - 1, .zero))
+        focusedRow = row
+        firstVisibleRow = min(firstVisibleRow, max(newChannels.count - GuideLayout.visibleRows, .zero))
+        setRow(row)
     }
 
     /// Adapts the window to the screen width (for example on rotation).

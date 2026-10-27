@@ -1,3 +1,4 @@
+import RetroGuideKit
 import SwiftUI
 
 struct WelcomeStepView: View {
@@ -5,7 +6,8 @@ struct WelcomeStepView: View {
         static let textWidth = PlatformMetric.value(tv: CGFloat(1_100), touch: 560)
     }
 
-    let onStart: () -> Void
+    let onPlex: () -> Void
+    let onJellyfin: () -> Void
 
     @Environment(\.theme) private var theme
 
@@ -18,15 +20,61 @@ struct WelcomeStepView: View {
                 .font(Typography.display)
                 .foregroundStyle(theme.textPrimary)
                 .multilineTextAlignment(.center)
-            Text("RetroGuide.TV turns your Plex library into live TV channels with a program guide. Flip through channels, drop into whatever is on, and let the schedule do the choosing.")
+            Text("RetroGuide.TV turns your Plex or Jellyfin library into live TV channels with a program guide. Flip through channels, drop into whatever is on, and let the schedule do the choosing.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
                 .multilineTextAlignment(.center)
                 .columnWidth(Layout.textWidth)
-            Button(action: onStart) {
+            ServerKindButtons(onPlex: onPlex, onJellyfin: onJellyfin)
+        }
+    }
+}
+
+/// "Connect Plex" and "Connect Jellyfin", side by side. Plex has focus
+/// whenever they appear, including coming back from a cancelled setup.
+struct ServerKindButtons: View {
+    let onPlex: () -> Void
+    let onJellyfin: () -> Void
+
+    @FocusState private var focused: ServerKind?
+
+    var body: some View {
+        HStack(spacing: DesignTokens.Spacing.lg) {
+            Button(action: onPlex) {
                 Label("Connect Plex", systemImage: "link")
             }
             .buttonStyle(.retroPrimary)
+            .focused($focused, equals: .plex)
+            Button(action: onJellyfin) {
+                Label("Connect Jellyfin", systemImage: "link")
+            }
+            .buttonStyle(.retroPrimary)
+            .focused($focused, equals: .jellyfin)
+        }
+        .onAppear { focused = .plex }
+    }
+}
+
+/// Adding a server: which kind.
+struct ServerKindStepView: View {
+    let onPlex: () -> Void
+    let onJellyfin: () -> Void
+    let onCancel: () -> Void
+
+    @Environment(\.theme) private var theme
+
+    var body: some View {
+        VStack(spacing: DesignTokens.Spacing.xl) {
+            Text("Add a server")
+                .font(Typography.title)
+                .foregroundStyle(theme.textPrimary)
+            Text("Channels can mix programs from every server you add.")
+                .font(Typography.body)
+                .foregroundStyle(theme.textSecondary)
+                .multilineTextAlignment(.center)
+            ServerKindButtons(onPlex: onPlex, onJellyfin: onJellyfin)
+            Button("Cancel", action: onCancel)
+                .buttonStyle(.retro)
         }
     }
 }

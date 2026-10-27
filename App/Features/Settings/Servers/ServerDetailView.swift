@@ -15,7 +15,7 @@ struct ServerDetailView: View {
             SettingsPage(title: account.name) {
                 Text(app.servers.status[serverID] == .offline
                     ? "This server can't be reached right now. Its programs are left out of the guide until it's back."
-                    : "Connected at \(account.baseURL.host() ?? account.baseURL.absoluteString).")
+                    : "Connected through: \(ConnectionRoute(account.baseURL).displayName) (\(ServerAddressText.short(account.baseURL))).")
                     .font(Typography.body)
                     .foregroundStyle(theme.textSecondary)
                 SettingsSection("Playback") {
@@ -41,6 +41,20 @@ struct ServerDetailView: View {
                         .foregroundStyle(theme.textSecondary)
                 }
                 SettingsSection("Server") {
+                    switch account.kind {
+                    case .plex:
+                        NavigationLink {
+                            ServerConnectionView(serverID: serverID)
+                        } label: {
+                            SettingsRowLabel(title: "Connection", systemImage: "network", value: account.connection.preference.shortName)
+                        }
+                    case .jellyfin:
+                        NavigationLink {
+                            JellyfinAddressView(serverID: serverID)
+                        } label: {
+                            SettingsRowLabel(title: "Server address", systemImage: "network", value: JellyfinAddressView.displayAddress(account.baseURL))
+                        }
+                    }
                     NavigationLink {
                         LibrarySettingsView(account: account)
                     } label: {

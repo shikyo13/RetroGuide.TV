@@ -17,7 +17,7 @@ RetroGuide.TV has two parts:
 | `Channels/` | `ChannelRule` (declarative filters), the curated catalog (`Resources/curated-channels.json`), dynamic channels, and `LineupBuilder`, which resolves everything into a lineup. |
 | `Scheduling/` | `ChannelTimeline` computes what's on at any time from a fixed epoch; `PlaylistArranger` implements the orderings. |
 | `Search/` | `ProgramSearchIndex` finds titles and their next airing. |
-| `MediaServers/` | The `MediaServerClient` protocol and the Plex implementation (linking, discovery, indexing, streams, track selection). |
+| `MediaServers/` | The `MediaServerClient` protocol and its Plex and Jellyfin implementations (sign-in, discovery, indexing, streams, track selection). |
 
 ### Scheduling
 

@@ -30,6 +30,20 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     public let artwork: Artwork
     /// Every version of the file on its server, in the server's order.
     public let versions: [MediaVersion]
+    /// The title's public database ids (the show's for an episode).
+    public let titleIDs: TitleIDs?
+    /// The item's own public database ids (the episode's, not its show's).
+    /// Servers name items differently (Plex's `plex://` guids, Jellyfin's
+    /// own ids); these recognize the same movie or episode on both.
+    public let publicIDs: TitleIDs?
+    /// When the item was added to its server (the earliest copy's, once
+    /// merged). Schedules bring new items in from the next broadcast day
+    /// after this (see ``ContentVersions``); `nil` counts as always there.
+    public let addedAt: Date?
+    /// Other libraries (on any server) holding a copy of this episode or
+    /// movie that lost out to this one when copies were merged: the item is
+    /// still part of those libraries. Set only in the merged library index.
+    public private(set) var otherLibraryIDs: [String]?
 
     public init(
         serverID: String,
@@ -49,7 +63,10 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         collections: [String] = [],
         countries: [String] = [],
         artwork: Artwork = Artwork(),
-        versions: [MediaVersion] = []
+        versions: [MediaVersion] = [],
+        titleIDs: TitleIDs? = nil,
+        publicIDs: TitleIDs? = nil,
+        addedAt: Date? = nil
     ) {
         self.id = Self.makeID(serverID: serverID, itemKey: itemKey)
         self.serverID = serverID
@@ -70,6 +87,92 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.countries = countries
         self.artwork = artwork
         self.versions = versions
+        self.titleIDs = titleIDs
+        self.publicIDs = publicIDs
+        self.addedAt = addedAt
+    }
+
+    /// Every library holding a copy of this item.
+    public var libraryIDs: [String] {
+        [libraryID] + (otherLibraryIDs ?? [])
+    }
+
+    /// This item, also counting as part of the libraries and collections the
+    /// other copies of it belong to.
+    func merging(copies: [MediaItem]) -> MediaItem {
+        let libraries = copies.flatMap(\.libraryIDs).filter { $0 != libraryID }
+        let otherCollections = copies.flatMap(\.collections).filter { !collections.contains($0) }
+        let borrowedIDs = (titleIDs == nil && copies.contains { $0.titleIDs != nil })
+            || (publicIDs == nil && copies.contains { $0.publicIDs != nil })
+        let earliest = ([addedAt] + copies.map(\.addedAt)).compactMap { $0 }.min()
+        guard !libraries.isEmpty || !otherCollections.isEmpty || borrowedIDs || earliest != addedAt else { return self }
+        var merged = MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
+            series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
+            genres: genres, networks: networks, collections: collections + Set(otherCollections).sorted(), countries: countries,
+            artwork: artwork, versions: versions, titleIDs: titleIDs ?? copies.lazy.compactMap(\.titleIDs).first,
+            publicIDs: publicIDs ?? copies.lazy.compactMap(\.publicIDs).first, addedAt: earliest
+        )
+        merged.otherLibraryIDs = Set(libraries).sorted()
+        return merged
+    }
+
+    /// This item as if it had been added to its server at `date`.
+    func withAddedAt(_ date: Date?) -> MediaItem {
+        var copy = MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
+            series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
+            genres: genres, networks: networks, collections: collections, countries: countries, artwork: artwork,
+            versions: versions, titleIDs: titleIDs, publicIDs: publicIDs, addedAt: date
+        )
+        copy.otherLibraryIDs = otherLibraryIDs
+        return copy
+    }
+
+    /// This copy (its server, file, timing and artwork), described the way
+    /// `sources`, every copy of the same title in order of preference,
+    /// describe it: each detail from the first copy that has it.
+    func described(by sources: [MediaItem]) -> MediaItem {
+        let source = sources.first ?? self
+        let rated = sources.first { $0.contentRating != nil }
+        var copy = MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: source.title,
+            series: series.map { SeriesInfo(key: $0.key, title: source.series?.title ?? $0.title, seasonNumber: $0.seasonNumber, episodeNumber: $0.episodeNumber, externalID: $0.externalID) },
+            year: sources.lazy.compactMap(\.year).first, duration: duration, summary: sources.lazy.compactMap(\.summary).first,
+            contentRating: rated?.contentRating, audience: rated?.audience ?? source.audience,
+            genres: source.genres, networks: source.networks, collections: collections, countries: source.countries, artwork: artwork,
+            versions: versions, titleIDs: sources.lazy.compactMap(\.titleIDs).first, publicIDs: publicIDs ?? sources.lazy.compactMap(\.publicIDs).first,
+            addedAt: addedAt
+        )
+        copy.otherLibraryIDs = otherLibraryIDs
+        return copy
+    }
+
+    /// This episode with its show's details (name, genres, networks,
+    /// countries, ids) as `show`, an episode of it, gives them.
+    func withShowDescription(of show: MediaItem) -> MediaItem {
+        guard let series, let showSeries = show.series else { return self }
+        var copy = MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
+            series: SeriesInfo(key: series.key, title: showSeries.title, seasonNumber: series.seasonNumber, episodeNumber: series.episodeNumber, externalID: series.externalID),
+            year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
+            genres: show.genres, networks: show.networks, collections: collections, countries: show.countries, artwork: artwork,
+            versions: versions, titleIDs: show.titleIDs ?? titleIDs, publicIDs: publicIDs, addedAt: addedAt
+        )
+        copy.otherLibraryIDs = otherLibraryIDs
+        return copy
+    }
+
+    /// This item as part of the show with the shared id `showID`.
+    func withShowExternalID(_ showID: String) -> MediaItem {
+        guard let series, series.externalID != showID else { return self }
+        return MediaItem(
+            serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
+            series: SeriesInfo(key: series.key, title: series.title, seasonNumber: series.seasonNumber, episodeNumber: series.episodeNumber, externalID: showID),
+            year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience, genres: genres,
+            networks: networks, collections: collections, countries: countries, artwork: artwork, versions: versions,
+            titleIDs: titleIDs, publicIDs: publicIDs, addedAt: addedAt
+        )
     }
 
     public static func makeID(serverID: String, itemKey: String) -> String {
@@ -100,6 +203,14 @@ public extension MediaItem {
     /// Globally unique series identifier (`"<serverID>/<seriesKey>"`), used by channel rules.
     var seriesID: String? {
         series.map { Self.makeID(serverID: serverID, itemKey: $0.key) }
+    }
+
+    /// The show (or, for a movie, the movie itself) this item belongs to, the
+    /// same on every server when the server knows the show's global id. Lineups
+    /// and schedules group by this.
+    var showID: String {
+        guard let series else { return id }
+        return series.externalID ?? Self.makeID(serverID: serverID, itemKey: series.key)
     }
 
     /// Secondary line, e.g. `"S2 E5 · The One With the Thing"` or `"1994"`.

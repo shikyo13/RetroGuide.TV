@@ -4,6 +4,10 @@ import SwiftUI
 /// Views must use these instead of literal numbers. Sizes have an Apple TV
 /// value and a smaller touch value for iPhone and iPad (see ``PlatformMetric``).
 enum DesignTokens {
+    enum Control {
+        static let minimumHeight = PlatformMetric.value(tv: CGFloat(64), touch: 44)
+    }
+
     enum Spacing {
         static let hairline = PlatformMetric.value(tv: CGFloat(2), touch: 1)
         static let xxs = PlatformMetric.value(tv: CGFloat(4), touch: 2)

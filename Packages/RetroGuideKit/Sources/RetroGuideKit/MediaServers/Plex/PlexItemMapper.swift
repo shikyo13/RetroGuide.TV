@@ -15,7 +15,8 @@ enum PlexItemMapper {
         library: MediaLibrary,
         memberships: PlexTagMemberships
     ) -> MediaItem? {
-        guard let duration = seconds(metadata.duration) else { return nil }
+        let playable = FullLengthVersions.select(metadata.versions, reported: seconds(metadata.duration))
+        guard let duration = playable.duration else { return nil }
         return MediaItem(
             serverID: library.serverID,
             itemKey: metadata.ratingKey,
@@ -38,7 +39,10 @@ enum PlexItemMapper {
                 logo: metadata.clearLogo,
                 thumbnail: metadata.thumb
             ),
-            versions: metadata.versions
+            versions: playable.versions,
+            titleIDs: titleIDs(of: metadata),
+            publicIDs: titleIDs(of: metadata),
+            addedAt: metadata.addedAt.map { Date(timeIntervalSince1970: TimeInterval($0)) }
         )
     }
 
@@ -48,7 +52,8 @@ enum PlexItemMapper {
         library: MediaLibrary,
         memberships: PlexTagMemberships
     ) -> MediaItem? {
-        guard let duration = seconds(metadata.duration),
+        let playable = FullLengthVersions.select(metadata.versions, reported: seconds(metadata.duration))
+        guard let duration = playable.duration,
               let showKey = metadata.grandparentRatingKey
         else { return nil }
         let rating = metadata.contentRating ?? show?.contentRating
@@ -64,7 +69,8 @@ enum PlexItemMapper {
                 key: showKey,
                 title: metadata.grandparentTitle ?? show?.title ?? metadata.title,
                 seasonNumber: metadata.parentIndex,
-                episodeNumber: metadata.index
+                episodeNumber: metadata.index,
+                externalID: show?.globalGuid ?? metadata.grandparentGlobalGuid
             ),
             year: metadata.year ?? show?.year,
             duration: duration,
@@ -81,8 +87,15 @@ enum PlexItemMapper {
                 logo: metadata.clearLogo ?? show?.clearLogo,
                 thumbnail: metadata.thumb
             ),
-            versions: metadata.versions
+            versions: playable.versions,
+            titleIDs: show.flatMap(titleIDs(of:)),
+            publicIDs: titleIDs(of: metadata),
+            addedAt: metadata.addedAt.map { Date(timeIntervalSince1970: TimeInterval($0)) }
         )
+    }
+
+    private static func titleIDs(of metadata: PlexMetadata) -> TitleIDs? {
+        TitleIDs(guids: (metadata.guids ?? []).map(\.id))
     }
 
     private static func seconds(_ milliseconds: Int?) -> TimeInterval? {

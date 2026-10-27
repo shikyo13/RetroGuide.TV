@@ -1,4 +1,5 @@
 import ImageIO
+import RetroGuideKit
 import UIKit
 
 /// Loads, downsamples and caches artwork.
@@ -12,6 +13,7 @@ actor ImagePipeline {
     static let shared = ImagePipeline()
 
     private enum Limits {
+        static let successStatusCodes = 200..<300
         static let bytesPerMegabyte = 1_024 * 1_024
         static let memoryCacheBytes = 96 * bytesPerMegabyte
         static let urlCacheMemoryBytes = 16 * bytesPerMegabyte
@@ -20,11 +22,8 @@ actor ImagePipeline {
         static let requestTimeout: TimeInterval = 20
     }
 
-    private let memoryCache: NSCache<NSString, UIImage> = {
-        let cache = NSCache<NSString, UIImage>()
-        cache.totalCostLimit = Limits.memoryCacheBytes
-        return cache
-    }()
+    /// Readable from any thread, so views can check it without waiting on the actor.
+    private nonisolated let memoryCache = ImageMemoryCache(costLimit: Limits.memoryCacheBytes)
 
     private let session: URLSession = {
         let configuration = URLSessionConfiguration.default
@@ -37,32 +36,76 @@ actor ImagePipeline {
         return URLSession(configuration: configuration)
     }()
 
-    private var inFlight: [NSString: Task<UIImage?, Never>] = [:]
+    private var inFlight: [String: Task<UIImage?, Never>] = [:]
+    /// How many callers are waiting on each download; at zero it's cancelled.
+    private var waiters: [String: Int] = [:]
 
-    /// Returns the image at `url`, downsampled so its longest side is at most `maxPixelSize`.
+    /// The image at `url` if it's already in memory, without waiting.
+    nonisolated func cachedImage(for url: URL, maxPixelSize: Int) -> UIImage? {
+        memoryCache.image(forKey: Self.key(url, maxPixelSize))
+    }
+
+    /// Returns the image at `url`, downsampled so its longest side is at most
+    /// `maxPixelSize`. Downloads and decodes run in parallel, off the actor;
+    /// one nobody is waiting for any more (a row scrolled away) is cancelled.
     func image(for url: URL, maxPixelSize: Int) async -> UIImage? {
-        let key = "\(url.absoluteString)#\(maxPixelSize)" as NSString
-        if let cached = memoryCache.object(forKey: key) {
+        let key = Self.key(url, maxPixelSize)
+        if let cached = memoryCache.image(forKey: key) {
             return cached
         }
+        let task: Task<UIImage?, Never>
         if let existing = inFlight[key] {
-            return await existing.value
+            task = existing
+        } else {
+            let session = session
+            task = Task.detached(priority: .userInitiated) {
+                #if DEBUG
+                if url.isFileURL {
+                    guard let data = try? Data(contentsOf: url), !Task.isCancelled else { return nil }
+                    return Self.downsample(data, maxPixelSize: maxPixelSize)
+                }
+                #endif
+                guard SecureTransport.permits(url),
+                      let (data, response) = try? await session.data(from: url, delegate: SecureRedirectDelegate.shared),
+                      let http = response as? HTTPURLResponse, Limits.successStatusCodes.contains(http.statusCode),
+                      !Task.isCancelled else { return nil }
+                return Self.downsample(data, maxPixelSize: maxPixelSize)
+            }
+            inFlight[key] = task
         }
-        let session = session
-        let task = Task<UIImage?, Never> {
-            guard let (data, _) = try? await session.data(from: url) else { return nil }
-            return Self.downsample(data, maxPixelSize: maxPixelSize)
+        waiters[key, default: .zero] += 1
+        let image = await withTaskCancellationHandler {
+            await task.value
+        } onCancel: {
+            Task { await self.abandon(key) }
         }
-        inFlight[key] = task
-        let image = await task.value
-        inFlight[key] = nil
+        guard !Task.isCancelled else { return nil }
+        waiters[key, default: 1] -= 1
+        if waiters[key] ?? .zero <= .zero {
+            waiters[key] = nil
+        }
+        if inFlight[key] == task {
+            inFlight[key] = nil
+        }
         if let image {
-            memoryCache.setObject(image, forKey: key, cost: Self.cost(of: image))
+            memoryCache.insert(image, forKey: key, cost: Self.cost(of: image))
         }
         return image
     }
 
-    private static func downsample(_ data: Data, maxPixelSize: Int) -> UIImage? {
+    /// A caller stopped waiting; cancels the download once nobody is.
+    private func abandon(_ key: String) {
+        waiters[key, default: 1] -= 1
+        guard waiters[key] ?? .zero <= .zero else { return }
+        waiters[key] = nil
+        inFlight.removeValue(forKey: key)?.cancel()
+    }
+
+    private nonisolated static func key(_ url: URL, _ maxPixelSize: Int) -> String {
+        "\(url.absoluteString)#\(maxPixelSize)"
+    }
+
+    private nonisolated static func downsample(_ data: Data, maxPixelSize: Int) -> UIImage? {
         let sourceOptions = [kCGImageSourceShouldCache: false] as CFDictionary
         guard let source = CGImageSourceCreateWithData(data as CFData, sourceOptions) else { return nil }
         let thumbnailOptions = [
@@ -75,8 +118,26 @@ actor ImagePipeline {
         return UIImage(cgImage: cgImage)
     }
 
-    private static func cost(of image: UIImage) -> Int {
+    private nonisolated static func cost(of image: UIImage) -> Int {
         guard let cgImage = image.cgImage else { return 1 }
         return cgImage.bytesPerRow * cgImage.height
+    }
+}
+
+/// Decoded images in memory, limited by cost and purged by the system under
+/// pressure. `NSCache` is documented as thread-safe.
+final class ImageMemoryCache: @unchecked Sendable {
+    private let cache = NSCache<NSString, UIImage>()
+
+    init(costLimit: Int) {
+        cache.totalCostLimit = costLimit
+    }
+
+    func image(forKey key: String) -> UIImage? {
+        cache.object(forKey: key as NSString)
+    }
+
+    func insert(_ image: UIImage, forKey key: String, cost: Int) {
+        cache.setObject(image, forKey: key as NSString, cost: cost)
     }
 }

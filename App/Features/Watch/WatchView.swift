@@ -11,13 +11,32 @@ struct WatchView: View {
         case guide
         case search
         case settings
+
+        /// Full-screen TV, unless a development launch option asks for a menu.
+        static var initial: Overlay {
+            switch DebugLaunchOptions.overlay {
+            case .guide: .guide
+            case .search: .search
+            case .settings: .settings
+            case .options, nil: .none
+            }
+        }
     }
 
     @Environment(AppModel.self) private var app
-    @State private var overlay = Overlay.none
+    @State private var overlay = Overlay.initial
     @State private var previewFrame: CGRect?
     @State private var screenSize = CGSize.zero
     @State private var safeArea = EdgeInsets()
+    /// Height of the on-screen keyboard (iPhone and iPad), so the PiP window stays above it.
+    @State private var keyboardHeight: CGFloat = .zero
+    /// Height of the free version's ad banner under the menus (iPhone and iPad).
+    @State private var bannerHeight: CGFloat = .zero
+    /// Apple TV: the guide's top row (Search, Settings, Options) can take focus.
+    @State private var isGuideTopBarActive = false
+    @State private var isShowingOptions = DebugLaunchOptions.overlay == .options
+    @State private var guideFocusRequest: GuideFocusRequest?
+    @State private var liveControlsFocusSerial = 0
 
     var body: some View {
         let tuner = app.tuner
@@ -26,6 +45,7 @@ struct WatchView: View {
             switch overlay {
             case .guide:
                 guide(tuner: tuner)
+                    .disabled(isShowingOptions)
                     .transition(.opacity)
             case .settings:
                 SettingsView(onClose: { overlay = .guide })
@@ -40,15 +60,56 @@ struct WatchView: View {
                 EmptyView()
             }
             liveVideo(tuner: tuner)
+            if overlay == .guide, !app.browsingChannels.isEmpty, let previewFrame {
+                liveControls(tuner: tuner, pictureFrame: previewFrame)
+            }
             #if os(iOS)
             if isPictureInPicture {
                 returnToFullScreenTarget
             }
             #endif
-            if overlay == .none {
-                PlayerChromeView(tuner: tuner, onOpenGuide: { overlay = .guide })
+            if app.sleepTimer.didExpire {
+                VStack(spacing: DesignTokens.Spacing.md) {
+                    Text("Sleep timer finished").font(Typography.title)
+                    Button("Resume watching") {
+                        app.sleepTimer.resumeWatching()
+                        tuner.resume()
+                    }.buttonStyle(.retroPrimary)
+                }
+                .panel()
+                .padding(DesignTokens.Spacing.lg)
+            }
+            if overlay == .none && !app.sleepTimer.didExpire {
+                PlayerChromeView(
+                    tuner: tuner,
+                    isActive: !isShowingOptions,
+                    onOpenGuide: { overlay = .guide },
+                    onOpenOptions: { isShowingOptions = true }
+                )
                     .transition(.opacity)
             }
+        }
+        .alert("Program reminder", isPresented: Binding(get: { app.reminders.due != nil }, set: { if !$0 { app.reminders.due = nil } }), presenting: app.reminders.due) { reminder in
+            Button("Watch now") {
+                if let url = WhatsOnStore.url(forChannel: reminder.channelID) { app.open(url); overlay = .none }
+                app.reminders.due = nil
+            }
+            Button("Dismiss", role: .cancel) { app.reminders.due = nil }
+        } message: { reminder in
+            Text("\(reminder.title) is starting on \(reminder.channelName).")
+        }
+        .alert("Reminders", isPresented: Binding(get: { app.reminders.message != nil }, set: { if !$0 { app.reminders.message = nil } })) {
+            Button("OK", role: .cancel) { app.reminders.message = nil }
+        } message: { Text(app.reminders.message ?? "") }
+        .onChange(of: tuner.returnToGuideRequest) { overlay = .guide }
+        .watchOptions(isPresented: $isShowingOptions, tuner: tuner)
+        #if os(iOS)
+        .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)
+        .ratingPrompt(isWatchingFullScreen: overlay == .none, tuner: tuner)
+        #endif
+        .onChange(of: overlay) {
+            isGuideTopBarActive = false
+            isShowingOptions = false
         }
         .onPreferenceChange(LivePreviewFrameKey.self) { frame in
             previewFrame = frame
@@ -62,15 +123,40 @@ struct WatchView: View {
             }
             .ignoresSafeArea()
         }
+        #if os(iOS)
+        .background {
+            // Ignores only the container safe area, so its bottom inset is the keyboard.
+            GeometryReader { _ in
+                Color.clear
+                    .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.bottom } action: { keyboardHeight = $0 }
+            }
+            .ignoresSafeArea(.container)
+        }
+        #endif
         .environment(\.pictureInPictureClearance, WatchLayout.pictureInPictureClearance(in: screenSize))
         #if os(iOS)
         .statusBarHidden(overlay == .none)
         .persistentSystemOverlays(overlay == .none ? .hidden : .automatic)
-        .keepsScreenAwake()
+        .keepsScreenAwake(enabled: !app.sleepTimer.didExpire)
         #endif
         .animation(DesignTokens.Motion.pictureInPicture, value: overlay)
         .animation(DesignTokens.Motion.pictureInPicture, value: previewFrame)
+        #if DEBUG
+        .task { await debugAutoTune(tuner: tuner) }
+        #endif
     }
+
+    #if DEBUG
+    /// Picks the next channel from the guide after a delay (``DebugLaunchOptions/autoTuneDelay``).
+    private func debugAutoTune(tuner: Tuner) async {
+        guard let delay = DebugLaunchOptions.autoTuneDelay else { return }
+        try? await Task.sleep(for: delay)
+        let channels = app.visibleChannels
+        guard let current = channels.firstIndex(where: { $0.id == tuner.channel?.id }) else { return }
+        tuner.tune(to: channels[(current + 1) % channels.count])
+        overlay = .none
+    }
+    #endif
 
     /// Full screen, the guide's preview window, or PiP in the bottom-right corner over Settings.
     private func liveVideo(tuner: Tuner) -> some View {
@@ -84,18 +170,21 @@ struct WatchView: View {
     private func frame(in screen: CGSize) -> CGRect? {
         switch overlay {
         case .none: nil
-        case .guide: previewFrame
+        case .guide: app.browsingChannels.isEmpty ? WatchLayout.pictureInPictureFrame(in: screen, safeArea: pictureInPictureSafeArea) : previewFrame
         case .settings, .search: WatchLayout.pictureInPictureFrame(in: screen, safeArea: pictureInPictureSafeArea)
         }
     }
 
     private var isPictureInPicture: Bool {
-        overlay == .settings || overlay == .search
+        overlay == .settings || overlay == .search || (overlay == .guide && app.browsingChannels.isEmpty)
     }
 
-    /// Apple TV's PiP insets already account for overscan.
+    /// Apple TV's PiP insets already account for overscan. On iPhone and iPad
+    /// the window also moves up above the on-screen keyboard.
     private var pictureInPictureSafeArea: EdgeInsets {
-        PlatformMetric.value(tv: EdgeInsets(), touch: safeArea)
+        var insets = PlatformMetric.value(tv: EdgeInsets(), touch: safeArea)
+        insets.bottom = max(insets.bottom + bannerHeight, keyboardHeight)
+        return insets
     }
 
     #if os(iOS)
@@ -117,9 +206,39 @@ struct WatchView: View {
     }
     #endif
 
+    /// The guide's controls on the live picture (above the video layer).
+    private func liveControls(tuner: Tuner, pictureFrame: CGRect) -> some View {
+        var controls = GuideLiveControls(
+            pictureFrame: pictureFrame,
+            isTopBarActive: isGuideTopBarActive,
+            isShowingOptions: $isShowingOptions,
+            focusSerial: liveControlsFocusSerial,
+            onCloseGuide: { overlay = .none }
+        )
+        #if os(tvOS)
+        controls.onMoveOut = moveFocusFromLiveControls
+        #endif
+        return controls
+    }
+
+    #if os(tvOS)
+    /// Up or Right from the picture's controls returns to Search, Down to the grid.
+    private func moveFocusFromLiveControls(_ direction: MoveCommandDirection) {
+        let serial = (guideFocusRequest?.serial ?? .zero) + 1
+        switch direction {
+        case .up, .right: guideFocusRequest = GuideFocusRequest(target: .topBar, serial: serial)
+        case .down: guideFocusRequest = GuideFocusRequest(target: .grid, serial: serial)
+        default: break
+        }
+    }
+    #endif
+
     private func guide(tuner: Tuner) -> some View {
         GuideView(
-            channels: app.visibleChannels,
+            channels: app.browsingChannels,
+            lineupRevision: app.lineupRevision,
+            isTopBarActive: $isGuideTopBarActive,
+            focusRequest: guideFocusRequest,
             tuner: tuner,
             actions: GuideActions(
                 onTune: { channel in
@@ -128,7 +247,8 @@ struct WatchView: View {
                 },
                 onClose: { overlay = .none },
                 onOpenSearch: { overlay = .search },
-                onOpenSettings: { overlay = .settings }
+                onOpenSettings: { overlay = .settings },
+                onFocusLiveControls: { liveControlsFocusSerial += 1 }
             )
         )
     }

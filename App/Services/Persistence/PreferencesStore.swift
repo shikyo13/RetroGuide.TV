@@ -9,6 +9,8 @@ struct UserPreferences: Codable, Equatable, Sendable {
     var showsScanlines = true
     var playerEngine: PlaybackEngineKind = .universal
     var displayMatching: DisplayMatching = .dynamicRange
+    /// Where earlier versions kept the last channel; read once to carry it over
+    /// (see ``PreferencesStore/lastChannelID``).
     var lastChannelID: String?
 
     init() {}
@@ -31,11 +33,16 @@ struct UserPreferences: Codable, Equatable, Sendable {
 @MainActor
 struct PreferencesStore {
     private enum Key {
+        static let startupIncomplete = "startupIncomplete.v1"
         static let preferences = "preferences.v1"
         static let accounts = "accounts.v1"
         static let customization = "lineupCustomization.v1"
         static let languagePreferences = "languagePreferences.v1"
+        static let trackRules = "trackRules.v1"
         static let plexClientIdentifier = "plexClientIdentifier"
+        static let lastChannelID = "lastChannelID.v1"
+        static let viewing = "viewing.v1"
+        static let showSubtitleOffsets = "showSubtitleOffsets.v1"
     }
 
     private let defaults: UserDefaults
@@ -44,9 +51,32 @@ struct PreferencesStore {
         self.defaults = defaults
     }
 
+    var startupIncomplete: Bool {
+        get { defaults.bool(forKey: Key.startupIncomplete) }
+        nonmutating set { defaults.set(newValue, forKey: Key.startupIncomplete) }
+    }
+
     var preferences: UserPreferences {
         get { decode(UserPreferences.self, forKey: Key.preferences) ?? UserPreferences() }
         nonmutating set { encode(newValue, forKey: Key.preferences) }
+    }
+
+    /// The channel to come back to. Saved on its own, apart from
+    /// ``preferences``, because it changes on every channel change.
+    var lastChannelID: String? {
+        get { defaults.string(forKey: Key.lastChannelID) ?? preferences.lastChannelID }
+        nonmutating set { defaults.set(newValue, forKey: Key.lastChannelID) }
+    }
+
+    var viewing: ViewingPreferences {
+        get { decode(ViewingPreferences.self, forKey: Key.viewing) ?? ViewingPreferences() }
+        nonmutating set { encode(newValue, forKey: Key.viewing) }
+    }
+
+    /// Subtitle timing remembered per show; on this device only.
+    var showSubtitleOffsets: ShowSubtitleOffsets {
+        get { decode(ShowSubtitleOffsets.self, forKey: Key.showSubtitleOffsets) ?? ShowSubtitleOffsets() }
+        nonmutating set { encode(newValue, forKey: Key.showSubtitleOffsets) }
     }
 
     var accounts: [ServerAccount] {
@@ -67,6 +97,13 @@ struct PreferencesStore {
         }
     }
 
+    /// The viewer's audio and subtitle choices (also kept in iCloud, see
+    /// ``CloudTrackRulesStore``).
+    var trackRules: TrackRules {
+        get { decode(TrackRules.self, forKey: Key.trackRules) ?? TrackRules() }
+        nonmutating set { encode(newValue, forKey: Key.trackRules) }
+    }
+
     var customization: LineupCustomization {
         get { decode(LineupCustomization.self, forKey: Key.customization) ?? LineupCustomization() }
         nonmutating set { encode(newValue, forKey: Key.customization) }
@@ -83,7 +120,7 @@ struct PreferencesStore {
     }
 
     func resetAll() {
-        [Key.preferences, Key.accounts, Key.customization, Key.languagePreferences].forEach(defaults.removeObject(forKey:))
+        [Key.startupIncomplete, Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID, Key.showSubtitleOffsets].forEach(defaults.removeObject(forKey:))
     }
 
     private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {

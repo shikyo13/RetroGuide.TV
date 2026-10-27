@@ -13,4 +13,6 @@ enum PlayerCommand {
     case hideInfo
     case openGuide
     case lastChannel
+    /// Open the audio and subtitle choices.
+    case openOptions
 }

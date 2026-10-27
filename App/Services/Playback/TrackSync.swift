@@ -1,0 +1,160 @@
+import Foundation
+import Observation
+import RetroGuideKit
+
+/// Saves audio and subtitle choices to the media server in the background,
+/// like PASTA: every episode a choice covers gets it as the account's own
+/// track choice, so every app signed in to the account, on any device, plays
+/// the same tracks.
+@MainActor
+@Observable
+final class TrackSync {
+    private enum Tuning {
+        /// Episodes saved at once (each is a read and a write).
+        static let concurrentSaves = 4
+    }
+
+    struct Progress: Equatable {
+        let saved: Int
+        let failed: Int
+        let total: Int
+
+        var done: Int { saved + failed }
+    }
+
+    /// Progress of the save in flight, if any.
+    private(set) var progress: Progress?
+    /// Episodes whose choice couldn't be saved (server unreachable, write
+    /// refused), kept until ``retryFailed()`` or the next save.
+    private(set) var failedCount = 0
+    @ObservationIgnored private var failedJobs: [Job] = []
+
+    private struct Job {
+        let items: [MediaItem]
+        let rules: TrackRules
+        let preferences: LanguagePreferences?
+    }
+
+    @ObservationIgnored private let clientProvider: (String) -> (any MediaServerClient)?
+    @ObservationIgnored private var queue: [Job] = []
+    @ObservationIgnored private var worker: Task<Void, Never>?
+    @ObservationIgnored private var workerGeneration = 0
+    /// The viewer's current choices and language settings, from whichever
+    /// source changed them last (this device, another one through iCloud, the
+    /// Plex account): retries send these, never an older snapshot.
+    @ObservationIgnored private var currentRules = TrackRules()
+    @ObservationIgnored private var currentPreferences: LanguagePreferences?
+
+    init(clientProvider: @escaping (String) -> (any MediaServerClient)?) {
+        self.clientProvider = clientProvider
+    }
+
+    /// Saves `rules` for everything `scope` covers around `item`.
+    func save(_ rules: TrackRules, around item: MediaItem, scope: TrackScope, among items: [MediaItem], preferences: LanguagePreferences?) {
+        currentRules = rules
+        currentPreferences = preferences
+        // Jellyfin receives choices during playback; it cannot save them in bulk.
+        // The app's shared rules still cover episodes that haven't played yet.
+        let covered = TrackRules.items(in: scope, around: item, among: items)
+            .filter { clientProvider($0.serverID)?.savesTrackChoices ?? true }
+        guard !covered.isEmpty else { return }
+        // A newer choice replaces an older one that failed for the same episodes.
+        let coveredIDs = Set(covered.map(\.id))
+        failedJobs = failedJobs.compactMap { job in
+            let remaining = job.items.filter { !coveredIDs.contains($0.id) }
+            return remaining.isEmpty ? nil : Job(items: remaining, rules: job.rules, preferences: job.preferences)
+        }
+        failedCount = failedJobs.reduce(0) { $0 + $1.items.count }
+        enqueue(Job(items: covered, rules: rules, preferences: preferences))
+    }
+
+    /// Records choices or language settings that changed without a save here
+    /// (another device's choices arriving through iCloud).
+    func setCurrent(rules: TrackRules, preferences: LanguagePreferences?) {
+        currentRules = rules
+        currentPreferences = preferences
+    }
+
+    /// Tries the episodes that failed to save again, with the current choices.
+    func retryFailed() {
+        let jobs = failedJobs
+        failedJobs = []
+        failedCount = .zero
+        jobs.forEach { enqueue(Job(items: $0.items, rules: currentRules, preferences: currentPreferences)) }
+    }
+
+    private func enqueue(_ job: Job) {
+        queue.append(job)
+        guard worker == nil else { return }
+        workerGeneration += 1
+        let generation = workerGeneration
+        worker = Task { [weak self] in
+            await self?.drain(generation: generation)
+        }
+    }
+
+    func cancelAll() {
+        queue.removeAll()
+        failedJobs = []
+        failedCount = .zero
+        currentRules = TrackRules()
+        currentPreferences = nil
+        workerGeneration += 1
+        worker?.cancel()
+        worker = nil
+        progress = nil
+    }
+
+    private func drain(generation: Int) async {
+        while generation == workerGeneration, !queue.isEmpty, !Task.isCancelled {
+            await run(queue.removeFirst(), generation: generation)
+        }
+        guard generation == workerGeneration else { return }
+        progress = nil
+        worker = nil
+    }
+
+    private func run(_ job: Job, generation: Int) async {
+        progress = Progress(saved: .zero, failed: .zero, total: job.items.count)
+        let clientProvider = clientProvider
+        var failedItems: [MediaItem] = []
+        await withTaskGroup(of: (MediaItem, Bool).self) { group in
+            var next = job.items.makeIterator()
+            @MainActor func enqueue() {
+                guard generation == workerGeneration, !Task.isCancelled else { return }
+                guard let item = next.next() else { return }
+                let rules = job.rules
+                let client = clientProvider(item.serverID)
+                group.addTask {
+                    // A server that isn't connected can't save anything.
+                    guard let client else { return (item, false) }
+                    let saved = await client.saveTracks(for: item, preferences: job.preferences) { tracks, automatic in
+                        // The viewer's choices over what the account picks on its own,
+                        // so going back to automatic saves the account's defaults.
+                        rules.selection(for: item, tracks: ItemTracks(audio: tracks.audio, subtitles: tracks.subtitles, selection: automatic))
+                    }
+                    return (item, saved)
+                }
+            }
+            for _ in 0..<Tuning.concurrentSaves {
+                enqueue()
+            }
+            while let (item, saved) = await group.next() {
+                guard generation == workerGeneration, !Task.isCancelled else {
+                    group.cancelAll()
+                    return
+                }
+                if !saved {
+                    failedItems.append(item)
+                }
+                progress = progress.map { Progress(saved: $0.saved + (saved ? 1 : 0), failed: $0.failed + (saved ? 0 : 1), total: $0.total) }
+                enqueue()
+            }
+        }
+        guard generation == workerGeneration, !Task.isCancelled else { return }
+        if !failedItems.isEmpty {
+            failedJobs.append(Job(items: failedItems, rules: job.rules, preferences: job.preferences))
+            failedCount += failedItems.count
+        }
+    }
+}

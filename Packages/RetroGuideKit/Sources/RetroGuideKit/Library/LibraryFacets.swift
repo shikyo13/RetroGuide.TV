@@ -22,7 +22,7 @@ public struct LibraryFacets: Sendable {
     public let decades: [FacetValue]
     public let libraries: [FacetValue]
 
-    init(items: [MediaItem], attributes: [NormalizedAttributes], libraries sourceLibraries: [MediaLibrary]) {
+    init(items: [MediaItem], attributes: [NormalizedAttributes], libraries sourceLibraries: [MediaLibrary], libraryTwins: LibraryTwins = .none) {
         let categoriesByItem = Dictionary(zip(items.map(\.id), attributes.map(\.categories)), uniquingKeysWith: { first, _ in first })
         categories = Self.aggregate(items) { item in
             (categoriesByItem[item.id] ?? []).map { ($0.rawValue, $0.displayName) }
@@ -32,8 +32,8 @@ public struct LibraryFacets: Sendable {
         networks = Self.aggregate(items) { $0.networks.map { ($0, $0) } }
         collections = Self.aggregate(items) { $0.collections.map { ($0, $0) } }
         series = Self.aggregate(items) { item in
-            guard let seriesID = item.seriesID, let title = item.series?.title else { return [] }
-            return [(seriesID, title)]
+            guard let title = item.series?.title else { return [] }
+            return [(item.showID, title)]
         }
         decades = Self.aggregate(items) { item in
             item.year.map { year in
@@ -41,7 +41,10 @@ public struct LibraryFacets: Sendable {
                 return [(String(decade), Decade.label(for: decade))]
             } ?? []
         }
-        self.libraries = Self.aggregate(items) { [($0.libraryID, libraryTitles[$0.libraryID] ?? $0.libraryID)] }
+        // A library's twins on other servers count as that library.
+        self.libraries = Self.aggregate(items) { item in
+            Set(item.libraryIDs.map { libraryTwins.canonical[$0] ?? $0 }).sorted().map { ($0, libraryTitles[$0] ?? $0) }
+        }
     }
 
     /// Groups items by the keys `extract` returns, preserving the first display name seen.
@@ -58,8 +61,8 @@ public struct LibraryFacets: Sendable {
                 if names[key] == nil { names[key] = name }
                 counts[key, default: .zero] += 1
                 runtimes[key, default: .zero] += item.duration
-                if let seriesID = item.seriesID {
-                    series[key, default: []].insert(seriesID)
+                if item.series != nil {
+                    series[key, default: []].insert(item.showID)
                 }
             }
         }
@@ -73,6 +76,7 @@ public struct LibraryFacets: Sendable {
                     seriesCount: series[key]?.count ?? .zero
                 )
             }
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            // Locale-independent, so every device builds the same lineup.
+            .sorted { ($0.name.lowercased(), $0.id) < ($1.name.lowercased(), $1.id) }
     }
 }

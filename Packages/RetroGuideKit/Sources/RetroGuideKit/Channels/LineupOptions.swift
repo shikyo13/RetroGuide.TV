@@ -6,17 +6,31 @@ public struct LineupOptions: Sendable, Hashable {
     public var minimumChannelRuntime: TimeInterval
     /// Channels with fewer items than this are dropped.
     public var minimumChannelItems: Int
-    /// A show needs at least this many episodes to earn a marathon channel.
-    public var marathonMinimumEpisodes: Int
-    /// Upper bound on marathon channels (the longest-running shows win).
+    /// A show needs at least this many regular seasons to get a 24/7 channel.
+    public var marathonMinimumSeasons: Int
+    /// 24/7 channels are limited on their own (most episodes first) and don't
+    /// take places from the other channels (``maximumChannels``).
     public var maximumMarathonChannels: Int
+    /// A collection of movies only needs at least this many to be a channel,
+    /// so one film franchise (Alien, Die Hard) isn't a channel of its own.
+    public var movieCollectionMinimumTitles: Int
+    /// Genre, decade, network, collection and library channels need at least
+    /// this many different titles, in libraries with at least
+    /// `titleMinimumLibraryTitles` titles (tiny libraries can't fill channels
+    /// with several titles each; any channel beats none there). Thin
+    /// neighbouring decade channels merge first (``DecadeChannelMerger``).
+    public var minimumChannelTitles: Int
+    public var titleMinimumLibraryTitles: Int
+    /// Channels sharing this much of their combined titles with a channel
+    /// earlier in the lineup are near-duplicates and dropped.
+    public var nearDuplicateSimilarity: Double
     /// A collection needs at least this many items to become a channel.
     public var collectionMinimumItems: Int
     /// A network needs at least this many different shows to become a channel
     /// (a single-show network would just duplicate that show's marathon).
     public var networkMinimumShows: Int
-    /// Upper bound on automatic channels; the least substantial dynamic channels
-    /// are dropped first. Custom channels are never dropped.
+    /// Upper bound on automatic channels other than 24/7 channels (see
+    /// ``LineupSelection``). Custom channels are never dropped.
     public var maximumChannels: Int
     /// Alignment of program start times.
     public var grid: ScheduleGrid
@@ -24,8 +38,12 @@ public struct LineupOptions: Sendable, Hashable {
     public init(
         minimumChannelRuntime: TimeInterval = Defaults.minimumChannelRuntime,
         minimumChannelItems: Int = Defaults.minimumChannelItems,
-        marathonMinimumEpisodes: Int = Defaults.marathonMinimumEpisodes,
+        marathonMinimumSeasons: Int = Defaults.marathonMinimumSeasons,
         maximumMarathonChannels: Int = Defaults.maximumMarathonChannels,
+        movieCollectionMinimumTitles: Int = Defaults.movieCollectionMinimumTitles,
+        minimumChannelTitles: Int = Defaults.minimumChannelTitles,
+        titleMinimumLibraryTitles: Int = Defaults.titleMinimumLibraryTitles,
+        nearDuplicateSimilarity: Double = Defaults.nearDuplicateSimilarity,
         collectionMinimumItems: Int = Defaults.collectionMinimumItems,
         networkMinimumShows: Int = Defaults.networkMinimumShows,
         maximumChannels: Int = Defaults.maximumChannels,
@@ -33,8 +51,12 @@ public struct LineupOptions: Sendable, Hashable {
     ) {
         self.minimumChannelRuntime = minimumChannelRuntime
         self.minimumChannelItems = minimumChannelItems
-        self.marathonMinimumEpisodes = marathonMinimumEpisodes
+        self.marathonMinimumSeasons = marathonMinimumSeasons
         self.maximumMarathonChannels = maximumMarathonChannels
+        self.movieCollectionMinimumTitles = movieCollectionMinimumTitles
+        self.minimumChannelTitles = minimumChannelTitles
+        self.titleMinimumLibraryTitles = titleMinimumLibraryTitles
+        self.nearDuplicateSimilarity = nearDuplicateSimilarity
         self.collectionMinimumItems = collectionMinimumItems
         self.networkMinimumShows = networkMinimumShows
         self.maximumChannels = maximumChannels
@@ -49,11 +71,7 @@ public struct LineupOptions: Sendable, Hashable {
             max(totalRuntime * Scaling.runtimeFraction, Scaling.minimumChannelRuntime),
             Defaults.minimumChannelRuntime
         )
-        let marathonEpisodes = min(
-            max(index.items.count / Scaling.itemsPerMarathonEpisode, Scaling.minimumMarathonEpisodes),
-            Defaults.marathonMinimumEpisodes
-        )
-        return LineupOptions(minimumChannelRuntime: runtime, marathonMinimumEpisodes: marathonEpisodes, grid: grid)
+        return LineupOptions(minimumChannelRuntime: runtime, grid: grid)
     }
 
     public enum Scaling {
@@ -61,23 +79,28 @@ public struct LineupOptions: Sendable, Hashable {
         public static let runtimeFraction = 0.004
         /// …but never less than this.
         public static let minimumChannelRuntime: TimeInterval = 2 * ScheduleConstants.secondsPerHour
-        public static let itemsPerMarathonEpisode = 250
-        public static let minimumMarathonEpisodes = 12
     }
 
     public enum Defaults {
         public static let minimumChannelRuntime: TimeInterval = 6 * ScheduleConstants.secondsPerHour
         public static let minimumChannelItems = 4
-        public static let marathonMinimumEpisodes = 40
+        public static let marathonMinimumSeasons = 3
         public static let maximumMarathonChannels = 40
+        public static let movieCollectionMinimumTitles = 15
+        public static let minimumChannelTitles = 3
+        public static let titleMinimumLibraryTitles = 40
+        public static let nearDuplicateSimilarity = 0.9
         public static let collectionMinimumItems = 5
-        public static let networkMinimumShows = 3
+        public static let networkMinimumShows = 5
         public static let maximumChannels = 120
     }
 }
 
-/// Channel number ranges per source, so numbers stay stable as libraries change.
+/// Channel number ranges. Automatic channels are numbered consecutively from
+/// the start of ``automatic`` in lineup order; the per-source ranges order
+/// the channels the library adds (libraries, networks, collections, 24/7).
 public enum ChannelNumbering {
+    public static let automatic = 1..<500
     public static let libraries = 90..<100
     public static let networks = 100..<200
     public static let collections = 200..<300

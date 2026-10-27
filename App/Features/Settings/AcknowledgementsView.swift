@@ -19,6 +19,7 @@ struct AcknowledgementsView: View {
         Component(name: "MPVKit", license: "GNU LGPL v3.0", source: "github.com/mpvkit/MPVKit"),
         Component(name: "mpv", license: "GNU LGPL (via MPVKit)", source: "mpv.io"),
         Component(name: "FFmpeg", license: "GNU LGPL (via MPVKit)", source: "ffmpeg.org"),
+        Component(name: "Mozilla CA certificate list", license: "Mozilla Public License 2.0", source: "curl.se/docs/caextract.html"),
     ]
 
     @Environment(\.theme) private var theme

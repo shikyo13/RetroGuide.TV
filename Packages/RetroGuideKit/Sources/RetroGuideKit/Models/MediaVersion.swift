@@ -15,6 +15,8 @@ public struct MediaVersion: Codable, Sendable, Hashable {
     public let height: Int?
     /// Overall bitrate in kilobits per second, when known.
     public let bitrateKbps: Int?
+    /// Running time in seconds, when the server reports one per version.
+    public let duration: TimeInterval?
 
     public init(
         index: Int = .zero,
@@ -23,7 +25,8 @@ public struct MediaVersion: Codable, Sendable, Hashable {
         audioCodec: String?,
         filePath: String?,
         height: Int? = nil,
-        bitrateKbps: Int? = nil
+        bitrateKbps: Int? = nil,
+        duration: TimeInterval? = nil
     ) {
         self.index = index
         self.container = container
@@ -32,6 +35,26 @@ public struct MediaVersion: Codable, Sendable, Hashable {
         self.filePath = filePath
         self.height = height
         self.bitrateKbps = bitrateKbps
+        self.duration = duration
+    }
+}
+
+/// A title's full-length versions: servers can list a short clip saved beside
+/// a movie (a sample or trailer) as one of its versions, and report the
+/// title's running time from it, so it would never air or play the clip.
+public enum FullLengthVersions {
+    /// A version less than this share of the longest one's running time is a
+    /// clip, not another cut of the title.
+    static let minimumShareOfLongest = 0.5
+
+    /// `versions` less clips, and the title's running time: the longest
+    /// version's, or `reported` when versions have none.
+    static func select(_ versions: [MediaVersion], reported: TimeInterval?) -> (versions: [MediaVersion], duration: TimeInterval?) {
+        guard let longest = versions.compactMap(\.duration).max() else { return (versions, reported) }
+        let full = versions.filter { version in
+            version.duration.map { $0 >= longest * minimumShareOfLongest } ?? true
+        }
+        return (full, longest)
     }
 }
 

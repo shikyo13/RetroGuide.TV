@@ -7,27 +7,33 @@ struct FailureView: View {
     }
 
     let message: String
+    var isCancelled = false
     let retry: () -> Void
 
     @Environment(\.theme) private var theme
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
-            Image(systemName: "antenna.radiowaves.left.and.right.slash")
+            Image(systemName: isCancelled ? "pause.circle" : "antenna.radiowaves.left.and.right.slash")
                 .font(Typography.display)
                 .foregroundStyle(theme.accent)
-            Text("We're experiencing technical difficulties")
+            Text(isCancelled ? "Channel loading cancelled" : "We're experiencing technical difficulties")
                 .font(Typography.title)
                 .foregroundStyle(theme.textPrimary)
                 .multilineTextAlignment(.center)
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
             Text(message)
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
                 .multilineTextAlignment(.center)
+                .lineLimit(nil)
+                .fixedSize(horizontal: false, vertical: true)
             Button("Try Again", action: retry)
                 .buttonStyle(.retroPrimary)
         }
         .columnWidth(Layout.contentWidth)
+        .padding(.horizontal, DesignTokens.Spacing.lg)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .screenBackground()
         .crtEffect()

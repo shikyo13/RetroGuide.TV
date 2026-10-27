@@ -22,6 +22,9 @@ public struct StreamRequest: Sendable, Hashable {
     public let sessionID: String
     public let method: StreamMethod
     public let buffer: BufferProfile
+    /// Which copy of the item this streams (``MediaVersion/index``), so its
+    /// own audio and subtitle tracks are the ones offered and played.
+    public let versionIndex: Int?
 
     public init(
         url: URL,
@@ -29,7 +32,8 @@ public struct StreamRequest: Sendable, Hashable {
         startsAtPosition: Bool,
         sessionID: String,
         method: StreamMethod,
-        buffer: BufferProfile = .standard
+        buffer: BufferProfile = .standard,
+        versionIndex: Int? = nil
     ) {
         self.url = url
         self.startPosition = startPosition
@@ -37,6 +41,17 @@ public struct StreamRequest: Sendable, Hashable {
         self.sessionID = sessionID
         self.method = method
         self.buffer = buffer
+        self.versionIndex = versionIndex
+    }
+
+    /// The same stream starting at `position` instead, when the player seeks
+    /// itself (a stream the server starts at a position can't move).
+    public func starting(at position: TimeInterval) -> StreamRequest {
+        guard !startsAtPosition else { return self }
+        return StreamRequest(
+            url: url, startPosition: position, startsAtPosition: false, sessionID: sessionID,
+            method: method, buffer: buffer, versionIndex: versionIndex
+        )
     }
 
     /// Whether the server holds resources for this stream that must be released.
@@ -68,15 +83,61 @@ public protocol MediaServerClient: Sendable {
         for item: MediaItem,
         startingAt position: TimeInterval,
         capabilities: PlaybackCapabilities
-    ) throws -> StreamRequest
+    ) async throws -> StreamRequest
 
-    /// The audio/subtitle tracks for this viewer: their choices for the item when
-    /// they made any, otherwise picked with their account's `preferences`. `nil`
-    /// when unknown (the player then falls back to its own language rules).
-    func trackSelection(for item: MediaItem, preferences: LanguagePreferences?) async -> TrackSelection?
+    /// The audio and subtitle tracks of copy `version` of the item (`nil`: the
+    /// first copy), and the ones to play for this
+    /// viewer: their choices for the item when they made any, otherwise picked
+    /// with their account's `preferences`. `nil` when unknown (the player then
+    /// falls back to its own language rules).
+    func tracks(for item: MediaItem, version: Int?, preferences: LanguagePreferences?) async -> ItemTracks?
+
+    /// Saves the tracks `choose` picks for `item` (given its tracks and what
+    /// the account's language settings would pick) as this account's choice
+    /// on the server, on every copy of the item, so every app signed in to it
+    /// plays them whichever copy it plays. Returns whether all were saved.
+    func saveTracks(
+        for item: MediaItem,
+        preferences: LanguagePreferences?,
+        choose: @Sendable (_ tracks: ItemTracks, _ automatic: TrackSelection) -> TrackSelection
+    ) async -> Bool
+
+    /// Whether ``saveTracks(for:preferences:choose:)`` stores choices on the
+    /// server. Jellyfin has no way to set them for an item directly; the app's
+    /// own choices still apply there.
+    var savesTrackChoices: Bool { get }
+
+    /// Whether this server accepts session and track state during playback.
+    var reportsPlayback: Bool { get }
+    func reportPlayback(_ report: PlaybackReport) async -> Bool
 
     /// Tells the server a stream is no longer needed so it can free transcoder resources.
     func endStream(sessionID: String) async
 
     func imageURL(for reference: String, size: ImageSize) -> URL?
+}
+
+public extension MediaServerClient {
+    var reportsPlayback: Bool { false }
+    func reportPlayback(_ report: PlaybackReport) async -> Bool { true }
+
+    var savesTrackChoices: Bool {
+        true
+    }
+}
+
+public enum StreamError: Error, Equatable, LocalizedError {
+    /// Every copy of the title is missing or unplayable on the server.
+    case noPlayableVersion
+    /// The server didn't answer.
+    case serverUnreachable
+
+    public var errorDescription: String? {
+        switch self {
+        case .noPlayableVersion:
+            "The server can't play this title. Its files may have been moved or deleted."
+        case .serverUnreachable:
+            "The server isn't responding."
+        }
+    }
 }

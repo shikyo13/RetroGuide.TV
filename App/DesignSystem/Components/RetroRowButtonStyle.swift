@@ -11,15 +11,17 @@ private struct RetroRowBody: View {
     let configuration: ButtonStyleConfiguration
 
     @Environment(\.isFocused) private var isFocused
+    @Environment(\.isEnabled) private var isEnabled
     @Environment(\.theme) private var theme
 
     var body: some View {
         configuration.label
-            .font(Typography.body)
+            .font(Typography.settingsBody)
             .foregroundStyle(isFocused ? theme.textOnFocus : theme.textPrimary)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, DesignTokens.Spacing.md)
             .padding(.vertical, DesignTokens.Spacing.sm)
+            .frame(minHeight: DesignTokens.Control.minimumHeight)
             .background(
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.medium, style: .continuous)
                     .fill(isFocused ? theme.focusFill : theme.surface)
@@ -27,6 +29,7 @@ private struct RetroRowBody: View {
             .scaleEffect(isFocused ? DesignTokens.Scale.focused : 1)
             .animation(DesignTokens.Motion.quickEase, value: isFocused)
             .environment(\.rowIsFocused, isFocused)
+            .opacity(isEnabled ? 1 : DesignTokens.Opacity.muted)
     }
 }
 

@@ -4,6 +4,9 @@ import SwiftUI
 /// the picture-in-picture live picture has the bottom-right corner.
 private enum SettingsLayout {
     static let contentWidth = PlatformMetric.value(tv: CGFloat(1_150), touch: 720)
+    /// Left on Apple TV, beside the picture-in-picture window; centered on
+    /// iPhone and iPad, where the window sits below or beside the content.
+    static let columnAlignment = PlatformMetric.value(tv: Alignment.leading, touch: .center)
 }
 
 struct SettingsPage<Content: View>: View {
@@ -29,7 +32,7 @@ struct SettingsPage<Content: View>: View {
             }
             .columnWidth(SettingsLayout.contentWidth, alignment: .leading)
             .padding(.vertical, DesignTokens.Spacing.xl)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: SettingsLayout.columnAlignment)
         }
         .screenBackground()
         .crtEffect()
@@ -38,10 +41,11 @@ struct SettingsPage<Content: View>: View {
         .scrollClipDisabled()
         .toolbar(.hidden, for: .navigationBar)
         // Menu goes back one level, or closes Settings from its first page.
-        .onExitCommand { (onExit ?? { dismiss() })() }
+        .remoteExitCommand { (onExit ?? { dismiss() })() }
         #else
-        .contentMargins(.horizontal, DesignTokens.Spacing.md, for: .scrollContent)
-        .contentMargins(.bottom, pictureInPictureClearance, for: .scrollContent)
+        .contentMargins(.leading, DesignTokens.Spacing.md, for: .scrollContent)
+        .contentMargins(.trailing, DesignTokens.Spacing.md + pictureInPictureClearance.trailing, for: .scrollContent)
+        .contentMargins(.bottom, pictureInPictureClearance.bottom, for: .scrollContent)
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -86,15 +90,26 @@ struct SettingsRowLabel: View {
     let systemImage: String
     let value: String?
     var accessory: String? = "chevron.right"
+    @Environment(\.dynamicTypeSize) private var textSize
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
             Image(systemName: systemImage)
+                .font(Typography.body)
                 .frame(width: DesignTokens.Spacing.xl)
-            Text(title)
+            if textSize.isAccessibilitySize, let value {
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+                    Text(title)
+                    Text(value).font(Typography.settingsCaption).secondaryText()
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text(title)
+            }
             Spacer(minLength: DesignTokens.Spacing.md)
-            if let value {
+            if let value, !textSize.isAccessibilitySize {
                 Text(value)
+                    .font(Typography.settingsCaption)
                     .secondaryText()
                     .lineLimit(1)
             }

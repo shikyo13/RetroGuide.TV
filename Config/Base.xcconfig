@@ -1,4 +1,7 @@
 // Shared build settings. Signing is configured per developer in Local.xcconfig
 // (git-ignored). Copy Local.xcconfig.example to Local.xcconfig and set your team.
 DEVELOPMENT_TEAM =
+// HTTPS measurement service base URL. Empty disables purchase attribution.
+ATTRIBUTION_ENDPOINT =
+#include "Ads.xcconfig"
 #include? "Local.xcconfig"
