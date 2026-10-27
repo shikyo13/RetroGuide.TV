@@ -17,7 +17,6 @@
 		0F70EBE0D88DE0438F1BB070 /* AVPlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */; };
 		1081AFCF099951D0532A2C8A /* RemoteCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFAACA5FC2EAC37012DF71EE /* RemoteCommands.swift */; };
 		128558BEF0F947A6DED11964 /* ScheduleOrderSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 217F6E0574F0BA824BD17F4B /* ScheduleOrderSection.swift */; };
-		13535A2983FE766E44C7B60A /* PlacementText.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE33F5C6380C978AE3E2616A /* PlacementText.swift */; };
 		14A5B0E5118164FD144DA680 /* GoogleUserMessagingPlatform in Frameworks */ = {isa = PBXBuildFile; platformFilters = (ios, ); productRef = F3A64A1F2A2BBE821A2B26E1 /* GoogleUserMessagingPlatform */; };
 		1519C7C4A3D7CF0977B65BDB /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187AFD75F0AE0640CC040E41 /* RootView.swift */; };
 		1621D2170E71F4484C39983B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5C5C915609130F57A5F8D278 /* Assets.xcassets */; };
@@ -436,7 +435,6 @@
 		C81F85483795CE27FA87CAD2 /* ScheduleFormatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleFormatting.swift; sourceTree = "<group>"; };
 		C88E420A470DC562AE0788B8 /* RetroGuideWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RetroGuideWidgets.entitlements; sourceTree = "<group>"; };
 		CBEB1593C43A740EC7B3A56C /* GuideTimeRuler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideTimeRuler.swift; sourceTree = "<group>"; };
-		CE33F5C6380C978AE3E2616A /* PlacementText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementText.swift; sourceTree = "<group>"; };
 		D0121D6DF72DF1DCF481F2F7 /* ArtworkResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkResolver.swift; sourceTree = "<group>"; };
 		D06F4B98B34746EE526B5EFC /* ChannelPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelPlacementControls.swift; sourceTree = "<group>"; };
 		D0C26D1723E494C6278D25A4 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -845,7 +843,6 @@
 				D06F4B98B34746EE526B5EFC /* ChannelPlacementControls.swift */,
 				7453CB93CF6564D403BF756D /* GuideLiveControls.swift */,
 				B39D6FB966CDC8361D2A3310 /* OptionMenu.swift */,
-				CE33F5C6380C978AE3E2616A /* PlacementText.swift */,
 				58E5FB2AF3157DFB718A5D2E /* SleepTimerControl.swift */,
 				F0D1CD7CD3D111FBE40C4615 /* SubtitleTimingControl.swift */,
 				375275F966C6A54E256081C1 /* WatchOptionsButton.swift */,
@@ -1335,7 +1332,6 @@
 				D25CB8955CEDB7A5BBAF8341 /* ParentalRatingsView.swift in Sources */,
 				4A3CB5A41E9FD2218653F12A /* ParentalTitlePicker.swift in Sources */,
 				C430A3021350C381E4070322 /* PictureInPictureController.swift in Sources */,
-				13535A2983FE766E44C7B60A /* PlacementText.swift in Sources */,
 				A5ED6B0B3D3D5CF9F874BE34 /* PlatformMetric.swift in Sources */,
 				A1E76CBA8D06CBB33C672891 /* PlaybackEngine.swift in Sources */,
 				46EFEAF8BBFAD2F5FE3EAE39 /* PlaybackReporting.swift in Sources */,
