@@ -26,6 +26,8 @@ import androidx.tv.material3.Text
 import com.adamhunt.retroguide.AppModel
 import com.adamhunt.retroguide.Phase
 import com.adamhunt.retroguide.ui.components.BrandMark
+import com.adamhunt.retroguide.ui.components.LocalShowsScanlines
+import com.adamhunt.retroguide.ui.components.crtEffect
 import com.adamhunt.retroguide.ui.components.Panel
 import com.adamhunt.retroguide.ui.components.ProgressTrack
 import com.adamhunt.retroguide.ui.components.RetroButton
@@ -42,7 +44,8 @@ import com.adamhunt.retroguide.ui.watch.WatchScreen
 fun RootScreen(app: AppModel) {
     val phase by app.phase.collectAsState()
     val themeID by app.themeID.collectAsState()
-    CompositionLocalProvider(LocalTheme provides Theme.of(themeID)) {
+    val showsScanlines by app.showsScanlines.collectAsState()
+    CompositionLocalProvider(LocalTheme provides Theme.of(themeID), LocalShowsScanlines provides showsScanlines) {
         when (val current = phase) {
             Phase.Launching -> Splash()
             Phase.Onboarding -> OnboardingScreen(remember { OnboardingModel(app) })
@@ -55,7 +58,7 @@ fun RootScreen(app: AppModel) {
 
 @Composable
 private fun Splash() {
-    Box(Modifier.fillMaxSize().background(LocalTheme.current.backgroundBrush), contentAlignment = Alignment.Center) {
+    Box(Modifier.fillMaxSize().background(LocalTheme.current.backgroundBrush).crtEffect(LocalShowsScanlines.current), contentAlignment = Alignment.Center) {
         BrandMark(Typography.display)
     }
 }
@@ -63,7 +66,7 @@ private fun Splash() {
 @Composable
 private fun Indexing(phase: Phase.Indexing) {
     val theme = LocalTheme.current
-    Box(Modifier.fillMaxSize().background(theme.backgroundBrush), contentAlignment = Alignment.Center) {
+    Box(Modifier.fillMaxSize().background(theme.backgroundBrush).crtEffect(LocalShowsScanlines.current), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xl)) {
             BrandMark(Typography.display)
             Panel(Modifier.width(420.dp)) {
@@ -81,7 +84,7 @@ private fun Indexing(phase: Phase.Indexing) {
 private fun Failed(message: String, onRetry: () -> Unit) {
     val theme = LocalTheme.current
     val retry = remember { FocusRequester() }
-    Box(Modifier.fillMaxSize().background(theme.backgroundBrush), contentAlignment = Alignment.Center) {
+    Box(Modifier.fillMaxSize().background(theme.backgroundBrush).crtEffect(LocalShowsScanlines.current), contentAlignment = Alignment.Center) {
         Column(Modifier.width(500.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
             Text("Something went wrong", style = Typography.title, color = theme.textPrimary)
             Text(message, style = Typography.body, color = theme.textSecondary, textAlign = TextAlign.Center)

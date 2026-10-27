@@ -13,6 +13,7 @@ import com.adamhunt.retroguide.core.ServersChange
 import com.adamhunt.retroguide.core.TokenVault
 import com.adamhunt.retroguide.home.HomeScreenRow
 import com.adamhunt.retroguide.core.NetworkMonitor
+import com.adamhunt.retroguide.player.MatchTVMode
 import com.adamhunt.retroguide.player.MpvPlayer
 import com.adamhunt.retroguide.player.ProgramReminders
 import com.adamhunt.retroguide.player.SleepTimer
@@ -56,6 +57,8 @@ class AppModel(context: Context, muted: Boolean) {
         const val PREFERENCES = "watching"
         const val LAST_CHANNEL = "lastChannelID"
         const val THEME = "theme"
+        const val MATCH_TV_MODE = "matchTVMode"
+        const val SCANLINES = "showsScanlines"
     }
 
     private val appContext = context.applicationContext
@@ -86,6 +89,25 @@ class AppModel(context: Context, muted: Boolean) {
         preferences.getString(Saved.THEME, null)?.let { saved -> ThemeId.entries.firstOrNull { it.name == saved } } ?: ThemeId.CLASSIC_CABLE,
     )
     val themeID: StateFlow<ThemeId> = _themeID.asStateFlow()
+
+    private val _matchTVMode = MutableStateFlow(
+        preferences.getString(Saved.MATCH_TV_MODE, null)?.let { saved -> MatchTVMode.entries.firstOrNull { it.name == saved } } ?: MatchTVMode.OFF,
+    )
+    val matchTVMode: StateFlow<MatchTVMode> = _matchTVMode.asStateFlow()
+
+    /** CRT scanlines on menus (on unless turned off, as on Apple platforms). */
+    private val _showsScanlines = MutableStateFlow(preferences.getBoolean(Saved.SCANLINES, true))
+    val showsScanlines: StateFlow<Boolean> = _showsScanlines.asStateFlow()
+
+    fun setShowsScanlines(isOn: Boolean) {
+        _showsScanlines.value = isOn
+        preferences.edit().putBoolean(Saved.SCANLINES, isOn).apply()
+    }
+
+    fun setMatchTVMode(mode: MatchTVMode) {
+        _matchTVMode.value = mode
+        preferences.edit().putString(Saved.MATCH_TV_MODE, mode.name).apply()
+    }
 
     /** RetroGuide Pro. Google Play Billing isn't connected yet; debug builds can turn it on for QA. */
     private val _isPro = MutableStateFlow(false)

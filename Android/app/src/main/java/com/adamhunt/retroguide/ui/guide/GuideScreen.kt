@@ -54,6 +54,8 @@ import com.adamhunt.retroguide.core.ProgramInfo
 import com.adamhunt.retroguide.ui.components.BrandMark
 import com.adamhunt.retroguide.ui.components.PictureWindow
 import com.adamhunt.retroguide.ui.components.screenBackground
+import com.adamhunt.retroguide.ui.components.LocalShowsScanlines
+import com.adamhunt.retroguide.ui.components.crtEffect
 import com.adamhunt.retroguide.ui.components.RatingChip
 import com.adamhunt.retroguide.ui.theme.Audience
 import com.adamhunt.retroguide.ui.theme.LocalTheme
@@ -118,6 +120,7 @@ fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?, favoritesOnly: Bo
         Modifier
             .fillMaxSize()
             .screenBackground(theme, GuideLayout.previewWindow)
+            .crtEffect(LocalShowsScanlines.current, GuideLayout.previewWindow)
             .padding(start = GuideLayout.margin, end = GuideLayout.margin, top = GuideLayout.top),
         verticalArrangement = Arrangement.spacedBy(GuideLayout.sectionSpacing),
     ) {

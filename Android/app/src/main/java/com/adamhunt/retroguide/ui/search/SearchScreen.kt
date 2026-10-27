@@ -44,6 +44,8 @@ import com.adamhunt.retroguide.ui.components.CornerPicture
 import com.adamhunt.retroguide.ui.components.RetroRow
 import com.adamhunt.retroguide.ui.components.RetroTextField
 import com.adamhunt.retroguide.ui.components.screenBackground
+import com.adamhunt.retroguide.ui.components.LocalShowsScanlines
+import com.adamhunt.retroguide.ui.components.crtEffect
 import com.adamhunt.retroguide.ui.theme.LocalTheme
 import com.adamhunt.retroguide.ui.theme.Tokens
 import com.adamhunt.retroguide.ui.theme.Typography
@@ -84,7 +86,11 @@ fun SearchScreen(app: AppModel, screen: DpSize, onTune: (String) -> Unit, onClos
         }
     }
     LaunchedEffect(Unit) { runCatching { field.requestFocus() } }
-    Box(Modifier.fillMaxSize().screenBackground(theme, CornerPicture.window(screen))) {
+    Box(
+        Modifier.fillMaxSize()
+            .screenBackground(theme, CornerPicture.window(screen))
+            .crtEffect(LocalShowsScanlines.current, CornerPicture.window(screen)),
+    ) {
         Column(
             Modifier.padding(start = SearchLayout.margin, top = SearchLayout.top).width(SearchLayout.resultsWidth),
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),

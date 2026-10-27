@@ -12,8 +12,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -72,6 +75,9 @@ class MpvPlayer(
     private val http = OkHttpClient()
     private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = EVENT_BUFFER)
     val events: SharedFlow<PlayerEvent> = _events.asSharedFlow()
+    /** The playing video's frame rate, once known (for matching the TV's refresh rate). */
+    private val _frameRate = MutableStateFlow<Double?>(null)
+    val frameRate: StateFlow<Double?> = _frameRate.asStateFlow()
     /** Whether the current file reached the picture (so its end is a real end). */
     private var isPlaying = false
 
@@ -201,6 +207,7 @@ class MpvPlayer(
                 MPVLib.MPV_EVENT_PLAYBACK_RESTART -> {
                     hasStartedPlaying = true
                     isPlaying = true
+                    _frameRate.value = runCatching { MPVLib.getPropertyDouble("container-fps") }.getOrNull()?.takeIf { it > 0 }
                     _events.emit(PlayerEvent.Playing)
                 }
                 MPVLib.MPV_EVENT_END_FILE -> if (isPlaying) {

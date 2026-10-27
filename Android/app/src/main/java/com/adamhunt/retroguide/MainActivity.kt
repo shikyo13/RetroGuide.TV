@@ -9,7 +9,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.adamhunt.retroguide.ui.RootScreen
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import com.adamhunt.retroguide.player.DisplayModeMatcher
 
 class MainActivity : ComponentActivity() {
     private val app get() = application as RetroGuideApplication
@@ -26,6 +28,14 @@ class MainActivity : ComponentActivity() {
                     } else {
                         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                     }
+                }
+            }
+        }
+        // Match TV mode: the refresh rate follows what's playing.
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                combine(app.model.player.frameRate, app.model.matchTVMode) { rate, mode -> rate to mode }.collect { (rate, mode) ->
+                    DisplayModeMatcher.apply(window, rate, mode)
                 }
             }
         }

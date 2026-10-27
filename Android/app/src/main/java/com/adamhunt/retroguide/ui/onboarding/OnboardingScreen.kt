@@ -34,6 +34,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Text
 import com.adamhunt.retroguide.ui.components.RetroTextField
+import com.adamhunt.retroguide.ui.components.LocalShowsScanlines
+import com.adamhunt.retroguide.ui.components.crtEffect
 import com.adamhunt.retroguide.ui.components.BrandMark
 import com.adamhunt.retroguide.ui.components.Panel
 import com.adamhunt.retroguide.ui.components.RetroButton
@@ -58,7 +60,7 @@ fun OnboardingScreen(model: OnboardingModel) {
     BackHandler(enabled = model.isAddingServer || step != OnboardingModel.Step.Welcome) {
         if (step == OnboardingModel.Step.Welcome) model.cancel() else model.back()
     }
-    Box(Modifier.fillMaxSize().background(theme.backgroundBrush), contentAlignment = Alignment.Center) {
+    Box(Modifier.fillMaxSize().background(theme.backgroundBrush).crtEffect(LocalShowsScanlines.current), contentAlignment = Alignment.Center) {
         Column(Modifier.width(Layout.columnWidth), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
             when (val current = step) {
                 OnboardingModel.Step.Welcome -> Welcome(model)

@@ -35,6 +35,8 @@ import com.adamhunt.retroguide.ui.components.PRO_BADGE
 import com.adamhunt.retroguide.ui.components.RetroRow
 import com.adamhunt.retroguide.ui.components.SectionHeader
 import com.adamhunt.retroguide.ui.components.screenBackground
+import com.adamhunt.retroguide.ui.components.LocalShowsScanlines
+import com.adamhunt.retroguide.ui.components.crtEffect
 import com.adamhunt.retroguide.ui.theme.LocalTheme
 import com.adamhunt.retroguide.ui.theme.ThemePalettes
 import com.adamhunt.retroguide.ui.theme.Typography
@@ -65,6 +67,7 @@ sealed interface SettingsRoute {
     data object Acknowledgements : SettingsRoute
     data object ParentalControls : SettingsRoute
     data object Reminders : SettingsRoute
+    data object MatchTVMode : SettingsRoute
 }
 
 /** Moves between Settings pages, remembering where each open page was scrolled. */
@@ -105,7 +108,11 @@ fun SettingsScreen(app: AppModel, screen: DpSize, onClose: () -> Unit) {
     // Closing Settings locks them again.
     DisposableEffect(Unit) { onDispose { app.endParentalAuthorization() } }
     BackHandler(onBack = navigator::back)
-    Box(Modifier.fillMaxSize().screenBackground(theme, CornerPicture.window(screen))) {
+    Box(
+        Modifier.fillMaxSize()
+            .screenBackground(theme, CornerPicture.window(screen))
+            .crtEffect(LocalShowsScanlines.current, CornerPicture.window(screen)),
+    ) {
         Box(Modifier.padding(start = SettingsLayout.margin, top = SettingsLayout.top).width(SettingsLayout.columnWidth)) {
             if (app.parentalLock.isUnavailable || (parentalEnabled && !isAuthorized)) {
                 ParentalPinPage(app, onCancel = onClose)
@@ -129,6 +136,7 @@ fun SettingsScreen(app: AppModel, screen: DpSize, onClose: () -> Unit) {
                 SettingsRoute.Acknowledgements -> AcknowledgementsPage()
                 SettingsRoute.ParentalControls -> ParentalControlsPage(app, navigator)
                 SettingsRoute.Reminders -> RemindersPage(app, navigator)
+                SettingsRoute.MatchTVMode -> MatchTVModePage(app)
             }
         }
     }
@@ -152,9 +160,17 @@ private fun MainPage(app: AppModel, navigator: SettingsNavigator) {
         item { SectionHeader("Picture") }
         item { HomeRowSetting(app, navigator, isPro) }
         item { RetroRow("Theme", { navigator.open(SettingsRoute.Themes) }, trailing = ThemePalettes.first { it.id == themeID }.name) }
+        item {
+            val showsScanlines by app.showsScanlines.collectAsState()
+            RetroRow("Scanlines on menus", { app.setShowsScanlines(!showsScanlines) }, trailing = if (showsScanlines) "On" else "Off")
+        }
 
         item { SectionHeader("Playback") }
         item { RetroRow("Program reminders", { navigator.open(SettingsRoute.Reminders) }, trailing = if (isPro) null else PRO_BADGE) }
+        item {
+            val matchTVMode by app.matchTVMode.collectAsState()
+            RetroRow("Match TV mode", { navigator.open(SettingsRoute.MatchTVMode) }, trailing = matchTVMode.title)
+        }
 
         item { SectionHeader("Channels") }
         item {
