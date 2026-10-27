@@ -22,9 +22,9 @@ uvicorn attribution.api:create_app --factory --host 127.0.0.1 --port 8084 --no-a
 
 Alternatively, use `docker compose up --build -d`. The container binds to loopback only. Publish through a trusted HTTPS reverse proxy with a 96 KiB request limit and request rate limiting. Do not log authorization headers or request bodies. Keep the SQLite volume and backups private. Reports and advertising credentials are available only to local administration, never through the public ingestion API.
 
-Configure App Store Server Notifications V2 to POST to `/v1/notifications/apple` for refund updates. Both the outer notification and its nested transaction are verified. Repeated notifications and restores are idempotent. An older transaction cannot undo a newer refund.
+Configure App Store Server Notifications V2 to POST to `/v1/notifications/apple` for one-time purchase and refund updates. Both the outer notification and its nested transaction are verified. Repeated notifications and restores are idempotent. An older transaction cannot undo a newer refund.
 
-Configure the app's `RetroGuideAttributionURL` Info.plist value with the HTTPS service base URL. With no value, collection is disabled and purchases have no measurement token. Before enabling collection in a distributed app, publish the corresponding privacy policy and App Store privacy disclosures for purchase history, the random identifier, and advertising attribution data.
+Configure the app's `RetroGuideAttributionURL` Info.plist value with the HTTPS service base URL. With no value, collection is disabled and purchases have no measurement token. Before enabling collection in a distributed app, publish the corresponding privacy policy and App Store privacy disclosures for purchase history, the random identifier, advertising attribution data, and country or region.
 
 ## Reports
 
