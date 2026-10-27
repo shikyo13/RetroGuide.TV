@@ -42,7 +42,9 @@ struct RetroGuideApp: App {
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .background: model.enteredBackground()
-            case .active: model.becameActive()
+            case .active:
+                model.becameActive()
+                PurchaseAttribution.shared.start()
             default: break
             }
         }

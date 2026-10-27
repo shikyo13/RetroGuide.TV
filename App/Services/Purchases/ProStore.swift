@@ -45,6 +45,7 @@ final class ProStore {
         }
         #endif
         guard updatesTask == nil else { return }
+        PurchaseAttribution.shared.start()
         updatesTask = Task { [weak self] in
             for await update in Transaction.updates {
                 await self?.handle(update)
@@ -59,7 +60,11 @@ final class ProStore {
         guard let product else { return }
         purchaseState = .purchasing
         do {
-            switch try await product.purchase() {
+            var options: Set<Product.PurchaseOption> = []
+            if let token = PurchaseAttribution.shared.accountToken {
+                options.insert(.appAccountToken(token))
+            }
+            switch try await product.purchase(options: options) {
             case .success(let verification):
                 await handle(verification)
                 purchaseState = .idle
@@ -106,6 +111,7 @@ final class ProStore {
     private func refreshOwnership() async {
         var owned = false
         for await result in Transaction.currentEntitlements {
+            PurchaseAttribution.shared.record(result)
             if case .verified(let transaction) = result, Self.grantsPro(transaction) {
                 owned = true
             }
@@ -115,6 +121,7 @@ final class ProStore {
 
     private func handle(_ result: VerificationResult<Transaction>) async {
         guard case .verified(let transaction) = result, transaction.productID == ProductID.pro else { return }
+        PurchaseAttribution.shared.record(result)
         await transaction.finish()
         await refreshOwnership()
     }

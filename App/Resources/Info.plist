@@ -50,6 +50,8 @@
 	<string>$(ADMOB_BANNER_UNIT_ID)</string>
 	<key>RetroGuideAdMobInterstitialUnitID</key>
 	<string>$(ADMOB_INTERSTITIAL_UNIT_ID)</string>
+	<key>RetroGuideAttributionURL</key>
+	<string>$(ATTRIBUTION_ENDPOINT)</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>

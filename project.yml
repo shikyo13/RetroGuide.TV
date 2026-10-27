@@ -98,6 +98,7 @@ targets:
         GADApplicationIdentifier: $(ADMOB_APP_ID)
         RetroGuideAdMobBannerUnitID: $(ADMOB_BANNER_UNIT_ID)
         RetroGuideAdMobInterstitialUnitID: $(ADMOB_INTERSTITIAL_UNIT_ID)
+        RetroGuideAttributionURL: $(ATTRIBUTION_ENDPOINT)
         SKAdNetworkItems:
           - SKAdNetworkIdentifier: cstr6suwn9.skadnetwork
     settings:
