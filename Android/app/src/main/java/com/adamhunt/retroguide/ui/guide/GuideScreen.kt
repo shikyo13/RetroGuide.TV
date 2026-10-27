@@ -94,10 +94,10 @@ object GuideLayout {
  * The top row's buttons, left to right. Options sits on the live picture
  * (the Apple app's `GuideLiveControls`), reached with Left from Favorites.
  */
-enum class GuideHeaderButton { OPTIONS, FAVORITES, SEARCH, SETTINGS }
+enum class GuideHeaderButton { OPTIONS, FAVORITES, REMINDER, SEARCH, SETTINGS }
 
 @Composable
-fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?, favoritesOnly: Boolean) {
+fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?, favoritesOnly: Boolean, isReminderSet: (ProgramInfo) -> Boolean) {
     val theme = LocalTheme.current
     val windowStart by model.windowStart.collectAsState()
     val schedules by model.schedules.collectAsState()
@@ -111,9 +111,9 @@ fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?, favoritesOnly: Bo
         }
     }
     val focusedRow = (focus as? GuideModel.Focus.Program)?.row
-    val focusedProgram = (focus as? GuideModel.Focus.Program)?.let { f ->
-        schedules[model.channels.getOrNull(f.row)?.id]?.firstOrNull { f.anchor >= it.start && f.anchor < it.end }
-    }
+    // In the top row, the details stay on the program focus came up from.
+    val selectedProgram = remember(focus, schedules) { model.selectedProgram }
+    val focusedProgram = (focus as? GuideModel.Focus.Program)?.let { selectedProgram }
     Column(
         Modifier
             .fillMaxSize()
@@ -121,8 +121,11 @@ fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?, favoritesOnly: Bo
             .padding(start = GuideLayout.margin, end = GuideLayout.margin, top = GuideLayout.top),
         verticalArrangement = Arrangement.spacedBy(GuideLayout.sectionSpacing),
     ) {
-        val focusedButton = (focus as? GuideModel.Focus.Header)?.let { GuideHeaderButton.entries[it.index] }
-        Header(now, focusedButton, favoritesOnly)
+        val buttons = remember(focus, schedules, now) { model.headerButtons(now) }
+        val focusedButton = (focus as? GuideModel.Focus.Header)?.let { buttons.getOrNull(it.index) }
+        val reminderTitle = selectedProgram?.takeIf { GuideHeaderButton.REMINDER in buttons }
+            ?.let { if (isReminderSet(it)) "🔔 Cancel reminder" else "🔔 Remind me" }
+        Header(now, focusedButton, favoritesOnly, reminderTitle)
         Row(Modifier.height(GuideLayout.previewHeight), horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
             // The live picture is drawn here by the video surface underneath.
             Box(
@@ -130,7 +133,7 @@ fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?, favoritesOnly: Bo
                     .size(GuideLayout.previewWidth, GuideLayout.previewHeight)
                     .border(GuideLayout.cellSpacing, theme.surfaceRaised, RoundedCornerShape(Tokens.Radius.medium)),
             )
-            ProgramDetails(focusedProgram, model.focusedChannel, now, Modifier.weight(1f))
+            ProgramDetails(selectedProgram, model.selectedChannel, now, Modifier.weight(1f))
         }
         Ruler(windowStart, now)
         Grid(model, schedules, windowStart, focusedRow, focusedProgram, now)
@@ -145,7 +148,7 @@ fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?, favoritesOnly: Bo
 fun GuidePreviewChrome(model: GuideModel, tunedChannel: ChannelInfo?) {
     val theme = LocalTheme.current
     val focus by model.focus.collectAsState()
-    val isOptionsFocused = (focus as? GuideModel.Focus.Header)?.index == GuideHeaderButton.OPTIONS.ordinal
+    val isOptionsFocused = (focus as? GuideModel.Focus.Header)?.index == 0
     Box(Modifier.fillMaxSize().padding(Tokens.Spacing.sm)) {
         tunedChannel?.let {
             Text(
@@ -158,7 +161,7 @@ fun GuidePreviewChrome(model: GuideModel, tunedChannel: ChannelInfo?) {
 }
 
 @Composable
-private fun Header(now: Double, focusedButton: GuideHeaderButton?, favoritesOnly: Boolean) {
+private fun Header(now: Double, focusedButton: GuideHeaderButton?, favoritesOnly: Boolean, reminderTitle: String?) {
     val theme = LocalTheme.current
     Row(
         Modifier.fillMaxWidth().height(GuideLayout.headerHeight),
@@ -170,6 +173,7 @@ private fun Header(now: Double, focusedButton: GuideHeaderButton?, favoritesOnly
         Text(ScheduleFormatting.time(now), style = Typography.clock, color = theme.accent)
         Text(if (focusedButton != null) "◀ Back: close guide" else "◀ Back: menus", style = Typography.caption, color = theme.textSecondary)
         HeaderButton(if (favoritesOnly) "★ All channels" else "☆ Favorites", focusedButton == GuideHeaderButton.FAVORITES)
+        reminderTitle?.let { HeaderButton(it, focusedButton == GuideHeaderButton.REMINDER) }
         HeaderButton("⌕ Search", focusedButton == GuideHeaderButton.SEARCH)
         HeaderButton("⚙ Settings", focusedButton == GuideHeaderButton.SETTINGS)
     }

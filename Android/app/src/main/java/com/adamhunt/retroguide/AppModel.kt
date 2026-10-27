@@ -12,6 +12,7 @@ import com.adamhunt.retroguide.core.ServerInfo
 import com.adamhunt.retroguide.core.ServersChange
 import com.adamhunt.retroguide.core.TokenVault
 import com.adamhunt.retroguide.player.MpvPlayer
+import com.adamhunt.retroguide.player.ProgramReminders
 import com.adamhunt.retroguide.player.SleepTimer
 import com.adamhunt.retroguide.player.Tuner
 import com.adamhunt.retroguide.ui.onboarding.OnboardingModel
@@ -86,6 +87,7 @@ class AppModel(context: Context, muted: Boolean) {
     val favoritesOnly: StateFlow<Boolean> = _favoritesOnly.asStateFlow()
 
     val sleepTimer = SleepTimer(scope) { tuner.suspend() }
+    val reminders = ProgramReminders(core, scope)
 
     private var refreshJob: Job? = null
     private var isInBackground = false
@@ -328,6 +330,8 @@ class AppModel(context: Context, muted: Boolean) {
 
     private fun showChannels(all: List<ChannelInfo>) {
         _lineupRevision.value += 1
+        // A rebuilt lineup can move or remove reminded airings.
+        reminders.reload()
         val visible = all.filter { !it.isHidden }
         _channels.value = visible
         tuner.setChannels(visible)

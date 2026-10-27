@@ -71,6 +71,9 @@ fun WatchScreen(app: AppModel) {
     val favoritesOnly by app.favoritesOnly.collectAsState()
     val sleepExpired by app.sleepTimer.didExpire.collectAsState()
     val addingServer by app.addingServer.collectAsState()
+    val pendingReminders by app.reminders.pending.collectAsState()
+    val dueReminder by app.reminders.due.collectAsState()
+    val reminderMessage by app.reminders.message.collectAsState()
     val scope = rememberCoroutineScope()
     var overlay by remember { mutableStateOf(Overlay.NONE) }
     var guide by remember { mutableStateOf<GuideModel?>(null) }
@@ -119,6 +122,12 @@ fun WatchScreen(app: AppModel) {
     fun pressHeaderButton(button: GuideHeaderButton) {
         when (button) {
             GuideHeaderButton.OPTIONS -> isShowingOptions = true
+            GuideHeaderButton.REMINDER -> guide?.let { open ->
+                val channel = open.selectedChannel
+                val program = open.selectedProgram
+                if (!isPro) overlay = Overlay.SETTINGS
+                else if (channel != null && program != null) app.reminders.toggle(channel.id, program.id)
+            }
             GuideHeaderButton.FAVORITES -> if (isPro) app.setFavoritesOnly(!favoritesOnly) else {
                 guide = null
                 overlay = Overlay.SETTINGS
@@ -137,6 +146,7 @@ fun WatchScreen(app: AppModel) {
     fun handle(code: Int): Boolean {
         // Options and Search handle their own keys; nothing they pass up changes channel.
         if (isShowingOptions || overlay == Overlay.SEARCH || overlay == Overlay.SETTINGS || addingServer != null) return false
+        if (dueReminder != null || reminderMessage != null) return false
         if (sleepExpired) {
             if (code == AndroidKeyEvent.KEYCODE_DPAD_CENTER || code == AndroidKeyEvent.KEYCODE_ENTER) {
                 app.sleepTimer.resumeWatching()
@@ -155,9 +165,9 @@ fun WatchScreen(app: AppModel) {
                 AndroidKeyEvent.KEYCODE_DPAD_UP -> open.moveUp()
                 AndroidKeyEvent.KEYCODE_DPAD_DOWN -> open.moveDown()
                 AndroidKeyEvent.KEYCODE_DPAD_LEFT -> open.moveLeft()
-                AndroidKeyEvent.KEYCODE_DPAD_RIGHT -> open.moveRight(GuideHeaderButton.entries.size)
+                AndroidKeyEvent.KEYCODE_DPAD_RIGHT -> open.moveRight(open.headerButtons().size)
                 AndroidKeyEvent.KEYCODE_DPAD_CENTER, AndroidKeyEvent.KEYCODE_ENTER -> when (val f = open.focus.value) {
-                    is GuideModel.Focus.Header -> pressHeaderButton(GuideHeaderButton.entries[f.index])
+                    is GuideModel.Focus.Header -> open.headerButtons().getOrNull(f.index)?.let(::pressHeaderButton)
                     is GuideModel.Focus.Program -> open.focusedChannel?.let {
                         tuner.tune(it)
                         closeOverlay()
@@ -209,7 +219,11 @@ fun WatchScreen(app: AppModel) {
         val height by animateDpAsState(window.size.height, motion, label = "videoHeight")
 
         when (overlay) {
-            Overlay.GUIDE -> guide?.let { GuideScreen(it, channel, isPro && favoritesOnly) }
+            Overlay.GUIDE -> guide?.let { open ->
+                GuideScreen(open, channel, isPro && favoritesOnly) { program ->
+                    open.selectedChannel?.let { selected -> pendingReminders.any { it.channelID == selected.id && it.start == program.start } } == true
+                }
+            }
             Overlay.SEARCH -> SearchScreen(app, screen, onTune = { id ->
                 tuner.channelWithID(id)?.let(tuner::tune)
                 closeOverlay()
@@ -237,6 +251,16 @@ fun WatchScreen(app: AppModel) {
             NoAllowedChannelsCard(Modifier.align(Alignment.Center))
         }
         addingServer?.let { OnboardingScreen(it) }
+        dueReminder?.let { reminder ->
+            ReminderDueCard(reminder, Modifier.align(Alignment.Center), onWatch = {
+                app.reminders.dismissDue()
+                tuner.channelWithID(reminder.channelID)?.let(tuner::tune)
+                closeOverlay()
+            }, onDismiss = app.reminders::dismissDue)
+        }
+        reminderMessage?.let { text ->
+            MessageCard("Reminders", text, Modifier.align(Alignment.Center), onDismiss = app.reminders::dismissMessage)
+        }
         if (isShowingOptions) OptionsPanel(app, onClose = { isShowingOptions = false })
     }
 }

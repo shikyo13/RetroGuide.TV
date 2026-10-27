@@ -77,6 +77,8 @@ class CoreClient {
     @Serializable private data class ServerAddressParams(val serverID: String, val address: String)
     @Serializable private data class ReachabilityParams(val isVPNActive: Boolean)
     @Serializable private data class LockedParams(val isLocked: Boolean)
+    @Serializable private data class ReminderParams(val channelID: String, val programID: String)
+    @Serializable private data class ReminderIDParams(val id: String)
     @Serializable private data class ParentalChannelParams(val channel: ChannelDraft, val policy: ParentalDraft)
     @Serializable private data class TrackCommandParams(val selection: SelectionInfo, val trackList: String)
     @Serializable private data class EndStreamParams(val serverID: String, val sessionID: String)
@@ -189,6 +191,15 @@ class CoreClient {
     suspend fun checkReachability(isVPNActive: Boolean) = call(
         "servers.checkReachability", ReachabilityParams(isVPNActive), ReachabilityParams.serializer(), ReachabilityResult.serializer(),
     )
+
+    // Program reminders
+
+    suspend fun reminders() = call("reminders", RemindersState.serializer())
+    suspend fun toggleReminder(channelID: String, programID: String) =
+        call("reminders.toggle", ReminderParams(channelID, programID), ReminderParams.serializer(), RemindersState.serializer())
+    suspend fun removeReminder(id: String) =
+        call("reminders.remove", ReminderIDParams(id), ReminderIDParams.serializer(), RemindersState.serializer())
+    suspend fun checkReminders() = call("reminders.check", RemindersState.serializer())
 
     // Settings › Parental Controls
 

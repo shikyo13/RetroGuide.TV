@@ -1,5 +1,10 @@
 package com.adamhunt.retroguide.ui.watch
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import com.adamhunt.retroguide.core.ReminderInfo
+import com.adamhunt.retroguide.ui.components.RetroButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -172,4 +177,39 @@ fun NoAllowedChannelsCard(modifier: Modifier = Modifier) {
         Text("No available channels match your parental controls. A parent can change the lineup or content restrictions in Settings › Parental Controls (press Select, then open Settings).",
             style = Typography.body, color = theme.textSecondary)
     }
+}
+
+/** A reminded program has started (the Apple app's "Program reminder" alert). */
+@Composable
+fun ReminderDueCard(reminder: ReminderInfo, modifier: Modifier = Modifier, onWatch: () -> Unit, onDismiss: () -> Unit) {
+    val theme = LocalTheme.current
+    val watch = remember { FocusRequester() }
+    BackHandler(onBack = onDismiss)
+    Panel(modifier.width(WatchOverlayLayout.alertWidth), color = theme.surface) {
+        Text("Program reminder", style = Typography.title, color = theme.textPrimary)
+        Text("${reminder.title} is starting on ${reminder.channelName}.", style = Typography.body, color = theme.textSecondary)
+        Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
+            RetroButton("Watch now", onWatch, Modifier.focusRequester(watch), isPrimary = true)
+            RetroButton("Dismiss", onDismiss)
+        }
+    }
+    LaunchedEffect(reminder.id) { runCatching { watch.requestFocus() } }
+}
+
+/** A short message with an OK button (the Apple app's simple alerts). */
+@Composable
+fun MessageCard(title: String, message: String, modifier: Modifier = Modifier, onDismiss: () -> Unit) {
+    val theme = LocalTheme.current
+    val ok = remember { FocusRequester() }
+    BackHandler(onBack = onDismiss)
+    Panel(modifier.width(WatchOverlayLayout.alertWidth), color = theme.surface) {
+        Text(title, style = Typography.title, color = theme.textPrimary)
+        Text(message, style = Typography.body, color = theme.textSecondary)
+        RetroButton("OK", onDismiss, Modifier.focusRequester(ok), isPrimary = true)
+    }
+    LaunchedEffect(message) { runCatching { ok.requestFocus() } }
+}
+
+private object WatchOverlayLayout {
+    val alertWidth = 420.dp
 }

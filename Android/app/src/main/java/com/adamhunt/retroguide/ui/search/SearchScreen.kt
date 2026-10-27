@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +41,7 @@ import com.adamhunt.retroguide.AppModel
 import com.adamhunt.retroguide.core.SearchHit
 import com.adamhunt.retroguide.ui.components.Note
 import com.adamhunt.retroguide.ui.components.CornerPicture
+import com.adamhunt.retroguide.ui.components.RetroRow
 import com.adamhunt.retroguide.ui.components.RetroTextField
 import com.adamhunt.retroguide.ui.components.screenBackground
 import com.adamhunt.retroguide.ui.theme.LocalTheme
@@ -71,6 +73,7 @@ fun SearchScreen(app: AppModel, screen: DpSize, onTune: (String) -> Unit, onClos
     val theme = LocalTheme.current
     var query by remember { mutableStateOf("") }
     var results by remember { mutableStateOf<List<SearchHit>>(emptyList()) }
+    val pending by app.reminders.pending.collectAsState()
     val field = remember { FocusRequester() }
     BackHandler(onBack = onClose)
     LaunchedEffect(query) {
@@ -95,6 +98,13 @@ fun SearchScreen(app: AppModel, screen: DpSize, onTune: (String) -> Unit, onClos
             LazyColumn(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
                 items(results, key = { it.id }) { hit ->
                     ResultRow(hit) { hit.channelID?.let(onTune) }
+                    val airing = hit.airing
+                    val channelID = hit.channelID
+                    if (airing != null && channelID != null && airing.start > nowSeconds()) {
+                        val isSet = pending.any { it.channelID == channelID && it.start == airing.start }
+                        RetroRow(if (isSet) "🔔 Cancel reminder" else "🔔 Remind me", { app.reminders.toggle(channelID, airing.id) },
+                            Modifier.padding(start = Tokens.Spacing.lg, top = Tokens.Spacing.xxs))
+                    }
                 }
                 if (results.isEmpty()) {
                     item {

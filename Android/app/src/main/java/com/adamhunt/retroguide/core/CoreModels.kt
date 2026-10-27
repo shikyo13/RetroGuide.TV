@@ -333,3 +333,11 @@ data class ParentalEditor(
 
 @Serializable
 data class ParentalStatus(val isEnabled: Boolean, val usesCustomLineup: Boolean)
+
+// Program reminders
+
+@Serializable
+data class ReminderInfo(val id: String, val channelID: String, val title: String, val channelName: String, val start: Double)
+
+@Serializable
+data class RemindersState(val pending: List<ReminderInfo>, val message: String? = null, val due: ReminderInfo? = null)

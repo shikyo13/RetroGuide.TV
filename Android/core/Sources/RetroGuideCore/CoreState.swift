@@ -24,6 +24,9 @@ actor CoreState {
     var parentalAllowedItemIDs: Set<String> = []
     /// A policy draft's index for previewing custom-lineup channels, by its encoding.
     var parentalPreview: (key: Data, index: LibraryIndex)?
+    /// Program reminders, soonest first, and a note about ones a lineup change removed.
+    var reminders: [ProgramReminder] = []
+    var reminderNote: String?
     /// The device is on a VPN, as the app last reported (see ``checkReachability(_:)``).
     var isVPNActive = false
     /// The merged library; built after ``start(_:)`` points RetroGuideKit at its data files.
@@ -126,6 +129,7 @@ actor CoreState {
         let builder = LineupBuilder(curated: curated, options: LineupOptions.adapted(to: index, grid: scheduleGrid))
         channels = builder.build(index: index, customization: parentalPolicy.activeCustomization(regular: customization))
         searchIndex = nil
+        if let note = reconcileReminders() { reminderNote = note }
     }
 
     var qualityByServer: [String: VideoQuality] {
@@ -157,6 +161,7 @@ struct CoreStore: Sendable {
         static let subtitleOffsets = "subtitleOffsets.json"
         static let preferences = "preferences.json"
         static let parental = "parental.json"
+        static let reminders = "reminders.json"
         static let snapshots = "snapshots"
     }
 

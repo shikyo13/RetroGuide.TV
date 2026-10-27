@@ -52,6 +52,8 @@ class GuideModel(
     private val _focus = MutableStateFlow<Focus>(Focus.Program(max(0, channels.indexOfFirst { it.id == tunedChannelID }), nowSeconds()))
     val focus: StateFlow<Focus> = _focus.asStateFlow()
     private var loadedUntil = 0.0
+    /** The program focused last, kept while focus is in the top row (its details stay up, and Remind me acts on it). */
+    private var lastProgramFocus: Focus.Program = _focus.value as Focus.Program
 
     init {
         load(_windowStart.value)
@@ -63,37 +65,54 @@ class GuideModel(
     val focusedChannel: ChannelInfo?
         get() = (focus.value as? Focus.Program)?.let { channels.getOrNull(it.row) }
 
+    /** The program focused now, or the one focus came up from. */
+    val selectedProgram: ProgramInfo?
+        get() = programAt(lastProgramFocus.row, lastProgramFocus.anchor)
+
+    val selectedChannel: ChannelInfo?
+        get() = channels.getOrNull(lastProgramFocus.row)
+
+    /** The top row's buttons: Remind me only for an upcoming program. */
+    fun headerButtons(now: Double = nowSeconds()): List<GuideHeaderButton> =
+        GuideHeaderButton.entries.filter { it != GuideHeaderButton.REMINDER || (selectedProgram?.start ?: 0.0) > now }
+
     fun programAt(row: Int, time: Double): ProgramInfo? =
         channels.getOrNull(row)?.let { channel -> _schedules.value[channel.id]?.firstOrNull { time >= it.start && time < it.end } }
 
     /** Play/Pause: the shortcut to the top bar from any row. */
     fun focusHeader() {
-        _focus.value = Focus.Header(TOP_ROW_ENTRY)
+        setFocus(Focus.Header(TOP_ROW_ENTRY))
+    }
+
+    private fun setFocus(focus: Focus) {
+        if (focus is Focus.Program) lastProgramFocus = focus
+        _focus.value = focus
     }
 
     fun moveUp() {
         when (val focus = _focus.value) {
-            is Focus.Program -> _focus.value = if (focus.row == 0) Focus.Header(TOP_ROW_ENTRY) else focus.copy(row = focus.row - 1)
+            is Focus.Program -> setFocus(if (focus.row == 0) Focus.Header(TOP_ROW_ENTRY) else focus.copy(row = focus.row - 1))
             is Focus.Header -> Unit
         }
     }
 
     fun moveDown() {
         when (val focus = _focus.value) {
-            is Focus.Program -> if (focus.row < channels.lastIndex) _focus.value = focus.copy(row = focus.row + 1)
-            is Focus.Header -> _focus.value = Focus.Program(0, max(nowSeconds(), _windowStart.value))
+            is Focus.Program -> if (focus.row < channels.lastIndex) setFocus(focus.copy(row = focus.row + 1))
+            // Back down to the program focus came up from.
+            is Focus.Header -> setFocus(lastProgramFocus)
         }
     }
 
     fun moveRight(headerCount: Int) {
         when (val focus = _focus.value) {
-            is Focus.Header -> _focus.value = focus.copy(index = (focus.index + 1).coerceAtMost(headerCount - 1))
+            is Focus.Header -> setFocus(focus.copy(index = (focus.index + 1).coerceAtMost(headerCount - 1)))
             is Focus.Program -> {
                 val current = programAt(focus.row, focus.anchor) ?: return
                 if (current.end >= nowSeconds() + Time.LOOKAHEAD) return
                 val next = programAt(focus.row, current.end + Time.EPSILON)
                 val anchor = (next?.start ?: current.end) + Time.EPSILON
-                _focus.value = focus.copy(anchor = anchor)
+                setFocus(focus.copy(anchor = anchor))
                 // Page right so the program now focused shows at least a little.
                 val windowEnd = _windowStart.value + Time.WINDOW
                 if (anchor > windowEnd - Time.MINIMUM_VISIBLE) setWindow(slotStart(anchor))
@@ -103,14 +122,14 @@ class GuideModel(
 
     fun moveLeft() {
         when (val focus = _focus.value) {
-            is Focus.Header -> _focus.value = focus.copy(index = (focus.index - 1).coerceAtLeast(0))
+            is Focus.Header -> setFocus(focus.copy(index = (focus.index - 1).coerceAtLeast(0)))
             is Focus.Program -> {
                 val current = programAt(focus.row, focus.anchor) ?: return
                 val earliest = slotStart(nowSeconds())
                 if (current.start <= earliest) return
                 val previous = programAt(focus.row, current.start - Time.EPSILON)
                 val anchor = max(earliest, (previous?.start ?: current.start) + Time.EPSILON)
-                _focus.value = focus.copy(anchor = anchor)
+                setFocus(focus.copy(anchor = anchor))
                 if (anchor < _windowStart.value) setWindow(max(earliest, slotStart(anchor)))
             }
         }
@@ -121,7 +140,7 @@ class GuideModel(
         val now = nowSeconds()
         if (_windowStart.value < slotStart(now)) setWindow(slotStart(now))
         val focus = _focus.value
-        if (focus is Focus.Program && focus.anchor < now) _focus.value = focus.copy(anchor = now)
+        if (focus is Focus.Program && focus.anchor < now) setFocus(focus.copy(anchor = now))
     }
 
     private fun setWindow(start: Double) {

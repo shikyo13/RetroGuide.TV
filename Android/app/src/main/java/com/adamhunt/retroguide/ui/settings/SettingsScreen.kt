@@ -58,6 +58,7 @@ sealed interface SettingsRoute {
     data class Server(val id: String) : SettingsRoute
     data object Acknowledgements : SettingsRoute
     data object ParentalControls : SettingsRoute
+    data object Reminders : SettingsRoute
 }
 
 /** Moves between Settings pages, remembering where each open page was scrolled. */
@@ -121,6 +122,7 @@ fun SettingsScreen(app: AppModel, screen: DpSize, onClose: () -> Unit) {
                 is SettingsRoute.Server -> ServerPage(app, navigator, route.id)
                 SettingsRoute.Acknowledgements -> AcknowledgementsPage()
                 SettingsRoute.ParentalControls -> ParentalControlsPage(app, navigator)
+                SettingsRoute.Reminders -> RemindersPage(app, navigator)
             }
         }
     }
@@ -143,6 +145,9 @@ private fun MainPage(app: AppModel, navigator: SettingsNavigator) {
 
         item { SectionHeader("Picture") }
         item { RetroRow("Theme", { navigator.open(SettingsRoute.Themes) }, trailing = ThemePalettes.first { it.id == themeID }.name) }
+
+        item { SectionHeader("Playback") }
+        item { RetroRow("Program reminders", { navigator.open(SettingsRoute.Reminders) }, trailing = if (isPro) null else PRO_BADGE) }
 
         item { SectionHeader("Channels") }
         item {
