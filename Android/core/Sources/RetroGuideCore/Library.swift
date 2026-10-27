@@ -18,6 +18,9 @@ struct ChannelInfo: Encodable, Sendable {
     let name: String
     let callSign: String
     let isHidden: Bool
+    let isFavorite: Bool
+    /// `ChannelSource` (curated, series, custom, …).
+    let source: String
 }
 
 extension CoreState {
@@ -91,7 +94,15 @@ extension CoreState {
 
     func channelList() -> [ChannelInfo] {
         channels.map { channel in
-            ChannelInfo(id: channel.id, number: channel.number, name: channel.name, callSign: channel.callSign, isHidden: channel.isHidden)
+            ChannelInfo(
+                id: channel.id,
+                number: channel.number,
+                name: channel.name,
+                callSign: channel.callSign,
+                isHidden: channel.isHidden,
+                isFavorite: viewing.isFavorite(channel),
+                source: channel.definition.source.rawValue
+            )
         }
     }
 

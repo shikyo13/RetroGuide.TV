@@ -32,6 +32,21 @@ enum Routes {
             MPVTrackSelector.commands(for: params.selection.trackSelection, trackListJSON: params.trackList)
         },
         "endStream": route(EndStreamParams.self) { state, params in await state.endStream(params) },
+        "playback.event": route(PlaybackEventParams.self) { state, params in await state.playbackEvent(params) },
+
+        "options": route(ChannelParams.self) { state, params in try await state.options(channelID: params.channelID) },
+        "tracks.choose": route(TrackChoiceParams.self) { state, params in try await state.chooseTrack(params) },
+        "subtitles.nudge": route(SubtitleNudgeParams.self) { state, params in await state.nudgeSubtitles(params) },
+
+        "channel.setOrdering": route(OrderingParams.self) { state, params in try await state.setOrdering(params) },
+        "channel.removeTitle": route(TitleParams.self) { state, params in await state.removeTitle(params) },
+        "channel.restoreTitle": route(TitleParams.self) { state, params in await state.restoreTitle(params) },
+        "channel.setHidden": route(HiddenParams.self) { state, params in await state.setHidden(params) },
+        "favorites.toggle": route(ChannelParams.self) { state, params in try await state.toggleFavorite(params) },
+        "viewing": route { state in await state.viewingInfo() },
+        "viewing.favoritesOnly": route(EnabledParams.self) { state, params in await state.setFavoritesOnly(params) },
+        "pro.set": route(EnabledParams.self) { state, params in await state.setPro(params) },
+        "search": route(SearchParams.self) { state, params in await state.search(params) },
     ]
 
     private struct Request<Params: Decodable>: Decodable {

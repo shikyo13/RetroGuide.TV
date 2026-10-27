@@ -70,7 +70,7 @@ fun RetroRow(
         onClick = onClick,
         modifier = modifier.fillMaxWidth().defaultMinSize(minHeight = Tokens.Control.minimumHeight),
         shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(Tokens.Radius.medium)),
-        scale = ClickableSurfaceDefaults.scale(focusedScale = 1.02f),
+        scale = ClickableSurfaceDefaults.scale(focusedScale = Tokens.Scale.ROW_FOCUSED),
         colors = ClickableSurfaceDefaults.colors(
             containerColor = theme.surface,
             contentColor = theme.textPrimary,

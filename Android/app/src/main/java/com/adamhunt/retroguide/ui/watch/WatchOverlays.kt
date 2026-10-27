@@ -152,3 +152,13 @@ private fun RemoteHints() {
         }
     }
 }
+
+/** After the sleep timer stops playback: Select starts the channel again. */
+@Composable
+fun SleepFinishedCard(modifier: Modifier = Modifier) {
+    val theme = LocalTheme.current
+    Panel(modifier, color = theme.surface) {
+        Text("Sleep timer finished", style = Typography.title, color = theme.textPrimary)
+        Text("Press Select to resume watching.", style = Typography.body, color = theme.textSecondary)
+    }
+}

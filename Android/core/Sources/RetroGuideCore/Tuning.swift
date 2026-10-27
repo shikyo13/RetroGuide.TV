@@ -3,6 +3,12 @@ import RetroGuideKit
 
 struct TuneParams: Decodable, Sendable {
     let channelID: String
+    /// Counts up with every tune the app starts; an older tune finishing late isn't kept.
+    let generation: Int
+    /// Watch from the beginning: this program, from `position` (0 when omitted),
+    /// off the channel's clock.
+    let programID: String?
+    let position: TimeInterval?
 }
 
 /// What to show on a channel right now.
@@ -13,6 +19,7 @@ struct TuneResult: Encodable, Sendable {
     let intermissionUntil: Date?
     let stream: StreamInfo?
     let tracks: TracksInfo?
+    let trackState: TrackState?
 }
 
 struct StreamInfo: Encodable, Sendable {
@@ -92,27 +99,70 @@ struct EndStreamParams: Decodable, Sendable {
     let sessionID: String
 }
 
+/// The stream on the player now, for track choices and playback reports.
+struct Playing: Sendable {
+    let program: ScheduledProgram
+    let channelID: String
+    let tracks: ItemTracks?
+    var selection: TrackSelection?
+}
+
 extension CoreState {
     /// mpv plays any container and codec, so servers send the original file.
     private static let capabilities = PlaybackCapabilities.universal
 
-    /// The program on `channelID` now, and the stream to show it from its live position.
+    private enum Timing {
+        /// Servers that start streams at a position can only start on whole
+        /// seconds; if preparing put it this far behind, it's requested again.
+        static let serverPositionTolerance: TimeInterval = 1
+        /// How far around now a program to watch from the beginning is looked for.
+        static let programSearchWindow: TimeInterval = 24 * ScheduleConstants.secondsPerHour
+    }
+
+    /// The program on `channelID` now (or the one asked for), and the stream to show it.
     func tune(_ params: TuneParams) async throws -> TuneResult {
+        latestTune = max(latestTune, params.generation)
         guard let channel = channel(withID: params.channelID) else { throw CoreError.unknownChannel }
         let now = Date.now
-        guard let program = channel.timeline.program(at: now) else { throw CoreError.nothingScheduled }
-        if program.isInIntermission(at: now) {
-            return TuneResult(channelID: channel.id, program: programInfo(program), intermissionUntil: program.slotEnd, stream: nil, tracks: nil)
+        let independent = params.programID.flatMap { program(withID: $0, on: channel, near: now) }
+        if params.programID != nil, independent == nil { throw CoreError.nothingScheduled }
+        guard let program = independent ?? channel.timeline.program(at: now) else { throw CoreError.nothingScheduled }
+        if independent == nil, program.isInIntermission(at: now) {
+            return TuneResult(channelID: channel.id, program: programInfo(program), intermissionUntil: program.slotEnd, stream: nil, tracks: nil, trackState: nil)
         }
         guard let client = clients[program.item.serverID] else { throw CoreError.unknownServer }
+        let independentPosition = independent.map { _ in params.position ?? .zero }
         let prepared = try await client.preparePlayback(
             for: program.item,
-            startingAt: program.elapsed(at: now),
+            startingAt: independentPosition ?? program.elapsed(at: now),
             capabilities: Self.capabilities,
             preferences: languagePreferences
         )
-        // Preparing takes a moment: join where the program is now.
-        let request = prepared.request.starting(at: program.elapsed(at: .now))
+        var request = prepared.request
+        var tracks = prepared.tracks
+        // Preparing takes a moment: a server that starts at a position is asked again if it fell behind.
+        if independentPosition == nil, request.startsAtPosition,
+           program.elapsed(at: .now) - request.startPosition >= Timing.serverPositionTolerance {
+            if request.needsTeardown { await client.endStream(sessionID: request.sessionID) }
+            let previousVersion = request.versionIndex
+            request = try await client.streamRequest(for: program.item, startingAt: program.elapsed(at: .now), capabilities: Self.capabilities)
+            if request.versionIndex != previousVersion {
+                tracks = await client.tracks(for: program.item, version: request.versionIndex, preferences: languagePreferences)
+            }
+        }
+        request = request.starting(at: independentPosition ?? program.elapsed(at: .now))
+        let selection = tracks.map { trackRules.selection(for: program.item, tracks: $0) }
+        if params.generation == latestTune {
+            playing = Playing(program: program, channelID: channel.id, tracks: tracks, selection: selection)
+            subtitleTiming.prepare(
+                itemID: program.item.id,
+                versionIndex: request.versionIndex,
+                show: SubtitleTimingState.show(of: program.item),
+                subtitle: selection?.subtitle ?? .none
+            )
+            reportedTune = params.generation
+            await reporter.prepare(client: client, item: program.item, request: request, tracks: tracks, selection: selection)
+        }
         let buffer = MPVBufferSettings(request.buffer)
         let stream = StreamInfo(
             url: request.url.absoluteString,
@@ -128,8 +178,14 @@ extension CoreState {
             program: programInfo(program),
             intermissionUntil: nil,
             stream: stream,
-            tracks: prepared.tracks.map(tracksInfo)
+            tracks: tracks.map { tracksInfo($0, selection: selection) },
+            trackState: trackState()
         )
+    }
+
+    private func program(withID id: String, on channel: Channel, near date: Date) -> ScheduledProgram? {
+        let window = DateInterval(start: date.addingTimeInterval(-Timing.programSearchWindow), duration: 2 * Timing.programSearchWindow)
+        return channel.timeline.programs(overlapping: window).first { $0.id == id }
     }
 
     func endStream(_ params: EndStreamParams) async -> Done {
@@ -137,7 +193,7 @@ extension CoreState {
         return Done()
     }
 
-    private func tracksInfo(_ tracks: ItemTracks) -> TracksInfo {
+    private func tracksInfo(_ tracks: ItemTracks, selection: TrackSelection?) -> TracksInfo {
         func info(_ option: TrackOption) -> TrackInfo {
             let (streamIndex, url): (Int?, String?) = switch option.source {
             case let .embedded(index): (index, nil)
@@ -145,6 +201,6 @@ extension CoreState {
             }
             return TrackInfo(id: option.id, title: option.title, language: option.language, isForced: option.isForced, streamIndex: streamIndex, url: url)
         }
-        return TracksInfo(audio: tracks.audio.map(info), subtitles: tracks.subtitles.map(info), selection: SelectionInfo(tracks.selection))
+        return TracksInfo(audio: tracks.audio.map(info), subtitles: tracks.subtitles.map(info), selection: SelectionInfo(selection ?? tracks.selection))
     }
 }

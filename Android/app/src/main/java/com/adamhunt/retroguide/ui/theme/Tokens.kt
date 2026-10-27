@@ -44,6 +44,8 @@ object Tokens {
 
     object Scale {
         const val FOCUSED = 1.04f
+        /** Full-width rows grow less, so they stay inside their column. */
+        const val ROW_FOCUSED = 1.02f
     }
 
     object Motion {

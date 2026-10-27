@@ -82,7 +82,7 @@ private fun MainPage(app: AppModel, onPage: (Page) -> Unit) {
                 detail = "${server.kind.replaceFirstChar(Char::uppercase)} · ${server.address}",
                 trailing = if (server.isOnline) "Online" else "Offline")
         }
-        item { RetroRow("Add another server", {}, trailing = if (app.isPro) "" else "Pro 🔒") }
+        item { RetroRow("Add another server", {}, trailing = if (app.isPro.value) "" else "Pro 🔒") }
         item { RetroRow("Refresh library", { app.refresh(showsProgress = false) }) }
         item { Section("Account") }
         item { RetroRow("Sign out", app::signOut, detail = "Removes every server and channel from this device") }
@@ -100,7 +100,7 @@ private fun ThemesPage(app: AppModel, onDone: () -> Unit) {
     val current = remember { FocusRequester() }
     LazyColumn(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {
         items(ThemePalettes, key = { it.id }) { palette ->
-            val locked = !palette.id.isIncludedFree && !app.isPro
+            val locked = !palette.id.isIncludedFree && !app.isPro.value
             RetroRow(
                 palette.name,
                 onClick = { if (!locked) { app.setTheme(palette.id); onDone() } },

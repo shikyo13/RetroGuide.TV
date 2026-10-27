@@ -17,6 +17,10 @@ class RetroGuideApplication : Application() {
     fun start(intent: Intent) {
         if (isStarted) return
         isStarted = true
-        model.start(if (isDebuggable) DevelopmentLaunch.server(intent) else null)
+        if (isDebuggable) {
+            model.start(DevelopmentLaunch.server(intent), developmentPro = DevelopmentLaunch.isPro(intent))
+        } else {
+            model.start()
+        }
     }
 }

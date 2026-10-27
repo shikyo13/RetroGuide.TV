@@ -84,6 +84,10 @@ extension CoreState {
         )
     }
 
+    func posterURL(of item: MediaItem) -> String? {
+        item.artwork.poster.flatMap { clients[item.serverID]?.imageURL(for: $0, size: ArtworkSize.poster)?.absoluteString }
+    }
+
     private func artwork(of item: MediaItem) -> ArtworkInfo {
         let client = clients[item.serverID]
         func url(_ reference: String?, _ size: ImageSize) -> String? {

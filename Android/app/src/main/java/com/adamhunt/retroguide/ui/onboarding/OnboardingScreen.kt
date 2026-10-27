@@ -15,10 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,12 +28,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Text
+import com.adamhunt.retroguide.ui.components.RetroTextField
 import com.adamhunt.retroguide.ui.components.BrandMark
 import com.adamhunt.retroguide.ui.components.Panel
 import com.adamhunt.retroguide.ui.components.RetroButton
@@ -228,34 +223,3 @@ private fun Message(text: String) {
     Text(text, style = Typography.headline, color = LocalTheme.current.textSecondary)
 }
 
-@Composable
-fun RetroTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    modifier: Modifier,
-    keyboardType: KeyboardType,
-    isSecret: Boolean = false,
-    onDone: () -> Unit,
-) {
-    val theme = LocalTheme.current
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { androidx.compose.material3.Text(label) },
-        singleLine = true,
-        modifier = modifier.fillMaxWidth(),
-        visualTransformation = if (isSecret) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Done, autoCorrectEnabled = false),
-        keyboardActions = KeyboardActions(onDone = { onDone() }),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedTextColor = theme.textPrimary,
-            unfocusedTextColor = theme.textPrimary,
-            focusedBorderColor = theme.focusFill,
-            unfocusedBorderColor = theme.textSecondary,
-            focusedLabelColor = theme.focusFill,
-            unfocusedLabelColor = theme.textSecondary,
-            cursorColor = theme.accent,
-        ),
-    )
-}

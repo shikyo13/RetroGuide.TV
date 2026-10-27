@@ -68,12 +68,12 @@ class GuideModel(
 
     /** Play/Pause: the shortcut to the top bar from any row. */
     fun focusHeader() {
-        _focus.value = Focus.Header(0)
+        _focus.value = Focus.Header(TOP_ROW_ENTRY)
     }
 
     fun moveUp() {
         when (val focus = _focus.value) {
-            is Focus.Program -> _focus.value = if (focus.row == 0) Focus.Header(0) else focus.copy(row = focus.row - 1)
+            is Focus.Program -> _focus.value = if (focus.row == 0) Focus.Header(TOP_ROW_ENTRY) else focus.copy(row = focus.row - 1)
             is Focus.Header -> Unit
         }
     }
@@ -144,6 +144,9 @@ class GuideModel(
     }
 
     companion object {
+        /** Up from the grid lands on Favorites, the first button in the top bar. */
+        private val TOP_ROW_ENTRY = GuideHeaderButton.FAVORITES.ordinal
+
         fun slotStart(time: Double) = floor(time / Time.SLOT) * Time.SLOT
     }
 }

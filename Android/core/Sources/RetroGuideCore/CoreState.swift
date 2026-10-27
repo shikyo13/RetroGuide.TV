@@ -25,6 +25,22 @@ actor CoreState {
     var languagePreferences: LanguagePreferences?
     var progress: [String: LibraryLoadProgress] = [:]
     var curated: [ChannelDefinition] = []
+    /// Built on the first search after each lineup change.
+    var searchIndex: ProgramSearchIndex?
+
+    // Personal choices, kept in the core's files.
+    var viewing = ViewingPreferences()
+    var trackRules = TrackRules()
+    var subtitleTiming = SubtitleTimingState()
+    /// RetroGuide Pro, as the app's store reports it.
+    var isPro = false
+
+    /// What the player is showing (see Tuning.swift), and the newest tune asked for.
+    var playing: Playing?
+    var latestTune = 0
+    /// The tune whose stream playback reports describe.
+    var reportedTune = 0
+    let reporter = PlaybackReporter()
 
     // Sign-in in progress.
     var plexLinkCodes: [Int: PlexLinkCode] = [:]
@@ -80,8 +96,15 @@ actor CoreState {
         let quality = Dictionary(accounts.map { ($0.id, $0.playback.quality) }, uniquingKeysWith: { first, _ in first })
         let index = LibraryIndex(snapshots: ordered, quality: quality)
         self.index = index
+        rebuildChannels()
+    }
+
+    /// Rebuilds the channels from the current index, after a lineup setting changed.
+    func rebuildChannels() {
+        guard let index else { return }
         let builder = LineupBuilder(curated: curated, options: LineupOptions.adapted(to: index, grid: scheduleGrid))
         channels = builder.build(index: index, customization: customization)
+        searchIndex = nil
     }
 
     var visibleChannels: [Channel] {
@@ -101,9 +124,12 @@ struct CoreConfiguration: Sendable {
 
 /// The core's files in the app's private storage.
 struct CoreStore: Sendable {
-    private enum File {
+    enum File {
         static let accounts = "accounts.json"
         static let customization = "customization.json"
+        static let viewing = "viewing.json"
+        static let trackRules = "trackRules.json"
+        static let subtitleOffsets = "subtitleOffsets.json"
         static let snapshots = "snapshots"
     }
 
@@ -141,6 +167,14 @@ struct CoreStore: Sendable {
 
     func removeSnapshot(serverID: String) {
         try? FileManager.default.removeItem(at: snapshotURL(serverID))
+    }
+
+    func load<Value: Decodable>(_ type: Value.Type, file: String) -> Value? {
+        load(type, from: directory.appending(path: file))
+    }
+
+    func save(_ value: some Encodable, file: String) {
+        save(value, to: directory.appending(path: file))
     }
 
     private func snapshotURL(_ serverID: String) -> URL {

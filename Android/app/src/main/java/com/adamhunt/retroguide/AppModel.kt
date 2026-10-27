@@ -9,6 +9,7 @@ import com.adamhunt.retroguide.core.ServerInfo
 import com.adamhunt.retroguide.core.ServersChange
 import com.adamhunt.retroguide.core.TokenVault
 import com.adamhunt.retroguide.player.MpvPlayer
+import com.adamhunt.retroguide.player.SleepTimer
 import com.adamhunt.retroguide.player.Tuner
 import com.adamhunt.retroguide.ui.theme.ThemeId
 import kotlinx.coroutines.CoroutineScope
@@ -72,10 +73,65 @@ class AppModel(context: Context, muted: Boolean) {
     )
     val themeID: StateFlow<ThemeId> = _themeID.asStateFlow()
 
-    /** RetroGuide Pro (Google Play billing isn't connected yet). */
-    val isPro = false
+    /** RetroGuide Pro. Google Play Billing isn't connected yet; debug builds can turn it on for QA. */
+    private val _isPro = MutableStateFlow(false)
+    val isPro: StateFlow<Boolean> = _isPro.asStateFlow()
+
+    /** Guide and channel surfing show only favorites (a Pro feature). */
+    private val _favoritesOnly = MutableStateFlow(false)
+    val favoritesOnly: StateFlow<Boolean> = _favoritesOnly.asStateFlow()
+
+    val sleepTimer = SleepTimer(scope) { tuner.suspend() }
 
     private var refreshJob: Job? = null
+    private var isInBackground = false
+
+    /** The channels the guide shows: favorites only when that's on. */
+    fun browsingChannels(): List<ChannelInfo> {
+        val visible = _channels.value
+        if (!(_isPro.value && _favoritesOnly.value)) return visible
+        return visible.filter { it.isFavorite }.ifEmpty { visible }
+    }
+
+    fun setPro(isPro: Boolean) {
+        _isPro.value = isPro
+        scope.launch { runCatching { core.setPro(isPro) } }
+        updateSurfing()
+    }
+
+    fun toggleFavorite(channelID: String) = changeLineup { core.toggleFavorite(channelID) }
+
+    fun setFavoritesOnly(isOn: Boolean) {
+        scope.launch {
+            runCatching { core.setFavoritesOnly(isOn) }.getOrNull()?.let { _favoritesOnly.value = it.favoritesOnly }
+            updateSurfing()
+        }
+    }
+
+    fun setOrdering(channelID: String, ordering: String) = changeLineup { core.setOrdering(channelID, ordering) }
+    fun removeTitle(channelID: String, showID: String) = changeLineup { core.removeTitle(channelID, showID) }
+    fun restoreTitle(channelID: String, showID: String) = changeLineup { core.restoreTitle(channelID, showID) }
+    fun setHidden(channelID: String, isHidden: Boolean) = changeLineup { core.setHidden(channelID, isHidden) }
+
+    /** Runs a lineup change in the core and shows its channels. */
+    private fun changeLineup(change: suspend () -> List<ChannelInfo>) {
+        scope.launch {
+            val all = runCatching { change() }.getOrNull() ?: return@launch
+            showChannels(all)
+        }
+    }
+
+    /** The app left the screen: release the stream (the Apple app does the same after a short grace). */
+    fun enteredBackground() {
+        isInBackground = true
+        tuner.suspend()
+    }
+
+    fun becameActive() {
+        if (!isInBackground) return
+        isInBackground = false
+        if (_phase.value == Phase.Ready && !sleepTimer.didExpire.value) tuner.resume()
+    }
 
     fun setTheme(id: ThemeId) {
         _themeID.value = id
@@ -104,9 +160,10 @@ class AppModel(context: Context, muted: Boolean) {
     }
 
     /** [development]: debug builds only, a server to add if it isn't connected yet. */
-    fun start(development: CoreClient.DevelopmentServer? = null) {
+    fun start(development: CoreClient.DevelopmentServer? = null, developmentPro: Boolean = false) {
         scope.launch {
             try {
+                if (developmentPro) setPro(true)
                 val started = CoreLauncher.start(appContext, core, vault.load())
                 _servers.value = started.servers
                 if (development != null && started.servers.none { it.id == development.id }) {
@@ -169,9 +226,19 @@ class AppModel(context: Context, muted: Boolean) {
     }
 
     private suspend fun reloadChannels() {
-        val visible = core.channels().filter { !it.isHidden }
+        _favoritesOnly.value = runCatching { core.viewing().favoritesOnly }.getOrDefault(false)
+        showChannels(core.channels())
+    }
+
+    private fun showChannels(all: List<ChannelInfo>) {
+        val visible = all.filter { !it.isHidden }
         _channels.value = visible
         tuner.setChannels(visible)
+        updateSurfing()
+    }
+
+    private fun updateSurfing() {
+        tuner.surfChannelIDs = if (_isPro.value && _favoritesOnly.value) browsingChannels().map { it.id }.toSet() else null
     }
 
     /** Powers the "TV" on to the last watched channel (or the first one). */

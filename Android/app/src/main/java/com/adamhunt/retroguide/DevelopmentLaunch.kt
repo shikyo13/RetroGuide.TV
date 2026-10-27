@@ -18,7 +18,11 @@ object DevelopmentLaunch {
         const val USER_ID = "devServerUserID"
         const val ACCOUNT_TOKEN = "devPlexAccountToken"
         const val DEFAULT_KIND = "plex"
+        const val PRO = "devPro"
     }
+
+    /** Turns RetroGuide Pro on for QA (`--ez devPro true`), until Google Play Billing is connected. */
+    fun isPro(intent: Intent): Boolean = intent.getBooleanExtra(Extra.PRO, false)
 
     fun server(intent: Intent): CoreClient.DevelopmentServer? {
         val id = intent.getStringExtra(Extra.ID) ?: return null

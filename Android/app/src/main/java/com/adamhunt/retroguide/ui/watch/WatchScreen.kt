@@ -1,6 +1,7 @@
 package com.adamhunt.retroguide.ui.watch
 
 import android.view.KeyEvent as AndroidKeyEvent
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -22,21 +23,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.nativeKeyCode
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.input.key.key
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.DpSize
 import com.adamhunt.retroguide.AppModel
 import com.adamhunt.retroguide.core.ProgramInfo
+import com.adamhunt.retroguide.ui.components.PictureWindow
 import com.adamhunt.retroguide.ui.guide.GuideHeaderButton
 import com.adamhunt.retroguide.ui.guide.GuideLayout
 import com.adamhunt.retroguide.ui.guide.GuideModel
+import com.adamhunt.retroguide.ui.guide.GuidePreviewChrome
 import com.adamhunt.retroguide.ui.guide.GuideScreen
+import com.adamhunt.retroguide.ui.search.SearchLayout
+import com.adamhunt.retroguide.ui.search.SearchScreen
 import com.adamhunt.retroguide.ui.theme.Tokens
 import kotlinx.coroutines.delay
 
@@ -45,7 +54,10 @@ private object WatchTiming {
     const val BANNER_MS = 5_000L
 }
 
-/** Live TV: the picture, channel surfing and the guide (the Apple app's `WatchView`). */
+/** What covers the picture. */
+private enum class Overlay { NONE, GUIDE, SEARCH }
+
+/** Live TV: the picture, channel surfing, the guide, Search and Options (the Apple app's `WatchView`). */
 @Composable
 fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
     val tuner = app.tuner
@@ -53,13 +65,28 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
     val program by tuner.program.collectAsState()
     val signal by tuner.signal.collectAsState()
     val channels by app.channels.collectAsState()
+    val isPro by app.isPro.collectAsState()
+    val favoritesOnly by app.favoritesOnly.collectAsState()
+    val sleepExpired by app.sleepTimer.didExpire.collectAsState()
     val scope = rememberCoroutineScope()
+    var overlay by remember { mutableStateOf(Overlay.NONE) }
     var guide by remember { mutableStateOf<GuideModel?>(null) }
+    var isShowingOptions by remember { mutableStateOf(false) }
     var bannerRequest by remember { mutableIntStateOf(0) }
     var showsBanner by remember { mutableStateOf(false) }
     var showsNext by remember { mutableStateOf(false) }
     var nextProgram by remember { mutableStateOf<ProgramInfo?>(null) }
     val focus = remember { FocusRequester() }
+
+    fun openGuide() {
+        guide = GuideModel(app.core, app.browsingChannels(), channel?.id, scope)
+        overlay = Overlay.GUIDE
+    }
+
+    fun closeOverlay() {
+        guide = null
+        overlay = Overlay.NONE
+    }
 
     // Every channel change brings up the banner, like a TV's info bar.
     LaunchedEffect(channel?.id) { if (channel != null) bannerRequest += 1 }
@@ -75,9 +102,47 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
             channel?.let { runCatching { app.core.guide(current.end + 1, current.end + 2, listOf(it.id)) }.getOrNull()?.firstOrNull()?.programs?.firstOrNull() }
         } else null
     }
-    LaunchedEffect(guide) { runCatching { focus.requestFocus() } }
+    // The guide follows Favorites as it's switched on and off.
+    LaunchedEffect(favoritesOnly, channels) {
+        if (overlay == Overlay.GUIDE) guide = GuideModel(app.core, app.browsingChannels(), channel?.id, scope)
+    }
+    LaunchedEffect(overlay, isShowingOptions, sleepExpired) {
+        if (overlay == Overlay.SEARCH || isShowingOptions) return@LaunchedEffect
+        // After the panel that had focus has left the screen.
+        withFrameNanos {}
+        runCatching { focus.requestFocus() }
+    }
+
+    fun pressHeaderButton(button: GuideHeaderButton) {
+        when (button) {
+            GuideHeaderButton.OPTIONS -> isShowingOptions = true
+            GuideHeaderButton.FAVORITES -> if (isPro) app.setFavoritesOnly(!favoritesOnly) else onOpenSettings()
+            GuideHeaderButton.SEARCH -> {
+                guide = null
+                overlay = Overlay.SEARCH
+            }
+            GuideHeaderButton.SETTINGS -> {
+                closeOverlay()
+                onOpenSettings()
+            }
+        }
+    }
 
     fun handle(code: Int): Boolean {
+        // Options and Search handle their own keys; nothing they pass up changes channel.
+        if (isShowingOptions || overlay == Overlay.SEARCH) return false
+        if (sleepExpired) {
+            if (code == AndroidKeyEvent.KEYCODE_DPAD_CENTER || code == AndroidKeyEvent.KEYCODE_ENTER) {
+                app.sleepTimer.resumeWatching()
+                tuner.resume()
+                return true
+            }
+            return false
+        }
+        if (code == AndroidKeyEvent.KEYCODE_MENU) {
+            isShowingOptions = true
+            return true
+        }
         val open = guide
         if (open != null) {
             when (code) {
@@ -86,16 +151,12 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
                 AndroidKeyEvent.KEYCODE_DPAD_LEFT -> open.moveLeft()
                 AndroidKeyEvent.KEYCODE_DPAD_RIGHT -> open.moveRight(GuideHeaderButton.entries.size)
                 AndroidKeyEvent.KEYCODE_DPAD_CENTER, AndroidKeyEvent.KEYCODE_ENTER -> when (val f = open.focus.value) {
-                    is GuideModel.Focus.Header -> if (GuideHeaderButton.entries[f.index] == GuideHeaderButton.SETTINGS) {
-                        guide = null
-                        onOpenSettings()
-                    }
+                    is GuideModel.Focus.Header -> pressHeaderButton(GuideHeaderButton.entries[f.index])
                     is GuideModel.Focus.Program -> open.focusedChannel?.let {
                         tuner.tune(it)
-                        guide = null
+                        closeOverlay()
                     }
                 }
-                AndroidKeyEvent.KEYCODE_BACK, AndroidKeyEvent.KEYCODE_ESCAPE -> guide = null
                 AndroidKeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> open.focusHeader()
                 else -> return false
             }
@@ -104,16 +165,23 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
         when (code) {
             AndroidKeyEvent.KEYCODE_DPAD_UP, AndroidKeyEvent.KEYCODE_CHANNEL_UP -> tuner.channelUp()
             AndroidKeyEvent.KEYCODE_DPAD_DOWN, AndroidKeyEvent.KEYCODE_CHANNEL_DOWN -> tuner.channelDown()
-            AndroidKeyEvent.KEYCODE_DPAD_CENTER, AndroidKeyEvent.KEYCODE_ENTER, AndroidKeyEvent.KEYCODE_GUIDE ->
-                guide = GuideModel(app.core, channels, channel?.id, scope)
+            AndroidKeyEvent.KEYCODE_DPAD_CENTER, AndroidKeyEvent.KEYCODE_ENTER, AndroidKeyEvent.KEYCODE_GUIDE -> openGuide()
             AndroidKeyEvent.KEYCODE_DPAD_LEFT -> { showsNext = false; bannerRequest += 1 }
             AndroidKeyEvent.KEYCODE_DPAD_RIGHT -> { showsNext = true; bannerRequest += 1 }
             AndroidKeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, AndroidKeyEvent.KEYCODE_LAST_CHANNEL -> tuner.recall()
-            AndroidKeyEvent.KEYCODE_BACK, AndroidKeyEvent.KEYCODE_ESCAPE -> if (showsBanner) showsBanner = false else return false
+            AndroidKeyEvent.KEYCODE_SEARCH -> overlay = Overlay.SEARCH
             else -> return false
         }
         return true
     }
+
+    // Back goes to the guide's top row first, then closes it (as on Apple TV); on
+    // the picture it dismisses the banner. Options and Search handle their own.
+    BackHandler(enabled = guide != null && !isShowingOptions) {
+        val open = guide ?: return@BackHandler
+        if (open.focus.value is GuideModel.Focus.Program) open.focusHeader() else closeOverlay()
+    }
+    BackHandler(enabled = overlay == Overlay.NONE && showsBanner && !isShowingOptions) { showsBanner = false }
 
     BoxWithConstraints(
         Modifier
@@ -122,19 +190,32 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
             .focusable()
             .onKeyEvent { event -> event.type == KeyEventType.KeyDown && handle(event.key.nativeKeyCode) },
     ) {
-        val isGuideOpen = guide != null
-        val motion = tween<androidx.compose.ui.unit.Dp>(Tokens.Motion.RELAXED)
-        val x by animateDpAsState(if (isGuideOpen) GuideLayout.margin else androidx.compose.ui.unit.Dp(0f), motion, label = "videoX")
-        val y by animateDpAsState(if (isGuideOpen) GuideLayout.previewTop else androidx.compose.ui.unit.Dp(0f), motion, label = "videoY")
-        val width by animateDpAsState(if (isGuideOpen) GuideLayout.previewWidth else maxWidth, motion, label = "videoWidth")
-        val height by animateDpAsState(if (isGuideOpen) GuideLayout.previewHeight else maxHeight, motion, label = "videoHeight")
+        val screen = DpSize(maxWidth, maxHeight)
+        val window = when (overlay) {
+            Overlay.NONE -> PictureWindow(DpOffset(Dp(0f), Dp(0f)), screen, Dp(0f))
+            Overlay.GUIDE -> GuideLayout.previewWindow
+            Overlay.SEARCH -> SearchLayout.pictureWindow(screen)
+        }
+        val motion = tween<Dp>(Tokens.Motion.RELAXED)
+        val x by animateDpAsState(window.offset.x, motion, label = "videoX")
+        val y by animateDpAsState(window.offset.y, motion, label = "videoY")
+        val width by animateDpAsState(window.size.width, motion, label = "videoWidth")
+        val height by animateDpAsState(window.size.height, motion, label = "videoHeight")
 
-        guide?.let { GuideScreen(it, channel) }
+        when (overlay) {
+            Overlay.GUIDE -> guide?.let { GuideScreen(it, channel, isPro && favoritesOnly) }
+            Overlay.SEARCH -> SearchScreen(app, screen, onTune = { id ->
+                tuner.channelWithID(id)?.let(tuner::tune)
+                closeOverlay()
+            }, onClose = ::closeOverlay)
+            Overlay.NONE -> Unit
+        }
         Box(Modifier.offset(x, y).size(width, height)) {
             VideoSurface(app.player, Modifier.fillMaxSize())
             SignalOverlay(signal, channel, program)
+            if (overlay == Overlay.GUIDE) guide?.let { GuidePreviewChrome(it, channel) }
         }
-        if (!isGuideOpen) {
+        if (overlay == Overlay.NONE) {
             val current = channel
             AnimatedVisibility(showsBanner && current != null, Modifier.align(Alignment.TopEnd).padding(Tokens.Spacing.xl), enter = fadeIn(), exit = fadeOut()) {
                 current?.let { ChannelNumberOSD(it) }
@@ -143,5 +224,7 @@ fun WatchScreen(app: AppModel, onOpenSettings: () -> Unit) {
                 current?.let { ChannelBanner(it, if (showsNext) nextProgram ?: program else program, isShowingNext = showsNext && nextProgram != null) }
             }
         }
+        if (sleepExpired) SleepFinishedCard(Modifier.align(Alignment.Center))
+        if (isShowingOptions) OptionsPanel(app, onClose = { isShowingOptions = false })
     }
 }

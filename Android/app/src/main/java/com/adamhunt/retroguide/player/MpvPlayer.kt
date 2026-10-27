@@ -11,9 +11,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -70,8 +70,10 @@ class MpvPlayer(
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val http = OkHttpClient()
-    private val _events = MutableStateFlow<PlayerEvent?>(null)
-    val events: StateFlow<PlayerEvent?> = _events.asStateFlow()
+    private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = EVENT_BUFFER)
+    val events: SharedFlow<PlayerEvent> = _events.asSharedFlow()
+    /** Whether the current file reached the picture (so its end is a real end). */
+    private var isPlaying = false
 
     private var pendingSelection: SelectionInfo? = null
     private var subtitleDownload: Job? = null
@@ -111,7 +113,7 @@ class MpvPlayer(
         generation += 1
         hasStartedPlaying = false
         subtitleDownload?.cancel()
-        _events.value = null
+        isPlaying = false
         pendingSelection = selection
         MPVLib.setPropertyString("demuxer-max-bytes", stream.maxBytes)
         MPVLib.setPropertyString("demuxer-readahead-secs", stream.readaheadSeconds)
@@ -128,7 +130,17 @@ class MpvPlayer(
         apply(selection)
     }
 
+    /** Where the file is, in seconds (`null` before it starts). */
+    val position: Double?
+        get() = runCatching { MPVLib.getPropertyDouble("time-pos") }.getOrNull()
+
+    /** Shows subtitles [seconds] later (earlier when negative). */
+    fun setSubtitleDelay(seconds: Double) {
+        MPVLib.setPropertyDouble("sub-delay", seconds)
+    }
+
     fun stop() {
+        isPlaying = false
         generation += 1
         subtitleDownload?.cancel()
         pendingSelection = null
@@ -188,10 +200,12 @@ class MpvPlayer(
                 }
                 MPVLib.MPV_EVENT_PLAYBACK_RESTART -> {
                     hasStartedPlaying = true
-                    _events.value = PlayerEvent.Playing
+                    isPlaying = true
+                    _events.emit(PlayerEvent.Playing)
                 }
-                MPVLib.MPV_EVENT_END_FILE -> if (_events.value == PlayerEvent.Playing) {
-                    _events.value = PlayerEvent.Ended
+                MPVLib.MPV_EVENT_END_FILE -> if (isPlaying) {
+                    isPlaying = false
+                    _events.emit(PlayerEvent.Ended)
                 }
             }
         }
@@ -211,6 +225,8 @@ class MpvPlayer(
     }
 
     companion object {
+        private const val EVENT_BUFFER = 16
+
         val isEmulator: Boolean
             get() = Build.HARDWARE.contains("ranchu") || Build.HARDWARE.contains("goldfish") || Build.PRODUCT.contains("sdk")
     }

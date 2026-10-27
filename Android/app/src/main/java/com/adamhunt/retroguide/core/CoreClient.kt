@@ -5,6 +5,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -54,7 +55,21 @@ class CoreClient {
     @Serializable private data class AddressParams(val address: String)
     @Serializable private data class SignInParams(val username: String, val password: String)
     @Serializable private data class GuideParams(val from: Double, val to: Double, val channelIDs: List<String>? = null)
-    @Serializable private data class TuneParams(val channelID: String)
+    @Serializable private data class TuneParams(
+        val channelID: String,
+        val generation: Int,
+        val programID: String? = null,
+        val position: Double? = null,
+    )
+    @Serializable private data class PlaybackEventParams(val event: String, val generation: Int, val position: Double? = null)
+    @Serializable private data class ChannelParams(val channelID: String)
+    @Serializable private data class TrackChoiceParams(val kind: String, val optionID: String?, val scope: String?)
+    @Serializable private data class SubtitleNudgeParams(val direction: Int, val repeatCount: Int)
+    @Serializable private data class OrderingParams(val channelID: String, val ordering: String)
+    @Serializable private data class TitleParams(val channelID: String, val showID: String)
+    @Serializable private data class HiddenParams(val channelID: String, val isHidden: Boolean)
+    @Serializable private data class EnabledParams(val isEnabled: Boolean)
+    @Serializable private data class SearchParams(val query: String)
     @Serializable private data class TrackCommandParams(val selection: SelectionInfo, val trackList: String)
     @Serializable private data class EndStreamParams(val serverID: String, val sessionID: String)
     @Serializable private class NoParams
@@ -105,7 +120,42 @@ class CoreClient {
     suspend fun guide(from: Double, to: Double, channelIDs: List<String>? = null) = call(
         "guide", GuideParams(from, to, channelIDs), GuideParams.serializer(), ListSerializer(GuideRow.serializer()),
     )
-    suspend fun tune(channelID: String) = call("tune", TuneParams(channelID), TuneParams.serializer(), TuneResult.serializer())
+    /** [programID]: watch that program from [position] (the start) instead of live. */
+    suspend fun tune(channelID: String, generation: Int, programID: String? = null, position: Double? = null) =
+        call("tune", TuneParams(channelID, generation, programID, position), TuneParams.serializer(), TuneResult.serializer())
+
+    /** `started`, `progress`, `paused`, `resumed` or `stopped`, for servers that track playback. */
+    suspend fun playbackEvent(event: String, generation: Int, position: Double?) = call(
+        "playback.event", PlaybackEventParams(event, generation, position), PlaybackEventParams.serializer(), JsonElement.serializer(),
+    )
+
+    suspend fun options(channelID: String) =
+        call("options", ChannelParams(channelID), ChannelParams.serializer(), OptionsInfo.serializer())
+    /** [scope] `null`: back to automatic. [optionID] `null` with subtitles: off. */
+    suspend fun chooseTrack(kind: String, optionID: String?, scope: String?) = call(
+        "tracks.choose", TrackChoiceParams(kind, optionID, scope), TrackChoiceParams.serializer(), TrackState.serializer().nullable,
+    )
+    suspend fun nudgeSubtitles(direction: Int, repeatCount: Int) = call(
+        "subtitles.nudge", SubtitleNudgeParams(direction, repeatCount), SubtitleNudgeParams.serializer(), TrackState.serializer().nullable,
+    )
+
+    suspend fun setOrdering(channelID: String, ordering: String) =
+        call("channel.setOrdering", OrderingParams(channelID, ordering), OrderingParams.serializer(), ListSerializer(ChannelInfo.serializer()))
+    suspend fun removeTitle(channelID: String, showID: String) =
+        call("channel.removeTitle", TitleParams(channelID, showID), TitleParams.serializer(), ListSerializer(ChannelInfo.serializer()))
+    suspend fun restoreTitle(channelID: String, showID: String) =
+        call("channel.restoreTitle", TitleParams(channelID, showID), TitleParams.serializer(), ListSerializer(ChannelInfo.serializer()))
+    suspend fun setHidden(channelID: String, isHidden: Boolean) =
+        call("channel.setHidden", HiddenParams(channelID, isHidden), HiddenParams.serializer(), ListSerializer(ChannelInfo.serializer()))
+    suspend fun toggleFavorite(channelID: String) =
+        call("favorites.toggle", ChannelParams(channelID), ChannelParams.serializer(), ListSerializer(ChannelInfo.serializer()))
+    suspend fun viewing() = call("viewing", ViewingInfo.serializer())
+    suspend fun setFavoritesOnly(isEnabled: Boolean) =
+        call("viewing.favoritesOnly", EnabledParams(isEnabled), EnabledParams.serializer(), ViewingInfo.serializer())
+    suspend fun setPro(isEnabled: Boolean) =
+        call("pro.set", EnabledParams(isEnabled), EnabledParams.serializer(), JsonElement.serializer())
+    suspend fun search(query: String) =
+        call("search", SearchParams(query), SearchParams.serializer(), ListSerializer(SearchHit.serializer()))
     suspend fun trackCommands(selection: SelectionInfo, trackList: String) = call(
         "trackCommands", TrackCommandParams(selection, trackList), TrackCommandParams.serializer(),
         ListSerializer(ListSerializer(String.serializer())),

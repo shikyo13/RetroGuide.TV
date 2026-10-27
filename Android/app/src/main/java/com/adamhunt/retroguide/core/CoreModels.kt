@@ -42,7 +42,16 @@ data class RefreshResult(val channelCount: Int, val offlineServers: List<String>
 data class ProgressInfo(val fraction: Double, val message: String)
 
 @Serializable
-data class ChannelInfo(val id: String, val number: Int, val name: String, val callSign: String, val isHidden: Boolean)
+data class ChannelInfo(
+    val id: String,
+    val number: Int,
+    val name: String,
+    val callSign: String,
+    val isHidden: Boolean,
+    val isFavorite: Boolean = false,
+    /** `ChannelSource`: curated, decade, series, library, custom, … */
+    val source: String = "",
+)
 
 @Serializable
 data class GuideRow(val channelID: String, val programs: List<ProgramInfo>)
@@ -81,6 +90,55 @@ data class TuneResult(
     val intermissionUntil: Double? = null,
     val stream: StreamInfo? = null,
     val tracks: TracksInfo? = null,
+    val trackState: TrackState? = null,
+)
+
+/** The viewer's choices for what's on: scopes are `null` when automatic. */
+@Serializable
+data class TrackState(
+    val selection: SelectionInfo? = null,
+    val audioScope: String? = null,
+    val subtitleScope: String? = null,
+    val subtitleDelay: Double = 0.0,
+    val subtitleDelayText: String = "",
+)
+
+@Serializable
+data class Choice(val id: String, val title: String)
+
+/** Everything the Options panel shows for what's on. */
+@Serializable
+data class OptionsInfo(
+    val headline: String,
+    val channelID: String,
+    val channelTitle: String,
+    val isFavorite: Boolean,
+    val scopes: List<Choice>,
+    val ordering: String,
+    val orderings: List<Choice>,
+    val orderingExplanation: String,
+    val canChangeOrdering: Boolean,
+    val placement: String,
+    val isRemovable: Boolean,
+    val canRemove: Boolean,
+    val showID: String,
+    val isMovie: Boolean,
+)
+
+@Serializable
+data class ViewingInfo(val favoritesOnly: Boolean)
+
+@Serializable
+data class SearchHit(
+    val id: String,
+    val title: String,
+    val kind: String,
+    val poster: String? = null,
+    val channelID: String? = null,
+    val channelNumber: Int? = null,
+    val channelName: String? = null,
+    val callSign: String? = null,
+    val airing: ProgramInfo? = null,
 )
 
 @Serializable

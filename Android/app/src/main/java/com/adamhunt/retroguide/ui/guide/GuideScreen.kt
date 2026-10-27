@@ -44,12 +44,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
 import com.adamhunt.retroguide.core.ChannelInfo
 import com.adamhunt.retroguide.core.ProgramInfo
 import com.adamhunt.retroguide.ui.components.BrandMark
+import com.adamhunt.retroguide.ui.components.PictureWindow
+import com.adamhunt.retroguide.ui.components.screenBackground
 import com.adamhunt.retroguide.ui.components.RatingChip
 import com.adamhunt.retroguide.ui.theme.Audience
 import com.adamhunt.retroguide.ui.theme.LocalTheme
@@ -83,13 +87,17 @@ object GuideLayout {
 
     /** Where the live picture sits while the guide is open. */
     val previewTop get() = top + headerHeight + sectionSpacing
+    val previewWindow get() = PictureWindow(DpOffset(margin, previewTop), DpSize(previewWidth, previewHeight))
 }
 
-/** The header's buttons, left to right. */
-enum class GuideHeaderButton(val title: String) { SETTINGS("Settings") }
+/**
+ * The top row's buttons, left to right. Options sits on the live picture
+ * (the Apple app's `GuideLiveControls`), reached with Left from Favorites.
+ */
+enum class GuideHeaderButton { OPTIONS, FAVORITES, SEARCH, SETTINGS }
 
 @Composable
-fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?) {
+fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?, favoritesOnly: Boolean) {
     val theme = LocalTheme.current
     val windowStart by model.windowStart.collectAsState()
     val schedules by model.schedules.collectAsState()
@@ -109,36 +117,19 @@ fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?) {
     Column(
         Modifier
             .fillMaxSize()
-            .drawBehind {
-                // Leave the preview window open: the video is drawn behind the app's window.
-                val hole = Path().apply {
-                    addRoundRect(
-                        RoundRect(
-                            Rect(Offset(GuideLayout.margin.toPx(), GuideLayout.previewTop.toPx()), Size(GuideLayout.previewWidth.toPx(), GuideLayout.previewHeight.toPx())),
-                            CornerRadius(Tokens.Radius.medium.toPx()),
-                        ),
-                    )
-                }
-                clipPath(hole, ClipOp.Difference) { drawRect(theme.backgroundBrush) }
-            }
+            .screenBackground(theme, GuideLayout.previewWindow)
             .padding(start = GuideLayout.margin, end = GuideLayout.margin, top = GuideLayout.top),
         verticalArrangement = Arrangement.spacedBy(GuideLayout.sectionSpacing),
     ) {
-        Header(now, (focus as? GuideModel.Focus.Header)?.index)
+        val focusedButton = (focus as? GuideModel.Focus.Header)?.let { GuideHeaderButton.entries[it.index] }
+        Header(now, focusedButton, favoritesOnly)
         Row(Modifier.height(GuideLayout.previewHeight), horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
             // The live picture is drawn here by the video surface underneath.
             Box(
                 Modifier
                     .size(GuideLayout.previewWidth, GuideLayout.previewHeight)
                     .border(GuideLayout.cellSpacing, theme.surfaceRaised, RoundedCornerShape(Tokens.Radius.medium)),
-            ) {
-                tunedChannel?.let {
-                    Text(
-                        "${it.number} ${it.callSign}", style = Typography.callSign, color = theme.osd,
-                        modifier = Modifier.padding(Tokens.Spacing.sm).background(Color.Black.copy(alpha = Tokens.Opacity.MUTED)).padding(horizontal = Tokens.Spacing.xs),
-                    )
-                }
-            }
+            )
             ProgramDetails(focusedProgram, model.focusedChannel, now, Modifier.weight(1f))
         }
         Ruler(windowStart, now)
@@ -146,29 +137,58 @@ fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?) {
     }
 }
 
+/**
+ * The channel tag and Options button on the live picture. The video surface
+ * covers whatever the guide draws there, so the watch screen draws these over it.
+ */
 @Composable
-private fun Header(now: Double, focusedButton: Int?) {
+fun GuidePreviewChrome(model: GuideModel, tunedChannel: ChannelInfo?) {
     val theme = LocalTheme.current
-    Row(Modifier.fillMaxWidth().height(GuideLayout.headerHeight), verticalAlignment = Alignment.CenterVertically) {
+    val focus by model.focus.collectAsState()
+    val isOptionsFocused = (focus as? GuideModel.Focus.Header)?.index == GuideHeaderButton.OPTIONS.ordinal
+    Box(Modifier.fillMaxSize().padding(Tokens.Spacing.sm)) {
+        tunedChannel?.let {
+            Text(
+                "${it.number} ${it.callSign}", style = Typography.callSign, color = theme.osd,
+                modifier = Modifier.background(Color.Black.copy(alpha = Tokens.Opacity.MUTED)).padding(horizontal = Tokens.Spacing.xs),
+            )
+        }
+        HeaderButton("⚙ Options", isOptionsFocused, Modifier.align(Alignment.BottomStart))
+    }
+}
+
+@Composable
+private fun Header(now: Double, focusedButton: GuideHeaderButton?, favoritesOnly: Boolean) {
+    val theme = LocalTheme.current
+    Row(
+        Modifier.fillMaxWidth().height(GuideLayout.headerHeight),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg),
+    ) {
         BrandMark(Typography.headline)
         Spacer(Modifier.weight(1f))
         Text(ScheduleFormatting.time(now), style = Typography.clock, color = theme.accent)
-        Spacer(Modifier.width(Tokens.Spacing.lg))
-        Text(if (focusedButton != null) "Back: close guide" else "Back: close guide · ▲ for Settings", style = Typography.caption, color = theme.textSecondary)
-        Spacer(Modifier.width(Tokens.Spacing.lg))
-        for ((index, button) in GuideHeaderButton.entries.withIndex()) {
-            val isFocused = focusedButton == index
-            Text(
-                button.title,
-                style = Typography.bodyEmphasis,
-                color = if (isFocused) theme.textOnFocus else theme.textPrimary,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(percent = 50))
-                    .background(if (isFocused) theme.focusFill else theme.surfaceRaised)
-                    .padding(horizontal = Tokens.Spacing.lg, vertical = Tokens.Spacing.xs),
-            )
-        }
+        Text(if (focusedButton != null) "◀ Back: close guide" else "◀ Back: menus", style = Typography.caption, color = theme.textSecondary)
+        HeaderButton(if (favoritesOnly) "★ All channels" else "☆ Favorites", focusedButton == GuideHeaderButton.FAVORITES)
+        HeaderButton("⌕ Search", focusedButton == GuideHeaderButton.SEARCH)
+        HeaderButton("⚙ Settings", focusedButton == GuideHeaderButton.SETTINGS)
     }
+}
+
+/** A top-row button; the guide moves focus itself (see ``GuideModel``). */
+@Composable
+private fun HeaderButton(title: String, isFocused: Boolean, modifier: Modifier = Modifier) {
+    val theme = LocalTheme.current
+    Text(
+        title,
+        style = Typography.bodyEmphasis,
+        color = if (isFocused) theme.textOnFocus else theme.textPrimary,
+        maxLines = 1,
+        modifier = modifier
+            .clip(RoundedCornerShape(percent = 50))
+            .background(if (isFocused) theme.focusFill else theme.surfaceRaised)
+            .padding(horizontal = Tokens.Spacing.lg, vertical = Tokens.Spacing.xs),
+    )
 }
 
 @Composable

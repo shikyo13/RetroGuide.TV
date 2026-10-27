@@ -1,9 +1,9 @@
-import RetroGuideKit
+import Foundation
 
 /// "Why is this here?" in words: what the channel takes, and which of that
 /// the show or movie has.
-enum PlacementText {
-    static func explanation(of placement: TitlePlacement?, title: String, on channel: Channel) -> String {
+public enum PlacementText {
+    public static func explanation(of placement: TitlePlacement?, title: String, on channel: Channel) -> String {
         let rule = channel.definition.rule
         switch channel.definition.source {
         case .series:
