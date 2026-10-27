@@ -1,6 +1,10 @@
 package com.adamhunt.retroguide.ui.watch
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.safeDrawingPadding
+import com.adamhunt.retroguide.ui.LocalFormFactor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -84,11 +88,14 @@ fun OptionsPanel(app: AppModel, onClose: () -> Unit) {
 
     Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = Tokens.Opacity.MUTED)), contentAlignment = Alignment.CenterEnd) {
         Panel(
-            Modifier.padding(Tokens.Spacing.xl).width(OptionsLayout.width).fillMaxHeight(),
+            Modifier.safeDrawingPadding().padding(LocalFormFactor.current.margin).widthIn(max = OptionsLayout.width).fillMaxHeight(),
             color = theme.surface.copy(alpha = Tokens.Opacity.SCRIM),
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xxs)) {
-                Text("Options", style = Typography.title, color = theme.textPrimary)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text("Options", style = Typography.title, color = theme.textPrimary, modifier = Modifier.weight(1f))
+                    if (LocalFormFactor.current.isTouch) RetroButton("Done", onClose)
+                }
                 program?.let { Text(it.headline, style = Typography.bodyEmphasis, color = theme.accent, maxLines = 2) }
             }
             LazyColumn(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xs)) {

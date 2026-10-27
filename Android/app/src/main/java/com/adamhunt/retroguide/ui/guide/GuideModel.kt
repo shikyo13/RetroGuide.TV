@@ -26,9 +26,9 @@ class GuideModel(
     object Time {
         /** One column of the guide (the ruler ticks). */
         const val SLOT = 30 * 60.0
-        /** How many slots are visible across the grid. */
+        /** How many slots are visible across the grid: three, or two on a phone held upright. */
         const val VISIBLE_SLOTS = 3
-        const val WINDOW = SLOT * VISIBLE_SLOTS
+        const val COMPACT_VISIBLE_SLOTS = 2
         /** How far into the future the guide can be browsed. */
         const val LOOKAHEAD = 24 * 3600.0
         /** When paging right, keep at least this much of the focused program visible. */
@@ -45,6 +45,10 @@ class GuideModel(
         data class Header(val index: Int) : Focus
     }
 
+    private val _visibleSlots = MutableStateFlow(Time.VISIBLE_SLOTS)
+    val visibleSlots: StateFlow<Int> = _visibleSlots.asStateFlow()
+    /** Seconds across the grid. */
+    val window get() = Time.SLOT * _visibleSlots.value
     private val _windowStart = MutableStateFlow(slotStart(nowSeconds()))
     val windowStart: StateFlow<Double> = _windowStart.asStateFlow()
     private val _schedules = MutableStateFlow<Map<String, List<ProgramInfo>>>(emptyMap())
@@ -114,7 +118,7 @@ class GuideModel(
                 val anchor = (next?.start ?: current.end) + Time.EPSILON
                 setFocus(focus.copy(anchor = anchor))
                 // Page right so the program now focused shows at least a little.
-                val windowEnd = _windowStart.value + Time.WINDOW
+                val windowEnd = _windowStart.value + window
                 if (anchor > windowEnd - Time.MINIMUM_VISIBLE) setWindow(slotStart(anchor))
             }
         }
@@ -135,6 +139,33 @@ class GuideModel(
         }
     }
 
+    // MARK: Touch
+
+    /** Fits the grid to the screen's width (fewer slots on a narrow phone). */
+    fun setVisibleSlots(slots: Int) {
+        _visibleSlots.value = slots
+        setWindow(_windowStart.value)
+    }
+
+    val isShowingNow: Boolean
+        get() = _windowStart.value <= slotStart(nowSeconds())
+
+    /** A tap on a program selects it (a second tap watches its channel). */
+    fun select(row: Int, program: ProgramInfo) {
+        setFocus(Focus.Program(row, max(program.start, nowSeconds()) + Time.EPSILON))
+    }
+
+    /** Pages through time by whole slots, from now to the end of the lookahead. */
+    fun shiftWindow(slots: Int) {
+        val earliest = slotStart(nowSeconds())
+        val latest = slotStart(nowSeconds() + Time.LOOKAHEAD)
+        setWindow((_windowStart.value + slots * Time.SLOT).coerceIn(earliest, latest))
+    }
+
+    fun jumpToNow() {
+        setWindow(slotStart(nowSeconds()))
+    }
+
     /** Keeps an open guide current: the window follows the clock if it's showing now. */
     fun followClock() {
         val now = nowSeconds()
@@ -145,7 +176,7 @@ class GuideModel(
 
     private fun setWindow(start: Double) {
         _windowStart.value = start
-        if (start + Time.WINDOW > loadedUntil) load(start)
+        if (start + window > loadedUntil) load(start)
     }
 
     private fun load(from: Double) {

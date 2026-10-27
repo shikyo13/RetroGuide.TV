@@ -76,7 +76,11 @@ object GuideLayout {
     val previewHeight = 170.dp
     val previewWidth = previewHeight * 16 / 9
     val channelColumnWidth = 150.dp
+    /** A phone held upright: the channel's number and call sign, with a short name. */
+    val compactChannelColumnWidth = 104.dp
     val rowHeight = 39.dp
+    /** Touch rows are tall enough to tap. */
+    val touchRowHeight = 48.dp
     val rowSpacing = 3.dp
     val cellSpacing = 2.dp
     val rulerHeight = 22.dp
@@ -138,8 +142,9 @@ fun GuideScreen(model: GuideModel, tunedChannel: ChannelInfo?, favoritesOnly: Bo
             )
             ProgramDetails(selectedProgram, model.selectedChannel, now, Modifier.weight(1f))
         }
-        Ruler(windowStart, now)
-        Grid(model, schedules, windowStart, focusedRow, focusedProgram, now)
+        val slots by model.visibleSlots.collectAsState()
+        GuideRuler(windowStart, now, slots)
+        GuideGrid(model, schedules, windowStart, slots, focusedRow, focusedProgram, now, isTouch = false)
     }
 }
 
@@ -225,121 +230,5 @@ private fun ProgramDetails(program: ProgramInfo?, channel: ChannelInfo?, now: Do
                 program.summary?.let { Text(it, style = Typography.caption, color = theme.textSecondary, maxLines = 3, overflow = TextOverflow.Ellipsis) }
             }
         }
-    }
-}
-
-@Composable
-private fun Ruler(windowStart: Double, now: Double) {
-    val theme = LocalTheme.current
-    Row(Modifier.fillMaxWidth().height(GuideLayout.rulerHeight), verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            java.text.DateFormat.getDateInstance(java.text.DateFormat.MEDIUM).format(java.util.Date((max(now, windowStart) * 1000).toLong())).uppercase(),
-            style = Typography.caption, color = theme.textSecondary, modifier = Modifier.width(GuideLayout.channelColumnWidth),
-        )
-        for (slot in 0 until GuideModel.Time.VISIBLE_SLOTS) {
-            Text(
-                ScheduleFormatting.time(windowStart + slot * GuideModel.Time.SLOT), style = Typography.clock, color = theme.textPrimary,
-                modifier = Modifier.weight(1f).padding(start = Tokens.Spacing.xs),
-            )
-        }
-    }
-}
-
-@Composable
-private fun Grid(
-    model: GuideModel,
-    schedules: Map<String, List<ProgramInfo>>,
-    windowStart: Double,
-    focusedRow: Int?,
-    focusedProgram: ProgramInfo?,
-    now: Double,
-) {
-    val theme = LocalTheme.current
-    val listState = rememberLazyListState()
-    LaunchedEffect(focusedRow) {
-        val row = focusedRow ?: return@LaunchedEffect
-        val first = listState.firstVisibleItemIndex
-        if (row < first) listState.animateScrollToItem(row)
-        else if (row >= first + GuideLayout.VISIBLE_ROWS) listState.animateScrollToItem(row - GuideLayout.VISIBLE_ROWS + 1)
-    }
-    val windowEnd = windowStart + GuideModel.Time.WINDOW
-    BoxWithConstraints(Modifier.fillMaxWidth().height(GuideLayout.rowHeight * GuideLayout.VISIBLE_ROWS + GuideLayout.rowSpacing * (GuideLayout.VISIBLE_ROWS - 1))) {
-        val gridWidth = maxWidth - GuideLayout.channelColumnWidth
-        LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(GuideLayout.rowSpacing), userScrollEnabled = false) {
-            itemsIndexed(model.channels, key = { _, channel -> channel.id }) { index, channel ->
-                Row(Modifier.height(GuideLayout.rowHeight)) {
-                    ChannelCell(channel, isFocusedRow = index == focusedRow)
-                    Box(Modifier.width(gridWidth).fillMaxHeight()) {
-                        for (program in schedules[channel.id].orEmpty()) {
-                            if (program.end <= windowStart || program.start >= windowEnd) continue
-                            val x = gridWidth * ((max(program.start, windowStart) - windowStart) / GuideModel.Time.WINDOW).toFloat()
-                            val width = gridWidth * ((min(program.end, windowEnd) - max(program.start, windowStart)) / GuideModel.Time.WINDOW).toFloat()
-                            ProgramCell(
-                                program, x, width - GuideLayout.cellSpacing,
-                                isFocused = index == focusedRow && program.id == focusedProgram?.id,
-                                continuesBefore = program.start < windowStart, continuesAfter = program.end > windowEnd,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        if (now in windowStart..windowEnd) {
-            val x = GuideLayout.channelColumnWidth + gridWidth * ((now - windowStart) / GuideModel.Time.WINDOW).toFloat()
-            Box(Modifier.offset(x = x).width(GuideLayout.nowLineWidth).fillMaxHeight().background(theme.nowLine))
-        }
-    }
-}
-
-@Composable
-private fun ChannelCell(channel: ChannelInfo, isFocusedRow: Boolean) {
-    val theme = LocalTheme.current
-    Row(
-        Modifier
-            .width(GuideLayout.channelColumnWidth - GuideLayout.cellSpacing)
-            .fillMaxHeight()
-            .clip(RoundedCornerShape(Tokens.Radius.small))
-            .background(theme.surface)
-            .then(if (isFocusedRow) Modifier.border(Tokens.Stroke.thin, theme.focusFill, RoundedCornerShape(Tokens.Radius.small)) else Modifier)
-            .padding(horizontal = Tokens.Spacing.sm),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(36.dp)) {
-            Text(channel.number.toString(), style = Typography.channelNumber, color = theme.accent)
-            Text(channel.callSign, style = Typography.callSign, color = theme.accentSecondary, maxLines = 1)
-        }
-        Text(channel.name, style = Typography.callout, color = theme.textPrimary, maxLines = 2, overflow = TextOverflow.Ellipsis)
-    }
-}
-
-@Composable
-private fun ProgramCell(program: ProgramInfo, x: Dp, width: Dp, isFocused: Boolean, continuesBefore: Boolean, continuesAfter: Boolean) {
-    val theme = LocalTheme.current
-    if (width <= 0.dp) return
-    Row(
-        Modifier
-            .offset(x = x)
-            .width(width)
-            .fillMaxHeight()
-            .clip(RoundedCornerShape(Tokens.Radius.small))
-            .background(if (isFocused) theme.focusFill else theme.surface),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(Modifier.width(GuideLayout.audienceStripeWidth).fillMaxHeight().background(theme.color(Audience.from(program.audience))))
-        if (continuesBefore) Text("◀", style = Typography.micro, color = if (isFocused) theme.textOnFocus else theme.textSecondary, modifier = Modifier.padding(start = Tokens.Spacing.xs))
-        if (width >= GuideLayout.minimumTitleWidth) {
-            Column(Modifier.weight(1f).padding(horizontal = Tokens.Spacing.sm)) {
-                Text(program.headline, style = Typography.bodyEmphasis, color = if (isFocused) theme.textOnFocus else theme.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                if (width >= GuideLayout.minimumSubtitleWidth) {
-                    program.subheadline?.let {
-                        Text(it, style = Typography.caption, color = if (isFocused) theme.textOnFocus else theme.textSecondary, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    }
-                }
-            }
-        } else {
-            Spacer(Modifier.weight(1f))
-        }
-        if (continuesAfter) Text("▶", style = Typography.micro, color = if (isFocused) theme.textOnFocus else theme.textSecondary, modifier = Modifier.padding(end = Tokens.Spacing.xs))
     }
 }

@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 import com.adamhunt.retroguide.ui.theme.Theme
 import com.adamhunt.retroguide.ui.theme.Tokens
@@ -41,13 +42,27 @@ fun Modifier.screenBackground(theme: Theme, window: PictureWindow?): Modifier = 
     clipPath(hole, ClipOp.Difference) { drawRect(theme.backgroundBrush) }
 }
 
-/** Live TV in the bottom-right corner while Search or Settings covers the screen. */
+/**
+ * Live TV in the bottom-right corner while Search or Settings covers the
+ * screen (the Apple app's `WatchLayout`): a quarter of the width on landscape
+ * screens, a third on a phone held upright, inside the screen's margin.
+ */
 object CornerPicture {
-    private val margin = 40.dp
-    private val size = DpSize(240.dp, 135.dp)
+    private const val WIDTH_FRACTION = 0.25f
+    private const val PORTRAIT_WIDTH_FRACTION = 0.34f
+    private const val ASPECT_RATIO = 16f / 9f
 
-    fun window(screen: DpSize) = PictureWindow(
-        DpOffset(screen.width - margin - size.width, screen.height - margin - size.height),
-        size,
-    )
+    fun window(screen: DpSize, margin: Dp = 40.dp): PictureWindow {
+        val isPortrait = screen.height > screen.width
+        val width = screen.width * if (isPortrait) PORTRAIT_WIDTH_FRACTION else WIDTH_FRACTION
+        val height = width / ASPECT_RATIO
+        return PictureWindow(DpOffset(screen.width - margin - width, screen.height - margin - height), DpSize(width, height))
+    }
+
+    /** Room a scrolling menu leaves for the window: below it upright, beside it in landscape. */
+    fun clearance(screen: DpSize, margin: Dp = 40.dp): PaddingValues {
+        val window = window(screen, margin)
+        return if (screen.height > screen.width) PaddingValues(bottom = window.size.height + margin * 2)
+        else PaddingValues(end = window.size.width + margin)
+    }
 }

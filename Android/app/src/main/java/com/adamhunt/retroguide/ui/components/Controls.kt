@@ -20,8 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
-import androidx.tv.material3.ClickableSurfaceDefaults
-import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import com.adamhunt.retroguide.ui.theme.Audience
 import com.adamhunt.retroguide.ui.theme.LocalTheme
@@ -38,18 +36,15 @@ fun RetroButton(
     enabled: Boolean = true,
 ) {
     val theme = LocalTheme.current
-    Surface(
+    RetroSurface(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier.defaultMinSize(minHeight = Tokens.Control.minimumHeight),
-        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(percent = 50)),
-        scale = ClickableSurfaceDefaults.scale(focusedScale = Tokens.Scale.FOCUSED),
-        colors = ClickableSurfaceDefaults.colors(
-            containerColor = if (isPrimary) theme.accent.copy(alpha = Tokens.Opacity.MUTED) else theme.surfaceRaised,
-            contentColor = theme.textPrimary,
-            focusedContainerColor = theme.focusFill,
-            focusedContentColor = theme.textOnFocus,
-        ),
+        shape = RoundedCornerShape(percent = 50),
+        containerColor = if (isPrimary) theme.accent.copy(alpha = Tokens.Opacity.MUTED) else theme.surfaceRaised,
+        contentColor = theme.textPrimary,
+        focusedContainerColor = theme.focusFill,
+        focusedContentColor = theme.textOnFocus,
     ) {
         Box(Modifier.padding(horizontal = Tokens.Spacing.lg, vertical = Tokens.Spacing.sm), contentAlignment = Alignment.Center) {
             Text(title, style = Typography.bodyEmphasis, maxLines = 1)
@@ -70,17 +65,15 @@ fun RetroRow(
     titleStyle: TextStyle = Typography.bodyEmphasis,
 ) {
     val theme = LocalTheme.current
-    Surface(
+    RetroSurface(
         onClick = onClick,
         modifier = modifier.fillMaxWidth().defaultMinSize(minHeight = Tokens.Control.minimumHeight),
-        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(Tokens.Radius.medium)),
-        scale = ClickableSurfaceDefaults.scale(focusedScale = Tokens.Scale.ROW_FOCUSED),
-        colors = ClickableSurfaceDefaults.colors(
-            containerColor = theme.surface,
-            contentColor = theme.textPrimary,
-            focusedContainerColor = theme.focusFill,
-            focusedContentColor = theme.textOnFocus,
-        ),
+        shape = RoundedCornerShape(Tokens.Radius.medium),
+        containerColor = theme.surface,
+        contentColor = theme.textPrimary,
+        focusedContainerColor = theme.focusFill,
+        focusedContentColor = theme.textOnFocus,
+        focusedScale = Tokens.Scale.ROW_FOCUSED,
     ) {
         Row(
             Modifier.padding(horizontal = Tokens.Spacing.md, vertical = Tokens.Spacing.sm),

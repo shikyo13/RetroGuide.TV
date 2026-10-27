@@ -7,7 +7,14 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import com.adamhunt.retroguide.ui.guide.TouchGuideScreen
+import com.adamhunt.retroguide.ui.guide.TouchGuideActions
+import com.adamhunt.retroguide.ui.LocalFormFactor
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -83,6 +90,9 @@ fun WatchScreen(app: AppModel) {
     var showsNext by remember { mutableStateOf(false) }
     var nextProgram by remember { mutableStateOf<ProgramInfo?>(null) }
     val focus = remember { FocusRequester() }
+    val formFactor = LocalFormFactor.current
+    /** Where the touch guide's preview put the live picture. */
+    var touchGuidePicture by remember { mutableStateOf<PictureWindow?>(null) }
 
     fun openGuide() {
         guide = GuideModel(app.core, app.browsingChannels(), channel?.id, scope)
@@ -195,7 +205,7 @@ fun WatchScreen(app: AppModel) {
     // the picture it dismisses the banner. Options and Search handle their own.
     BackHandler(enabled = guide != null && !isShowingOptions) {
         val open = guide ?: return@BackHandler
-        if (open.focus.value is GuideModel.Focus.Program) open.focusHeader() else closeOverlay()
+        if (!formFactor.isTouch && open.focus.value is GuideModel.Focus.Program) open.focusHeader() else closeOverlay()
     }
     BackHandler(enabled = overlay == Overlay.NONE && showsBanner && !isShowingOptions) { showsBanner = false }
 
@@ -207,10 +217,11 @@ fun WatchScreen(app: AppModel) {
             .onKeyEvent { event -> event.type == KeyEventType.KeyDown && handle(event.key.nativeKeyCode) },
     ) {
         val screen = DpSize(maxWidth, maxHeight)
+        val fullScreen = PictureWindow(DpOffset(Dp(0f), Dp(0f)), screen, Dp(0f))
         val window = when (overlay) {
-            Overlay.NONE -> PictureWindow(DpOffset(Dp(0f), Dp(0f)), screen, Dp(0f))
-            Overlay.GUIDE -> GuideLayout.previewWindow
-            Overlay.SEARCH, Overlay.SETTINGS -> CornerPicture.window(screen)
+            Overlay.NONE -> fullScreen
+            Overlay.GUIDE -> if (formFactor.isTouch) touchGuidePicture ?: fullScreen else GuideLayout.previewWindow
+            Overlay.SEARCH, Overlay.SETTINGS -> CornerPicture.window(screen, formFactor.margin)
         }
         val motion = tween<Dp>(Tokens.Motion.RELAXED)
         val x by animateDpAsState(window.offset.x, motion, label = "videoX")
@@ -220,8 +231,21 @@ fun WatchScreen(app: AppModel) {
 
         when (overlay) {
             Overlay.GUIDE -> guide?.let { open ->
-                GuideScreen(open, channel, isPro && favoritesOnly) { program ->
+                val isReminderSet = { program: ProgramInfo ->
                     open.selectedChannel?.let { selected -> pendingReminders.any { it.channelID == selected.id && it.start == program.start } } == true
+                }
+                if (formFactor.isTouch) {
+                    TouchGuideScreen(open, channel, isPro && favoritesOnly, isReminderSet, TouchGuideActions(
+                        onTune = { tuner.tune(it); closeOverlay() },
+                        onToggleFavorites = { pressHeaderButton(GuideHeaderButton.FAVORITES) },
+                        onReminder = { pressHeaderButton(GuideHeaderButton.REMINDER) },
+                        onSearch = { pressHeaderButton(GuideHeaderButton.SEARCH) },
+                        onSettings = { pressHeaderButton(GuideHeaderButton.SETTINGS) },
+                        onOptions = { isShowingOptions = true },
+                        onClose = ::closeOverlay,
+                    ), onPictureWindow = { touchGuidePicture = it })
+                } else {
+                    GuideScreen(open, channel, isPro && favoritesOnly, isReminderSet)
                 }
             }
             Overlay.SEARCH -> SearchScreen(app, screen, onTune = { id ->
@@ -234,18 +258,55 @@ fun WatchScreen(app: AppModel) {
         Box(Modifier.offset(x, y).size(width, height)) {
             VideoSurface(app.player, Modifier.fillMaxSize())
             SignalOverlay(signal, channel, program)
-            if (overlay == Overlay.GUIDE) guide?.let { GuidePreviewChrome(it, channel) }
+            if (overlay == Overlay.GUIDE && !formFactor.isTouch) guide?.let { GuidePreviewChrome(it, channel) }
+        }
+        // Touch screens: swipes and taps on the picture, like the remote.
+        if (formFactor.isTouch && overlay == Overlay.NONE) {
+            Box(Modifier.fillMaxSize().playerTouchInput { command ->
+                when (command) {
+                    PlayerCommand.CHANNEL_UP -> tuner.channelUp()
+                    PlayerCommand.CHANNEL_DOWN -> tuner.channelDown()
+                    PlayerCommand.SHOW_NOW -> { showsNext = false; bannerRequest += 1 }
+                    PlayerCommand.SHOW_NEXT -> { showsNext = true; bannerRequest += 1 }
+                    PlayerCommand.TOGGLE_INFO -> if (showsBanner) showsBanner = false else { showsNext = false; bannerRequest += 1 }
+                    PlayerCommand.OPEN_GUIDE -> openGuide()
+                    PlayerCommand.OPEN_OPTIONS -> isShowingOptions = true
+                    PlayerCommand.LAST_CHANNEL -> tuner.recall()
+                }
+            })
         }
         if (overlay == Overlay.NONE) {
             val current = channel
-            AnimatedVisibility(showsBanner && current != null, Modifier.align(Alignment.TopEnd).padding(Tokens.Spacing.xl), enter = fadeIn(), exit = fadeOut()) {
+            AnimatedVisibility(showsBanner && current != null, Modifier.align(Alignment.TopEnd).safeDrawingPadding().padding(formFactor.margin), enter = fadeIn(), exit = fadeOut()) {
                 current?.let { ChannelNumberOSD(it) }
             }
-            AnimatedVisibility(showsBanner && current != null, Modifier.align(Alignment.BottomCenter).padding(Tokens.Spacing.xl), enter = fadeIn(), exit = fadeOut()) {
-                current?.let { ChannelBanner(it, if (showsNext) nextProgram ?: program else program, isShowingNext = showsNext && nextProgram != null) }
+            AnimatedVisibility(showsBanner && current != null, Modifier.align(Alignment.BottomCenter).safeDrawingPadding().padding(formFactor.margin), enter = fadeIn(), exit = fadeOut()) {
+                current?.let {
+                    Column(verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm)) {
+                        if (formFactor.isTouch) {
+                            PlayerTouchControls({ command ->
+                                bannerRequest += 1
+                                when (command) {
+                                    PlayerCommand.OPEN_GUIDE -> openGuide()
+                                    PlayerCommand.OPEN_OPTIONS -> isShowingOptions = true
+                                    PlayerCommand.LAST_CHANNEL -> tuner.recall()
+                                    PlayerCommand.CHANNEL_UP -> tuner.channelUp()
+                                    PlayerCommand.CHANNEL_DOWN -> tuner.channelDown()
+                                    else -> Unit
+                                }
+                            })
+                        }
+                        ChannelBanner(it, if (showsNext) nextProgram ?: program else program, isShowingNext = showsNext && nextProgram != null)
+                    }
+                }
             }
         }
-        if (sleepExpired) SleepFinishedCard(Modifier.align(Alignment.Center))
+        if (sleepExpired) {
+            SleepFinishedCard(Modifier.align(Alignment.Center).clickable {
+                app.sleepTimer.resumeWatching()
+                tuner.resume()
+            })
+        }
         val parentalEnabled by app.parentalEnabled.collectAsState()
         if (channels.isEmpty() && parentalEnabled && overlay == Overlay.NONE) {
             NoAllowedChannelsCard(Modifier.align(Alignment.Center))

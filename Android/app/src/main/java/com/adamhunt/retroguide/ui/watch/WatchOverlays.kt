@@ -5,6 +5,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import com.adamhunt.retroguide.core.ReminderInfo
 import com.adamhunt.retroguide.ui.components.RetroButton
+import com.adamhunt.retroguide.ui.LocalFormFactor
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +53,8 @@ import com.adamhunt.retroguide.ui.theme.Typography
 import kotlinx.coroutines.delay
 
 private object BannerLayout {
+    /** Narrower than this, the banner drops the logo and the large channel number. */
+    val compactWidth = 600.dp
     val logoWidth = 180.dp
     val logoHeight = 55.dp
     val progressHeight = 4.dp
@@ -106,9 +110,13 @@ fun ChannelBanner(channel: ChannelInfo, program: ProgramInfo?, isShowingNext: Bo
             now = nowSeconds()
         }
     }
-    Panel(modifier.fillMaxWidth(), color = theme.scrim) {
-        Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg), verticalAlignment = Alignment.CenterVertically) {
-            ChannelBadge(channel.number, channel.callSign, large = true)
+    val isTouch = LocalFormFactor.current.isTouch
+    BoxWithConstraints(modifier.fillMaxWidth()) {
+    // A phone held upright has room for the program, not the logo.
+    val isCompact = maxWidth < BannerLayout.compactWidth
+    Panel(Modifier.fillMaxWidth(), color = theme.scrim) {
+        Row(horizontalArrangement = Arrangement.spacedBy(if (isCompact) Tokens.Spacing.sm else Tokens.Spacing.lg), verticalAlignment = Alignment.CenterVertically) {
+            ChannelBadge(channel.number, channel.callSign, large = !isCompact)
             Box(Modifier.width(BannerLayout.dividerWidth).height(BannerLayout.logoHeight).background(theme.textSecondary.copy(alpha = Tokens.Opacity.MUTED)))
             if (program == null) {
                 Text(channel.name, style = Typography.headline, color = theme.textPrimary, modifier = Modifier.weight(1f))
@@ -130,20 +138,27 @@ fun ChannelBanner(channel: ChannelInfo, program: ProgramInfo?, isShowingNext: Bo
                     Row(horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md), verticalAlignment = Alignment.CenterVertically) {
                         Text(ScheduleFormatting.range(program), style = Typography.clock, color = theme.textPrimary)
                         if (!isShowingNext) {
-                            ProgressTrack(ScheduleFormatting.progress(program, now), Modifier.width(BannerLayout.progressWidth), BannerLayout.progressHeight)
-                            Text(ScheduleFormatting.remaining(program, now), style = Typography.caption, color = theme.textSecondary)
+                            ProgressTrack(
+                                ScheduleFormatting.progress(program, now),
+                                if (isCompact) Modifier.weight(1f) else Modifier.width(BannerLayout.progressWidth),
+                                BannerLayout.progressHeight,
+                            )
+                            Text(ScheduleFormatting.remaining(program, now), style = Typography.caption, color = theme.textSecondary, maxLines = 1, softWrap = false)
                         }
                     }
-                    RemoteHints()
+                    if (!isTouch) RemoteHints()
                 }
-                program.artwork.logo?.let { logo ->
-                    AsyncImage(
-                        model = logo, contentDescription = program.headline, contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(BannerLayout.logoWidth, BannerLayout.logoHeight),
-                    )
+                if (!isCompact) {
+                    program.artwork.logo?.let { logo ->
+                        AsyncImage(
+                            model = logo, contentDescription = program.headline, contentScale = ContentScale.Fit,
+                            modifier = Modifier.size(BannerLayout.logoWidth, BannerLayout.logoHeight),
+                        )
+                    }
                 }
             }
         }
+    }
     }
 }
 
@@ -164,7 +179,7 @@ fun SleepFinishedCard(modifier: Modifier = Modifier) {
     val theme = LocalTheme.current
     Panel(modifier, color = theme.surface) {
         Text("Sleep timer finished", style = Typography.title, color = theme.textPrimary)
-        Text("Press Select to resume watching.", style = Typography.body, color = theme.textSecondary)
+        Text(if (LocalFormFactor.current.isTouch) "Tap to resume watching." else "Press Select to resume watching.", style = Typography.body, color = theme.textSecondary)
     }
 }
 

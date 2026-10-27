@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -45,7 +46,11 @@ fun RootScreen(app: AppModel) {
     val phase by app.phase.collectAsState()
     val themeID by app.themeID.collectAsState()
     val showsScanlines by app.showsScanlines.collectAsState()
-    CompositionLocalProvider(LocalTheme provides Theme.of(themeID), LocalShowsScanlines provides showsScanlines) {
+    CompositionLocalProvider(
+        LocalTheme provides Theme.of(themeID),
+        LocalShowsScanlines provides showsScanlines,
+        LocalFormFactor provides app.formFactor,
+    ) {
         when (val current = phase) {
             Phase.Launching -> Splash()
             Phase.Onboarding -> OnboardingScreen(remember { OnboardingModel(app) })
@@ -69,7 +74,7 @@ private fun Indexing(phase: Phase.Indexing) {
     Box(Modifier.fillMaxSize().background(theme.backgroundBrush).crtEffect(LocalShowsScanlines.current), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.xl)) {
             BrandMark(Typography.display)
-            Panel(Modifier.width(420.dp)) {
+            Panel(Modifier.widthIn(max = 420.dp).padding(horizontal = LocalFormFactor.current.margin)) {
                 Text("Programming your channels", style = Typography.headline, color = theme.textPrimary,
                     modifier = Modifier.align(Alignment.CenterHorizontally))
                 ProgressTrack(phase.progress.fraction.toFloat(), Modifier.fillMaxWidth(), Tokens.Spacing.xs)
@@ -85,7 +90,7 @@ private fun Failed(message: String, onRetry: () -> Unit) {
     val theme = LocalTheme.current
     val retry = remember { FocusRequester() }
     Box(Modifier.fillMaxSize().background(theme.backgroundBrush).crtEffect(LocalShowsScanlines.current), contentAlignment = Alignment.Center) {
-        Column(Modifier.width(500.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
+        Column(Modifier.widthIn(max = 500.dp).padding(horizontal = LocalFormFactor.current.margin), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
             Text("Something went wrong", style = Typography.title, color = theme.textPrimary)
             Text(message, style = Typography.body, color = theme.textSecondary, textAlign = TextAlign.Center)
             RetroButton("Try Again", onRetry, Modifier.focusRequester(retry), isPrimary = true)

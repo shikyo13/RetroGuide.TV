@@ -1,6 +1,9 @@
 package com.adamhunt.retroguide.ui.onboarding
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.safeDrawingPadding
+import com.adamhunt.retroguide.ui.LocalFormFactor
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -61,7 +64,7 @@ fun OnboardingScreen(model: OnboardingModel) {
         if (step == OnboardingModel.Step.Welcome) model.cancel() else model.back()
     }
     Box(Modifier.fillMaxSize().background(theme.backgroundBrush).crtEffect(LocalShowsScanlines.current), contentAlignment = Alignment.Center) {
-        Column(Modifier.width(Layout.columnWidth), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
+        Column(Modifier.safeDrawingPadding().padding(horizontal = LocalFormFactor.current.margin).widthIn(max = Layout.columnWidth), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.lg)) {
             when (val current = step) {
                 OnboardingModel.Step.Welcome -> Welcome(model)
                 is OnboardingModel.Step.PlexLink -> PlexLink(current, model)

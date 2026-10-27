@@ -1,6 +1,8 @@
 package com.adamhunt.retroguide
 
 import android.content.Context
+import android.content.pm.PackageManager
+import com.adamhunt.retroguide.ui.FormFactor
 import com.adamhunt.retroguide.core.ChannelDraft
 import com.adamhunt.retroguide.core.ChannelInfo
 import com.adamhunt.retroguide.core.ParentalDraft
@@ -62,6 +64,10 @@ class AppModel(context: Context, muted: Boolean) {
     }
 
     private val appContext = context.applicationContext
+
+    /** Android TV (remote) or a phone or tablet (touch). */
+    val formFactor: FormFactor =
+        if (context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)) FormFactor.TV else FormFactor.TOUCH
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val vault = TokenVault(appContext)
     private val network = NetworkMonitor(appContext)

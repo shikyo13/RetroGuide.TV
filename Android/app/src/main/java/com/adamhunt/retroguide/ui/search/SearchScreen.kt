@@ -1,6 +1,11 @@
 package com.adamhunt.retroguide.ui.search
 
 import androidx.activity.compose.BackHandler
+import com.adamhunt.retroguide.ui.components.RetroButton
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.safeDrawingPadding
+import com.adamhunt.retroguide.ui.LocalFormFactor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,8 +38,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.tv.material3.ClickableSurfaceDefaults
-import androidx.tv.material3.Surface
+import com.adamhunt.retroguide.ui.components.RetroSurface
 import androidx.tv.material3.Text
 import coil3.compose.AsyncImage
 import com.adamhunt.retroguide.AppModel
@@ -55,7 +59,6 @@ import kotlinx.coroutines.delay
 
 /** Sizes of Search (the Apple app's `SearchView`, halved for Android TV's dp grid). */
 object SearchLayout {
-    val margin = 40.dp
     val top = 24.dp
     val resultsWidth = 575.dp
     val posterWidth = 32.dp
@@ -86,16 +89,25 @@ fun SearchScreen(app: AppModel, screen: DpSize, onTune: (String) -> Unit, onClos
         }
     }
     LaunchedEffect(Unit) { runCatching { field.requestFocus() } }
+    val formFactor = LocalFormFactor.current
+    val picture = CornerPicture.window(screen, formFactor.margin)
     Box(
         Modifier.fillMaxSize()
-            .screenBackground(theme, CornerPicture.window(screen))
-            .crtEffect(LocalShowsScanlines.current, CornerPicture.window(screen)),
+            .screenBackground(theme, picture)
+            .crtEffect(LocalShowsScanlines.current, picture),
     ) {
         Column(
-            Modifier.padding(start = SearchLayout.margin, top = SearchLayout.top).width(SearchLayout.resultsWidth),
+            Modifier
+                .safeDrawingPadding()
+                .padding(start = formFactor.margin, end = formFactor.margin, top = SearchLayout.top)
+                .padding(CornerPicture.clearance(screen, formFactor.margin).takeIf { formFactor.isTouch } ?: PaddingValues())
+                .widthIn(max = SearchLayout.resultsWidth),
             verticalArrangement = Arrangement.spacedBy(Tokens.Spacing.sm),
         ) {
-            Text("Search", style = Typography.title, color = theme.textPrimary)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(Tokens.Spacing.md)) {
+                if (formFactor.isTouch) RetroButton("‹ Back", onClose)
+                Text("Search", style = Typography.title, color = theme.textPrimary)
+            }
             RetroTextField(
                 query, { query = it }, "Shows and movies", Modifier.focusRequester(field),
                 // Search opens ready to type.
@@ -126,17 +138,15 @@ fun SearchScreen(app: AppModel, screen: DpSize, onTune: (String) -> Unit, onClos
 @Composable
 private fun ResultRow(hit: SearchHit, onClick: () -> Unit) {
     val theme = LocalTheme.current
-    Surface(
+    RetroSurface(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = Tokens.Control.minimumHeight),
-        shape = ClickableSurfaceDefaults.shape(RoundedCornerShape(Tokens.Radius.medium)),
-        scale = ClickableSurfaceDefaults.scale(focusedScale = Tokens.Scale.ROW_FOCUSED),
-        colors = ClickableSurfaceDefaults.colors(
-            containerColor = theme.surface,
-            contentColor = theme.textPrimary,
-            focusedContainerColor = theme.focusFill,
-            focusedContentColor = theme.textOnFocus,
-        ),
+        shape = RoundedCornerShape(Tokens.Radius.medium),
+        containerColor = theme.surface,
+        contentColor = theme.textPrimary,
+        focusedContainerColor = theme.focusFill,
+        focusedContentColor = theme.textOnFocus,
+        focusedScale = Tokens.Scale.ROW_FOCUSED,
     ) {
         Row(
             Modifier.padding(Tokens.Spacing.sm),

@@ -1,6 +1,11 @@
 package com.adamhunt.retroguide.ui.settings
 
 import androidx.activity.compose.BackHandler
+import com.adamhunt.retroguide.ui.components.RetroButton
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.safeDrawingPadding
+import com.adamhunt.retroguide.ui.LocalFormFactor
 import kotlinx.coroutines.launch
 import com.adamhunt.retroguide.ui.theme.Tokens
 import com.adamhunt.retroguide.core.HomeRowSettings
@@ -43,7 +48,6 @@ import com.adamhunt.retroguide.ui.theme.Typography
 
 /** Sizes of Settings (the Apple app's settings column, halved for Android TV's dp grid). */
 object SettingsLayout {
-    val margin = 40.dp
     val top = 24.dp
     val columnWidth = 560.dp
 }
@@ -108,12 +112,22 @@ fun SettingsScreen(app: AppModel, screen: DpSize, onClose: () -> Unit) {
     // Closing Settings locks them again.
     DisposableEffect(Unit) { onDispose { app.endParentalAuthorization() } }
     BackHandler(onBack = navigator::back)
+    val formFactor = LocalFormFactor.current
+    val picture = CornerPicture.window(screen, formFactor.margin)
     Box(
         Modifier.fillMaxSize()
-            .screenBackground(theme, CornerPicture.window(screen))
-            .crtEffect(LocalShowsScanlines.current, CornerPicture.window(screen)),
+            .screenBackground(theme, picture)
+            .crtEffect(LocalShowsScanlines.current, picture),
     ) {
-        Box(Modifier.padding(start = SettingsLayout.margin, top = SettingsLayout.top).width(SettingsLayout.columnWidth)) {
+        Column(
+            Modifier
+                .safeDrawingPadding()
+                .padding(start = formFactor.margin, end = formFactor.margin, top = if (formFactor.isTouch) 0.dp else SettingsLayout.top)
+                .padding(CornerPicture.clearance(screen, formFactor.margin).takeIf { formFactor.isTouch } ?: PaddingValues())
+                .widthIn(max = SettingsLayout.columnWidth),
+        ) {
+            if (formFactor.isTouch) RetroButton("‹ Back", navigator::back)
+            Box {
             if (app.parentalLock.isUnavailable || (parentalEnabled && !isAuthorized)) {
                 ParentalPinPage(app, onCancel = onClose)
                 return@Box
@@ -138,6 +152,7 @@ fun SettingsScreen(app: AppModel, screen: DpSize, onClose: () -> Unit) {
                 SettingsRoute.Reminders -> RemindersPage(app, navigator)
                 SettingsRoute.MatchTVMode -> MatchTVModePage(app)
             }
+            }
         }
     }
 }
@@ -158,7 +173,8 @@ private fun MainPage(app: AppModel, navigator: SettingsNavigator) {
         item { RetroRow(if (isPro) "RetroGuide Pro" else "Upgrade to Pro", { navigator.open(SettingsRoute.Pro) }, trailing = if (isPro) "Active" else PRO_BADGE) }
 
         item { SectionHeader("Picture") }
-        item { HomeRowSetting(app, navigator, isPro) }
+        // Android TV's home screen; phones and tablets get the What's On widget instead.
+        if (!app.formFactor.isTouch) item { HomeRowSetting(app, navigator, isPro) }
         item { RetroRow("Theme", { navigator.open(SettingsRoute.Themes) }, trailing = ThemePalettes.first { it.id == themeID }.name) }
         item {
             val showsScanlines by app.showsScanlines.collectAsState()
@@ -167,9 +183,11 @@ private fun MainPage(app: AppModel, navigator: SettingsNavigator) {
 
         item { SectionHeader("Playback") }
         item { RetroRow("Program reminders", { navigator.open(SettingsRoute.Reminders) }, trailing = if (isPro) null else PRO_BADGE) }
-        item {
-            val matchTVMode by app.matchTVMode.collectAsState()
-            RetroRow("Match TV mode", { navigator.open(SettingsRoute.MatchTVMode) }, trailing = matchTVMode.title)
+        if (!app.formFactor.isTouch) {
+            item {
+                val matchTVMode by app.matchTVMode.collectAsState()
+                RetroRow("Match TV mode", { navigator.open(SettingsRoute.MatchTVMode) }, trailing = matchTVMode.title)
+            }
         }
 
         item { SectionHeader("Channels") }
