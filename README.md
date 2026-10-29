@@ -26,6 +26,7 @@ An optional one-time RetroGuide Pro purchase removes mobile ads and unlocks
 multiple servers, unlimited custom channels, all themes and schedule controls
 across all three devices.
 
+[Website](https://www.retroguide.tv/) ·
 [Setup and support](https://www.retroguide.tv/support/) ·
 [Privacy Policy](https://www.retroguide.tv/privacy/)
 
