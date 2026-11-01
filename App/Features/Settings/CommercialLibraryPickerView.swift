@@ -7,6 +7,9 @@ struct CommercialLibraryPickerView: View {
     @State private var sources: [(account: ServerAccount, libraries: [MediaLibrary])] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
+    private var unavailableIDs: Set<String> {
+        app.preferences.commercials.libraryIDs.subtracting(sources.flatMap { $0.libraries.map(\.id) })
+    }
     var body: some View {
         SettingsPage(title: "Commercial Libraries") {
             SettingsSection("Commercial libraries") {
@@ -24,6 +27,17 @@ struct CommercialLibraryPickerView: View {
                             if settings.libraryIDs.isEmpty { settings.isEnabled = false }
                             app.preferences.commercials = settings
                         }
+                    }
+                }
+                if !isLoading, !unavailableIDs.isEmpty {
+                    Text("Some selected libraries are unavailable. Reconnect their servers or remove these selections.")
+                        .font(Typography.caption).foregroundStyle(theme.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Button("Remove unavailable selections") {
+                        var settings = app.preferences.commercials
+                        settings.libraryIDs.subtract(unavailableIDs)
+                        if settings.libraryIDs.isEmpty { settings.isEnabled = false }
+                        app.preferences.commercials = settings
                     }
                 }
                 if let errorMessage { Text(errorMessage).font(Typography.caption).foregroundStyle(theme.textSecondary) }

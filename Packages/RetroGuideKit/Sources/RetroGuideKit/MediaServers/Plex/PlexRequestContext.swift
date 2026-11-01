@@ -31,18 +31,19 @@ struct PlexRequestContext: Sendable {
     }
 
     /// Fetches every page of a metadata listing.
-    func allMetadata(path: String, query: [URLQueryItem] = []) async throws -> [PlexMetadata] {
-        let pageSize = PlexAPI.Defaults.pageSize
+    func allMetadata(path: String, query: [URLQueryItem] = [], limit: Int? = nil) async throws -> [PlexMetadata] {
+        guard limit != .zero else { return [] }
+        let pageSize = min(PlexAPI.Defaults.pageSize, limit ?? PlexAPI.Defaults.pageSize)
         let first = try await metadataPage(path: path, query: query, start: .zero, size: pageSize)
-        var results = first.metadata ?? []
-        let total = first.totalSize ?? results.count
+        var results = Array((first.metadata ?? []).prefix(limit ?? Int.max))
+        let total = min(first.totalSize ?? results.count, limit ?? Int.max)
         guard total > results.count else { return results }
         let offsets = Array(stride(from: pageSize, to: total, by: pageSize))
         let pages = try await offsets.concurrentMap(limit: PlexAPI.Defaults.maxConcurrentRequests) { offset in
-            try await metadataPage(path: path, query: query, start: offset, size: pageSize).metadata ?? []
+            try await metadataPage(path: path, query: query, start: offset, size: min(pageSize, total - offset)).metadata ?? []
         }
         results.append(contentsOf: pages.joined())
-        return results
+        return Array(results.prefix(limit ?? Int.max))
     }
 
     func directories(path: String) async throws -> [PlexDirectory] {

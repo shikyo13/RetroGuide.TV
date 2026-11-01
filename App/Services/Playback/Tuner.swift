@@ -437,11 +437,8 @@ final class Tuner {
         failedAttempts = .zero
         tuneGeneration += 1
         onChannelChanged?(channel.id)
-        stopTimers()
-        // The old stream stops now rather than downloading while the new
-        // one is prepared.
-        endActiveStream()
-        engine.stop()
+        // Cancel both program work and any commercial deadline before retuning.
+        stopPlayback()
         let now = ContinuousClock.now
         tuneStart = now
         logger.notice("tune \(channel.number, privacy: .public)\(isAutomatic ? " (automatic)" : "", privacy: .public)")
@@ -710,6 +707,7 @@ final class Tuner {
     }
 
     private func enterIntermission(until date: Date) {
+        UIApplication.shared.isIdleTimerDisabled = true
         endActiveStream()
         engine.stop()
         playbackGeneration = nil
@@ -719,7 +717,7 @@ final class Tuner {
         if independentPlayback == nil, let program, program.isInIntermission(at: .now), !program.commercials.isEmpty {
             boundaryTask?.cancel()
             commercialPlayback?.cancel()
-            let playback = CommercialPlayback(engine: engine, clientProvider: clientProvider, allows: commercialAllowed,
+            let playback = CommercialPlayback(engine: engine, clientProvider: clientProvider, languagePreferences: languagePreferences, allows: commercialAllowed,
                 onPlaying: { [weak self] in self?.signal = .live },
                 onCard: { [weak self] in self?.signal = .intermission },
                 onFinished: { [weak self] in

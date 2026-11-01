@@ -13,8 +13,10 @@ struct JellyfinLibraryLoader: Sendable {
 
     func load(
         _ libraries: [MediaLibrary],
+        limit: Int? = nil,
         progress: @escaping @Sendable (LibraryLoadProgress) -> Void
     ) async throws -> [MediaItem] {
+        guard limit != .zero else { return [] }
         let schedulable = libraries.filter(\.isSchedulable)
         guard !schedulable.isEmpty else { return [] }
         progress(LibraryLoadProgress(fraction: .zero, message: "Reading collections…"))
@@ -22,14 +24,16 @@ struct JellyfinLibraryLoader: Sendable {
         let collections = try await collectionMembership()
         var items: [MediaItem] = []
         for (position, library) in schedulable.enumerated() {
+            let remaining = limit.map { max($0 - items.count, .zero) }
+            if remaining == .zero { break }
             let base = Stage.collections + (1 - Stage.collections) * Double(position) / Double(schedulable.count)
             let share = (1 - Stage.collections) / Double(schedulable.count)
             let report: @Sendable (Double, String) -> Void = { fraction, message in
                 progress(LibraryLoadProgress(fraction: base + share * fraction, message: message))
             }
             switch library.kind {
-            case .movies: items += try await loadMovies(library, collections: collections, report: report)
-            case .shows: items += try await loadShows(library, collections: collections, report: report)
+            case .movies: items += try await loadMovies(library, limit: remaining, collections: collections, report: report)
+            case .shows: items += try await loadShows(library, limit: remaining, collections: collections, report: report)
             case .unsupported: continue
             }
         }
@@ -39,17 +43,19 @@ struct JellyfinLibraryLoader: Sendable {
 
     private func loadMovies(
         _ library: MediaLibrary,
+        limit: Int?,
         collections: [String: [String]],
         report: @Sendable (Double, String) -> Void
     ) async throws -> [MediaItem] {
         report(.zero, "Reading \(library.title) movies…")
-        let movies = try await context.allItems(query: listing(in: library, type: JellyfinAPI.ItemType.movie, fields: JellyfinAPI.Fields.playable))
+        let movies = try await context.allItems(query: listing(in: library, type: JellyfinAPI.ItemType.movie, fields: JellyfinAPI.Fields.playable), limit: limit)
         report(1, "Indexed \(movies.count) movies")
         return movies.compactMap { JellyfinItemMapper.movie($0, library: library, collections: collections) }
     }
 
     private func loadShows(
         _ library: MediaLibrary,
+        limit: Int?,
         collections: [String: [String]],
         report: @Sendable (Double, String) -> Void
     ) async throws -> [MediaItem] {
@@ -58,7 +64,7 @@ struct JellyfinLibraryLoader: Sendable {
         let showsByID = Dictionary(shows.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         let networks = JellyfinNetworks(shows: shows)
         report(Stage.shows, "Reading episodes in \(library.title)…")
-        let episodes = try await context.allItems(query: listing(in: library, type: JellyfinAPI.ItemType.episode, fields: JellyfinAPI.Fields.playable))
+        let episodes = try await context.allItems(query: listing(in: library, type: JellyfinAPI.ItemType.episode, fields: JellyfinAPI.Fields.playable), limit: limit)
         report(1, "Indexed \(episodes.count) episodes from \(shows.count) shows")
         return episodes.compactMap { episode in
             let show = episode.seriesId.flatMap { showsByID[$0] }

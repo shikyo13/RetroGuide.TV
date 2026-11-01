@@ -41,6 +41,10 @@ public struct PlexServerClient: MediaServerClient {
         try await PlexLibraryLoader(context: context).load(libraries, progress: progress)
     }
 
+    public func fetchItems(in libraries: [MediaLibrary], limit: Int, progress: @escaping @Sendable (LibraryLoadProgress) -> Void) async throws -> [MediaItem] {
+        try await PlexLibraryLoader(context: context).load(libraries, limit: max(limit, .zero), progress: progress)
+    }
+
     public func streamRequest(
         for item: MediaItem,
         startingAt position: TimeInterval,

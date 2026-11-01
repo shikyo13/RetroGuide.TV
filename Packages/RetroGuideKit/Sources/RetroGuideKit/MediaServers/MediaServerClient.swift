@@ -77,6 +77,12 @@ public protocol MediaServerClient: Sendable {
         progress: @escaping @Sendable (LibraryLoadProgress) -> Void
     ) async throws -> [MediaItem]
 
+    /// Loads a bounded prefix for auxiliary libraries such as commercial clips.
+    func fetchItems(
+        in libraries: [MediaLibrary], limit: Int,
+        progress: @escaping @Sendable (LibraryLoadProgress) -> Void
+    ) async throws -> [MediaItem]
+
     /// Builds the cheapest stream the player can handle: the original file when
     /// possible, otherwise a server-side remux/transcode.
     func streamRequest(
@@ -118,6 +124,11 @@ public protocol MediaServerClient: Sendable {
 }
 
 public extension MediaServerClient {
+    func fetchItems(in libraries: [MediaLibrary], limit: Int, progress: @escaping @Sendable (LibraryLoadProgress) -> Void) async throws -> [MediaItem] {
+        guard limit > .zero else { return [] }
+        return Array(try await fetchItems(in: libraries, progress: progress).prefix(limit))
+    }
+
     var reportsPlayback: Bool { false }
     func reportPlayback(_ report: PlaybackReport) async -> Bool { true }
 

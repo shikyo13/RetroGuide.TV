@@ -36,21 +36,22 @@ struct JellyfinRequestContext: Sendable {
     /// Fetches every page of an item query. Pages are sorted by creation date
     /// and name so they don't overlap, and items repeated across pages anyway
     /// (a library changing mid-download) are kept once.
-    func allItems(query: [URLQueryItem]) async throws -> [JellyfinItem] {
+    func allItems(query: [URLQueryItem], limit: Int? = nil) async throws -> [JellyfinItem] {
+        guard limit != .zero else { return [] }
         let sorted = query + [URLQueryItem(name: "SortBy", value: "DateCreated,SortName")]
-        let pageSize = JellyfinAPI.Defaults.pageSize
+        let pageSize = min(JellyfinAPI.Defaults.pageSize, limit ?? JellyfinAPI.Defaults.pageSize)
         let first = try await itemsPage(query: sorted, start: .zero, size: pageSize)
-        var results = first.items ?? []
-        let total = first.totalRecordCount ?? results.count
+        var results = Array((first.items ?? []).prefix(limit ?? Int.max))
+        let total = min(first.totalRecordCount ?? results.count, limit ?? Int.max)
         if total > results.count {
             let offsets = Array(stride(from: pageSize, to: total, by: pageSize))
             let pages = try await offsets.concurrentMap(limit: JellyfinAPI.Defaults.maxConcurrentRequests) { offset in
-                try await itemsPage(query: sorted, start: offset, size: pageSize).items ?? []
+                try await itemsPage(query: sorted, start: offset, size: min(pageSize, total - offset)).items ?? []
             }
             results.append(contentsOf: pages.joined())
         }
         var seen = Set<String>()
-        return results.filter { seen.insert($0.id).inserted }
+        return Array(results.prefix(limit ?? Int.max)).filter { seen.insert($0.id).inserted }
     }
 }
 

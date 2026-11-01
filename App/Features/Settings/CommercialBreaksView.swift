@@ -25,7 +25,7 @@ struct CommercialBreaksView: View {
                         app.preferences.commercials.count = count
                     }
                 }
-                Text("Commercials play in full. Their combined length is included in the guide. If fewer clips are available, each plays once. Program start-time alignment may add an intermission before the next program.")
+                Text("Breaks use the combined running time of the selected clips, which is included in the guide. If fewer clips are available, each plays once. Program start-time alignment may add an intermission before the next program.")
                     .font(Typography.caption).foregroundStyle(theme.textSecondary)
             }
             Text("Parental Controls also apply to commercials. Unrated clips are excluded when unrated content is blocked.")

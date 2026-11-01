@@ -6,6 +6,7 @@ import RetroGuideKit
 final class CommercialPlayback {
     private let engine: any PlaybackEngine
     private let clientProvider: (String) -> (any MediaServerClient)?
+    private let languagePreferences: LanguagePreferences?
     private let allows: (MediaItem) -> Bool
     private let onPlaying: () -> Void
     private let onCard: () -> Void
@@ -21,12 +22,15 @@ final class CommercialPlayback {
     private var isCancelled = false
     private(set) var item: MediaItem?
 
-    init(engine: any PlaybackEngine, clientProvider: @escaping (String) -> (any MediaServerClient)?, allows: @escaping (MediaItem) -> Bool,
+    init(engine: any PlaybackEngine, clientProvider: @escaping (String) -> (any MediaServerClient)?, languagePreferences: LanguagePreferences? = nil, allows: @escaping (MediaItem) -> Bool,
          onPlaying: @escaping () -> Void, onCard: @escaping () -> Void, onFinished: @escaping () -> Void, onFormat: @escaping (VideoFormat) -> Void) {
         self.engine = engine; self.clientProvider = clientProvider; self.allows = allows
+        self.languagePreferences = languagePreferences
         self.onPlaying = onPlaying; self.onCard = onCard; self.onFinished = onFinished; self.onFormat = onFormat
     }
     func start(_ plan: CommercialBreakPlan) {
+        cancel()
+        isCancelled = false
         self.plan = plan
         deadline = Task { [weak self] in
             try? await Task.sleep(for: .seconds(max(plan.end.timeIntervalSinceNow, .zero)))
@@ -63,30 +67,40 @@ final class CommercialPlayback {
     }
     private func advance() {
         guard !isCancelled, let plan else { return }
+        boundary?.cancel(); boundary = nil
         stopClip()
-        guard let clip = plan.clip(at: .now), allows(clip.item), let client = clientProvider(clip.item.serverID) else {
+        guard let clip = plan.clip(at: .now) else {
+            onCard()
+            return
+        }
+        boundary = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(max(clip.end.timeIntervalSinceNow, .zero)))
+            guard !Task.isCancelled, let self, !isCancelled else { return }
+            advance()
+        }
+        guard allows(clip.item), let client = clientProvider(clip.item.serverID) else {
             onCard()
             return
         }
         self.clip = clip
         item = clip.item
         let token = generation
-        boundary = Task { [weak self] in
-            try? await Task.sleep(for: .seconds(max(clip.end.timeIntervalSinceNow, .zero)))
-            guard !Task.isCancelled, let self, !isCancelled else { return }
-            advance()
-        }
         work = Task { [weak self] in
             guard let self else { return }
             do {
-                let prepared = try await client.preparePlayback(for: clip.item, startingAt: clip.position(at: .now), capabilities: engine.capabilities, preferences: nil)
+                let prepared = try await client.preparePlayback(for: clip.item, startingAt: clip.position(at: .now), capabilities: engine.capabilities, preferences: languagePreferences)
                 var request = prepared.request
+                var tracks = prepared.tracks
                 guard isCurrent(token, clip: clip) else { release(client, request); return }
                 // Server-positioned streams cannot be sought client-side. Skip a stale
                 // preparation rather than start an ad behind the channel's clock.
                 if request.startsAtPosition && clip.position(at: .now) - request.startPosition >= Timing.positionTolerance {
                     release(client, request)
+                    let previousVersion = request.versionIndex
                     request = try await client.streamRequest(for: clip.item, startingAt: clip.position(at: .now), capabilities: engine.capabilities)
+                    if request.versionIndex != previousVersion {
+                        tracks = await client.tracks(for: clip.item, version: request.versionIndex, preferences: languagePreferences)
+                    }
                     guard isCurrent(token, clip: clip) else { release(client, request); return }
                     guard clip.position(at: .now) - request.startPosition < Timing.positionTolerance else {
                         release(client, request); showCard(); return
@@ -94,7 +108,7 @@ final class CommercialPlayback {
                 }
                 stream = (client, request)
                 engine.setSubtitleDelay(.zero)
-                engine.play(request.starting(at: clip.position(at: .now)), tracks: nil)
+                engine.play(request.starting(at: clip.position(at: .now)), tracks: tracks?.selection)
             } catch {
                 guard isCurrent(token, clip: clip) else { return }
                 showCard()
@@ -106,7 +120,7 @@ final class CommercialPlayback {
         !Task.isCancelled && !isCancelled && generation == token && Date.now < clip.end && allows(clip.item)
     }
     private func showCard() {
-        boundary?.cancel(); boundary = nil
+        // A failed or restricted clip must not suppress later clips in the break.
         stopClip()
         onCard()
     }

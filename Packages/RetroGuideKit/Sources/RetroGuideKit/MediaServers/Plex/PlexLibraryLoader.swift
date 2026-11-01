@@ -6,19 +6,23 @@ struct PlexLibraryLoader: Sendable {
 
     func load(
         _ libraries: [MediaLibrary],
+        limit: Int? = nil,
         progress: @escaping @Sendable (LibraryLoadProgress) -> Void
     ) async throws -> [MediaItem] {
+        guard limit != .zero else { return [] }
         let schedulable = libraries.filter(\.isSchedulable)
         var items: [MediaItem] = []
         for (position, library) in schedulable.enumerated() {
+            let remaining = limit.map { max($0 - items.count, .zero) }
+            if remaining == .zero { break }
             let base = Double(position) / Double(schedulable.count)
             let share = 1 / Double(schedulable.count)
             let report: @Sendable (Double, String) -> Void = { fraction, message in
                 progress(LibraryLoadProgress(fraction: base + share * fraction, message: message))
             }
             switch library.kind {
-            case .movies: items += try await loadMovies(library, report: report)
-            case .shows: items += try await loadShows(library, report: report)
+            case .movies: items += try await loadMovies(library, limit: remaining, report: report)
+            case .shows: items += try await loadShows(library, limit: remaining, report: report)
             case .unsupported: continue
             }
         }
@@ -35,6 +39,7 @@ struct PlexLibraryLoader: Sendable {
 
     private func loadMovies(
         _ library: MediaLibrary,
+        limit: Int?,
         report: @Sendable (Double, String) -> Void
     ) async throws -> [MediaItem] {
         report(.zero, "Reading \(library.title)…")
@@ -42,7 +47,7 @@ struct PlexLibraryLoader: Sendable {
         memberships.genres = try await membership(library, field: PlexAPI.FilterField.genre, type: .movie)
         memberships.collections = try await collectionMembership(library)
         report(MovieStage.tags, "Reading \(library.title) movies…")
-        let movies = try await context.allMetadata(path: PlexAPI.Path.sectionItems(library.key), query: typeQuery(.movie) + PlexAPI.Trim.listingWithIDs)
+        let movies = try await context.allMetadata(path: PlexAPI.Path.sectionItems(library.key), query: typeQuery(.movie) + PlexAPI.Trim.listingWithIDs, limit: limit)
         report(MovieStage.movies, "Indexed \(movies.count) movies")
         return movies.compactMap { PlexItemMapper.movie($0, library: library, memberships: memberships) }
     }
@@ -56,6 +61,7 @@ struct PlexLibraryLoader: Sendable {
 
     private func loadShows(
         _ library: MediaLibrary,
+        limit: Int?,
         report: @Sendable (Double, String) -> Void
     ) async throws -> [MediaItem] {
         report(.zero, "Reading \(library.title)…")
@@ -70,7 +76,7 @@ struct PlexLibraryLoader: Sendable {
         memberships.collections = try await collectionMembership(library)
         report(ShowStage.tags, "Reading episodes in \(library.title)…")
 
-        let episodes = try await context.allMetadata(path: path, query: typeQuery(.episode) + PlexAPI.Trim.listing)
+        let episodes = try await context.allMetadata(path: path, query: typeQuery(.episode) + PlexAPI.Trim.listing, limit: limit)
         report(1, "Indexed \(episodes.count) episodes from \(shows.count) shows")
         return episodes.compactMap { episode in
             PlexItemMapper.episode(
