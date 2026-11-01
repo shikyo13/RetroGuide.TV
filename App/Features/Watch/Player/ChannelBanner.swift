@@ -7,6 +7,7 @@ struct ChannelBanner: View {
         static let logoWidth = PlatformMetric.value(tv: CGFloat(360), touch: 150)
         static let logoHeight = PlatformMetric.value(tv: CGFloat(110), touch: 46)
         static let summaryLines = 2
+        static let commercialRefreshInterval: TimeInterval = 1
         static let progressHeight = PlatformMetric.value(tv: CGFloat(8), touch: 5)
     }
 
@@ -17,13 +18,14 @@ struct ChannelBanner: View {
     /// reaches the Options button.
     var offersOptions = false
     var isIndependent = false
+    var isCommercial = false
 
     @Environment(\.theme) private var theme
     /// iPhone in portrait: too narrow for the badge, details and logo side by side.
     @Environment(\.isNarrowLayout) private var isStacked
 
     var body: some View {
-        TimelineView(.everyMinute) { context in
+        TimelineView(.periodic(from: .distantPast, by: isCommercial ? Layout.commercialRefreshInterval : ScheduleConstants.secondsPerMinute)) { context in
             Group {
                 if isStacked {
                     stackedLayout(now: context.date)
@@ -47,7 +49,7 @@ struct ChannelBanner: View {
                 channelName
             }
             Spacer(minLength: DesignTokens.Spacing.md)
-            if let program {
+            if let program, !isCommercial {
                 logo(for: program)
             }
         }
@@ -58,7 +60,7 @@ struct ChannelBanner: View {
             HStack(alignment: .center, spacing: DesignTokens.Spacing.md) {
                 ChannelBadge(number: channel.number, callSign: channel.callSign)
                 Spacer(minLength: DesignTokens.Spacing.md)
-                if let program {
+                if let program, !isCommercial {
                     logo(for: program)
                 }
             }
@@ -86,19 +88,19 @@ struct ChannelBanner: View {
                     .font(Typography.caption)
                     .foregroundStyle(theme.accentSecondary)
                     .lineLimit(1)
-                RatingChip(rating: program.item.contentRating, audience: program.item.audience)
+                if !isCommercial { RatingChip(rating: program.item.contentRating, audience: program.item.audience) }
             }
-            Text(program.item.headline)
+            Text(isCommercial ? "Commercial break" : program.item.headline)
                 .font(Typography.headline)
                 .foregroundStyle(theme.textPrimary)
                 .lineLimit(1)
-            if let subheadline = program.item.subheadline {
+            if let subheadline = program.item.subheadline, !isCommercial {
                 Text(subheadline)
                     .font(Typography.callout)
                     .foregroundStyle(theme.textSecondary)
                     .lineLimit(1)
             }
-            if let summary = program.item.summary, !summary.isEmpty {
+            if let summary = program.item.summary, !summary.isEmpty, !isCommercial {
                 Text(summary)
                     .font(Typography.caption)
                     .foregroundStyle(theme.textSecondary)
@@ -106,13 +108,13 @@ struct ChannelBanner: View {
             }
             if !isIndependent {
             HStack(spacing: DesignTokens.Spacing.md) {
-                Text(ScheduleFormatting.range(program))
+                Text(isCommercial ? "Next program at \(ScheduleFormatting.time(program.slotEnd))" : ScheduleFormatting.range(program))
                     .font(Typography.clock)
                     .foregroundStyle(theme.textPrimary)
                     .fixedSize()
                 if !isShowingNext {
-                    ProgressTrack(progress: program.progress(at: now), height: Layout.progressHeight)
-                    Text(ScheduleFormatting.remaining(in: program, at: now))
+                    ProgressTrack(progress: isCommercial ? breakProgress(program, at: now) : program.progress(at: now), height: Layout.progressHeight)
+                    Text(isCommercial ? "\(Int(ceil(max(program.slotEnd.timeIntervalSince(now), .zero))))s left" : ScheduleFormatting.remaining(in: program, at: now))
                         .font(Typography.caption)
                         .foregroundStyle(theme.textSecondary)
                         .fixedSize()
@@ -123,6 +125,12 @@ struct ChannelBanner: View {
             RemoteHints(offersOptions: offersOptions)
             #endif
         }
+    }
+
+    private func breakProgress(_ program: ScheduledProgram, at date: Date) -> Double {
+        let duration = program.slotEnd.timeIntervalSince(program.contentEnd)
+        guard duration > .zero else { return 1 }
+        return min(max(date.timeIntervalSince(program.contentEnd) / duration, .zero), 1)
     }
 
     private func logo(for program: ScheduledProgram) -> some View {

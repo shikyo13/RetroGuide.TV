@@ -71,6 +71,9 @@ final class AppModel {
     /// Changes whenever ``searchIndex`` is replaced, so open searches rerun.
     private(set) var searchRevision = 0
 
+    let commercialLibrary = CommercialLibrary()
+    @ObservationIgnored private var commercialLoad: Task<Void, Never>?
+
     var preferences: UserPreferences {
         didSet { preferencesChanged(from: oldValue) }
     }
@@ -134,6 +137,11 @@ final class AppModel {
         tuner.playbackAllowed = { [weak self] item in
             guard let self else { return false }
             return !isApplyingParentalControls && (!parentalControls.policy.isEnabled || parentalAllowedItemIDs.contains(item.id))
+        }
+        tuner.commercialAllowed = { [weak self] item in
+            guard let self else { return false }
+            return preferences.commercials.isEnabled && preferences.commercials.libraryIDs.contains(item.libraryID)
+                && !isApplyingParentalControls && commercialLibrary.allowedIDs.contains(item.id)
         }
         tuner.onChannelChanged = { [weak self] channelID in
             self?.store.lastChannelID = channelID
@@ -783,11 +791,20 @@ final class AppModel {
         guard !isManagingStartup else { return }
         indexGeneration += 1
         let generation = indexGeneration
+        await commercialLibrary.load(settings: preferences.commercials, servers: servers)
+        guard generation == indexGeneration, !Task.isCancelled else { return }
         if parentalControls.policy.hasTitleSelections {
             parentalControls.refreshTitleMatches(in: ParentalTitleCatalog(snapshots: servers.knownSnapshots))
         }
         let policy = parentalControls.policy
-        let snapshots = policy.filtering(servers.activeSnapshots)
+        commercialLibrary.apply(policy: policy, servers: servers)
+        let sourceIDs = preferences.commercials.libraryIDs
+        let regularSnapshots = servers.activeSnapshots.map { snapshot in
+            LibrarySnapshot(serverID: snapshot.serverID, serverName: snapshot.serverName,
+                libraries: snapshot.libraries.filter { !sourceIDs.contains($0.id) },
+                items: snapshot.items.filter { !sourceIDs.contains($0.libraryID) }, refreshedAt: snapshot.refreshedAt)
+        }
+        let snapshots = policy.filtering(regularSnapshots)
         let allowedIDs = policy.isEnabled ? Set(snapshots.flatMap { $0.items.map(\.id) }) : []
         let index = await engine.makeIndex(from: snapshots, quality: servers.qualityByServer)
         guard generation == indexGeneration else { return }
@@ -829,7 +846,7 @@ final class AppModel {
         let generation = lineupGeneration
         pendingLineupRebuilds += 1
         defer { pendingLineupRebuilds -= 1 }
-        let built = await engine.makeLineup(index: libraryIndex, customization: customization, grid: preferences.scheduleGrid)
+        let built = await engine.makeLineup(index: libraryIndex, customization: customization, grid: preferences.scheduleGrid, commercials: commercialCatalog)
         guard generation == lineupGeneration else { return }
         lineup = built
         lineupRevision += 1
@@ -879,6 +896,20 @@ final class AppModel {
         tuner.tune(to: channel, isAutomatic: true)
     }
 
+    private var commercialCatalog: CommercialCatalog {
+        preferences.commercials.isEnabled
+            ? CommercialCatalog(items: commercialLibrary.items, count: preferences.commercials.count) : .empty
+    }
+
+    func refreshCommercials(force: Bool = false) async {
+        let previous = commercialCatalog
+        await commercialLibrary.load(settings: preferences.commercials, servers: servers, force: force)
+        guard !Task.isCancelled else { return }
+        commercialLibrary.apply(policy: parentalControls.policy, servers: servers)
+        tuner.enforcePlaybackAccess()
+        if previous != commercialCatalog { await rebuildLineup() }
+    }
+
     private func preferencesChanged(from old: UserPreferences) {
         store.preferences = preferences
         if old.playerEngine != preferences.playerEngine {
@@ -886,6 +917,14 @@ final class AppModel {
         }
         if old.displayMatching != preferences.displayMatching {
             updateDisplayMode()
+        }
+        if old.commercials != preferences.commercials {
+            tuner.enforcePlaybackAccess()
+            commercialLoad?.cancel()
+            commercialLoad = Task { [weak self] in
+                guard let self else { return }
+                await rebuildIndexAndLineup()
+            }
         }
         if old.scheduleGrid != preferences.scheduleGrid {
             Task {

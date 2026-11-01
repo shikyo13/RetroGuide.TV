@@ -116,7 +116,7 @@ struct PlayerChromeView: View {
             }
             #endif
             if isBannerVisible, let channel = tuner.channel {
-                ChannelBanner(channel: channel, program: bannerProgram, isShowingNext: showsNext, offersOptions: offersOptions, isIndependent: tuner.isWatchingFromBeginning)
+                ChannelBanner(channel: channel, program: bannerProgram, isShowingNext: showsNext, offersOptions: offersOptions, isIndependent: tuner.isWatchingFromBeginning, isCommercial: tuner.isPlayingCommercial && !showsNext)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                     .allowsHitTesting(false)
             }

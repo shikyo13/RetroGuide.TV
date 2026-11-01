@@ -5,6 +5,7 @@ import Foundation
 final class ScheduleContext: Sendable {
     let channelID: String
     let items: [MediaItem]
+    private let commercials: CommercialCatalog
     /// Every item's slot, in whole milliseconds, so schedules computed in
     /// different ways add up to exactly the same times.
     let slotLengths: [Int]
@@ -25,10 +26,11 @@ final class ScheduleContext: Sendable {
     /// Each show's stable rank per salt ("" and each shuffled round), worked out once.
     private let ranks: [String: [UInt64]]
 
-    init(channelID: String, items: [MediaItem], grid: ScheduleGrid) {
+    init(channelID: String, items: [MediaItem], grid: ScheduleGrid, commercials: CommercialCatalog = .empty) {
         self.channelID = channelID
         self.items = items
-        self.slotLengths = items.map { ScheduleTime.milliseconds(max(grid.slotLength(for: $0.duration), ScheduleConstants.minimumProgramDuration)) }
+        self.commercials = commercials
+        self.slotLengths = items.map { ScheduleTime.milliseconds(max(grid.slotLength(for: $0.duration + commercials.duration(channelID: channelID, program: $0)), ScheduleConstants.minimumProgramDuration)) }
         var groups: [String: [Int]] = [:]
         for index in items.indices where items[index].duration > .zero {
             groups[items[index].showID, default: []].append(index)
@@ -98,7 +100,8 @@ final class ScheduleContext: Sendable {
             contentEnd: begins.addingTimeInterval(media.duration),
             slotEnd: ScheduleTime.date(start + slotLengths[item]),
             cycle: cycle,
-            slot: slot
+            slot: slot,
+            commercials: commercials.selection(channelID: channelID, program: media)
         )
     }
 }

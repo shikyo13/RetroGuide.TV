@@ -159,7 +159,7 @@ public struct LineupBuilder: Sendable {
         for position in resolved.indices where !isHidden(resolved[position].definition) {
             let (definition, items) = resolved[position]
             if Self.exemptSources.contains(definition.source), Channel.airsOneShow(items) {
-                let timeline = ChannelTimeline(channelID: definition.id, items: items, ordering: definition.ordering, grid: options.grid)
+                let timeline = ChannelTimeline(channelID: definition.id, items: items, ordering: definition.ordering, grid: options.grid, commercials: options.commercials)
                 timelines[position] = timeline
                 fixed += timeline.repeatingSlots()
             } else {
@@ -172,7 +172,7 @@ public struct LineupBuilder: Sendable {
                 limit: customization.simulcastLimit.channels ?? .max,
                 channels: shared.map { position in
                     let definition = resolved[position].definition
-                    return (ScheduleContext(channelID: definition.id, items: resolved[position].items, grid: options.grid), definition.ordering)
+                    return (ScheduleContext(channelID: definition.id, items: resolved[position].items, grid: options.grid, commercials: options.commercials), definition.ordering)
                 },
                 uncounted: Set(shared.indices.filter { Self.exemptSources.contains(resolved[shared[$0]].definition.source) }),
                 fixed: fixed
@@ -187,7 +187,7 @@ public struct LineupBuilder: Sendable {
                 definition: definition,
                 items: items,
                 isHidden: isHidden(definition),
-                timeline: timelines[position] ?? Channel.schedule(for: definition, items: items, grid: options.grid),
+                timeline: timelines[position] ?? Channel.schedule(for: definition, items: items, grid: options.grid, commercials: options.commercials),
                 formerIDs: formerIDs[definition.id] ?? []
             )
         }

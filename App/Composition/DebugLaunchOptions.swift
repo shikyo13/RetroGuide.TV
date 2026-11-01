@@ -36,6 +36,7 @@ enum DebugLaunchOptions {
         case channel
         case order
         case repeats
+        case commercials
     }
 
     private enum Variable {

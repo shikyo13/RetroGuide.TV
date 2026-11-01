@@ -34,6 +34,7 @@ public struct LineupOptions: Sendable, Hashable {
     public var maximumChannels: Int
     /// Alignment of program start times.
     public var grid: ScheduleGrid
+    public var commercials: CommercialCatalog = .empty
 
     public init(
         minimumChannelRuntime: TimeInterval = Defaults.minimumChannelRuntime,

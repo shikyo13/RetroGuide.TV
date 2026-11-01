@@ -86,6 +86,11 @@ final class Tuner {
     private(set) var videoFormat: VideoFormat?
     private(set) var engine: any PlaybackEngine
 
+    @ObservationIgnored var commercialAllowed: (MediaItem) -> Bool = { _ in false }
+    private var commercialPlayback: CommercialPlayback?
+    var isPlayingCommercial: Bool { commercialPlayback != nil }
+    var commercialItem: MediaItem? { commercialPlayback?.item }
+
     @ObservationIgnored var playbackAllowed: (MediaItem) -> Bool = { _ in true }
 
     @ObservationIgnored var onChannelChanged: ((String) -> Void)?
@@ -266,6 +271,7 @@ final class Tuner {
 
     /// Stops an existing viewing session when refreshed metadata no longer permits it.
     func enforcePlaybackAccess() {
+        commercialPlayback?.enforceAccess()
         guard let item = (independentPlayback?.program ?? program)?.item,
               !playbackAllowed(item) else { return }
         stopWatching()
@@ -307,7 +313,8 @@ final class Tuner {
         guard signal != .off, let previous, let airing else { return }
         if airing.item.id != previous.item.id || airing.start != previous.start {
             tune(to: channel, isAutomatic: true)
-        } else if airing.contentEnd != previous.contentEnd || airing.slotEnd != previous.slotEnd {
+        } else if airing.contentEnd != previous.contentEnd || airing.slotEnd != previous.slotEnd || airing.commercials != previous.commercials {
+            if commercialPlayback != nil { tune(to: channel, isAutomatic: true); return }
             scheduleBoundary(at: signal == .intermission ? airing.slotEnd : airing.contentEnd)
         }
     }
@@ -652,6 +659,7 @@ final class Tuner {
     }
 
     private func handle(_ event: PlaybackEvent) {
+        if let commercialPlayback { commercialPlayback.handle(event); return }
         // Events from a stream started for an earlier tune (the viewer changed
         // channel before it reported) don't describe what's tuned now.
         guard playbackGeneration == tuneGeneration else { return }
@@ -704,8 +712,34 @@ final class Tuner {
     private func enterIntermission(until date: Date) {
         endActiveStream()
         engine.stop()
+        playbackGeneration = nil
+        currentTracks = nil
+        currentSelection = nil
         signal = .intermission
-        scheduleBoundary(at: date)
+        if independentPlayback == nil, let program, program.isInIntermission(at: .now), !program.commercials.isEmpty {
+            boundaryTask?.cancel()
+            commercialPlayback?.cancel()
+            let playback = CommercialPlayback(engine: engine, clientProvider: clientProvider, allows: commercialAllowed,
+                onPlaying: { [weak self] in self?.signal = .live },
+                onCard: { [weak self] in self?.signal = .intermission },
+                onFinished: { [weak self] in
+                    guard let self else { return }
+                    commercialPlayback = nil
+                    signal = .tuning
+                    tuneTask = Task { [weak self] in await self?.startPlayback() }
+                }, onFormat: { [weak self] in self?.setVideoFormat($0) })
+            commercialPlayback = playback
+            playback.start(CommercialBreakPlan(program: program))
+        } else {
+            // A file may end just before its metadata does. Still enter the
+            // scheduled commercial break when its start time arrives.
+            let breakStart = program.flatMap { program -> Date? in
+                guard !program.commercials.isEmpty, Date.now < program.contentEnd,
+                      program.contentEnd < program.slotEnd else { return nil }
+                return program.contentEnd
+            }
+            scheduleBoundary(at: breakStart ?? date)
+        }
     }
 
     /// Sleeps until `date`, then follows the schedule (intermission or next program).
@@ -754,6 +788,9 @@ final class Tuner {
     }
 
     private func stopPlayback() {
+        let commercial = commercialPlayback
+        commercialPlayback = nil
+        commercial?.cancel()
         stopTimers()
         endActiveStream()
         engine.stop()

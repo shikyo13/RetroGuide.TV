@@ -63,6 +63,10 @@ built from your own Plex or Jellyfin media. [Screenshot credits](docs/images/CRE
   library and settings, the same program is on at the same time on every Apple TV. Choose Shuffle, Block
   Shuffle, Show Rotation or Marathon ordering per channel, and optionally align
   start times to the quarter or half hour.
+- **Commercial breaks from your library.** Choose dedicated Plex or Jellyfin
+  libraries and play one, two or three commercials between programs. The guide
+  includes their full runtime, and Parental Controls apply to commercials too.
+  This is optional and separate from the mobile app's advertising.
 - **Program guide.** A focus-driven grid with a live preview, "now" line,
   rating colors, show logos and artwork, and search with live results.
 - **Channel surfing.** Swipe to change channels, with static between channels,

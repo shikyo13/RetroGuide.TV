@@ -15,8 +15,10 @@ struct LineupEngine: Sendable {
         }.value
     }
 
-    func makeLineup(index: LibraryIndex, customization: LineupCustomization, grid: ScheduleGrid) async -> [Channel] {
-        let builder = LineupBuilder(curated: curated, options: LineupOptions.adapted(to: index, grid: grid))
+    func makeLineup(index: LibraryIndex, customization: LineupCustomization, grid: ScheduleGrid, commercials: CommercialCatalog = .empty) async -> [Channel] {
+        var options = LineupOptions.adapted(to: index, grid: grid)
+        options.commercials = commercials
+        let builder = LineupBuilder(curated: curated, options: options)
         return await Task.detached(priority: .userInitiated) {
             let lineup = builder.build(index: index, customization: customization)
             // Channels sharing a simulcast limit are simulated together on

@@ -6,6 +6,7 @@ import RetroGuideKit
 struct UserPreferences: Codable, Equatable, Sendable {
     var themeID: ThemeID = .classicCable
     var scheduleGrid: ScheduleGrid = .continuous
+    var commercials = CommercialBreakSettings()
     var showsScanlines = true
     var playerEngine: PlaybackEngineKind = .universal
     var displayMatching: DisplayMatching = .dynamicRange
@@ -21,6 +22,7 @@ struct UserPreferences: Codable, Equatable, Sendable {
         let defaults = UserPreferences()
         let container = try decoder.container(keyedBy: CodingKeys.self)
         themeID = (try? container.decode(ThemeID.self, forKey: .themeID)) ?? defaults.themeID
+        commercials = (try? container.decode(CommercialBreakSettings.self, forKey: .commercials)) ?? defaults.commercials
         scheduleGrid = (try? container.decode(ScheduleGrid.self, forKey: .scheduleGrid)) ?? defaults.scheduleGrid
         showsScanlines = (try? container.decode(Bool.self, forKey: .showsScanlines)) ?? defaults.showsScanlines
         playerEngine = (try? container.decode(PlaybackEngineKind.self, forKey: .playerEngine)) ?? defaults.playerEngine

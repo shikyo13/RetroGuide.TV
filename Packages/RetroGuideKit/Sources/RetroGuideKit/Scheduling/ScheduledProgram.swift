@@ -12,6 +12,8 @@ public struct ScheduledProgram: Sendable, Hashable, Identifiable {
     public let slotEnd: Date
     let cycle: Int
     let slot: Int
+    /// Commercials scheduled after this program, fixed with its slot length.
+    public var commercials: [MediaItem] = []
 
     public var id: String {
         "\(channelID)#\(cycle)#\(slot)"

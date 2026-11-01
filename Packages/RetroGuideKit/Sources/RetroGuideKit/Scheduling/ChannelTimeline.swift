@@ -10,6 +10,7 @@ import Foundation
 public final class ChannelTimeline: @unchecked Sendable {
     public let channelID: String
     private let items: [MediaItem]
+    private let commercials: CommercialCatalog
     private let slotLengths: [TimeInterval]
     private let ordering: ScheduleOrdering
     private let grid: ScheduleGrid
@@ -20,12 +21,13 @@ public final class ChannelTimeline: @unchecked Sendable {
     private var layoutCache: [Int: CycleLayout] = [:]
     private var layoutRecency: [Int] = []
 
-    init(channelID: String, items: [MediaItem], ordering: ScheduleOrdering, grid: ScheduleGrid) {
+    init(channelID: String, items: [MediaItem], ordering: ScheduleOrdering, grid: ScheduleGrid, commercials: CommercialCatalog = .empty) {
         self.channelID = channelID
         self.items = items
+        self.commercials = commercials
         self.ordering = ordering
         self.grid = grid
-        self.slotLengths = items.map { grid.slotLength(for: $0.duration) }
+        self.slotLengths = items.map { grid.slotLength(for: $0.duration + commercials.duration(channelID: channelID, program: $0)) }
         self.cycleLength = slotLengths.reduce(.zero, +)
         self.baseSeed = StableHash.fnv1a(channelID)
     }
@@ -79,7 +81,8 @@ public final class ChannelTimeline: @unchecked Sendable {
             contentEnd: start.addingTimeInterval(item.duration),
             slotEnd: start.addingTimeInterval(slotLengths[itemIndex]),
             cycle: cycle,
-            slot: slot
+            slot: slot,
+            commercials: commercials.selection(channelID: channelID, program: item)
         )
     }
 

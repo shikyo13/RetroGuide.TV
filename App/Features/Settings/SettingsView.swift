@@ -80,6 +80,9 @@ struct SettingsView: View {
                         #endif
                     }
                     SettingsSection("Channels") {
+                        NavigationLink { CommercialBreaksView() } label: {
+                            SettingsRowLabel(title: "Commercial breaks", systemImage: "film", value: app.preferences.commercials.isEnabled ? "Between programs" : "Off")
+                        }
                         NavigationLink { FavoritesView() } label: {
                             SettingsRowLabel(title: "Favorites", systemImage: "star", value: app.pro.isPro ? "\(app.viewing.favoriteIDs.count)" : "Pro")
                         }
@@ -195,6 +198,7 @@ struct SettingsView: View {
                     case .channel: ChannelDetailView(channelID: app.lineup.first?.id ?? "")
                     case .order: AllChannelsOrderView()
                     case .repeats: SimulcastLimitPickerView()
+                    case .commercials: CommercialBreaksView()
                     }
                 }
                 #endif
