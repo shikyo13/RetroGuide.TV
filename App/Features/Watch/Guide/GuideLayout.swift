@@ -35,7 +35,9 @@ enum GuideLayout {
         /// How many slots are visible across the grid.
         static let visibleSlots = 3
         /// Fewer slots on narrow screens (iPhone in portrait) so titles stay readable.
-        static let compactVisibleSlots = 2
+        static let compactVisibleSlots = 1
+        /// Center the live portrait window so programs near a half-hour boundary stay readable.
+        static let compactHistory: TimeInterval = slot / 2
         /// How far into the future the guide can be browsed.
         static let lookahead: TimeInterval = 24 * ScheduleConstants.secondsPerHour
         /// When paging right, keep at least this much of the focused program visible.

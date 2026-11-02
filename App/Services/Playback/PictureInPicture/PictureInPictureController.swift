@@ -82,6 +82,19 @@ final class PictureInPictureController: NSObject {
 }
 
 extension PictureInPictureController: AVPictureInPictureControllerDelegate {
+    nonisolated func pictureInPictureController(
+        _ controller: AVPictureInPictureController,
+        failedToStartPictureInPictureWithError error: any Error
+    ) {
+        MainActor.assumeIsolated {
+            isActive = false
+            isRestoring = false
+            onActiveChanged?(false)
+            let failure = error as NSError
+            logger.error("Picture in Picture could not start: \(failure.domain, privacy: .public) (\(failure.code))")
+        }
+    }
+
     nonisolated func pictureInPictureControllerWillStartPictureInPicture(_ controller: AVPictureInPictureController) {
         MainActor.assumeIsolated {
             isActive = true

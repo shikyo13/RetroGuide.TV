@@ -16,6 +16,7 @@ build/
 .swiftpm/
 Packages/*/.swiftpm/
 Package.resolved
+!RetroGuide.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 
 # Local configuration and secrets
 *.env

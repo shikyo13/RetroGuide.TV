@@ -8,6 +8,7 @@ struct GuideProgramCell: View {
     let now: Date
     let isFocused: Bool
 
+    @Environment(\.isNarrowLayout) private var isNarrowLayout
     @Environment(\.theme) private var theme
 
     var body: some View {
@@ -45,8 +46,9 @@ struct GuideProgramCell: View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.hairline) {
             Text(program.item.headline)
                 .font(Typography.bodyEmphasis)
-                .lineLimit(1)
-            if showsSubtitle, let subheadline = program.item.subheadline {
+                .lineLimit(isNarrowLayout ? 2 : 1)
+                .minimumScaleFactor(isNarrowLayout ? Typography.minimumScaleFactor : 1)
+            if !isNarrowLayout, showsSubtitle, let subheadline = program.item.subheadline {
                 Text(subheadline)
                     .font(Typography.caption)
                     .opacity(DesignTokens.Opacity.strong)

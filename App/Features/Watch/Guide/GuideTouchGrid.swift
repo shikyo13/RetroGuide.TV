@@ -10,13 +10,16 @@ struct GuideTouchGrid: View {
     let tunedChannelID: String?
     let onTune: (Channel) -> Void
 
+    @Environment(\.isNarrowLayout) private var isNarrowLayout
     @Environment(\.guideChannelColumnWidth) private var channelColumnWidth
 
     var body: some View {
         TimelineView(.everyMinute) { context in
             GeometryReader { proxy in
                 let scale = GuideTimeScale(
-                    window: model.window,
+                    window: isNarrowLayout && model.isFollowingLive
+                        ? DateInterval(start: context.date.addingTimeInterval(-GuideLayout.Time.compactHistory), duration: model.window.duration)
+                        : model.window,
                     width: proxy.size.width - channelColumnWidth - GuideLayout.cellSpacing
                 )
                 VStack(alignment: .leading, spacing: GuideLayout.rowSpacing) {

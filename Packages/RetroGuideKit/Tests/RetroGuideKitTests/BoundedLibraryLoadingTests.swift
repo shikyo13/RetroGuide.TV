@@ -4,12 +4,12 @@ import Testing
 
 @Suite("Bounded auxiliary library loading", .serialized)
 struct BoundedLibraryLoadingTests {
-    func client(_ provider: ServerKind, total: Int = 100_000) -> any MediaServerClient {
+    func client(_ provider: ServerKind, total: Int = 100_000, metadata: Bool = false) -> any MediaServerClient {
         LibraryPageProtocol.requests.reset()
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [LibraryPageProtocol.self]
         let http = HTTPClient(session: URLSession(configuration: configuration))
-        let url = URL(string: "https://\(provider.rawValue)-\(total).invalid")!
+        let url = URL(string: "https://\(provider.rawValue)-\(total)\(metadata ? "-metadata" : "").invalid")!
         switch provider {
         case .plex:
             return PlexServerClient(serverID: "server", baseURL: url, token: "fixture", identity: PlexClientIdentity(clientIdentifier: "fixture", product: "RetroGuide.TV", version: "1.7", platform: "Test", platformVersion: "1", device: "Test", deviceName: "Test"), http: http)
@@ -30,6 +30,18 @@ struct BoundedLibraryLoadingTests {
         let requests = LibraryPageProtocol.requests.values
         #expect(requests.map(\.size).reduce(0, +) == 2_001)
         #expect(requests.allSatisfy { $0.start + $0.size <= 2_001 })
+    }
+    @Test("Bounded clips preserve late-page genres, collections and parent ratings", arguments: ServerKind.allCases)
+    func supportingMetadata(_ provider: ServerKind) async throws {
+        for kind in [MediaLibrary.Kind.movies, .shows] {
+            let client = client(provider, total: 2_501, metadata: true)
+            let library = MediaLibrary(serverID: "server", key: "ads", title: "Ads", kind: kind)
+            let items = try await client.fetchItems(in: [library], limit: 2, progress: { _ in })
+            #expect(items.count == 2)
+            #expect(items.allSatisfy { $0.contentRating == (kind == .movies ? "G" : "TV-PG") })
+            #expect(items.allSatisfy { $0.genres.contains("Education") && $0.collections.contains("Curated") })
+            #expect(LibraryPageProtocol.requests.values.map(\.size).reduce(0, +) == 2)
+        }
     }
     @Test("Zero and negative limits do not contact the server", arguments: ServerKind.allCases)
     func emptyLimit(_ provider: ServerKind) async throws {
@@ -65,18 +77,50 @@ private final class LibraryPageProtocol: URLProtocol, @unchecked Sendable {
         let url = request.url!
         let query = Dictionary((URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems ?? []).map { ($0.name, $0.value ?? "") }, uniquingKeysWith: { first, _ in first })
         let isPlex = url.host!.hasPrefix("plex")
-        let isListing = isPlex ? url.path.hasSuffix("/all") : query["IncludeItemTypes"] == "Movie"
+        let enriched = url.host!.contains("metadata")
+        let isListing = isPlex ? url.path.hasSuffix("/all") && query["type"] != "2" && query["genre"] == nil && query["network"] == nil : ["Movie", "Episode"].contains(query["IncludeItemTypes"] ?? "")
         let total = Int(url.host!.split(separator: "-")[1].split(separator: ".")[0])!
         let start = Int(isPlex ? request.value(forHTTPHeaderField: "X-Plex-Container-Start") ?? "0" : query["StartIndex"] ?? "0")!
         let size = Int(isPlex ? request.value(forHTTPHeaderField: "X-Plex-Container-Size") ?? "0" : query["Limit"] ?? "0")!
         var payload: [String: Any]
         if isListing {
             Self.requests.append(start: start, size: size)
-            let rows: [[String: Any]] = (start..<min(start + size, total)).map { index in
+            var rows: [[String: Any]] = (start..<min(start + size, total)).map { index in
                 isPlex ? ["ratingKey": "\(index)", "title": "Clip \(index)", "duration": 15_000, "contentRating": "G"] :
                     ["Id": "\(index)", "Name": "Clip \(index)", "RunTimeTicks": 150_000_000, "OfficialRating": "G"]
             }
+            if enriched {
+                let episode = isPlex ? query["type"] == "4" : query["IncludeItemTypes"] == "Episode"
+                for index in rows.indices {
+                    if isPlex {
+                        rows[index]["Genre"] = [["tag": "Inline"]]
+                        if episode { rows[index]["grandparentRatingKey"] = "show0"; rows[index].removeValue(forKey: "contentRating") }
+                    } else {
+                        rows[index]["Genres"] = ["Education"]
+                        if episode { rows[index]["SeriesId"] = "show0"; rows[index].removeValue(forKey: "OfficialRating") }
+                    }
+                }
+            }
             payload = isPlex ? ["MediaContainer": ["totalSize": total, "Metadata": rows]] : ["TotalRecordCount": total, "Items": rows]
+        } else if enriched {
+            if isPlex && (url.path.hasSuffix("/genre") || url.path.hasSuffix("/network")) {
+                payload = ["MediaContainer": ["Directory": [["key": "tag", "title": "Education"]]]]
+            } else {
+                let collections = isPlex ? url.path.hasSuffix("/collections") : query["IncludeItemTypes"] == "BoxSet"
+                let shows = isPlex ? query["type"] == "2" && query["genre"] == nil && query["network"] == nil : query["IncludeItemTypes"] == "Series"
+                let rows: [[String: Any]] = (start..<min(start + size, total)).map { index in
+                    let reverse = total - index - 1
+                    let id = collections ? "collection\(reverse)" : shows ? "show\(reverse)" : reverse == 2 ? "show0" : "\(reverse)"
+                    var row: [String: Any] = isPlex ? ["ratingKey": id, "title": "Curated"] : ["Id": id, "Name": "Curated"]
+                    if collections { row[isPlex ? "childCount" : "ChildCount"] = reverse == 0 ? total : 0 }
+                    if shows {
+                        row[isPlex ? "contentRating" : "OfficialRating"] = "TV-PG"
+                        if !isPlex { row["Genres"] = ["Education"] }
+                    }
+                    return row
+                }
+                payload = isPlex ? ["MediaContainer": ["totalSize": total, "Metadata": rows]] : ["TotalRecordCount": total, "Items": rows]
+            }
         } else {
             payload = isPlex ? ["MediaContainer": ["totalSize": 0, "Metadata": [], "Directory": []]] : ["TotalRecordCount": 0, "Items": []]
         }

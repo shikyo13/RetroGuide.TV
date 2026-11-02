@@ -17,6 +17,7 @@ struct JellyfinLibraryLoader: Sendable {
         progress: @escaping @Sendable (LibraryLoadProgress) -> Void
     ) async throws -> [MediaItem] {
         guard limit != .zero else { return [] }
+        if let limit { return try await loadBounded(libraries, limit: limit, progress: progress) }
         let schedulable = libraries.filter(\.isSchedulable)
         guard !schedulable.isEmpty else { return [] }
         progress(LibraryLoadProgress(fraction: .zero, message: "Reading collections…"))

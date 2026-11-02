@@ -10,6 +10,7 @@ struct PlexLibraryLoader: Sendable {
         progress: @escaping @Sendable (LibraryLoadProgress) -> Void
     ) async throws -> [MediaItem] {
         guard limit != .zero else { return [] }
+        if let limit { return try await loadBounded(libraries, limit: limit, progress: progress) }
         let schedulable = libraries.filter(\.isSchedulable)
         var items: [MediaItem] = []
         for (position, library) in schedulable.enumerated() {

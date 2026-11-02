@@ -33,6 +33,23 @@ struct JellyfinRequestContext: Sendable {
         return try await http.decode(JellyfinQueryResult<JellyfinItem>.self, for: request)
     }
 
+    /// Visits one page at a time without retaining unrelated library metadata.
+    func itemPages(
+        query: [URLQueryItem],
+        visit: ([JellyfinItem]) async throws -> Void
+    ) async throws {
+        let sorted = query + [URLQueryItem(name: "SortBy", value: "DateCreated,SortName")]
+        var offset = 0
+        while true {
+            try Task.checkCancellation()
+            let page = try await itemsPage(query: sorted, start: offset, size: JellyfinAPI.Defaults.pageSize)
+            let rows = page.items ?? []
+            try await visit(rows)
+            offset += rows.count
+            guard !rows.isEmpty, offset < (page.totalRecordCount ?? offset) else { return }
+        }
+    }
+
     /// Fetches every page of an item query. Pages are sorted by creation date
     /// and name so they don't overlap, and items repeated across pages anyway
     /// (a library changing mid-download) are kept once.

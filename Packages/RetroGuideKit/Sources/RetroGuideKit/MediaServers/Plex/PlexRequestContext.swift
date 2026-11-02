@@ -30,6 +30,22 @@ struct PlexRequestContext: Sendable {
         return try await http.decode(PlexEnvelope<PlexMetadataPage>.self, for: request).mediaContainer
     }
 
+    /// Visits one page at a time without retaining unrelated library metadata.
+    func metadataPages(
+        path: String, query: [URLQueryItem] = [],
+        visit: ([PlexMetadata]) async throws -> Void
+    ) async throws {
+        var offset = 0
+        while true {
+            try Task.checkCancellation()
+            let page = try await metadataPage(path: path, query: query, start: offset, size: PlexAPI.Defaults.pageSize)
+            let rows = page.metadata ?? []
+            try await visit(rows)
+            offset += rows.count
+            guard !rows.isEmpty, offset < (page.totalSize ?? offset) else { return }
+        }
+    }
+
     /// Fetches every page of a metadata listing.
     func allMetadata(path: String, query: [URLQueryItem] = [], limit: Int? = nil) async throws -> [PlexMetadata] {
         guard limit != .zero else { return [] }

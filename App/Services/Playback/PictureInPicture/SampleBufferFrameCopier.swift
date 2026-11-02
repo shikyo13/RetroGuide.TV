@@ -17,8 +17,8 @@ final class SampleBufferFrameCopier: @unchecked Sendable {
     private enum Tuning {
         /// The window is small: frames are at most 720p, in even sizes.
         static let maximumSize = CGSize(width: 1_280, height: 720)
-        /// Buffers kept in reserve, so a frame the window is still showing isn't reused.
-        static let spareBuffers = 6
+        /// Bound retained video frames even when the display renderer falls behind.
+        static let maximumBuffers = 6
         /// The source layer must be on screen to start Picture in Picture;
         /// nearly transparent so it doesn't cover mpv's own picture.
         static let layerAlpha: CGFloat = 0.01
@@ -41,6 +41,10 @@ final class SampleBufferFrameCopier: @unchecked Sendable {
 
     private var isEnabled: Bool {
         !isInBackground || isPictureInPictureActive
+    }
+
+    deinit {
+        for observer in observers { NotificationCenter.default.removeObserver(observer) }
     }
 
     @MainActor
@@ -77,6 +81,9 @@ final class SampleBufferFrameCopier: @unchecked Sendable {
 
     private func copy(_ drawable: CAMetalDrawable) {
         guard isEnabled else { return }
+        let renderer = displayLayer.sampleBufferRenderer
+        if renderer.status == .failed { renderer.flush() }
+        guard renderer.isReadyForMoreMediaData else { return }
         let texture = drawable.texture
         lock.lock()
         // One copy at a time: drop a frame rather than queue behind a busy GPU.
@@ -86,7 +93,7 @@ final class SampleBufferFrameCopier: @unchecked Sendable {
         }
         if queue == nil, let queue = texture.device.makeCommandQueue() {
             self.queue = queue
-            imageContext = CIContext(mtlCommandQueue: queue)
+            imageContext = CIContext(mtlCommandQueue: queue, options: [.cacheIntermediates: false])
             CVMetalTextureCacheCreate(nil, nil, texture.device, nil, &textureCache)
         }
         let scale = min(Tuning.maximumSize.width / CGFloat(texture.width), Tuning.maximumSize.height / CGFloat(texture.height), 1)
@@ -146,7 +153,7 @@ final class SampleBufferFrameCopier: @unchecked Sendable {
         if renderer.status == .failed {
             renderer.flush()
         }
-        renderer.enqueue(sample)
+        if renderer.isReadyForMoreMediaData { renderer.enqueue(sample) }
     }
 
     private func makePixelBuffer(width: Int, height: Int) -> CVPixelBuffer? {
@@ -158,14 +165,15 @@ final class SampleBufferFrameCopier: @unchecked Sendable {
                 kCVPixelBufferMetalCompatibilityKey: true,
                 kCVPixelBufferIOSurfacePropertiesKey: [CFString: Any](),
             ]
-            let poolAttributes: [CFString: Any] = [kCVPixelBufferPoolMinimumBufferCountKey: Tuning.spareBuffers]
+            let poolAttributes: [CFString: Any] = [kCVPixelBufferPoolMinimumBufferCountKey: Tuning.maximumBuffers]
             pool = nil
             CVPixelBufferPoolCreate(nil, poolAttributes as CFDictionary, attributes as CFDictionary, &pool)
             poolSize = (width, height)
         }
         guard let pool else { return nil }
         var buffer: CVPixelBuffer?
-        CVPixelBufferPoolCreatePixelBuffer(nil, pool, &buffer)
+        let limits = [kCVPixelBufferPoolAllocationThresholdKey: Tuning.maximumBuffers] as CFDictionary
+        CVPixelBufferPoolCreatePixelBufferWithAuxAttributes(nil, pool, limits, &buffer)
         return buffer
     }
 
