@@ -2,6 +2,7 @@
 import GoogleMobileAds
 import RetroGuideKit
 import SwiftUI
+import UIKit
 
 /// The free version's ads on iPhone and iPad: an anchored adaptive banner
 /// under the menus (never over full-screen TV; in the guide header on a landscape
@@ -50,7 +51,7 @@ private struct FreeVersionAds: ViewModifier {
     }
 
     private var isCountingWatchTime: Bool {
-        showsAds && isWatchingFullScreen && scenePhase == .active
+        showsAds && isWatchingFullScreen && scenePhase == .active && !ads.isPresentingInterstitial
     }
 
     func body(content: Content) -> some View {
@@ -73,8 +74,15 @@ private struct FreeVersionAds: ViewModifier {
                 bannerHeight = shown ? bannerHeightWhenShown : .zero
             }
             .task(id: app.pro.hasLoaded && !app.pro.isPro) {
-                guard app.pro.hasLoaded, !app.pro.isPro else { return }
+                guard app.pro.hasLoaded, !app.pro.isPro else {
+                    ads.discardPreloadedAd()
+                    return
+                }
                 await ads.start()
+            }
+            .task(id: showsAds && scenePhase == .active) {
+                guard showsAds, scenePhase == .active else { return }
+                await ads.maintainInterstitial()
             }
             .task(id: isCountingWatchTime) {
                 guard isCountingWatchTime else { return }
@@ -97,9 +105,10 @@ private struct FreeVersionAds: ViewModifier {
     }
 
     private func naturalBreak() {
-        guard showsAds else { return }
-        ads.presentInterstitialIfDue(onPresent: tuner.suspend) { [tuner] in
-            tuner.resume()
+        guard showsAds, scenePhase == .active, !tuner.isPictureInPictureActive else { return }
+        ads.presentInterstitialIfDue(onPresent: tuner.suspend) { [app] in
+            guard UIApplication.shared.applicationState == .active, !app.sleepTimer.didExpire else { return }
+            app.tuner.resume()
         }
     }
 }

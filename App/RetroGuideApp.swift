@@ -43,7 +43,11 @@ struct RetroGuideApp: App {
             switch phase {
             case .background: model.enteredBackground()
             case .active:
+                #if os(iOS)
+                model.becameActive(resumePlayback: !ads.isPresentingInterstitial)
+                #else
                 model.becameActive()
+                #endif
                 PurchaseAttribution.shared.start()
             default: break
             }

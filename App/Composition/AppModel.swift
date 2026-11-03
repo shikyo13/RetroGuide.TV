@@ -362,7 +362,7 @@ final class AppModel {
 
     /// Back from the background: the stream carries on after a short time
     /// away, and rejoins live after a longer one.
-    func becameActive() {
+    func becameActive(resumePlayback: Bool = true) {
         isInBackground = false
         // Back in the app: the channel carries on full screen, not twice.
         tuner.closePictureInPicture()
@@ -375,7 +375,7 @@ final class AppModel {
         guard phase == .ready else { return }
         reminders.check()
         sleepTimer.checkDeadline()
-        if !sleepTimer.didExpire {
+        if resumePlayback, !sleepTimer.didExpire {
             tuner.continueStream()
             tuner.resume()
         }

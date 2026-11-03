@@ -25,6 +25,8 @@ enum AdConsent {
         ConsentInformation.shared.privacyOptionsRequirementStatus == .required
     }
 
+    static var canRequestAds: Bool { ConsentInformation.shared.canRequestAds }
+
     static func presentPrivacyChoices() async {
         do {
             try await ConsentForm.presentPrivacyOptionsForm(from: PresentingViewController.current)

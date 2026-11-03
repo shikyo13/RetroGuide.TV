@@ -165,6 +165,7 @@
 		B320FC43F4B0A7A00F3941AA /* MPVPlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588766984AE2C0AD5684E00 /* MPVPlaybackEngine.swift */; };
 		B5078207034B483739FBEE0D /* SnapshotFileWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AAAA597DFCC457352A15FA /* SnapshotFileWriter.swift */; };
 		B636AB6FE4DCA9287D32E3DD /* LoopbackPlaybackRelayExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BDABCB3CBA894BBA772DE7 /* LoopbackPlaybackRelayExchange.swift */; };
+		B66C07FE1CF420FE0096A97A /* InterstitialAdCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB6731C444FEE3F03A694F3 /* InterstitialAdCache.swift */; };
 		B8F5061B6E0B8A86076A6926 /* AttributionDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B9979118C8D8F76CCD16BA /* AttributionDelivery.swift */; };
 		B9282DBA728F082BB3ECED5E /* FailureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9DDD4AB63AB0D2F04F3DC1 /* FailureView.swift */; };
 		B9806FFA4BFBED302C2FFDF2 /* IndexingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 400321D38B8063B8C8749040 /* IndexingView.swift */; };
@@ -445,6 +446,7 @@
 		C88E420A470DC562AE0788B8 /* RetroGuideWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = RetroGuideWidgets.entitlements; sourceTree = "<group>"; };
 		C9B881830F35AE894929CE47 /* MPVTrackSelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVTrackSelector.swift; sourceTree = "<group>"; };
 		CBEB1593C43A740EC7B3A56C /* GuideTimeRuler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideTimeRuler.swift; sourceTree = "<group>"; };
+		CCB6731C444FEE3F03A694F3 /* InterstitialAdCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterstitialAdCache.swift; sourceTree = "<group>"; };
 		CE33F5C6380C978AE3E2616A /* PlacementText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementText.swift; sourceTree = "<group>"; };
 		D0121D6DF72DF1DCF481F2F7 /* ArtworkResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkResolver.swift; sourceTree = "<group>"; };
 		D06F4B98B34746EE526B5EFC /* ChannelPlacementControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelPlacementControls.swift; sourceTree = "<group>"; };
@@ -739,6 +741,7 @@
 				D0EBE1540EB09EEDE7296CA6 /* AdsController.swift */,
 				D4DC96C9B8E47BE7AA7954AB /* AdUnits.swift */,
 				5FFCAFE97BE39E7BD3554DF6 /* BannerAdView.swift */,
+				CCB6731C444FEE3F03A694F3 /* InterstitialAdCache.swift */,
 				EFC1B0A525F43C6F9AF3F80C /* InterstitialPresenter.swift */,
 				0ECA29AE15FAC6521C26C473 /* PresentingViewController.swift */,
 			);
@@ -1312,6 +1315,7 @@
 				505A3CFA60A3B09373BDCC80 /* ImagePipeline.swift in Sources */,
 				B9806FFA4BFBED302C2FFDF2 /* IndexingView.swift in Sources */,
 				19B0BFE4E21F4DBCF6A284BC /* IntermissionCard.swift in Sources */,
+				B66C07FE1CF420FE0096A97A /* InterstitialAdCache.swift in Sources */,
 				550072530FE2537BB8206054 /* InterstitialPresenter.swift in Sources */,
 				F5F63DECAB948A03D4E59491 /* InvisibleButtonStyle.swift in Sources */,
 				1AA70CE7AEBF69F6107C6058 /* JellyfinAddressStepView.swift in Sources */,
@@ -1562,7 +1566,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 20261102.1;
+				CURRENT_PROJECT_VERSION = 20261103.1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1689,7 +1693,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 20261102.1;
+				CURRENT_PROJECT_VERSION = 20261103.1;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
