@@ -184,7 +184,13 @@ final class CloudSettingsSync {
         settingsRevision += 1
         finishTrackRulesMigration()
         needsInitialChoice = false
-        if !useLocal { applyLatest() }
+        if !useLocal {
+            applyLatest()
+            // Joining follows a completed fetch; nothing is waiting to upload.
+            state.lastSync = .now
+            lastSync = state.lastSync
+            try persist()
+        }
         enqueue()
     }
 

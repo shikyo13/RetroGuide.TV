@@ -110,7 +110,7 @@ extension CloudSettingsSync: CKSyncEngineDelegate {
                     }
                 }
             case .didSendChanges:
-                if state.replica.pending.isEmpty {
+                if state.joined, state.replica.pending.isEmpty {
                     state.lastSync = .now
                     lastSync = state.lastSync
                     if !hasPendingApplication { message = nil }
