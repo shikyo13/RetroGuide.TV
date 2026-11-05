@@ -37,6 +37,8 @@ struct WatchView: View {
     @State private var isShowingOptions = DebugLaunchOptions.overlay == .options
     @State private var guideFocusRequest: GuideFocusRequest?
     @State private var liveControlsFocusSerial = 0
+    /// Apple TV: the guide was opened with Back, so it acts as the app's top level.
+    @State private var isGuideHome = false
 
     var body: some View {
         let tuner = app.tuner
@@ -83,7 +85,8 @@ struct WatchView: View {
                 PlayerChromeView(
                     tuner: tuner,
                     isActive: !isShowingOptions,
-                    onOpenGuide: { overlay = .guide },
+                    onOpenGuide: { isGuideHome = false; overlay = .guide },
+                    onGoBack: { isGuideHome = true; overlay = .guide },
                     onOpenOptions: { isShowingOptions = true }
                 )
                     .transition(.opacity)
@@ -213,7 +216,7 @@ struct WatchView: View {
             isTopBarActive: isGuideTopBarActive,
             isShowingOptions: $isShowingOptions,
             focusSerial: liveControlsFocusSerial,
-            onCloseGuide: { overlay = .none }
+            onCloseGuide: isGuideHome ? nil : { overlay = .none }
         )
         #if os(tvOS)
         controls.onMoveOut = moveFocusFromLiveControls
@@ -248,7 +251,8 @@ struct WatchView: View {
                 onClose: { overlay = .none },
                 onOpenSearch: { overlay = .search },
                 onOpenSettings: { overlay = .settings },
-                onFocusLiveControls: { liveControlsFocusSerial += 1 }
+                onFocusLiveControls: { liveControlsFocusSerial += 1 },
+                leavesAppOnBack: isGuideHome
             )
         )
     }

@@ -6,6 +6,7 @@ import SwiftUI
 /// - Swipe/press up and down: channel up / down
 /// - Swipe/press left and right: show what's on now / next
 /// - Click: open the guide
+/// - Back/Menu: open the guide
 /// - Play/Pause: jump back to the last channel
 struct PlayerRemoteInput: View {
     let focus: FocusState<PlayerChromeFocus?>.Binding
@@ -21,6 +22,7 @@ struct PlayerRemoteInput: View {
         .focused(focus, equals: .remote)
         .onMoveCommand(perform: handleMove)
         .remotePlayPauseCommand { onCommand(.lastChannel) }
+        .remoteExitCommand { onCommand(.goBack) }
         .ignoresSafeArea()
     }
 

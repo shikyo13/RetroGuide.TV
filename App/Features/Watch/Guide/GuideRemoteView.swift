@@ -78,7 +78,7 @@ struct GuideRemoteView: View {
             .remotePlayPauseCommand(perform: focusHeader)
         }
         .screenBackground()
-        .remoteExitCommand(perform: handleBack)
+        .remoteExitCommand(perform: backAction)
         .onAppear { focus = .grid }
         .onChange(of: lineupRevision) { model.replaceChannels(channels) }
         .onChange(of: channels.map(\.id)) { model.replaceChannels(channels) }
@@ -111,6 +111,12 @@ struct GuideRemoteView: View {
         case .right: model.moveRight()
         @unknown default: break
         }
+    }
+
+    /// Nil hands Back to the system (Home Screen) from the top row of a guide opened with Back.
+    private var backAction: (() -> Void)? {
+        guard focus == .grid || !actions.leavesAppOnBack else { return nil }
+        return { handleBack() }
     }
 
     private func handleBack() {

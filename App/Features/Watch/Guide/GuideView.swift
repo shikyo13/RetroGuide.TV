@@ -9,6 +9,8 @@ struct GuideActions {
     let onOpenSettings: () -> Void
     /// Apple TV: move focus to the controls on the live picture (drawn outside the guide).
     var onFocusLiveControls: () -> Void = {}
+    /// Apple TV: the guide was opened with Back, so Back from its top row goes Home.
+    var leavesAppOnBack = false
 }
 
 /// Apple TV: asks the guide to move focus somewhere, from outside it (the

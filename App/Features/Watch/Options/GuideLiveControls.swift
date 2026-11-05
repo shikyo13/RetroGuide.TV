@@ -14,7 +14,8 @@ struct GuideLiveControls: View {
     @Binding var isShowingOptions: Bool
     /// Changes whenever the guide hands focus to the button.
     let focusSerial: Int
-    let onCloseGuide: () -> Void
+    /// Nil when Back should leave the app instead of closing the guide.
+    let onCloseGuide: (() -> Void)?
     #if os(tvOS)
     /// A move off the button, for the guide to take focus back.
     var onMoveOut: (MoveCommandDirection) -> Void = { _ in }

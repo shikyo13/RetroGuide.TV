@@ -10,10 +10,11 @@ import SwiftUI
 /// A link reaches the handler a real press would: the one nearest the
 /// focused view.
 extension View {
-    func remoteExitCommand(perform action: @escaping () -> Void) -> some View {
+    /// A nil action leaves Menu to the system, which returns to the Home Screen.
+    func remoteExitCommand(perform action: (() -> Void)?) -> some View {
         onExitCommand(perform: action)
             #if DEBUG
-            .focusedValue(\.debugExitCommand, RemoteCommand(perform: action))
+            .focusedValue(\.debugExitCommand, action.map(RemoteCommand.init(perform:)))
             #endif
     }
 

@@ -27,6 +27,7 @@ struct PlayerChromeView: View {
     /// False while a panel over the picture (Options) has focus.
     var isActive = true
     let onOpenGuide: () -> Void
+    var onGoBack: () -> Void = {}
     let onOpenOptions: () -> Void
 
     @State private var isOSDVisible = false
@@ -193,6 +194,7 @@ struct PlayerChromeView: View {
         case .showNext: presentBanner(next: true)
         case .hideInfo: isBannerVisible = false
         case .openGuide: onOpenGuide()
+        case .goBack: onGoBack()
         case .lastChannel: tuner.recall()
         case .openOptions: onOpenOptions()
         }

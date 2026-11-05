@@ -12,6 +12,8 @@ enum PlayerCommand {
     /// Hide the info banner (touch only; on Apple TV it times out).
     case hideInfo
     case openGuide
+    /// Apple TV Back/Menu: open the guide, from which Back goes Home.
+    case goBack
     case lastChannel
     /// Open the audio and subtitle choices.
     case openOptions

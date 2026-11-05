@@ -115,7 +115,8 @@ struct GuideHeader: View {
     private var backHint: some View {
         // Anywhere but the grid (including Options on the picture) is the top row.
         let isOnButtons = focus.wrappedValue != .grid
-        return Label(isOnButtons ? "Back: close guide" : "Back: menus", systemImage: "chevron.backward.circle")
+        let topRowAction = actions.leavesAppOnBack ? "Back: Home" : "Back: close guide"
+        return Label(isOnButtons ? topRowAction : "Back: menus", systemImage: "chevron.backward.circle")
             .font(Typography.micro)
             .foregroundStyle(theme.textSecondary)
             .lineLimit(1)
