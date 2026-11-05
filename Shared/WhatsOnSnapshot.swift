@@ -32,6 +32,8 @@ struct WhatsOnSnapshot: Codable, Sendable {
     let channels: [Channel]
     var pinned: Bool? = nil
     var updatedAt: Date? = nil
+    /// The Apple TV theme used to draw Top Shelf cards. Older snapshots use Classic Cable.
+    var themeID: String? = nil
 
     /// Until when every channel has a schedule.
     var coveredUntil: Date? {
@@ -45,6 +47,7 @@ enum WhatsOnStore {
     static let appGroup = "group.com.adamhunt.retroguide"
     static let widgetKind = "WhatsOnWidget"
     static let artworkFolder = "whats-on-artwork"
+    static let topShelfArtworkFolder = "top-shelf-artwork"
     private static let snapshotFile = "whats-on.json"
     private static let offsetKey = "whatsOnOffset"
     private static let urlScheme = "retroguide"
@@ -52,7 +55,13 @@ enum WhatsOnStore {
     private static let channelIDQuery = "id"
 
     static var container: URL? {
-        FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)
+        let group = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup)
+        #if os(tvOS)
+        // tvOS permits shared files in Library/Caches, not at the group container's root.
+        return group?.appending(path: "Library/Caches/WhatsOn")
+        #else
+        return group
+        #endif
     }
 
     static func load(from directory: URL? = container) -> WhatsOnSnapshot? {
@@ -101,6 +110,7 @@ enum WhatsOnStore {
         guard let container = directory else { return }
         try? FileManager.default.removeItem(at: container.appending(path: snapshotFile))
         try? FileManager.default.removeItem(at: container.appending(path: artworkFolder))
+        try? FileManager.default.removeItem(at: container.appending(path: topShelfArtworkFolder))
     }
 
     static func artworkURL(_ file: String?, in directory: URL? = container) -> URL? {

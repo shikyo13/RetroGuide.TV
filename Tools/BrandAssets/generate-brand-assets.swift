@@ -1,11 +1,12 @@
 #!/usr/bin/env swift
 // Generates the tvOS app icon (layered image stacks) and Top Shelf images
 // from the in-app RetroGuide.TV wordmark (see App/DesignSystem/Components/BrandMark.swift),
-// plus the iPhone/iPad icon and one alternate icon per Pro theme, in that
+// plus the iPhone/iPad icon and alternate icons for each platform in every Pro
 // theme's colors (read from App/DesignSystem/Theme/ThemePalettes+*.swift).
 //
 // Usage (from the repository root, on macOS):
 //   swift Tools/BrandAssets/generate-brand-assets.swift App/Resources/Assets.xcassets
+// Add --tv-alternates-only to generate just the themed Apple TV icons.
 
 import AppKit
 import CoreGraphics
@@ -214,11 +215,13 @@ let touchIcon: Draw = { context, size in
 
 // MARK: - Asset catalog output
 
-guard CommandLine.arguments.count == 2 else {
-    print("usage: swift generate-brand-assets.swift <path/to/Assets.xcassets>")
+guard (2...3).contains(CommandLine.arguments.count),
+      CommandLine.arguments.count == 2 || CommandLine.arguments[2] == "--tv-alternates-only" else {
+    print("usage: swift generate-brand-assets.swift <path/to/Assets.xcassets> [--tv-alternates-only]")
     exit(1)
 }
 let catalog = URL(fileURLWithPath: CommandLine.arguments[1])
+let onlyTVAlternates = CommandLine.arguments.contains("--tv-alternates-only")
 let fileManager = FileManager.default
 let info: [String: Any] = ["author": "xcode", "version": 1]
 
@@ -251,31 +254,33 @@ func writeImageStack(named name: String, in brand: URL, size: CGSize, scales: [C
     writeContents(["info": info, "layers": layers.map { ["filename": "\($0.name).imagestacklayer"] }], to: stack)
 }
 
-writeContents(["info": info], to: catalog)
-let brand = catalog.appendingPathComponent("App Icon & Top Shelf Image.brandassets")
-writeImageStack(named: "App Icon", in: brand, size: Canvas.homeIcon, scales: [1, 2])
-writeImageStack(named: "App Icon - App Store", in: brand, size: Canvas.appStoreIcon, scales: [1])
-writeImageSet(at: brand.appendingPathComponent("Top Shelf Image.imageset"), size: Canvas.topShelf, scales: [1, 2], opaque: true, draw: topShelf)
-writeImageSet(at: brand.appendingPathComponent("Top Shelf Image Wide.imageset"), size: Canvas.topShelfWide, scales: [1, 2], opaque: true, draw: topShelf)
-writeContents([
-    "assets": [
-        ["filename": "App Icon - App Store.imagestack", "idiom": "tv", "role": "primary-app-icon", "size": "1280x768"],
-        ["filename": "App Icon.imagestack", "idiom": "tv", "role": "primary-app-icon", "size": "400x240"],
-        ["filename": "Top Shelf Image Wide.imageset", "idiom": "tv", "role": "top-shelf-image-wide", "size": "2320x720"],
-        ["filename": "Top Shelf Image.imageset", "idiom": "tv", "role": "top-shelf-image", "size": "1920x720"],
-    ],
-    "info": info,
-], to: brand)
+if !onlyTVAlternates {
+    writeContents(["info": info], to: catalog)
+    let brand = catalog.appendingPathComponent("App Icon & Top Shelf Image.brandassets")
+    writeImageStack(named: "App Icon", in: brand, size: Canvas.homeIcon, scales: [1, 2])
+    writeImageStack(named: "App Icon - App Store", in: brand, size: Canvas.appStoreIcon, scales: [1])
+    writeImageSet(at: brand.appendingPathComponent("Top Shelf Image.imageset"), size: Canvas.topShelf, scales: [1, 2], opaque: true, draw: topShelf)
+    writeImageSet(at: brand.appendingPathComponent("Top Shelf Image Wide.imageset"), size: Canvas.topShelfWide, scales: [1, 2], opaque: true, draw: topShelf)
+    writeContents([
+        "assets": [
+            ["filename": "App Icon - App Store.imagestack", "idiom": "tv", "role": "primary-app-icon", "size": "1280x768"],
+            ["filename": "App Icon.imagestack", "idiom": "tv", "role": "primary-app-icon", "size": "400x240"],
+            ["filename": "Top Shelf Image Wide.imageset", "idiom": "tv", "role": "top-shelf-image-wide", "size": "2320x720"],
+            ["filename": "Top Shelf Image.imageset", "idiom": "tv", "role": "top-shelf-image", "size": "1920x720"],
+        ],
+        "info": info,
+    ], to: brand)
 
-// iPhone and iPad: one 1024 pt image; Xcode derives the other sizes.
-let appIcon = catalog.appendingPathComponent("AppIcon.appiconset")
-try! fileManager.createDirectory(at: appIcon, withIntermediateDirectories: true)
-try! render(Canvas.touchIcon, scale: 1, opaque: true, touchIcon).write(to: appIcon.appendingPathComponent("icon-1024.png"))
-writeContents([
-    "images": [["filename": "icon-1024.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"]],
-    "info": info,
-], to: appIcon)
-print("Wrote brand assets to \(catalog.path)")
+    // iPhone and iPad: one 1024 pt image; Xcode derives the other sizes.
+    let appIcon = catalog.appendingPathComponent("AppIcon.appiconset")
+    try! fileManager.createDirectory(at: appIcon, withIntermediateDirectories: true)
+    try! render(Canvas.touchIcon, scale: 1, opaque: true, touchIcon).write(to: appIcon.appendingPathComponent("icon-1024.png"))
+    writeContents([
+        "images": [["filename": "icon-1024.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"]],
+        "info": info,
+    ], to: appIcon)
+    print("Wrote brand assets to \(catalog.path)")
+}
 
 // MARK: - Alternate icons, one per Pro theme
 
@@ -316,6 +321,8 @@ for theme in themes where theme.id != "classicCable" {
     Palette.backgroundBottom = Palette.rgb(theme.backgroundBottom)
     Palette.accent = Palette.rgb(theme.accent)
     Palette.text = Palette.rgb(theme.text)
+    writeImageStack(named: "TVAppIcon-\(theme.id)", in: catalog, size: Canvas.homeIcon, scales: [1, 2])
+    guard !onlyTVAlternates else { continue }
     let set = catalog.appendingPathComponent("AppIcon-\(theme.id).appiconset")
     try! fileManager.createDirectory(at: set, withIntermediateDirectories: true)
     try! render(Canvas.touchIcon, scale: 1, opaque: true, touchIcon).write(to: set.appendingPathComponent("icon-1024.png"))

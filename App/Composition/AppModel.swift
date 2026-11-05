@@ -268,9 +268,10 @@ final class AppModel {
     }
 
     func applyHomeScreenTheme() {
-        #if os(iOS)
         guard pro.hasLoaded else { return }
         HomeScreenTheme.apply(theme)
+        #if os(tvOS)
+        if phase == .ready { updateWhatsOnWidget() }
         #endif
     }
 
@@ -373,6 +374,10 @@ final class AppModel {
         }
         backgroundedAt = nil
         guard phase == .ready else { return }
+        #if os(tvOS)
+        // Home-screen artwork is discardable; restore files purged while the app was away.
+        updateWhatsOnWidget(forceRefresh: true)
+        #endif
         reminders.check()
         sleepTimer.checkDeadline()
         if resumePlayback, !sleepTimer.didExpire {
@@ -394,7 +399,7 @@ final class AppModel {
 
     /// Saves what's on for the widget: the channel being watched (or
     /// watched last), then the channels after it in the guide.
-    private func updateWhatsOnWidget() {
+    private func updateWhatsOnWidget(forceRefresh: Bool = false) {
         let channels = visibleChannels.sorted { $0.number < $1.number }
         guard !channels.isEmpty else { whatsOnWidget.clear(); return }
         let lastID = tuner.channel?.id ?? store.lastChannelID
@@ -420,7 +425,12 @@ final class AppModel {
             }
         }
         #endif
-        whatsOnWidget.update(channels: selected, artworkResolver: servers.artworkResolver, pinned: pinned)
+        #if os(tvOS)
+        let topShelfTheme = theme.id.rawValue
+        #else
+        let topShelfTheme: String? = nil
+        #endif
+        whatsOnWidget.update(channels: selected, artworkResolver: servers.artworkResolver, pinned: pinned, forceRefresh: forceRefresh, themeID: topShelfTheme)
     }
 
     /// The Picture in Picture window closed while the app was away: the

@@ -5,7 +5,7 @@ import SwiftUI
 /// by the watch screen (see ``WatchOptionsPresentation``).
 ///
 /// On Apple TV the button belongs to the guide's top row: it can take focus
-/// only while Search and Settings can (reach it with Left from Search), and
+/// only while Search and Settings can (reach it with Left from Favorites), and
 /// Back from it closes the guide like Back from the top row.
 struct GuideLiveControls: View {
     /// Where the live picture is, in screen coordinates.

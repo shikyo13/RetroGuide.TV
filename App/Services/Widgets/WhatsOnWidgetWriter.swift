@@ -41,7 +41,7 @@ final class WhatsOnWidgetWriter {
     }
 
     /// Saves `channels` (in rotation order) for the widget.
-    func update(channels: [Channel], artworkResolver: ArtworkResolver, pinned: Bool = false) {
+    func update(channels: [Channel], artworkResolver: ArtworkResolver, pinned: Bool = false, forceRefresh: Bool = false, themeID: String? = nil) {
         guard WhatsOnStore.container != nil else { return }
         let now = Date.now
         let window = DateInterval(start: now, duration: Tuning.horizon)
@@ -52,10 +52,10 @@ final class WhatsOnWidgetWriter {
             clear()
             return
         }
-        let key = String(pinned) + schedules.map { channel, programs in
-            channel.id + "|" + programs.map { "\($0.id):\($0.slotEnd.timeIntervalSince1970)" }.joined(separator: ";")
+        let key = (themeID ?? "") + "|" + String(pinned) + schedules.map { channel, programs in
+            "\(channel.id)|\(channel.number)|\(channel.name)|\(channel.callSign)|" + programs.map { "\($0.id):\($0.slotEnd.timeIntervalSince1970)" }.joined(separator: ";")
         }.joined(separator: ",")
-        guard key != pendingKey, key != savedKey || now >= retryArtworkAfter else { return }
+        guard forceRefresh || (key != pendingKey && (key != savedKey || now >= retryArtworkAfter)) else { return }
         needsHomeScreenReload = true
         task?.cancel()
         pendingKey = key
@@ -69,7 +69,7 @@ final class WhatsOnWidgetWriter {
             }
             defer {
                 activity.end()
-                if self?.pendingKey == key { self?.pendingKey = nil }
+                if self?.generation == generation, self?.pendingKey == key { self?.pendingKey = nil }
             }
             // References cover the entire saved guide from the first publication. Existing
             // files stay visible while new artwork arrives, including after cancellation.
@@ -78,7 +78,7 @@ final class WhatsOnWidgetWriter {
                     id: channel.id, number: channel.number, name: channel.name,
                     callSign: channel.callSign, programs: programs.map { Self.entry($0) }
                 )
-            }, pinned: pinned, updatedAt: now)
+            }, pinned: pinned, updatedAt: now, themeID: themeID)
             guard !Task.isCancelled else { return }
             let published = await files.save(snapshot, artwork: [:], generation: generation)
             guard published, !Task.isCancelled else { return }

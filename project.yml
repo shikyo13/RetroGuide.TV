@@ -11,7 +11,7 @@ settings:
   base:
     SWIFT_VERSION: "6.0"
     MARKETING_VERSION: "1.7"
-    CURRENT_PROJECT_VERSION: "20261103.1"
+    CURRENT_PROJECT_VERSION: "20261103.2"
     SWIFT_STRICT_CONCURRENCY: complete
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     DEAD_CODE_STRIPPING: YES
@@ -105,6 +105,18 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.adamhunt.retroguide
         ASSETCATALOG_COMPILER_APPICON_NAME[sdk=appletv*]: App Icon & Top Shelf Image
+        ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES[sdk=appletv*]:
+          - TVAppIcon-localForecast
+          - TVAppIcon-saturdayMorning
+          - TVAppIcon-payPerView
+          - TVAppIcon-woodPanel
+          - TVAppIcon-vhs
+          - TVAppIcon-synthwave
+          - TVAppIcon-midnight
+          - TVAppIcon-crtGreen
+          - TVAppIcon-amber
+          - TVAppIcon-teletext
+          - TVAppIcon-mono
         ASSETCATALOG_COMPILER_APPICON_NAME[sdk=iphone*]: AppIcon
         # One icon per Pro theme (Tools/BrandAssets), chosen with the theme.
         ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS[sdk=iphone*]: YES
@@ -125,6 +137,16 @@ targets:
     sources:
       - path: TopShelf
       - path: Shared/WhatsOnSnapshot.swift
+      - path: App/DesignSystem/Theme
+      - path: App/DesignSystem/Tokens/DesignTokens.swift
+      - path: App/DesignSystem/Tokens/Typography.swift
+      - path: App/DesignSystem/Tokens/PlatformMetric.swift
+      - path: App/DesignSystem/Components/ChannelBadge.swift
+      - path: App/DesignSystem/Components/Surfaces.swift
+      - path: App/DesignSystem/Components/RetroRowButtonStyle.swift
+      - path: App/DesignSystem/Components/TopShelfCard.swift
+    dependencies:
+      - package: RetroGuideKit
     entitlements:
       path: TopShelf/RetroGuideTopShelf.entitlements
       properties:
@@ -205,6 +227,9 @@ schemes:
     archive:
       config: Release
       postActions:
+        - name: Prepare tvOS alternate icon metadata
+          settingsTarget: RetroGuide
+          script: 'xcrun swift "${SRCROOT}/Scripts/prepare-tvos-icons.swift" "${ARCHIVE_PATH}/Products/Applications/RetroGuide.app/Info.plist"'
         - name: Remove codeless framework stubs
           settingsTarget: RetroGuide
           script: '"${SRCROOT}/Scripts/remove-codeless-framework-stubs.sh" "${ARCHIVE_PATH}"'

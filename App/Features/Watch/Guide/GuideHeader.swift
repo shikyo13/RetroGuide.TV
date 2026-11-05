@@ -54,6 +54,11 @@ struct GuideHeader: View {
                     Label(app.pro.isPro && app.viewing.favoritesOnly ? "All channels" : "Favorites", systemImage: app.pro.isPro && app.viewing.favoritesOnly ? "star.fill" : "star")
                 }
                 .focused(focus, equals: .favorites)
+                #if os(tvOS)
+                .onMoveCommand { direction in
+                    if direction == .left { actions.onFocusLiveControls() }
+                }
+                #endif
                 .sheet(isPresented: $showsUpgrade) { ProUpgradeView() }
                 if let channel, let program, program.start > .now {
                     ReminderButton(channel: channel, program: program)

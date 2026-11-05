@@ -50,8 +50,6 @@ struct GuideRemoteView: View {
             .onMoveCommand { direction in
                 switch direction {
                 case .down: focusGrid()
-                // The picture's controls sit outside the guide, below and left of Favorites.
-                case .left where focus == .favorites: actions.onFocusLiveControls()
                 default: break
                 }
             }
