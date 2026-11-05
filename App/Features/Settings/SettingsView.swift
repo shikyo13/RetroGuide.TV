@@ -160,6 +160,9 @@ struct SettingsView: View {
                         .disabled(app.isRefreshing)
                     }
                     SettingsSection("Account and Security") {
+                        NavigationLink { CloudSyncSettingsView() } label: {
+                            SettingsRowLabel(title: "iCloud Sync", systemImage: "icloud", value: app.settingsSync.summary)
+                        }
                         NavigationLink { ParentalControlsView() } label: {
                             SettingsRowLabel(title: "Parental Controls", systemImage: "lock.shield", value: app.parentalControls.policy.isEnabled ? "On" : "Off")
                         }
@@ -199,6 +202,7 @@ struct SettingsView: View {
                     case .order: AllChannelsOrderView()
                     case .repeats: SimulcastLimitPickerView()
                     case .commercials: CommercialBreaksView()
+                    case .cloudSync: CloudSyncSettingsView()
                     }
                 }
                 #endif

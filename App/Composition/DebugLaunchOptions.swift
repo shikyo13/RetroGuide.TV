@@ -37,6 +37,7 @@ enum DebugLaunchOptions {
         case order
         case repeats
         case commercials
+        case cloudSync
     }
 
     private enum Variable {

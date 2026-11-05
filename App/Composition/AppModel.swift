@@ -61,7 +61,10 @@ final class AppModel {
     private(set) var isRefreshing = false
     private(set) var lastRefreshed: Date?
     private(set) var refreshError: String?
-    private var regularCustomization: LineupCustomization
+    var regularCustomization: LineupCustomization
+    let settingsSync: CloudSettingsSync
+    @ObservationIgnored var isApplyingSyncedSettings = false
+    @ObservationIgnored var syncedSettingsRefresh: Task<Void, Never>?
     var customization: LineupCustomization {
         parentalControls.policy.activeCustomization(regular: regularCustomization)
     }
@@ -82,6 +85,7 @@ final class AppModel {
         didSet {
             store.viewing = viewing
             updatePersonalChannels()
+            if oldValue.favoriteIDs != viewing.favoriteIDs { recordSettingsChange() }
         }
     }
     let parentalControls: ParentalControls
@@ -101,7 +105,7 @@ final class AppModel {
     let pro = ProStore()
     let identities: ServerIdentities
 
-    @ObservationIgnored private let store: PreferencesStore
+    @ObservationIgnored let store: PreferencesStore
     @ObservationIgnored private let engine = LineupEngine()
     @ObservationIgnored private var healthTask: Task<Void, Never>?
     /// When the app went to the background, and the release of the stream
@@ -121,6 +125,7 @@ final class AppModel {
     init(store: PreferencesStore = PreferencesStore(), snapshotStore: LibrarySnapshotStore = LibrarySnapshotStore(), parentalControls: ParentalControls = ParentalControls()) {
         self.parentalControls = parentalControls
         self.store = store
+        self.settingsSync = CloudSettingsSync(defaults: store.defaults)
         self.preferences = store.preferences
         self.regularCustomization = store.customization
         self.viewing = store.viewing
@@ -169,9 +174,11 @@ final class AppModel {
             nowPlaying?.update(channel: tuner.channel, program: tuner.program, isPlaying: tuner.signal == .live, independentPosition: tuner.independentPlaybackPosition)
         }
         tuner.languagePreferences = store.languagePreferences
-        // Another device's rules (via iCloud) win over this one's older copy.
-        let rules = cloudTrackRules.rules ?? store.trackRules
+        // Carry over the previous iCloud rules once. All subsequent cloud
+        // changes use the explicit iCloud Sync setting.
+        let rules = settingsSync.hasMigratedTrackRules ? store.trackRules : (cloudTrackRules.rules ?? store.trackRules)
         store.trackRules = rules
+        settingsSync.finishTrackRulesMigration()
         tuner.replaceTrackRules(rules)
         tuner.onTrackRulesChanged = { [weak self] rules, item, scope in
             self?.trackRulesChanged(rules, on: item, scope: scope)
@@ -179,15 +186,10 @@ final class AppModel {
         tuner.restoreShowSubtitleOffsets(store.showSubtitleOffsets)
         tuner.onShowSubtitleOffsetsChanged = { [weak self] offsets in
             self?.store.showSubtitleOffsets = offsets
+            self?.recordSettingsChange()
         }
         trackSync.setCurrent(rules: rules, preferences: store.languagePreferences)
-        cloudTrackRules.onChange = { [weak self] rules in
-            guard let self else { return }
-            store.trackRules = rules
-            tuner.replaceTrackRules(rules)
-            trackSync.setCurrent(rules: rules, preferences: store.languagePreferences)
-        }
-        cloudTrackRules.start()
+        configureSettingsSync()
         reminders.onOpen = { [weak self] id in
             if let url = WhatsOnStore.url(forChannel: id) { self?.open(url) }
         }
@@ -200,6 +202,7 @@ final class AppModel {
     func applyParentalControls(_ policy: ParentalPolicy, newPIN: String? = nil) async -> Bool {
         let policy = policy.hasTitleSelections ? policy.resolvingTitles(in: ParentalTitleCatalog(snapshots: servers.knownSnapshots)) : policy
         guard !isApplyingParentalControls, parentalControls.save(policy, newPIN: newPIN) else { return false }
+        recordSettingsChange()
         isApplyingParentalControls = true
         indexGeneration += 1
         lineupGeneration += 1
@@ -240,6 +243,7 @@ final class AppModel {
         // Purchase status changes personal features; the schedule inputs stay
         // the same. Rebuilding here duplicated the entire lineup at startup.
         if phase == .ready && pro.hasLoaded {
+            refreshSyncedReminders()
             reminders.reconcile(channels: visibleChannels)
         }
     }
@@ -287,6 +291,7 @@ final class AppModel {
 
     func start() async {
         guard phase == .launching else { return }
+        defer { settingsSync.applyLatest() }
         #if DEBUG
         await DebugBootstrap.seedAccountIfRequested(store: store, keychain: KeychainStore(), identities: identities)
         if DebugLaunchOptions.probesAudio {
@@ -303,6 +308,8 @@ final class AppModel {
         let restoreSession = sessionGeneration
         await servers.restore()
         guard restoreSession == sessionGeneration else { return }
+        seedSharedSelections()
+        settingsSync.startIfEnabled()
         if tuner.languagePreferences == nil {
             tuner.languagePreferences = servers.provisionalLanguagePreferences
         }
@@ -364,6 +371,7 @@ final class AppModel {
     /// Back from the background: the stream carries on after a short time
     /// away, and rejoins live after a longer one.
     func becameActive(resumePlayback: Bool = true) {
+        if settingsSync.isEnabled { settingsSync.retry() }
         isInBackground = false
         // Back in the app: the channel carries on full screen, not twice.
         tuner.closePictureInPicture()
@@ -482,6 +490,8 @@ final class AppModel {
         for selection in selections {
             servers.add(selection.account, token: selection.token, accountToken: selection.accountToken)
         }
+        seedSharedSelections()
+        recordSettingsChange()
         if tuner.languagePreferences == nil {
             tuner.languagePreferences = servers.provisionalLanguagePreferences
         }
@@ -493,6 +503,8 @@ final class AppModel {
     func addServer(_ account: ServerAccount, token: String, accountToken: String?) async {
         guard !parentalControls.needsAuthorization else { return }
         servers.add(account, token: token, accountToken: accountToken)
+        seedSharedSelections()
+        recordSettingsChange()
         if tuner.languagePreferences == nil {
             tuner.languagePreferences = servers.provisionalLanguagePreferences
         }
@@ -516,6 +528,10 @@ final class AppModel {
     func updateLibrarySelection(serverID: String, libraryIDs: Set<String>) async {
         guard !parentalControls.needsAuthorization else { return }
         servers.setSelectedLibraries(libraryIDs, serverID: serverID)
+        if let account = servers.accounts.first(where: { $0.id == serverID }) {
+            store.sharedLibraries[Self.sharedServerKey(account)] = libraryIDs
+        }
+        recordSettingsChange()
         guard !isManagingStartup else { return }
         await refreshLibrary()
     }
@@ -560,6 +576,8 @@ final class AppModel {
 
     func signOut() {
         guard !parentalControls.needsAuthorization else { return }
+        settingsSync.disconnectLocalSetup()
+        syncedSettingsRefresh?.cancel()
         isManagingStartup = false
         store.startupIncomplete = false
         sessionGeneration += 1
@@ -601,7 +619,10 @@ final class AppModel {
             return
         }
         isRefreshing = true
-        defer { isRefreshing = false }
+        defer {
+            isRefreshing = false
+            settingsSync.applyLatest()
+        }
         repeat {
             refreshPending = false
             let work = Task { await refreshLibraryOnce() }
@@ -706,6 +727,7 @@ final class AppModel {
             regularCustomization = updated
             store.customization = updated
         }
+        recordSettingsChange()
         Task { await rebuildLineup() }
     }
 
@@ -766,7 +788,7 @@ final class AppModel {
     /// devices, and on the servers for every app signed in to the account.
     private func trackRulesChanged(_ rules: TrackRules, on item: MediaItem, scope: TrackScope) {
         store.trackRules = rules
-        cloudTrackRules.save(rules)
+        recordSettingsChange()
         trackSync.save(rules, around: item, scope: scope, among: libraryIndex.items, preferences: store.languagePreferences)
     }
 
@@ -797,7 +819,7 @@ final class AppModel {
         }
     }
 
-    private func rebuildIndexAndLineup() async {
+    func rebuildIndexAndLineup() async {
         guard !isManagingStartup else { return }
         indexGeneration += 1
         let generation = indexGeneration
@@ -863,7 +885,10 @@ final class AppModel {
         updateWhatsOnWidget()
         tuner.setChannels(visibleChannels)
         updatePersonalChannels()
-        if phase == .ready && pro.hasLoaded && !lineupBuildPending { reminders.reconcile(channels: visibleChannels) }
+        if phase == .ready && pro.hasLoaded && !lineupBuildPending {
+            refreshSyncedReminders()
+            reminders.reconcile(channels: visibleChannels)
+        }
         resumeLastChannelIfAvailable()
         // Search follows on its own: nothing waits for it, least of all the first picture.
         searchIndexBuild?.cancel()
@@ -922,6 +947,8 @@ final class AppModel {
 
     private func preferencesChanged(from old: UserPreferences) {
         store.preferences = preferences
+        guard !isApplyingSyncedSettings else { return }
+        recordSettingsChange()
         if old.playerEngine != preferences.playerEngine {
             tuner.useEngine(preferences.playerEngine)
         }

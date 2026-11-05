@@ -17,6 +17,17 @@ struct ParentalControlsView: View {
                 draft.isEnabled.toggle()
             }
             if let choices {
+                if let remote = app.parentalSettingsFromCloud {
+                    SettingsSection("Settings from iCloud") {
+                        Button("Review synced restrictions and lineup") {
+                            let enabled = draft.isEnabled
+                            draft = remote
+                            draft.isEnabled = enabled
+                        }
+                        Text("Review the choices below, then Save to apply them here. Your PIN and whether parental controls are on stay unchanged.")
+                            .font(Typography.settingsBody)
+                    }
+                }
                 SettingsSection("Content restrictions") {
                     NavigationLink { ParentalChannelsView(draft: $draft) } label: {
                         SettingsRowLabel(title: "Channels", systemImage: "list.number", value: channelSummary)

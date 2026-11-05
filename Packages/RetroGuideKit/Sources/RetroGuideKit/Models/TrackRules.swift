@@ -68,6 +68,14 @@ public struct TrackRules: Codable, Sendable, Hashable {
         subtitles = [:]
     }
 
+    public var audioChoices: [String: AudioRule] { audio }
+    public var subtitleChoices: [String: SubtitleRule] { subtitles }
+
+    public init(audio: [String: AudioRule], subtitles: [String: SubtitleRule]) {
+        self.audio = audio
+        self.subtitles = subtitles
+    }
+
     public var isEmpty: Bool {
         audio.isEmpty && subtitles.isEmpty
     }

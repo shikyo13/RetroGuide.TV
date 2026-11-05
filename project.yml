@@ -64,8 +64,12 @@ targets:
     entitlements:
       path: App/Resources/RetroGuide.entitlements
       properties:
-        # iCloud key-value storage: audio and subtitle choices sync across devices.
+        # Read previous audio and subtitle choices during migration to CloudKit.
         com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)$(CFBundleIdentifier)
+        com.apple.developer.icloud-container-identifiers: [iCloud.com.adamhunt.retroguide]
+        com.apple.developer.icloud-services: [CloudKit]
+        com.apple.developer.icloud-container-environment: $(RETROGUIDE_ICLOUD_ENVIRONMENT)
+        aps-environment: development
         # Shared with the What's On widget (its schedule and artwork).
         com.apple.security.application-groups: [group.com.adamhunt.retroguide]
     info:
@@ -86,7 +90,7 @@ targets:
           - CFBundleURLName: com.adamhunt.retroguide
             CFBundleURLSchemes: [retroguide]
         # Picture in Picture keeps the channel playing with the app in the background.
-        UIBackgroundModes: [audio]
+        UIBackgroundModes: [audio, remote-notification]
         NSLocalNetworkUsageDescription: RetroGuide.TV connects to your media server on the local network.
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: false
@@ -124,10 +128,12 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
       configs:
         Debug:
+          RETROGUIDE_ICLOUD_ENVIRONMENT: Development
           ADMOB_APP_ID: $(ADMOB_DEMO_APP_ID)
           ADMOB_BANNER_UNIT_ID: $(ADMOB_DEMO_BANNER_UNIT_ID)
           ADMOB_INTERSTITIAL_UNIT_ID: $(ADMOB_DEMO_INTERSTITIAL_UNIT_ID)
         Release:
+          RETROGUIDE_ICLOUD_ENVIRONMENT: Production
           ADMOB_APP_ID: $(ADMOB_RELEASE_APP_ID)
           ADMOB_BANNER_UNIT_ID: $(ADMOB_RELEASE_BANNER_UNIT_ID)
           ADMOB_INTERSTITIAL_UNIT_ID: $(ADMOB_RELEASE_INTERSTITIAL_UNIT_ID)

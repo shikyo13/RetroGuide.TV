@@ -12,6 +12,7 @@ final class ProgramReminders: NSObject {
     var message: String?
     var due: ProgramReminder?
     @ObservationIgnored var onOpen: ((String) -> Void)?
+    @ObservationIgnored var onUserChange: ((ProgramReminder, Bool) -> Void)?
     @ObservationIgnored private var timer: Task<Void, Never>?
     @ObservationIgnored private var adding = false
     @ObservationIgnored private var generation = 0
@@ -67,12 +68,14 @@ final class ProgramReminders: NSObject {
         }
         pending.append(reminder)
         pending.sort { $0.start < $1.start }
+        onUserChange?(reminder, true)
         save()
         arm()
     }
 
-    func remove(_ reminder: ProgramReminder) {
+    func remove(_ reminder: ProgramReminder, userInitiated: Bool = true) {
         pending.removeAll { $0.id == reminder.id }
+        if userInitiated { onUserChange?(reminder, false) }
         #if os(iOS)
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [reminder.id])
         #endif
@@ -98,7 +101,7 @@ final class ProgramReminders: NSObject {
     func restrict(to allowedItemIDs: Set<String>) {
         generation += 1
         for reminder in pending where !allowedItemIDs.contains(reminder.itemID) {
-            remove(reminder)
+            remove(reminder, userInitiated: false)
         }
         if let due, !allowedItemIDs.contains(due.itemID) { self.due = nil }
         #if os(iOS)
@@ -114,7 +117,7 @@ final class ProgramReminders: NSObject {
                   let program = channel.timeline.program(at: reminder.start) else { return true }
             return program.item.id != reminder.itemID || program.start != reminder.start
         }
-        for reminder in invalid { remove(reminder) }
+        for reminder in invalid { remove(reminder, userInitiated: false) }
         if !invalid.isEmpty { message = "\(invalid.count) reminder(s) were removed because their scheduled programs changed." }
     }
 
@@ -132,6 +135,45 @@ final class ProgramReminders: NSObject {
         save()
         arm()
         onOpen?(channelID)
+    }
+
+    /// Mirrored choices use this device's existing notification permission.
+    /// Merely receiving a cloud change never presents a permission prompt.
+    func replaceFromSync(_ reminders: [ProgramReminder]) {
+        let next = Array(reminders.filter { $0.start > .now }.sorted { $0.start < $1.start }.prefix(ProgramReminder.Limits.pending))
+        guard next != pending else { return }
+        generation += 1
+        let generation = generation
+        let removed = Set(pending.map(\.id)).subtracting(next.map(\.id))
+        pending = next
+        if let due, removed.contains(due.id) { self.due = nil }
+        save()
+        arm()
+        #if os(iOS)
+        let center = UNUserNotificationCenter.current()
+        center.removePendingNotificationRequests(withIdentifiers: Array(removed))
+        Task { [weak self] in
+            let settings = await center.notificationSettings()
+            guard let self, self.generation == generation,
+                  [.authorized, .provisional, .ephemeral].contains(settings.authorizationStatus) else { return }
+            for reminder in next {
+                guard self.generation == generation, reminder.start > .now else { return }
+                let content = UNMutableNotificationContent()
+                content.title = reminder.title
+                content.body = "Starting now on \(reminder.channelName)"
+                content.sound = .default
+                content.userInfo = ["channelID": reminder.channelID]
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, reminder.start.timeIntervalSinceNow), repeats: false)
+                try? await center.add(UNNotificationRequest(identifier: reminder.id, content: content, trigger: trigger))
+                if self.generation != generation {
+                    if !self.pending.contains(where: { $0.id == reminder.id }) {
+                        center.removePendingNotificationRequests(withIdentifiers: [reminder.id])
+                    }
+                    return
+                }
+            }
+        }
+        #endif
     }
 
     private func arm() {

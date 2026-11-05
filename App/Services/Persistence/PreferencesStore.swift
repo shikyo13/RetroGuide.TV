@@ -45,9 +45,11 @@ struct PreferencesStore {
         static let lastChannelID = "lastChannelID.v1"
         static let viewing = "viewing.v1"
         static let showSubtitleOffsets = "showSubtitleOffsets.v1"
+        static let sharedLibraries = "sharedLibrarySelections.v1"
+        static let sharedReminders = "sharedProgramReminders.v1"
     }
 
-    private let defaults: UserDefaults
+    let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -75,7 +77,7 @@ struct PreferencesStore {
         nonmutating set { encode(newValue, forKey: Key.viewing) }
     }
 
-    /// Subtitle timing remembered per show; on this device only.
+    /// Subtitle timing remembered per show.
     var showSubtitleOffsets: ShowSubtitleOffsets {
         get { decode(ShowSubtitleOffsets.self, forKey: Key.showSubtitleOffsets) ?? ShowSubtitleOffsets() }
         nonmutating set { encode(newValue, forKey: Key.showSubtitleOffsets) }
@@ -84,6 +86,16 @@ struct PreferencesStore {
     var accounts: [ServerAccount] {
         get { decode([ServerAccount].self, forKey: Key.accounts) ?? [] }
         nonmutating set { encode(newValue, forKey: Key.accounts) }
+    }
+
+    var sharedLibraries: [String: Set<String>] {
+        get { decode([String: Set<String>].self, forKey: Key.sharedLibraries) ?? [:] }
+        nonmutating set { encode(newValue, forKey: Key.sharedLibraries) }
+    }
+
+    var sharedReminders: [ProgramReminder]? {
+        get { decode([ProgramReminder].self, forKey: Key.sharedReminders) }
+        nonmutating set { encode(newValue, forKey: Key.sharedReminders) }
     }
 
     /// The account's language settings as last fetched, so tracks are right
@@ -99,8 +111,7 @@ struct PreferencesStore {
         }
     }
 
-    /// The viewer's audio and subtitle choices (also kept in iCloud, see
-    /// ``CloudTrackRulesStore``).
+    /// The viewer's audio and subtitle choices, included when iCloud Sync is on.
     var trackRules: TrackRules {
         get { decode(TrackRules.self, forKey: Key.trackRules) ?? TrackRules() }
         nonmutating set { encode(newValue, forKey: Key.trackRules) }
@@ -122,7 +133,29 @@ struct PreferencesStore {
     }
 
     func resetAll() {
-        [Key.startupIncomplete, Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID, Key.showSubtitleOffsets].forEach(defaults.removeObject(forKey:))
+        [Key.startupIncomplete, Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID, Key.showSubtitleOffsets, Key.sharedLibraries, Key.sharedReminders].forEach(defaults.removeObject(forKey:))
+    }
+
+    /// Refuse a cloud import before writing any field if it would exceed the
+    /// tvOS defaults warning threshold. Existing device settings stay intact.
+    func validateSyncImport(preferences: UserPreferences, viewing: ViewingPreferences,
+                            customization: LineupCustomization, rules: TrackRules,
+                            offsets: ShowSubtitleOffsets, libraries: [String: Set<String>],
+                            reminders: [ProgramReminder]) throws {
+        #if os(tvOS)
+        enum Limit { static let defaultsBytes = 512 * 1_024 }
+        let encoder = JSONEncoder()
+        var proposed = defaults.dictionaryRepresentation()
+        proposed[Key.preferences] = try encoder.encode(preferences)
+        proposed[Key.viewing] = try encoder.encode(viewing)
+        proposed[Key.customization] = try encoder.encode(customization)
+        proposed[Key.trackRules] = try encoder.encode(rules)
+        proposed[Key.showSubtitleOffsets] = try encoder.encode(offsets)
+        proposed[Key.sharedLibraries] = try encoder.encode(libraries)
+        proposed[Key.sharedReminders] = try encoder.encode(reminders)
+        let data = try PropertyListSerialization.data(fromPropertyList: proposed, format: .binary, options: 0)
+        guard data.count < Limit.defaultsBytes else { throw SettingsReplica.Failure.deviceStorageLimit }
+        #endif
     }
 
     private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {

@@ -22,6 +22,10 @@ public struct ShowSubtitleOffsets: Codable, Sendable, Equatable {
         entries.count
     }
 
+    public var choices: [String: TimeInterval] {
+        Dictionary(entries.map { ($0.show, $0.offset) }, uniquingKeysWith: { _, latest in latest })
+    }
+
     public subscript(show: String) -> TimeInterval? {
         entries.last { $0.show == show }?.offset
     }
