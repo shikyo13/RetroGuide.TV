@@ -29,6 +29,8 @@ struct JellyfinItem: Decodable {
     let indexNumber: Int?
     let runTimeTicks: Int64?
     let productionYear: Int?
+    /// Release (movie) or first air (episode) date, ISO 8601.
+    let premiereDate: String?
     let overview: String?
     let officialRating: String?
     let genres: [String]?

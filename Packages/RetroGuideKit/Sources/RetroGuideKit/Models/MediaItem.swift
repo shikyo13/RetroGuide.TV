@@ -18,6 +18,9 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     public let title: String
     public let series: SeriesInfo?
     public let year: Int?
+    /// When the movie was released or the episode first aired, when the
+    /// server knows (for ``ScheduleOrdering/releaseOrder``).
+    public let released: Date?
     public let duration: TimeInterval
     public let summary: String?
     public let contentRating: String?
@@ -54,6 +57,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         title: String,
         series: SeriesInfo? = nil,
         year: Int? = nil,
+        released: Date? = nil,
         duration: TimeInterval,
         summary: String? = nil,
         contentRating: String? = nil,
@@ -77,6 +81,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         self.title = title
         self.series = series
         self.year = year
+        self.released = released
         self.duration = duration
         self.summary = summary
         self.contentRating = contentRating
@@ -105,10 +110,12 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         let borrowedIDs = (titleIDs == nil && copies.contains { $0.titleIDs != nil })
             || (publicIDs == nil && copies.contains { $0.publicIDs != nil })
         let earliest = ([addedAt] + copies.map(\.addedAt)).compactMap { $0 }.min()
-        guard !libraries.isEmpty || !otherCollections.isEmpty || borrowedIDs || earliest != addedAt else { return self }
+        let borrowedRelease = released == nil && copies.contains { $0.released != nil }
+        guard !libraries.isEmpty || !otherCollections.isEmpty || borrowedIDs || borrowedRelease || earliest != addedAt else { return self }
         var merged = MediaItem(
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
-            series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
+            series: series, year: year, released: released ?? copies.lazy.compactMap(\.released).first, duration: duration,
+            summary: summary, contentRating: contentRating, audience: audience,
             genres: genres, networks: networks, collections: collections + Set(otherCollections).sorted(), countries: countries,
             artwork: artwork, versions: versions, titleIDs: titleIDs ?? copies.lazy.compactMap(\.titleIDs).first,
             publicIDs: publicIDs ?? copies.lazy.compactMap(\.publicIDs).first, addedAt: earliest
@@ -121,8 +128,8 @@ public struct MediaItem: Codable, Sendable, Identifiable {
     func withAddedAt(_ date: Date?) -> MediaItem {
         var copy = MediaItem(
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
-            series: series, year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
-            genres: genres, networks: networks, collections: collections, countries: countries, artwork: artwork,
+            series: series, year: year, released: released, duration: duration, summary: summary, contentRating: contentRating,
+            audience: audience, genres: genres, networks: networks, collections: collections, countries: countries, artwork: artwork,
             versions: versions, titleIDs: titleIDs, publicIDs: publicIDs, addedAt: date
         )
         copy.otherLibraryIDs = otherLibraryIDs
@@ -138,7 +145,8 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         var copy = MediaItem(
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: source.title,
             series: series.map { SeriesInfo(key: $0.key, title: source.series?.title ?? $0.title, seasonNumber: $0.seasonNumber, episodeNumber: $0.episodeNumber, externalID: $0.externalID) },
-            year: sources.lazy.compactMap(\.year).first, duration: duration, summary: sources.lazy.compactMap(\.summary).first,
+            year: sources.lazy.compactMap(\.year).first, released: sources.lazy.compactMap(\.released).first ?? released,
+            duration: duration, summary: sources.lazy.compactMap(\.summary).first,
             contentRating: rated?.contentRating, audience: rated?.audience ?? source.audience,
             genres: source.genres, networks: source.networks, collections: collections, countries: source.countries, artwork: artwork,
             versions: versions, titleIDs: sources.lazy.compactMap(\.titleIDs).first, publicIDs: publicIDs ?? sources.lazy.compactMap(\.publicIDs).first,
@@ -155,7 +163,7 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         var copy = MediaItem(
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
             series: SeriesInfo(key: series.key, title: showSeries.title, seasonNumber: series.seasonNumber, episodeNumber: series.episodeNumber, externalID: series.externalID),
-            year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
+            year: year, released: released, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
             genres: show.genres, networks: show.networks, collections: collections, countries: show.countries, artwork: artwork,
             versions: versions, titleIDs: show.titleIDs ?? titleIDs, publicIDs: publicIDs, addedAt: addedAt
         )
@@ -169,8 +177,8 @@ public struct MediaItem: Codable, Sendable, Identifiable {
         return MediaItem(
             serverID: serverID, itemKey: itemKey, externalID: externalID, libraryID: libraryID, kind: kind, title: title,
             series: SeriesInfo(key: series.key, title: series.title, seasonNumber: series.seasonNumber, episodeNumber: series.episodeNumber, externalID: showID),
-            year: year, duration: duration, summary: summary, contentRating: contentRating, audience: audience, genres: genres,
-            networks: networks, collections: collections, countries: countries, artwork: artwork, versions: versions,
+            year: year, released: released, duration: duration, summary: summary, contentRating: contentRating, audience: audience,
+            genres: genres, networks: networks, collections: collections, countries: countries, artwork: artwork, versions: versions,
             titleIDs: titleIDs, publicIDs: publicIDs, addedAt: addedAt
         )
     }

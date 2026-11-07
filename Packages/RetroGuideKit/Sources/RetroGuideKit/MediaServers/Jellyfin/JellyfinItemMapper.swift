@@ -23,6 +23,7 @@ enum JellyfinItemMapper {
             kind: .movie,
             title: title,
             year: item.productionYear,
+            released: JellyfinCoding.date(item.premiereDate),
             duration: duration,
             summary: item.overview,
             contentRating: item.officialRating,
@@ -73,6 +74,7 @@ enum JellyfinItemMapper {
                 externalID: showID(series?.providerIds)
             ),
             year: item.productionYear ?? series?.productionYear,
+            released: JellyfinCoding.date(item.premiereDate),
             duration: duration,
             summary: item.overview,
             contentRating: rating,

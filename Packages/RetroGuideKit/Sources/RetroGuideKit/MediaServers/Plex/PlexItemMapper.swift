@@ -25,6 +25,7 @@ enum PlexItemMapper {
             kind: .movie,
             title: metadata.title,
             year: metadata.year,
+            released: releaseDate(metadata.originallyAvailableAt),
             duration: duration,
             summary: metadata.summary,
             contentRating: metadata.contentRating,
@@ -73,6 +74,7 @@ enum PlexItemMapper {
                 externalID: show?.globalGuid ?? metadata.grandparentGlobalGuid
             ),
             year: metadata.year ?? show?.year,
+            released: releaseDate(metadata.originallyAvailableAt),
             duration: duration,
             summary: metadata.summary,
             contentRating: rating,
@@ -96,6 +98,14 @@ enum PlexItemMapper {
 
     private static func titleIDs(of metadata: PlexMetadata) -> TitleIDs? {
         TitleIDs(guids: (metadata.guids ?? []).map(\.id))
+    }
+
+    /// Plex's `originallyAvailableAt` (`yyyy-MM-dd`) as midnight UTC.
+    static func releaseDate(_ text: String?) -> Date? {
+        guard let text else { return nil }
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withFullDate]
+        return formatter.date(from: text)
     }
 
     private static func seconds(_ milliseconds: Int?) -> TimeInterval? {

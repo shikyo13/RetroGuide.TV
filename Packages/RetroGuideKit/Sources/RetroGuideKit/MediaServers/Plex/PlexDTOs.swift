@@ -60,6 +60,8 @@ struct PlexMetadata: Decodable {
     let parentIndex: Int?
     let index: Int?
     let year: Int?
+    /// Release (movie) or first air (episode) date, `yyyy-MM-dd`.
+    let originallyAvailableAt: String?
     let duration: Int?
     /// When the item was added to the server (Unix seconds).
     let addedAt: Int?
@@ -80,7 +82,7 @@ struct PlexMetadata: Decodable {
 
     enum CodingKeys: String, CodingKey {
         case ratingKey, guid, type, title, grandparentRatingKey, grandparentTitle, grandparentGuid
-        case parentIndex, index, year, duration, addedAt, summary, contentRating, contentRatingAge
+        case parentIndex, index, year, originallyAvailableAt, duration, addedAt, summary, contentRating, contentRatingAge
         case studio, thumb, art, grandparentThumb, grandparentArt, childCount
         case genres = "Genre"
         case countries = "Country"
