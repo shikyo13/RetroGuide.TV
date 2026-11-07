@@ -125,7 +125,7 @@ enum ShowBudget {
                     switch channel.ordering {
                     case .syndication: turns = 1
                     case .shuffle: turns = rounds
-                    case .blockShuffle: turns = rounds * ScheduleConstants.blockShuffleEpisodesPerBlock
+                    case .blockShuffle: turns = rounds * ScheduleConstants.blockLength(episodes: counts[show])
                     case .marathon: turns = counts[show]
                     }
                     return Double(turns) * passes[show] / Double(counts[show])

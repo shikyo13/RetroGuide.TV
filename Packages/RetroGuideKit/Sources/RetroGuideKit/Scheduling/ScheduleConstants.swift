@@ -17,4 +17,11 @@ public enum ScheduleConstants {
 
     /// Episodes per show in one block when using ``ScheduleOrdering/blockShuffle``.
     static let blockShuffleEpisodesPerBlock = 3
+
+    /// Episodes in one Block Shuffle block of a show with `episodes` episodes:
+    /// never more than it has, so a movie or a short miniseries doesn't air
+    /// the same episode twice in one block.
+    static func blockLength(episodes: Int) -> Int {
+        max(1, min(blockShuffleEpisodesPerBlock, episodes))
+    }
 }

@@ -157,6 +157,9 @@ struct CycleSegment: OrderSegment {
         let canonical: [Int]
         let canonicalOccurrence: [Int]
         let perCycle: [Int]
+        /// Each show's Block Shuffle block length (empty for other orders):
+        /// a show growing past a short block needs a new template.
+        let blocks: [Int]
     }
 
     /// The turn template, for the next version to reuse.
@@ -189,7 +192,8 @@ struct CycleSegment: OrderSegment {
             local[show] = index
         }
         let template: Template
-        if let previous, previous.shows == shows, ordering != .marathon {
+        let blocks = Self.blocks(for: ordering, shows: shows, shelf: shelf)
+        if let previous, previous.shows == shows, previous.blocks == blocks, ordering != .marathon {
             template = previous
         } else {
             let canonical = Self.turns(for: ordering, context: context, shows: shows, shelf: shelf).map { local[$0] ?? 0 }
@@ -200,7 +204,7 @@ struct CycleSegment: OrderSegment {
                 canonicalOccurrence.append(seen[show])
                 seen[show] += 1
             }
-            template = Template(shows: shows, canonical: canonical, canonicalOccurrence: canonicalOccurrence, perCycle: seen)
+            template = Template(shows: shows, canonical: canonical, canonicalOccurrence: canonicalOccurrence, perCycle: seen, blocks: blocks)
         }
         self.template = template
         let canonical = template.canonical
@@ -250,18 +254,24 @@ struct CycleSegment: OrderSegment {
         case .syndication:
             return ranked("")
         case .shuffle:
-            return rounds(of: ranked, repeating: 1)
+            return rounds(of: ranked) { _ in 1 }
         case .blockShuffle:
-            return rounds(of: ranked, repeating: ScheduleConstants.blockShuffleEpisodesPerBlock)
+            return rounds(of: ranked) { ScheduleConstants.blockLength(episodes: shelf.episodes[$0]?.count ?? 0) }
         case .marathon:
             return ranked("").flatMap { Array(repeating: $0, count: shelf.episodes[$0]?.count ?? 0) }
         }
     }
 
+    /// Each show's block length under Block Shuffle (empty for other orders).
+    static func blocks(for ordering: ScheduleOrdering, shows: [Int], shelf: EpisodeShelf) -> [Int] {
+        guard ordering == .blockShuffle else { return [] }
+        return shows.map { ScheduleConstants.blockLength(episodes: shelf.episodes[$0]?.count ?? 0) }
+    }
+
     /// ``Tuning/shuffledRounds`` rounds, each every show once in a new order
-    /// (each turn `repeating` times in a row), never the same show either side
-    /// of a round boundary when there's a choice.
-    private static func rounds(of ranked: (String) -> [Int], repeating: Int) -> [Int] {
+    /// (each turn `repeating(show)` times in a row), never the same show
+    /// either side of a round boundary when there's a choice.
+    private static func rounds(of ranked: (String) -> [Int], repeating: (Int) -> Int) -> [Int] {
         var order: [Int] = []
         for round in 0..<Tuning.shuffledRounds {
             var shows = ranked("round\(round)")
@@ -270,7 +280,7 @@ struct CycleSegment: OrderSegment {
             }
             order += shows
         }
-        return order.flatMap { Array(repeating: $0, count: repeating) }
+        return order.flatMap { Array(repeating: $0, count: repeating($0)) }
     }
 
     func start(of position: Int) -> Int {
