@@ -23,6 +23,8 @@ struct TrackingPicker: Sendable {
     private var early: [Int] = []
     /// Show and item of positions `due..<due + upcoming.count`.
     private var upcoming: [(show: Int, item: Int)] = []
+    /// The item this channel aired last.
+    private var lastItem: Int?
 
     init(order: any NominalOrder, at position: Int) {
         self.order = order
@@ -33,9 +35,18 @@ struct TrackingPicker: Sendable {
     /// The item to air next. `isAllowed` says whether an item may air now;
     /// when nothing in reach is allowed, one that `isAcceptable` airs
     /// (breaking only the rules that may bend), and failing that the due one.
+    /// Stepping around a clash doesn't air the item that just aired again
+    /// when something else allowed could air instead.
     mutating func next(isAllowed: (Int) -> Bool, isAcceptable: (Int) -> Bool) -> Int {
-        let step = firstStep(passing: isAllowed) ?? firstStep(passing: isAcceptable) ?? 0
-        return air(step: step)
+        let last = lastItem
+        let step = firstStep { $0 != last && isAllowed($0) }
+            ?? firstStep(passing: isAllowed)
+            ?? firstStep { $0 != last && isAcceptable($0) }
+            ?? firstStep(passing: isAcceptable)
+            ?? 0
+        let item = air(step: step)
+        lastItem = item
+        return item
     }
 
     /// The nearest program not yet aired whose show has nothing earlier
