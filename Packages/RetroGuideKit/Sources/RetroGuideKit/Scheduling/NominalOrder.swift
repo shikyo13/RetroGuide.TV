@@ -194,7 +194,7 @@ struct CycleSegment: OrderSegment {
         }
         let template: Template
         let blocks = Self.blocks(for: ordering, shows: shows, shelf: shelf)
-        if let previous, previous.shows == shows, previous.blocks == blocks, !ordering.airsEveryEpisode {
+        if let previous, previous.shows == shows, previous.blocks == blocks, !ordering.airsEveryEpisode || shows.count == 1 {
             template = previous
         } else {
             let canonical = Self.turns(for: ordering, context: context, shows: shows, shelf: shelf).map { local[$0] ?? 0 }
@@ -247,6 +247,10 @@ struct CycleSegment: OrderSegment {
     /// One cycle of turns for `ordering` (channel show indices), ordered by
     /// each show's identity.
     static func turns(for ordering: ScheduleOrdering, context: ScheduleContext, shows: [Int], shelf: EpisodeShelf) -> [Int] {
+        // One show airs in order whatever the ordering: one turn per cycle
+        // gives the same programs and keeps every lookup short (24/7 and
+        // Release Order channels).
+        guard shows.count > 1 else { return shows }
         func ranked(_ salt: String) -> [Int] {
             let rank = context.ranks(salt: salt)
             return shows.sorted { rank[$0] < rank[$1] }

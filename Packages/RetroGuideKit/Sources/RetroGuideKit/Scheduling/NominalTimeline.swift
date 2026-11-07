@@ -33,6 +33,30 @@ final class NominalTimeline: ChannelSchedule, @unchecked Sendable {
         return self.program(position: program.slot + 1, in: order())
     }
 
+    /// The channel's items, as ``forEachAiring(from:to:_:)`` numbers them.
+    var items: [MediaItem] {
+        context.items
+    }
+
+    /// Every program from `begin` to `end` (milliseconds since the epoch) as
+    /// the index of the item it airs and its slot, without building programs:
+    /// for channels others steer around (``SimulcastCoordinator``).
+    func forEachAiring(from begin: Int, to end: Int, _ body: (_ item: Int, _ start: Int, _ end: Int) -> Void) {
+        let from = max(begin, .zero)
+        guard !isEmpty, end > from else { return }
+        let order = order()
+        var position = order.position(at: from)
+        var start = order.start(of: position)
+        // Programs run back to back, so each one starts where the last ended.
+        while start < end {
+            let item = order.program(at: position).item
+            let slotEnd = start + context.slotLengths[item]
+            body(item, start, slotEnd)
+            start = slotEnd
+            position += 1
+        }
+    }
+
     private func order() -> any NominalOrder {
         lock.lock()
         defer { lock.unlock() }

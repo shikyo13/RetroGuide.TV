@@ -20,6 +20,25 @@ struct SchedulingRegressionTests {
         #expect(context.showOfItem[next] != showA, "aired blocked show A although B was free")
     }
 
+    // 24/7 channels jumped to an unrelated episode whenever an episode was added.
+    @Test func allDayChannelCarriesOnWhenAnEpisodeArrives() {
+        let added = Date.now.addingTimeInterval(-10 * 86_400)
+        let episodes = (1...12).map { TestFactory.episode("e\($0)", show: "Show", number: $0) }
+        let newest = TestFactory.episode("e13", show: "Show", number: 13, addedAt: added)
+        let definition = ChannelDefinition(id: "series.show", number: 300, name: "Show 24/7", rule: ChannelRule(), ordering: .marathon, source: .series)
+        let before = Channel(definition: definition, items: episodes, isHidden: false, grid: .continuous).timeline
+        let after = Channel(definition: definition, items: episodes + [newest], isHidden: false, grid: .continuous).timeline
+        // Nothing changes before the new episode joins.
+        let earlier = DateInterval(start: added.addingTimeInterval(-3 * 86_400), duration: 3 * 86_400)
+        #expect(after.programs(overlapping: earlier) == before.programs(overlapping: earlier))
+        // Afterwards the show carries on in order, the new episode included.
+        let numbers = after.programs(overlapping: DateInterval(start: added.addingTimeInterval(2 * 86_400), duration: 2 * 86_400)).compactMap(\.item.series?.episodeNumber)
+        #expect(numbers.contains(13))
+        for (previous, next) in zip(numbers, numbers.dropFirst()) {
+            #expect(next == previous % 13 + 1, "episode \(previous) was followed by \(next)")
+        }
+    }
+
     // B: greedy first pick takes the only show another channel can air.
     @Test func greedyAllocation() {
         let a = TestFactory.show("A", episodes: 30)

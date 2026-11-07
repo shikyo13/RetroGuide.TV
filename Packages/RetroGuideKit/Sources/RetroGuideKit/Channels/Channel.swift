@@ -26,14 +26,12 @@ public struct Channel: Sendable, Identifiable, Hashable {
         id == definition.id || formerIDs.contains(id)
     }
 
-    /// A schedule for a channel on its own (see ``NominalOrder``). Channels
-    /// that share a simulcast limit are scheduled by a ``SimulcastCoordinator``.
-    static func schedule(for definition: ChannelDefinition, items: [MediaItem], grid: ScheduleGrid, commercials: CommercialCatalog = .empty) -> any ChannelSchedule {
-        // One show (a 24/7 channel) needs no turns: plain arithmetic finds its episode.
-        guard !airsOneShow(items) else {
-            return ChannelTimeline(channelID: definition.id, items: items, ordering: definition.ordering, grid: grid, commercials: commercials)
-        }
-        return NominalTimeline(context: ScheduleContext(channelID: definition.id, items: items, grid: grid, commercials: commercials, inReleaseOrder: definition.ordering == .releaseOrder), ordering: definition.ordering)
+    /// A schedule for a channel on its own (see ``NominalOrder``), 24/7
+    /// channels included: content arriving joins at a set moment and the
+    /// show carries on from where it was. Channels that share a simulcast
+    /// limit are scheduled by a ``SimulcastCoordinator``.
+    static func schedule(for definition: ChannelDefinition, items: [MediaItem], grid: ScheduleGrid, commercials: CommercialCatalog = .empty) -> NominalTimeline {
+        NominalTimeline(context: ScheduleContext(channelID: definition.id, items: items, grid: grid, commercials: commercials, inReleaseOrder: definition.ordering == .releaseOrder), ordering: definition.ordering)
     }
 
     /// Whether the items are all one show (or one movie).

@@ -43,8 +43,11 @@ final class SimulcastCoordinator: @unchecked Sendable {
     private let itemCount: Int
     /// Whether each channel's airings count toward `limit`.
     private let countsTowardLimit: [Bool]
-    /// When fixed channels air each item (by shared item index), if ever.
-    private let fixedSlots: [[RepeatingSlot]]
+    /// Channels outside the group that the group works around (24/7
+    /// channels), and the shared item index of each of their items, if the
+    /// group has it.
+    private let fixed: [NominalTimeline]
+    private let fixedItems: [[Int?]]
     /// Channels with anything to air.
     private let activeChannels: [Int]
 
@@ -59,15 +62,19 @@ final class SimulcastCoordinator: @unchecked Sendable {
         var starts: [[Int]]
     }
 
+    /// When the fixed channels air each shared item during one run, as
+    /// `start..<end` in milliseconds.
+    private typealias FixedAirings = [Int: [(start: Int, end: Int)]]
+
     /// - Parameters:
     ///   - uncounted: positions of channels that don't count toward `limit`.
-    ///   - fixed: items' slots on channels outside the group (24/7 channels),
+    ///   - fixed: channels outside the group (24/7 channels), scheduled on their own,
     ///     which the group works around.
     init(
         limit: Int,
         channels: [(context: ScheduleContext, ordering: ScheduleOrdering)],
         uncounted: Set<Int> = [],
-        fixed: [(item: MediaItem, slot: RepeatingSlot)] = []
+        fixed: [NominalTimeline] = []
     ) {
         self.limit = limit
         contexts = channels.map(\.context)
@@ -93,11 +100,8 @@ final class SimulcastCoordinator: @unchecked Sendable {
             }
         }
         itemCount = itemIDs.count
-        var fixedSlots = Array(repeating: [RepeatingSlot](), count: itemIDs.count)
-        for (item, slot) in fixed {
-            if let index = itemIDs[item.id] { fixedSlots[index].append(slot) }
-        }
-        self.fixedSlots = fixedSlots
+        self.fixed = fixed
+        fixedItems = fixed.map { $0.items.map { itemIDs[$0.id] } }
         var showIDs: [String: Int] = [:]
         for id in Set(channels.flatMap(\.context.showIDs)).sorted() {
             showIDs[id] = showIDs.count
@@ -239,6 +243,7 @@ final class SimulcastCoordinator: @unchecked Sendable {
         let begin = max(start - Tuning.warmUp, .zero)
         let end = Self.periodStart(period + 1) + Tuning.overlap
         let keepFrom = start - Tuning.overlap
+        let fixedAirings = fixedAirings(from: begin, to: end)
         var state = State(
             pickers: Array(repeating: nil, count: contexts.count),
             airing: Array(repeating: -1, count: contexts.count),
@@ -257,7 +262,7 @@ final class SimulcastCoordinator: @unchecked Sendable {
         var upcoming = StartQueue(firstStarts)
         var due: [Int] = []
         func pick(_ channel: Int, at start: Int) -> Int {
-            let (item, next) = self.pick(on: channel, at: start, state: &state)
+            let (item, next) = self.pick(on: channel, at: start, state: &state, fixed: fixedAirings)
             if start >= keepFrom {
                 run.items[channel].append(item)
                 run.starts[channel].append(start)
@@ -308,7 +313,7 @@ final class SimulcastCoordinator: @unchecked Sendable {
     }
 
     /// Airs the channel's next program at `start`; returns it and when it ends.
-    private func pick(on channel: Int, at start: Int, state: inout State) -> (item: Int, end: Int) {
+    private func pick(on channel: Int, at start: Int, state: inout State, fixed: FixedAirings) -> (item: Int, end: Int) {
         let context = contexts[channel]
         let shows = globalShow[channel]
         let items = globalItem[channel]
@@ -320,7 +325,7 @@ final class SimulcastCoordinator: @unchecked Sendable {
         // when nothing else could air.
         func isFree(_ candidate: Int) -> Bool {
             state.itemAiringCount[items[candidate]] == 0
-                && !isOnFixedChannel(items[candidate], from: start, to: start + context.slotLengths[candidate])
+                && !Self.isOnFixedChannel(items[candidate], from: start, to: start + context.slotLengths[candidate], fixed: fixed)
         }
         let item = picker.next(
             isAllowed: { (!counts || state.airingCount[shows[$0]] < limit) && isFree($0) },
@@ -337,8 +342,21 @@ final class SimulcastCoordinator: @unchecked Sendable {
     }
 
     /// Whether a 24/7 channel airs the item at any point in `start..<end` (milliseconds).
-    private func isOnFixedChannel(_ item: Int, from start: Int, to end: Int) -> Bool {
-        fixedSlots[item].contains { $0.overlaps(from: ScheduleTime.seconds(start), to: ScheduleTime.seconds(end)) }
+    private static func isOnFixedChannel(_ item: Int, from start: Int, to end: Int, fixed: FixedAirings) -> Bool {
+        fixed[item]?.contains { $0.start < end && start < $0.end } ?? false
+    }
+
+    /// What the fixed channels air from `begin` to `end` (milliseconds), for
+    /// the items this group shares with them.
+    private func fixedAirings(from begin: Int, to end: Int) -> FixedAirings {
+        var airings: FixedAirings = [:]
+        for (channel, schedule) in fixed.enumerated() {
+            let shared = fixedItems[channel]
+            schedule.forEachAiring(from: begin, to: end) { item, start, end in
+                if let index = shared[item] { airings[index, default: []].append((start, end)) }
+            }
+        }
+        return airings
     }
 }
 

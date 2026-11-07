@@ -74,12 +74,12 @@ struct SimulcastCoordinatorTests {
     @Test("Channels steer clear of what a 24/7 channel is airing")
     func avoidsFixedChannels() {
         let marathon = TestFactory.show("Show1", episodes: 6)
-        let fixed = ChannelTimeline(channelID: "marathon", items: marathon, ordering: .syndication, grid: .continuous)
+        let fixed = NominalTimeline(context: ScheduleContext(channelID: "marathon", items: marathon, grid: .continuous), ordering: .syndication)
         let items = Self.sharedShows(3)
         let coordinator = SimulcastCoordinator(
             limit: 2,
             channels: (1...3).map { (ScheduleContext(channelID: "channel.\($0)", items: items, grid: .continuous), .syndication) },
-            fixed: fixed.repeatingSlots()
+            fixed: [fixed]
         )
         let timelines: [any ChannelSchedule] = (0..<3).map { coordinator.timeline(for: $0) } + [fixed]
         #expect(Self.sameEpisodeOverlap(timelines, in: Self.week) <= .zero)

@@ -250,7 +250,7 @@ public struct LineupReport: Sendable, CustomStringConvertible {
 
     private static func label(_ channel: Channel) -> String {
         let titles = Set(channel.items.map(title)).count
-        let scheduler = channel.timeline is ChannelTimeline ? "cycle" : "simulated"
+        let scheduler = channel.timeline is NominalTimeline ? "own" : "simulated"
         return "\(channel.number) \(channel.name), \(titles) titles, \(Int(channel.totalRuntime / ScheduleConstants.secondsPerHour)) h, \(channel.definition.ordering.rawValue) \(scheduler)"
     }
 

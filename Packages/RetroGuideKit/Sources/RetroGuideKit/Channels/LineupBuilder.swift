@@ -154,14 +154,14 @@ public struct LineupBuilder: Sendable {
         customization: LineupCustomization
     ) -> [Channel] {
         var timelines: [Int: any ChannelSchedule] = [:]
-        var fixed: [(item: MediaItem, slot: RepeatingSlot)] = []
+        var fixed: [NominalTimeline] = []
         var shared: [Int] = []
         for position in resolved.indices where !isHidden(resolved[position].definition) {
             let (definition, items) = resolved[position]
             if Self.exemptSources.contains(definition.source), Channel.airsOneShow(items) {
-                let timeline = ChannelTimeline(channelID: definition.id, items: items, ordering: definition.ordering, grid: options.grid, commercials: options.commercials)
+                let timeline = Channel.schedule(for: definition, items: items, grid: options.grid, commercials: options.commercials)
                 timelines[position] = timeline
-                fixed += timeline.repeatingSlots()
+                fixed.append(timeline)
             } else {
                 shared.append(position)
             }
