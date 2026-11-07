@@ -26,22 +26,32 @@ final class ScheduleContext: Sendable {
     /// Each show's stable rank per salt ("" and each shuffled round), worked out once.
     private let ranks: [String: [UInt64]]
 
-    init(channelID: String, items: [MediaItem], grid: ScheduleGrid, commercials: CommercialCatalog = .empty) {
+    /// - Parameter inReleaseOrder: schedules the whole channel as one
+    ///   sequence in release order (``ScheduleOrdering/releaseOrder``), so
+    ///   the order of shows never changes and stepping around a clash can't
+    ///   reorder it. Items still keep their own show for everything else.
+    init(channelID: String, items: [MediaItem], grid: ScheduleGrid, commercials: CommercialCatalog = .empty, inReleaseOrder: Bool = false) {
         self.channelID = channelID
         self.items = items
         self.commercials = commercials
         self.slotLengths = items.map { ScheduleTime.milliseconds(max(grid.slotLength(for: $0.duration + commercials.duration(channelID: channelID, program: $0)), ScheduleConstants.minimumProgramDuration)) }
-        var groups: [String: [Int]] = [:]
-        for index in items.indices where items[index].duration > .zero {
-            groups[items[index].showID, default: []].append(index)
-        }
-        let sorted = groups.sorted { $0.key < $1.key }
-        self.showIDs = sorted.map(\.key)
-        self.shows = sorted.map { _, indices in
-            indices.sorted { lhs, rhs in
-                let left = items[lhs].series?.broadcastOrder ?? (.zero, .zero)
-                let right = items[rhs].series?.broadcastOrder ?? (.zero, .zero)
-                return left != right ? left < right : items[lhs].id < items[rhs].id
+        let schedulable = items.indices.filter { items[$0].duration > .zero }
+        if inReleaseOrder {
+            self.showIDs = schedulable.isEmpty ? [] : [Self.releaseSequenceID(channelID)]
+            self.shows = schedulable.isEmpty ? [] : [ReleaseSequence.order(schedulable, of: items)]
+        } else {
+            var groups: [String: [Int]] = [:]
+            for index in schedulable {
+                groups[items[index].showID, default: []].append(index)
+            }
+            let sorted = groups.sorted { $0.key < $1.key }
+            self.showIDs = sorted.map(\.key)
+            self.shows = sorted.map { _, indices in
+                indices.sorted { lhs, rhs in
+                    let left = items[lhs].series?.broadcastOrder ?? (.zero, .zero)
+                    let right = items[rhs].series?.broadcastOrder ?? (.zero, .zero)
+                    return left != right ? left < right : items[lhs].id < items[rhs].id
+                }
             }
         }
         var showOfItem = Array(repeating: 0, count: items.count)
@@ -67,6 +77,12 @@ final class ScheduleContext: Sendable {
 
     var isEmpty: Bool {
         shows.isEmpty
+    }
+
+    /// The schedule's single "show" on a Release Order channel: unique to
+    /// the channel, so it never counts toward any real show's limit.
+    static func releaseSequenceID(_ channelID: String) -> String {
+        "release-order:\(channelID)"
     }
 
     /// The episode `show` starts from when it first comes on (of its

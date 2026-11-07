@@ -66,7 +66,8 @@ public struct ChannelDefinition: Codable, Sendable, Hashable, Identifiable {
         name = try container.decode(String.self, forKey: .name)
         callSign = try container.decodeIfPresent(String.self, forKey: .callSign) ?? CallSign.make(from: name)
         rule = try container.decodeIfPresent(ChannelRule.self, forKey: .rule) ?? ChannelRule()
-        ordering = try container.decodeIfPresent(ScheduleOrdering.self, forKey: .ordering) ?? .shuffle
+        // An order from a newer version falls back rather than losing the channel.
+        ordering = (try? container.decodeIfPresent(String.self, forKey: .ordering)).flatMap { $0 }.flatMap(ScheduleOrdering.init(rawValue:)) ?? .shuffle
         source = try container.decodeIfPresent(ChannelSource.self, forKey: .source) ?? .curated
     }
 }

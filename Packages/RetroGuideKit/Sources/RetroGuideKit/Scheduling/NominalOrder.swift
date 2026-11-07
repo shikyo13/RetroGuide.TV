@@ -64,7 +64,8 @@ enum NominalOrders {
     }
 
     static func rotates(ordering: ScheduleOrdering, titles: Int, content: TimeInterval) -> Bool {
-        guard ordering != .shuffle, titles > 1 else { return false }
+        // A Release Order channel is one sequence: it never rotates.
+        guard ordering != .shuffle, ordering != .releaseOrder, titles > 1 else { return false }
         guard ordering != .marathon else { return true }
         return content >= Tuning.minimumContent && titles >= Tuning.minimumShows
     }
@@ -193,7 +194,7 @@ struct CycleSegment: OrderSegment {
         }
         let template: Template
         let blocks = Self.blocks(for: ordering, shows: shows, shelf: shelf)
-        if let previous, previous.shows == shows, previous.blocks == blocks, ordering != .marathon {
+        if let previous, previous.shows == shows, previous.blocks == blocks, !ordering.airsEveryEpisode {
             template = previous
         } else {
             let canonical = Self.turns(for: ordering, context: context, shows: shows, shelf: shelf).map { local[$0] ?? 0 }
@@ -257,7 +258,7 @@ struct CycleSegment: OrderSegment {
             return rounds(of: ranked) { _ in 1 }
         case .blockShuffle:
             return rounds(of: ranked) { ScheduleConstants.blockLength(episodes: shelf.episodes[$0]?.count ?? 0) }
-        case .marathon:
+        case .marathon, .releaseOrder:
             return ranked("").flatMap { Array(repeating: $0, count: shelf.episodes[$0]?.count ?? 0) }
         }
     }

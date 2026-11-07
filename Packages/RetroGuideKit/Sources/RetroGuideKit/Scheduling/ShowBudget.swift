@@ -126,7 +126,7 @@ enum ShowBudget {
                     case .syndication: turns = 1
                     case .shuffle: turns = rounds
                     case .blockShuffle: turns = rounds * ScheduleConstants.blockLength(episodes: counts[show])
-                    case .marathon: turns = counts[show]
+                    case .marathon, .releaseOrder: turns = counts[show]
                     }
                     return Double(turns) * passes[show] / Double(counts[show])
                 }

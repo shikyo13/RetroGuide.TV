@@ -38,8 +38,10 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         hiddenChannelIDs = try container.decodeIfPresent(Set<String>.self, forKey: .hiddenChannelIDs) ?? []
-        orderingOverrides = try container.decodeIfPresent([String: ScheduleOrdering].self, forKey: .orderingOverrides) ?? [:]
-        defaultOrdering = try container.decodeIfPresent(ScheduleOrdering.self, forKey: .defaultOrdering)
+        // Orders from a newer version are skipped rather than losing every setting.
+        orderingOverrides = (try container.decodeIfPresent([String: String].self, forKey: .orderingOverrides) ?? [:])
+            .compactMapValues(ScheduleOrdering.init(rawValue:))
+        defaultOrdering = (try? container.decodeIfPresent(String.self, forKey: .defaultOrdering)).flatMap { $0 }.flatMap(ScheduleOrdering.init(rawValue:))
         simulcastLimit = try container.decodeIfPresent(SimulcastLimit.self, forKey: .simulcastLimit) ?? .two
         customChannels = try container.decodeIfPresent([ChannelDefinition].self, forKey: .customChannels) ?? []
         disabledSources = try container.decodeIfPresent(Set<ChannelSource>.self, forKey: .disabledSources) ?? []

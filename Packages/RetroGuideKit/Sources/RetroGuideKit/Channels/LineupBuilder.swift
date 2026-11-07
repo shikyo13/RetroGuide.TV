@@ -172,7 +172,7 @@ public struct LineupBuilder: Sendable {
                 limit: customization.simulcastLimit.channels ?? .max,
                 channels: shared.map { position in
                     let definition = resolved[position].definition
-                    return (ScheduleContext(channelID: definition.id, items: resolved[position].items, grid: options.grid, commercials: options.commercials), definition.ordering)
+                    return (ScheduleContext(channelID: definition.id, items: resolved[position].items, grid: options.grid, commercials: options.commercials, inReleaseOrder: definition.ordering == .releaseOrder), definition.ordering)
                 },
                 uncounted: Set(shared.indices.filter { Self.exemptSources.contains(resolved[shared[$0]].definition.source) }),
                 fixed: fixed

@@ -24,6 +24,8 @@ enum PlaylistArranger {
             return spread(groups, phase: .evenlySpaced, using: &generator)
         case .marathon:
             return groupedBySeries(items).flatMap { $0 }
+        case .releaseOrder:
+            return ReleaseSequence.order(Array(items.indices), of: items)
         }
     }
 

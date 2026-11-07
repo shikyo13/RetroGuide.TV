@@ -81,7 +81,7 @@ public enum ScheduleDiagnostics {
         let shared = lineup.filter { !$0.isHidden && !($0.definition.source == .series && Channel.airsOneShow($0.items)) && !($0.definition.source == .custom && Channel.airsOneShow($0.items)) }
         let coordinator = SimulcastCoordinator(
             limit: customization.simulcastLimit.channels ?? .max,
-            channels: shared.sorted { $0.id < $1.id }.map { (ScheduleContext(channelID: $0.id, items: $0.items, grid: grid), $0.definition.ordering) }
+            channels: shared.sorted { $0.id < $1.id }.map { (ScheduleContext(channelID: $0.id, items: $0.items, grid: grid, inReleaseOrder: $0.definition.ordering == .releaseOrder), $0.definition.ordering) }
         )
         let current = SimulcastCoordinator.period(containing: ScheduleTime.milliseconds(since: now))
         var seamless = 0, total = 0, imperfect: [Int] = []

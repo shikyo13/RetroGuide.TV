@@ -33,7 +33,7 @@ public struct Channel: Sendable, Identifiable, Hashable {
         guard !airsOneShow(items) else {
             return ChannelTimeline(channelID: definition.id, items: items, ordering: definition.ordering, grid: grid, commercials: commercials)
         }
-        return NominalTimeline(context: ScheduleContext(channelID: definition.id, items: items, grid: grid, commercials: commercials), ordering: definition.ordering)
+        return NominalTimeline(context: ScheduleContext(channelID: definition.id, items: items, grid: grid, commercials: commercials, inReleaseOrder: definition.ordering == .releaseOrder), ordering: definition.ordering)
     }
 
     /// Whether the items are all one show (or one movie).

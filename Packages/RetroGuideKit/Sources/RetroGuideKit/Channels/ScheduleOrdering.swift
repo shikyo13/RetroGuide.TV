@@ -11,6 +11,9 @@ public enum ScheduleOrdering: String, Codable, Sendable, CaseIterable, Hashable 
     case syndication
     /// Each show from its first episode to its last before the next one begins.
     case marathon
+    /// Everything on the channel oldest first, by release or first air date
+    /// (see ``ReleaseSequence``), then from the start again.
+    case releaseOrder
 
     public var displayName: String {
         switch self {
@@ -18,6 +21,7 @@ public enum ScheduleOrdering: String, Codable, Sendable, CaseIterable, Hashable 
         case .blockShuffle: "Block Shuffle"
         case .syndication: "Show Rotation"
         case .marathon: "Marathon"
+        case .releaseOrder: "Release Order"
         }
     }
 
@@ -27,6 +31,13 @@ public enum ScheduleOrdering: String, Codable, Sendable, CaseIterable, Hashable 
         case .blockShuffle: "Shows take turns in short blocks, episodes stay in order."
         case .syndication: "One episode from each show in turn, in order."
         case .marathon: "Every episode of a show in order, then the next show."
+        case .releaseOrder: "Movies and episodes oldest first, then it starts over."
         }
+    }
+
+    /// Whether a schedule cycle airs every episode of every show (rather
+    /// than the same number of turns per show).
+    var airsEveryEpisode: Bool {
+        self == .marathon || self == .releaseOrder
     }
 }
