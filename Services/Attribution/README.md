@@ -10,6 +10,10 @@ On iPhone and iPad, Apple's AdServices token is exchanged on the server for acqu
 
 The service verifies app transactions, purchase transactions, and App Store Server Notifications using Apple's App Store Server Library and trusted Apple root certificates. Production and Sandbox require separate deployments and databases. Xcode's locally signed StoreKit test purchases are not accepted by the production verifier.
 
+## Usage steps
+
+The app also sends anonymous setup and usage steps, so it is known where people stop: which server setup step was reached, whether a Plex or Jellyfin server was saved, whether channels were built (in coarse count buckets), whether a program played, whether the Pro page was opened, and one "active" mark per day with the kinds of server the app has. Each is stored once per installation and UTC day with the device type and app version. Names and details come from fixed lists in `attribution/usage.py`; anything else is dropped. No titles, server addresses, library contents or viewing history are sent.
+
 ## Run
 
 Use Python 3.13 and install `requirements.txt` (`requirements-dev.txt` for tests). Obtain the Apple root certificates from [Apple PKI](https://www.apple.com/certificateauthority/) and store the DER `.cer` files in a protected directory outside this repository.
@@ -31,7 +35,10 @@ Configure the app's `RetroGuideAttributionURL` Info.plist value with the HTTPS s
 ```sh
 python -m attribution.cli revenue --start 2026-10-01 --end 2026-10-31
 python -m attribution.cli sync-ads --campaign 123456 --start 2026-10-01 --end 2026-10-31
+python -m attribution.cli usage --start 2026-11-01 --end 2026-11-30
 ```
+
+The usage report gives daily counts of installations per step, and for installations first seen in the range, how many reached each step and whether they came back on a later day.
 
 Dates are inclusive UTC calendar dates. Revenue is selected by purchase date, with the latest verified refund status. Amounts are transaction prices in their original currency, before Apple's commission and tax adjustments. Different currencies remain separate. Unknown prices are reported explicitly. Family Sharing does not count as another sale.
 

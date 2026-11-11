@@ -150,3 +150,25 @@ def test_changed_apple_account_does_not_inherit_previous_accounts_campaign(setup
     apple.tx = transaction(appAccountToken=identifier,appTransactionId='different-account')
     upload(client,identifier)
     assert revenue_report(db,0,3000)['groups'][0]['campaignId'] is None
+
+def test_usage_needs_a_registered_installation_and_keeps_only_known_events(setup):
+    from datetime import datetime, timezone
+    from attribution.usage import usage_report
+    db,apple,client,identifier = setup
+    today = datetime.now(timezone.utc).date()
+    body = {'platform':'iPhone', 'version':'1.9', 'events':[
+        {'name':'setup', 'detail':'welcome', 'day':today.isoformat()},
+        {'name':'setup', 'detail':'welcome', 'day':today.isoformat()},
+        {'name':'watched', 'detail':'plex', 'day':today.isoformat()},
+        {'name':'something-newer', 'detail':'', 'day':today.isoformat()},
+        {'name':'proViewed', 'detail':'a title', 'day':today.isoformat()},
+        {'name':'proViewed', 'detail':'', 'day':'1999-01-01'}]}
+    post = lambda: client.post(f'/v1/installations/{identifier}/usage',
+                               headers={'Authorization':f'Bearer {SECRET}'}, json=body)
+    assert post().status_code == 403
+    assert register(client,identifier).status_code == 200
+    assert post().json() == {'accepted':2}
+    assert post().status_code == 200
+    funnel = usage_report(db,today,today)['firstSeenInRange']['iPhone']
+    assert funnel['installations'] == 1 and funnel['setup:welcome'] == 1 and funnel['watched'] == 1
+    assert funnel['proViewed'] == 0

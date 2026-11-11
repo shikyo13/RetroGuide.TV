@@ -5,6 +5,7 @@ import json
 import os
 import sqlite3
 import time
+from .usage import SCHEMA as USAGE_SCHEMA
 
 SCHEMA = '''
 CREATE TABLE IF NOT EXISTS installations (
@@ -36,7 +37,7 @@ class Database:
     def __init__(self, path):
         self.path = path
         with self.connection() as db:
-            db.executescript(SCHEMA)
+            db.executescript(SCHEMA + USAGE_SCHEMA)
         os.chmod(self.path, 0o600)
 
     @contextmanager

@@ -1,6 +1,7 @@
 """Ingestion only. Reports and credentials are never served on the public API."""
 import re
 import sqlite3
+from typing import Literal
 from uuid import UUID
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.exceptions import RequestValidationError
@@ -9,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from .apple import Apple
 from .config import Config
 from .database import Database
+from . import usage
 
 class Payload(BaseModel):
     model_config = ConfigDict(extra='forbid')
@@ -19,6 +21,16 @@ class Installation(Payload):
 
 class Purchase(Payload):
     signedTransaction: str = Field(min_length=20, max_length=32768)
+
+class UsageEvent(Payload):
+    name: str = Field(min_length=1, max_length=32)
+    detail: str = Field(default='', max_length=32)
+    day: str = Field(min_length=10, max_length=10)
+
+class Usage(Payload):
+    platform: Literal[usage.PLATFORMS]
+    version: str = Field(pattern=r'^[0-9]{1,3}(\.[0-9]{1,4}){0,2}$')
+    events: list[UsageEvent] = Field(min_length=1, max_length=50)
 
 class Notification(Payload):
     signedPayload: str = Field(min_length=20, max_length=65536)
@@ -81,6 +93,16 @@ def create_app(config=None, apple=None, database=None):
         # never the upload URL's installation ID. Restores cannot reassign sales.
         database.purchase(tx)
         return {'accepted':True}
+
+    @app.post('/v1/installations/{identifier}/usage')
+    def usage_events(identifier: UUID, body: Usage, authorization: str | None = Header(default=None)):
+        try:
+            database.authenticate(str(identifier), credentials(authorization))
+        except PermissionError:
+            raise HTTPException(403, 'Installation identity mismatch') from None
+        events = usage.accepted(body.events)
+        usage.store(database, str(identifier), body.platform, body.version, events)
+        return {'accepted':len(events)}
 
     @app.post('/v1/notifications/apple')
     def notification(body: Notification):

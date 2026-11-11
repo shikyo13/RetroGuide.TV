@@ -19,6 +19,9 @@ import SwiftUI
 /// - `RETROGUIDE_DEV_AUDIO_PROBE`: `1` to record the audio route at launch and
 ///   write libmpv's log to Library/Caches (see ``AudioRouteProbe``).
 ///
+/// - `RETROGUIDE_DEV_ATTRIBUTION_URL`: an HTTPS measurement service to use
+///   instead of the real one (a local test server).
+///
 /// Release builds always return the defaults.
 enum DebugLaunchOptions {
     enum Overlay: String {
@@ -52,6 +55,7 @@ enum DebugLaunchOptions {
         static let playURL = "RETROGUIDE_DEV_PLAY_URL"
         static let playStart = "RETROGUIDE_DEV_PLAY_START"
         static let mute = "RETROGUIDE_DEV_MUTE"
+        static let attributionURL = "RETROGUIDE_DEV_ATTRIBUTION_URL"
     }
 
     private static let landscape = "landscape"
@@ -105,6 +109,10 @@ enum DebugLaunchOptions {
 
     static var forcesPro: Bool {
         value(for: Variable.pro) == enabled
+    }
+
+    static var attributionURL: String? {
+        value(for: Variable.attributionURL)
     }
 
     private static func value(for variable: String) -> String? {

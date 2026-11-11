@@ -6,11 +6,12 @@ import os
 from pathlib import Path
 from .database import Database
 from .reporting import revenue_report
+from .usage import usage_report
 from .ads_reports import AdsReports
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('command',choices=['revenue','sync-ads'])
+    parser.add_argument('command',choices=['revenue','sync-ads','usage'])
     parser.add_argument('--start',required=True,help='First UTC day, YYYY-MM-DD')
     parser.add_argument('--end',required=True,help='Last UTC day, inclusive')
     parser.add_argument('--campaign',type=int)
@@ -18,7 +19,9 @@ def main():
     db = Database(os.environ['ATTRIBUTION_DATABASE'])
     start = datetime.fromisoformat(args.start).replace(tzinfo=timezone.utc)
     end = datetime.fromisoformat(args.end).replace(tzinfo=timezone.utc)+timedelta(days=1)
-    if args.command == 'revenue':
+    if args.command == 'usage':
+        print(json.dumps(usage_report(db, start.date(), (end - timedelta(days=1)).date()), indent=2))
+    elif args.command == 'revenue':
         result = revenue_report(db,int(start.timestamp()*1000),int(end.timestamp()*1000),
                                 os.getenv('STORE_ENVIRONMENT','Production'))
         print(json.dumps(result,indent=2))

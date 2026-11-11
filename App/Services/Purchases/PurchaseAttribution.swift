@@ -4,6 +4,7 @@ import Security
 import StoreKit
 #if os(iOS)
 import AdServices
+import UIKit
 #endif
 
 /// Optional first-party measurement. No analytics request is awaited by ProStore.
@@ -14,7 +15,8 @@ final class PurchaseAttribution {
     private let delivery: AttributionDelivery?
 
     private init() {
-        guard let raw = Bundle.main.object(forInfoDictionaryKey: "RetroGuideAttributionURL") as? String,
+        guard let raw = DebugLaunchOptions.attributionURL
+                ?? Bundle.main.object(forInfoDictionaryKey: "RetroGuideAttributionURL") as? String,
               let endpoint = URL(string: raw), endpoint.scheme == "https",
               endpoint.host != nil, endpoint.user == nil, endpoint.password == nil,
               endpoint.query == nil, endpoint.fragment == nil else {
@@ -45,12 +47,29 @@ final class PurchaseAttribution {
             }
         }
         accountToken = identity.id
-        delivery = AttributionDelivery(endpoint: endpoint, identity: identity)
+        delivery = AttributionDelivery(endpoint: endpoint, identity: identity, client: Self.client)
+    }
+
+    private static var client: UsageClient {
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "unknown"
+        #if os(tvOS)
+        let platform = "AppleTV"
+        #else
+        let platform = ProcessInfo.processInfo.isiOSAppOnMac ? "Mac"
+            : UIDevice.current.userInterfaceIdiom == .pad ? "iPad" : "iPhone"
+        #endif
+        return UsageClient(platform: platform, version: version)
     }
 
     func start() {
         guard let delivery else { return }
         Task { await delivery.kick() }
+    }
+
+    /// Notes a setup or usage step (see ``UsageEvent``). Sent in the background.
+    func record(_ event: UsageEvent) {
+        guard let delivery else { return }
+        Task { await delivery.record(event) }
     }
 
     func record(_ result: VerificationResult<Transaction>) {

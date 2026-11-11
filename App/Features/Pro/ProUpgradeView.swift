@@ -21,6 +21,9 @@ struct ProUpgradeView: View {
             }
         }
         .task { await pro.loadProductIfNeeded() }
+        .onAppear {
+            if !pro.isPro { app.recordUsage(.proViewed) }
+        }
     }
 
     @ViewBuilder

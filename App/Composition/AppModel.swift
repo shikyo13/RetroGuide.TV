@@ -32,7 +32,11 @@ final class AppModel {
 
     private(set) var isManagingStartup = false
 
-    private(set) var phase: Phase = .launching
+    private(set) var phase: Phase = .launching {
+        didSet {
+            if case .failed = phase, phase != oldValue { recordUsage(.libraryFailed) }
+        }
+    }
     private(set) var lineup: [Channel] = []
     /// True while channel schedules are being rebuilt (seconds with a large library).
     var isRebuildingLineup: Bool { pendingLineupRebuilds > .zero }
@@ -172,6 +176,7 @@ final class AppModel {
         tuner.onSignalChanged = { [weak self] in
             guard let self else { return }
             nowPlaying?.update(channel: tuner.channel, program: tuner.program, isPlaying: tuner.signal == .live, independentPosition: tuner.independentPlaybackPosition)
+            if tuner.signal == .live { recordWatching() }
         }
         tuner.languagePreferences = store.languagePreferences
         // Carry over the previous iCloud rules once. All subsequent cloud
@@ -309,6 +314,7 @@ final class AppModel {
         await servers.restore()
         guard restoreSession == sessionGeneration else { return }
         seedSharedSelections()
+        recordActive()
         settingsSync.startIfEnabled()
         if tuner.languagePreferences == nil {
             tuner.languagePreferences = servers.provisionalLanguagePreferences
@@ -371,6 +377,7 @@ final class AppModel {
     /// Back from the background: the stream carries on after a short time
     /// away, and rejoins live after a longer one.
     func becameActive(resumePlayback: Bool = true) {
+        recordActive()
         if settingsSync.isEnabled { settingsSync.retry() }
         isInBackground = false
         // Back in the app: the channel carries on full screen, not twice.
@@ -489,6 +496,7 @@ final class AppModel {
         guard selections.count == 1 || pro.access.canAddServer(connectedCount: selections.count - 1) else { return }
         for selection in selections {
             servers.add(selection.account, token: selection.token, accountToken: selection.accountToken)
+            recordUsage(.serverConnected, detail: selection.account.kind.rawValue)
         }
         seedSharedSelections()
         recordSettingsChange()
@@ -503,6 +511,7 @@ final class AppModel {
     func addServer(_ account: ServerAccount, token: String, accountToken: String?) async {
         guard !parentalControls.needsAuthorization else { return }
         servers.add(account, token: token, accountToken: accountToken)
+        recordUsage(.serverConnected, detail: account.kind.rawValue)
         seedSharedSelections()
         recordSettingsChange()
         if tuner.languagePreferences == nil {
@@ -909,6 +918,7 @@ final class AppModel {
     /// Powers the "TV" on to the last watched channel (or the first one).
     private func turnOn() {
         let channels = visibleChannels
+        recordUsage(.lineupReady, detail: UsageEvent.ChannelCount(channels.count).rawValue)
         tuner.setChannels(channels)
         guard tuner.channel == nil else { return }
         if let lastChannel = tuner.channel(withID: store.lastChannelID) {

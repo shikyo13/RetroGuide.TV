@@ -52,7 +52,13 @@ final class OnboardingModel {
         case jellyfin
     }
 
-    private(set) var step: Step
+    private(set) var step: Step {
+        didSet {
+            if let reached = step.usageStep, reached != oldValue.usageStep {
+                PurchaseAttribution.shared.record(UsageEvent(.setup, detail: reached.rawValue))
+            }
+        }
+    }
 
     @ObservationIgnored private let accountService: PlexAccountService
     @ObservationIgnored private let resolver: PlexConnectionResolver
@@ -78,6 +84,9 @@ final class OnboardingModel {
         self.resolver = PlexConnectionResolver(identity: identities.plex)
         self.jellyfinService = JellyfinAccountService(identity: identities.jellyfin)
         self.step = showsWelcome ? .welcome : .choosingKind
+        if let reached = step.usageStep {
+            PurchaseAttribution.shared.record(UsageEvent(.setup, detail: reached.rawValue))
+        }
     }
 
     func setStep(_ newStep: Step) {
@@ -194,6 +203,23 @@ final class OnboardingModel {
             )
         } catch {
             step = .failed(error.localizedDescription)
+        }
+    }
+}
+
+extension OnboardingModel.Step {
+    /// The setup step this is, for usage measurement; `nil` for passing states.
+    var usageStep: UsageEvent.SetupStep? {
+        switch self {
+        case .welcome: .welcome
+        case .choosingKind, .connecting: nil
+        case .linking: .plexLink
+        case .choosingServer: .plexServers
+        case .findingJellyfin: .jellyfinFind
+        case .enteringJellyfinAddress: .jellyfinAddress
+        case .jellyfinSignIn: .jellyfinSignIn
+        case .choosingLibraries: .libraries
+        case .failed: .failed
         }
     }
 }
