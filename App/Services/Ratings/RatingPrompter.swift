@@ -8,10 +8,18 @@ import RetroGuideKit
 final class RatingPrompter {
     private enum Key {
         static let pacing = "ratings.pacing.v1"
+        /// Set once the viewer chose to rate from Settings.
+        static let choseToRate = "ratings.choseToRate.v1"
+    }
+
+    private enum Timing {
+        /// No request this soon after launch: the viewer has only just arrived.
+        static let settleTime: TimeInterval = 2 * ScheduleConstants.secondsPerMinute
     }
 
     private var pacing: RatingPromptPacing
     private let defaults: UserDefaults
+    private let createdAt = Date.now
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -20,7 +28,9 @@ final class RatingPrompter {
     }
 
     var isRequestDue: Bool {
-        pacing.isRequestDue(version: AppIdentity.version)
+        !defaults.bool(forKey: Key.choseToRate)
+            && Date.now.timeIntervalSince(createdAt) >= Timing.settleTime
+            && pacing.isRequestDue(version: AppIdentity.version)
     }
 
     func recordWatching(_ duration: TimeInterval) {
@@ -31,6 +41,11 @@ final class RatingPrompter {
     func requested() {
         pacing.requested(version: AppIdentity.version)
         save()
+    }
+
+    /// The viewer went to rate by choice: never ask again.
+    static func choseToRate(defaults: UserDefaults = .standard) {
+        defaults.set(true, forKey: Key.choseToRate)
     }
 
     private func save() {

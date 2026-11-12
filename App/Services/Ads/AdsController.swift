@@ -68,6 +68,11 @@ final class AdsController {
         interstitials?.discard()
     }
 
+    /// A full-screen ad would show at the next natural break.
+    var isInterstitialDue: Bool {
+        isReady && pacing.isInterstitialDue
+    }
+
     func recordWatching(_ duration: TimeInterval) {
         pacing.recordWatching(duration)
         savePacing()

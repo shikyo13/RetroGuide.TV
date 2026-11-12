@@ -146,6 +146,7 @@
 		8DED937D109F78188054FD22 /* CloudSettingsSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAEBEA0B64D57030F2DF72E /* CloudSettingsSync.swift */; };
 		8FF5A5B693EF76B5DF1F280F /* MPVKit in Frameworks */ = {isa = PBXBuildFile; productRef = AF7766867AB8515623736C48 /* MPVKit */; };
 		930B7ED7E49AE404D4FE0B43 /* RemovedTitlesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BCE63CDE2B10FA67A293BE9 /* RemovedTitlesSection.swift */; };
+		9442620285F56AC8A8835026 /* RateAppRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBBC455A32EB76BFE7D7850 /* RateAppRow.swift */; };
 		94E4C5E01039B184321A2E3E /* TrackSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0601DF37765D3C776688AF60 /* TrackSync.swift */; };
 		9589CA63A17920D1A4A6153C /* WidgetPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6A9FCDB157646BFB4D534C0 /* WidgetPalette.swift */; };
 		95E0DA90C93CE1480D8FF5B8 /* RetroGuideKit in Frameworks */ = {isa = PBXBuildFile; productRef = 83A9CED44125DC61355949E7 /* RetroGuideKit */; };
@@ -408,6 +409,7 @@
 		66CC706B5FDE0AED70647579 /* EngineVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineVideoView.swift; sourceTree = "<group>"; };
 		6B12779CAF7F8DACCCBA2209 /* GuideRemoteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideRemoteView.swift; sourceTree = "<group>"; };
 		6B2A57740E6CC4A1CC636644 /* ParentalControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentalControls.swift; sourceTree = "<group>"; };
+		6CBBC455A32EB76BFE7D7850 /* RateAppRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RateAppRow.swift; sourceTree = "<group>"; };
 		6D2CE07BACDB88DCA49EF932 /* RatingPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RatingPrompt.swift; sourceTree = "<group>"; };
 		722E6EC59138BE2580FB6F96 /* CloudSettingsStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSettingsStorage.swift; sourceTree = "<group>"; };
 		72CFCA02CBB428F864F9B9F1 /* WhatsOnWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsOnWidget.swift; sourceTree = "<group>"; };
@@ -1105,6 +1107,7 @@
 				49960C6E5611553858B36F83 /* DisplayMatchingPickerView.swift */,
 				8F90413A593D82BD4A01F34C /* PlayerEnginePickerView.swift */,
 				07D961CBC1D1F79931643393 /* PrivacyChoicesRow.swift */,
+				6CBBC455A32EB76BFE7D7850 /* RateAppRow.swift */,
 				DE0289837828F959D40440FF /* RemindersView.swift */,
 				1228ACA50F43CD93B6C327B2 /* ScheduleGridPickerView.swift */,
 				D0C26D1723E494C6278D25A4 /* SettingsView.swift */,
@@ -1451,6 +1454,7 @@
 				AF9F80CCF79978692322149D /* ProgressTrack.swift in Sources */,
 				5ED3917B4C9F62E9A7A98318 /* PurchaseAttribution.swift in Sources */,
 				21FE91CD314E7F3B7C0DD596 /* QRCodeView.swift in Sources */,
+				9442620285F56AC8A8835026 /* RateAppRow.swift in Sources */,
 				9CD6CF6223D598BA2A994FB0 /* RatingChip.swift in Sources */,
 				EE77837048987578601DBAE8 /* RatingPrompt.swift in Sources */,
 				866A0EB73AB28544D2DCBDB3 /* RatingPrompter.swift in Sources */,

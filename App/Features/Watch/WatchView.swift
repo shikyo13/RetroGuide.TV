@@ -39,6 +39,8 @@ struct WatchView: View {
     @State private var liveControlsFocusSerial = 0
     /// Apple TV: the guide was opened with Back, so it acts as the app's top level.
     @State private var isGuideHome = false
+    /// Times the viewer came back to the guide from Settings or Search.
+    @State private var finishedTasks = 0
 
     var body: some View {
         let tuner = app.tuner
@@ -108,11 +110,14 @@ struct WatchView: View {
         .watchOptions(isPresented: $isShowingOptions, tuner: tuner)
         #if os(iOS)
         .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)
-        .ratingPrompt(isWatchingFullScreen: overlay == .none, tuner: tuner)
+        .ratingPrompt(isWatchingFullScreen: overlay == .none, finishedTasks: finishedTasks, tuner: tuner)
         #endif
-        .onChange(of: overlay) {
+        .onChange(of: overlay) { previous, current in
             isGuideTopBarActive = false
             isShowingOptions = false
+            if current == .guide, previous == .settings || previous == .search {
+                finishedTasks += 1
+            }
         }
         .onPreferenceChange(LivePreviewFrameKey.self) { frame in
             previewFrame = frame

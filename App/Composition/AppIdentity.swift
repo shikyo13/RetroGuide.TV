@@ -12,6 +12,8 @@ enum AppIdentity {
         static let suffix = ".TV"
     }
     static let bundleIdentifier = "com.adamhunt.retroguide"
+    /// The App Store page's "Write a Review" sheet.
+    static let writeReviewURL = URL(string: "https://apps.apple.com/app/id6816213425?action=write-review")!
     static let keychainService = "com.adamhunt.retroguide.tokens"
     static let cacheFolderName = "RetroGuide"
 

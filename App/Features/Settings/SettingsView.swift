@@ -175,6 +175,7 @@ struct SettingsView: View {
                     }
                     SettingsSection("About") {
                         #if os(iOS)
+                        RateAppRow()
                         PrivacyChoicesRow()
                         #endif
                         NavigationLink {

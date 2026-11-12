@@ -81,13 +81,25 @@ struct RatingPromptPacingTests {
         #expect(pacing.isRequestDue(version: "1.2"))
     }
 
-    @Test("Next request after another 48 hours, in a newer version")
+    @Test("Next request after another 48 hours and 120 days, in a newer version")
     func laterRequests() {
+        let asked = Date(timeIntervalSince1970: 1_800_000_000)
+        let day: TimeInterval = 86_400
         var pacing = RatingPromptPacing(watched: 3 * hour)
-        pacing.requested(version: "1.2")
+        pacing.requested(version: "1.2", at: asked)
         pacing.recordWatching(48 * hour)
-        #expect(!pacing.isRequestDue(version: "1.2"))
-        #expect(pacing.isRequestDue(version: "1.3"))
+        #expect(!pacing.isRequestDue(version: "1.2", now: asked + 200 * day))
+        #expect(!pacing.isRequestDue(version: "1.3", now: asked + 119 * day))
+        #expect(pacing.isRequestDue(version: "1.3", now: asked + 120 * day))
+    }
+
+    @Test("Pacing saved by 1.8 still applies")
+    func readsEarlierPacing() throws {
+        let saved = Data(#"{"watched":10800,"watchedAtLastRequest":10800,"lastRequestedVersion":"1.8"}"#.utf8)
+        var pacing = try JSONDecoder().decode(RatingPromptPacing.self, from: saved)
+        #expect(!pacing.isRequestDue(version: "1.9"))
+        pacing.recordWatching(48 * hour)
+        #expect(pacing.isRequestDue(version: "1.9"))
     }
 
     @Test("A new version alone doesn't make a request due")
