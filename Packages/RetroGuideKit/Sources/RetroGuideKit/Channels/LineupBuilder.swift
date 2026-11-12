@@ -145,8 +145,9 @@ public struct LineupBuilder: Sendable {
     /// Visible channels share one schedule: no show on more than
     /// ``LineupCustomization/simulcastLimit`` of them at once (24/7 and custom
     /// channels don't count), and never the same episode or movie on two at
-    /// once, 24/7 channels included. 24/7 channels repeat a fixed cycle that
-    /// the others work around; hidden channels run on their own.
+    /// once, 24/7 channels included. 24/7 and Release Order channels keep
+    /// their own order and the others work around them; hidden channels run
+    /// on their own.
     private func schedule(
         _ resolved: [Resolved],
         isHidden: (ChannelDefinition) -> Bool,
@@ -158,7 +159,9 @@ public struct LineupBuilder: Sendable {
         var shared: [Int] = []
         for position in resolved.indices where !isHidden(resolved[position].definition) {
             let (definition, items) = resolved[position]
-            if Self.exemptSources.contains(definition.source), Channel.airsOneShow(items) {
+            // 24/7 and Release Order channels keep their own order: the
+            // others are planned around them.
+            if definition.ordering == .releaseOrder || (Self.exemptSources.contains(definition.source) && Channel.airsOneShow(items)) {
                 let timeline = Channel.schedule(for: definition, items: items, grid: options.grid, commercials: options.commercials)
                 timelines[position] = timeline
                 fixed.append(timeline)

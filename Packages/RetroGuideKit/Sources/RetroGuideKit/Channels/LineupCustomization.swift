@@ -5,8 +5,11 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
     public var hiddenChannelIDs: Set<String>
     public var orderingOverrides: [String: ScheduleOrdering]
     /// Schedule order for every automatic channel without its own override
-    /// (`nil`: each channel keeps its built-in order).
-    public var defaultOrdering: ScheduleOrdering?
+    /// (`nil`: each channel keeps its built-in order). Never Release Order,
+    /// which is chosen channel by channel (see ``ScheduleOrdering/forAllChannels``).
+    public var defaultOrdering: ScheduleOrdering? {
+        didSet { defaultOrdering = defaultOrdering.map(ScheduleOrdering.forAllChannels) }
+    }
     /// How many channels may air the same show at the same time.
     public var simulcastLimit: SimulcastLimit
     public var customChannels: [ChannelDefinition]
@@ -27,7 +30,7 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
     ) {
         self.hiddenChannelIDs = hiddenChannelIDs
         self.orderingOverrides = orderingOverrides
-        self.defaultOrdering = defaultOrdering
+        self.defaultOrdering = defaultOrdering.map(ScheduleOrdering.forAllChannels)
         self.simulcastLimit = simulcastLimit
         self.customChannels = customChannels
         self.disabledSources = disabledSources
@@ -41,7 +44,8 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
         // Orders from a newer version are skipped rather than losing every setting.
         orderingOverrides = (try container.decodeIfPresent([String: String].self, forKey: .orderingOverrides) ?? [:])
             .compactMapValues(ScheduleOrdering.init(rawValue:))
-        defaultOrdering = (try? container.decodeIfPresent(String.self, forKey: .defaultOrdering)).flatMap { $0 }.flatMap(ScheduleOrdering.init(rawValue:))
+        defaultOrdering = (try? container.decodeIfPresent(String.self, forKey: .defaultOrdering)).flatMap { $0 }
+            .flatMap(ScheduleOrdering.init(rawValue:)).map(ScheduleOrdering.forAllChannels)
         simulcastLimit = try container.decodeIfPresent(SimulcastLimit.self, forKey: .simulcastLimit) ?? .two
         customChannels = try container.decodeIfPresent([ChannelDefinition].self, forKey: .customChannels) ?? []
         disabledSources = try container.decodeIfPresent(Set<ChannelSource>.self, forKey: .disabledSources) ?? []
@@ -53,6 +57,7 @@ public struct LineupCustomization: Codable, Sendable, Hashable {
     /// cleared so the change really applies everywhere. `nil` returns every
     /// automatic channel to its built-in order.
     public mutating func setOrderingForAllChannels(_ ordering: ScheduleOrdering?) {
+        let ordering = ordering.map(ScheduleOrdering.forAllChannels)
         defaultOrdering = ordering
         orderingOverrides.removeAll()
         guard let ordering else { return }

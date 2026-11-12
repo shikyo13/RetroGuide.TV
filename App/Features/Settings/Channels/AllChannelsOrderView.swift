@@ -22,7 +22,7 @@ struct AllChannelsOrderView: View {
                 ) {
                     choose(nil)
                 }
-                ForEach(ScheduleOrdering.allCases, id: \.self) { ordering in
+                ForEach(ScheduleOrdering.allChannelsChoices, id: \.self) { ordering in
                     CheckmarkRow(title: ordering.displayName, detail: ordering.explanation, isSelected: current == ordering) {
                         choose(ordering)
                     }

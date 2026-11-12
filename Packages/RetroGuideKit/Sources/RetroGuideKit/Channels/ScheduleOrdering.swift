@@ -40,4 +40,15 @@ public enum ScheduleOrdering: String, Codable, Sendable, CaseIterable, Hashable 
     var airsEveryEpisode: Bool {
         self == .marathon || self == .releaseOrder
     }
+
+    /// The orders offered for every channel at once. Release Order is chosen
+    /// channel by channel: on every channel at once, channels couldn't step
+    /// around each other and would air the same programs together.
+    public static let allChannelsChoices = allCases.filter { $0 != .releaseOrder }
+
+    /// `ordering` as an order for every channel at once: Release Order
+    /// becomes Marathon, the same loop without the date order.
+    public static func forAllChannels(_ ordering: ScheduleOrdering) -> ScheduleOrdering {
+        ordering == .releaseOrder ? .marathon : ordering
+    }
 }

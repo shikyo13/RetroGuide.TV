@@ -83,7 +83,8 @@ struct ReleaseOrderTests {
             if let ordering { #expect(legacy.contains(ordering), "\(key) stores \(ordering)") }
         }
         let read = try SharedSettings(values: values)
-        #expect(read.lineup.defaultOrdering == .releaseOrder)
+        // Release Order is chosen channel by channel: for all channels it is Marathon.
+        #expect(read.lineup.defaultOrdering == .marathon)
         #expect(read.lineup.orderingOverrides == ["curated.scifi": .releaseOrder, "curated.drama": .marathon])
         #expect(read.lineup.customChannels.map(\.ordering) == [.releaseOrder])
     }
