@@ -31,7 +31,7 @@ public enum ScheduleOrdering: String, Codable, Sendable, CaseIterable, Hashable 
         case .blockShuffle: "Shows take turns in short blocks, episodes stay in order."
         case .syndication: "One episode from each show in turn, in order."
         case .marathon: "Every episode of a show in order, then the next show."
-        case .releaseOrder: "Movies and episodes oldest first, then it starts over."
+        case .releaseOrder: "Oldest first, by the release dates on your server, then it starts over."
         }
     }
 

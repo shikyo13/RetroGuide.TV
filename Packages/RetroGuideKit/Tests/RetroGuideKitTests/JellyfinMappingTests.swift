@@ -63,6 +63,20 @@ struct JellyfinMappingTests {
         #expect(date == ISO8601DateFormatter().date(from: "2020-11-21T02:13:52Z"))
     }
 
+    @Test("An episode's premiere date becomes its release date")
+    func mapsPremiereDate() throws {
+        let fixture = try fixture()
+        // Jellyfin sends PremiereDate with every item (it isn't one of the requestable Fields).
+        let url = try #require(Bundle.module.url(forResource: "jellyfin-episode", withExtension: "json", subdirectory: "Fixtures"))
+        let raw = try #require(JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any])
+        var json = try #require(raw["Episode"] as? [String: Any])
+        json["PremiereDate"] = "2008-08-06T00:00:00.0000000Z"
+        let episode = try JellyfinCoding.decoder.decode(JellyfinItem.self, from: JSONSerialization.data(withJSONObject: json))
+        let networks = JellyfinNetworks(shows: [fixture.series]).networks(of: fixture.series)
+        let item = try #require(JellyfinItemMapper.episode(episode, series: fixture.series, networks: networks, library: library, collections: [:]))
+        #expect(item.released == ISO8601DateFormatter().date(from: "2008-08-06T00:00:00Z"))
+    }
+
     @Test("A typed address becomes the URLs worth trying")
     func addressCandidates() {
         #expect(JellyfinAddress.candidates(from: "10.0.1.5").map(\.absoluteString)
