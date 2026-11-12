@@ -5,13 +5,15 @@ import SwiftUI
 /// Dimensions and time scale of the program guide.
 enum GuideLayout {
     static let channelColumnWidth = PlatformMetric.value(tv: CGFloat(300), touch: 176)
-    /// iPhone in portrait: the channel column shows only the number badge.
+    /// iPhone in portrait: the channel column shows the number and a short name.
     static let narrowChannelColumnWidth: CGFloat = 96
     static let rowHeight = PlatformMetric.value(tv: CGFloat(78), touch: 50)
     static let rowSpacing = PlatformMetric.value(tv: CGFloat(6), touch: 4)
     static let cellSpacing = PlatformMetric.value(tv: CGFloat(4), touch: 2)
     static let visibleRows = 6
     static let rulerHeight = PlatformMetric.value(tv: CGFloat(44), touch: 30)
+    /// Room a ruler time label needs.
+    static let rulerLabelWidth = PlatformMetric.value(tv: CGFloat(130), touch: 76)
     static let previewHeight = PlatformMetric.value(tv: CGFloat(340), touch: 190)
     /// Preview height on phones, where vertical space belongs to the channel grid.
     static let compactPreviewHeight: CGFloat = 110

@@ -45,8 +45,20 @@ struct GuideRowView: View {
 
     private var channelCell: some View {
         HStack(spacing: DesignTokens.Spacing.sm) {
-            ChannelBadge(number: channel.number, callSign: channel.callSign)
-            if !isNarrowLayout {
+            if isNarrowLayout {
+                // No room for the badge and the name: the number and the name.
+                VStack(alignment: .leading, spacing: .zero) {
+                    Text(String(channel.number))
+                        .font(Typography.channelNumber)
+                        .foregroundStyle(theme.accent)
+                    Text(channel.name)
+                        .font(Typography.micro)
+                        .foregroundStyle(theme.textPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(Typography.minimumScaleFactor)
+                }
+            } else {
+                ChannelBadge(number: channel.number, callSign: channel.callSign)
                 Text(channel.name)
                     .font(Typography.caption)
                     .foregroundStyle(theme.textPrimary)

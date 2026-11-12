@@ -131,6 +131,8 @@ struct GuidePreviewPanel: View {
     private func timing(for program: ScheduledProgram) -> String {
         let now = Date.now
         let range = ScheduleFormatting.range(program)
+        // iPhone in portrait: the times alone fit; the grid shows how far along it is.
+        if isNarrow { return range }
         if program.contains(now) {
             return "\(range) · \(ScheduleFormatting.remaining(in: program, at: now))"
         }

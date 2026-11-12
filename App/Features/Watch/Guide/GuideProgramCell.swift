@@ -22,7 +22,7 @@ struct GuideProgramCell: View {
                     .font(Typography.micro)
             }
             if width >= GuideLayout.minimumTitleWidth {
-                labels(showsSubtitle: width >= GuideLayout.minimumSubtitleWidth)
+                labels(isWide: width >= GuideLayout.minimumSubtitleWidth)
             }
             Spacer(minLength: .zero)
             if endsAfterWindow {
@@ -42,13 +42,14 @@ struct GuideProgramCell: View {
         .zIndex(isFocused ? 1 : .zero)
     }
 
-    private func labels(showsSubtitle: Bool) -> some View {
+    /// Titles never shrink or break inside a word: a second line only where
+    /// the cell is wide enough for whole words (iPhone in portrait).
+    private func labels(isWide: Bool) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.hairline) {
             Text(program.item.headline)
                 .font(Typography.bodyEmphasis)
-                .lineLimit(isNarrowLayout ? 2 : 1)
-                .minimumScaleFactor(isNarrowLayout ? Typography.minimumScaleFactor : 1)
-            if !isNarrowLayout, showsSubtitle, let subheadline = program.item.subheadline {
+                .lineLimit(isNarrowLayout && isWide ? 2 : 1)
+            if !isNarrowLayout, isWide, let subheadline = program.item.subheadline {
                 Text(subheadline)
                     .font(Typography.caption)
                     .opacity(DesignTokens.Opacity.strong)
