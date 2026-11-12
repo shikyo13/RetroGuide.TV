@@ -230,6 +230,13 @@ final class ServerLibrary {
         progress: @escaping @MainActor (LibraryLoadProgress) -> Void,
         onServerReady: @escaping @MainActor () async -> Void
     ) async throws -> Bool {
+        // A server not known to answer is checked first, and a Plex server
+        // that doesn't answer at its saved address is found again through the
+        // account (it may have moved, or the viewer's network can't reach the
+        // home address), rather than waiting out a download that can't work.
+        for account in self.accounts where status[account.id] != .online {
+            if await isReachable(account) { status[account.id] = .online }
+        }
         let accounts = accounts
         let aggregator = ProgressAggregator(servers: accounts, report: progress)
         var failures: [Error] = []
