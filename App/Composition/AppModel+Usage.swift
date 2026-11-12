@@ -1,14 +1,21 @@
 import Foundation
 import RetroGuideKit
 
-/// Anonymous setup and usage steps (see ``UsageEvent``).
+/// Setup and usage steps (see ``UsageEvent``).
 extension AppModel {
     func recordUsage(_ name: UsageEvent.Name, detail: String = UsageEvent.noDetail) {
         PurchaseAttribution.shared.record(UsageEvent(name, detail: detail))
     }
 
-    /// The app is in use today, and which kinds of server it has.
+    /// The app is in use today, and which kinds of server it has. Not before
+    /// the saved servers are loaded, or it would say there are none.
     func recordActive() {
+        guard phase != .launching else { return }
+        recordActiveWithLoadedServers()
+    }
+
+    /// At launch, once the saved servers are loaded.
+    func recordActiveWithLoadedServers() {
         recordUsage(.active, detail: UsageEvent.serverKinds(servers.accounts.map(\.kind)))
     }
 

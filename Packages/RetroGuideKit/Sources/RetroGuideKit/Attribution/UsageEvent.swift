@@ -1,7 +1,8 @@
 import Foundation
 
-/// "This installation did `name` (`detail`) on `day`": anonymous setup and
-/// usage steps, so it's known where people stop. Details come from fixed
+/// "This installation did `name` (`detail`) on `day`": setup and usage
+/// steps, so it's known where people stop. Sent with the random installation
+/// identifier that purchase measurement also uses. Details come from fixed
 /// lists. Never titles, server addresses, library contents or viewing history.
 public struct UsageEvent: Codable, Hashable, Sendable {
     public enum Name: String, Codable, Sendable, CaseIterable {

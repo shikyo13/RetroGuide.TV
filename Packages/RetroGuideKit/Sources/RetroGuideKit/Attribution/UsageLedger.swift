@@ -14,6 +14,12 @@ public actor UsageLedger {
         static let fileBytes = 256 * 1024
     }
 
+    /// Thrown by a delivery the service refused for good (a malformed or
+    /// unknown request): that batch is dropped rather than retried forever.
+    public struct Rejected: Error {
+        public init() {}
+    }
+
     private struct State: Codable {
         var pending: [UsageEvent] = []
         var sent: Set<UsageEvent> = []
@@ -41,8 +47,9 @@ public actor UsageLedger {
     public func record(_ event: UsageEvent) -> Bool {
         guard !state.sent.contains(event), !state.pending.contains(event) else { return false }
         state.pending.append(event)
-        if state.pending.count > Limits.pending {
-            state.pending.removeFirst(state.pending.count - Limits.pending)
+        while state.pending.count > Limits.pending {
+            // Daily marks go first: the steps of someone's first day matter most.
+            state.pending.remove(at: state.pending.firstIndex { $0.name == .active } ?? state.pending.startIndex)
         }
         persist()
         return true
@@ -59,9 +66,10 @@ public actor UsageLedger {
         defer { draining = false }
         while !state.pending.isEmpty {
             let batch = Array(state.pending.prefix(Limits.batch))
-            do { try await deliver(batch) } catch { return false }
+            var accepted = true
+            do { try await deliver(batch) } catch is Rejected { accepted = false } catch { return false }
             state.pending.removeAll(where: batch.contains)
-            state.sent.formUnion(batch)
+            if accepted { state.sent.formUnion(batch) }
             forgetOldSent(now: now)
             persist()
         }

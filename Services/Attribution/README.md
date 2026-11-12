@@ -12,7 +12,7 @@ The service verifies app transactions, purchase transactions, and App Store Serv
 
 ## Usage steps
 
-The app also sends anonymous setup and usage steps, so it is known where people stop: which server setup step was reached, whether a Plex or Jellyfin server was saved, whether channels were built (in coarse count buckets), whether a program played, whether the Pro page was opened, and one "active" mark per day with the kinds of server the app has. Each is stored once per installation and UTC day with the device type and app version. Names and details come from fixed lists in `attribution/usage.py`; anything else is dropped. No titles, server addresses, library contents or viewing history are sent.
+The app also sends setup and usage steps, tied to the same random installation identifier, so it is known where people stop: which server setup step was reached, whether a Plex or Jellyfin server was saved, whether channels were built (in coarse count buckets), whether a program played, whether the Pro page was opened, and one "active" mark per day with the kinds of server the app has. Each is stored once per installation and UTC day with the device type and app version. Names and details come from fixed lists in `attribution/usage.py`; anything else is dropped. No titles, server addresses, library contents or viewing history are sent.
 
 ## Run
 

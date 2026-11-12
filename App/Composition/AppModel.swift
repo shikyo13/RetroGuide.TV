@@ -314,7 +314,7 @@ final class AppModel {
         await servers.restore()
         guard restoreSession == sessionGeneration else { return }
         seedSharedSelections()
-        recordActive()
+        recordActiveWithLoadedServers()
         settingsSync.startIfEnabled()
         if tuner.languagePreferences == nil {
             tuner.languagePreferences = servers.provisionalLanguagePreferences

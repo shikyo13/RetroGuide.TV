@@ -1,4 +1,4 @@
-"""Anonymous setup and usage steps sent by the app, and their report.
+"""Setup and usage steps sent by the app, and their report.
 
 Each row says an installation did something on a UTC day. Names and details
 come from fixed lists; anything else is dropped, so newer app versions can

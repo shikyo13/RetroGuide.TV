@@ -72,7 +72,11 @@ actor AttributionDelivery {
                 }
                 let events = await usage.drain { [weak self] batch in
                     guard let self else { throw URLError(.cancelled) }
-                    _ = try await self.post(path: "usage", payload: UsageBatch(client: client, events: batch))
+                    do {
+                        _ = try await self.post(path: "usage", payload: UsageBatch(client: client, events: batch))
+                    } catch let failure as HTTPFailure where failure.isPermanent {
+                        throw UsageLedger.Rejected()
+                    }
                 }
                 delivered = purchases && events
             }
@@ -126,9 +130,8 @@ actor AttributionDelivery {
         request.setValue("Bearer \(identity.secret)", forHTTPHeaderField: "Authorization")
         request.httpBody = try JSONEncoder().encode(payload)
         let (bytes, response) = try await session.bytes(for: request)
-        guard let response = response as? HTTPURLResponse, (200..<300).contains(response.statusCode) else {
-            throw URLError(.badServerResponse)
-        }
+        guard let response = response as? HTTPURLResponse else { throw URLError(.badServerResponse) }
+        guard (200..<300).contains(response.statusCode) else { throw HTTPFailure(status: response.statusCode) }
         var data = Data()
         for try await byte in bytes {
             guard data.count < Settings.maximumResponseBytes else { throw URLError(.dataLengthExceedsMaximum) }
@@ -138,6 +141,15 @@ actor AttributionDelivery {
     }
 
     private struct RegistrationResponse: Decodable { let attributionResolved: Bool }
+
+    /// The service answered with an error status.
+    private struct HTTPFailure: Error {
+        let status: Int
+
+        /// The request itself is wrong (or unknown to this service):
+        /// sending it again won't help.
+        var isPermanent: Bool { [400, 404, 409, 413, 422].contains(status) }
+    }
 
     private struct UsageBatch: Encodable {
         let platform: String
