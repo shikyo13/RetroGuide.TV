@@ -72,7 +72,7 @@ public struct SharedSettings: Sendable {
     private static func putLineup(_ lineup: LineupCustomization, prefix: String, into values: inout SettingsValues) throws {
         let defaultOrder = lineup.defaultOrdering.map(SyncedOrdering.stored)
         try values.put(defaultOrder?.legacy, prefix + "/defaultOrder")
-        if let flag = defaultOrder?.flag { try values.put(flag, prefix + "/defaultOrderFlag") }
+        if let full = defaultOrder?.full { try values.put(full, prefix + "/defaultOrderFlag") }
         try values.put(lineup.simulcastLimit, prefix + "/simulcast")
         try putMembers(lineup.hiddenChannelIDs, prefix + "/hidden", into: &values)
         try putMembers(Set(lineup.disabledSources.map(\.rawValue)), prefix + "/disabled", into: &values)
@@ -81,12 +81,12 @@ public struct SharedSettings: Sendable {
             let order = SyncedOrdering.stored(channel.ordering)
             legacy.ordering = order.legacy
             try values.putUnordered(legacy, SettingsValues.key(prefix + "/custom", channel.id))
-            if let flag = order.flag { try values.put(flag, SettingsValues.key(prefix + "/orderFlag", channel.id)) }
+            try values.put(order.full, SettingsValues.key(prefix + "/orderFlag", channel.id))
         }
         for (id, ordering) in lineup.orderingOverrides {
             let order = SyncedOrdering.stored(ordering)
             try values.put(order.legacy, SettingsValues.key(prefix + "/order", id))
-            if let flag = order.flag { try values.put(flag, SettingsValues.key(prefix + "/orderFlag", id)) }
+            try values.put(order.full, SettingsValues.key(prefix + "/orderFlag", id))
         }
         for (channel, titles) in lineup.removedTitles {
             for title in titles {
@@ -99,19 +99,19 @@ public struct SharedSettings: Sendable {
     private static func lineup(in values: SettingsValues, prefix: String) throws -> LineupCustomization {
         var result = LineupCustomization()
         let flags = try values.members(String.self, prefix + "/orderFlag")
-        result.defaultOrdering = SyncedOrdering.read(try values.get(String?.self, prefix + "/defaultOrder") ?? nil, flag: try values.get(String.self, prefix + "/defaultOrderFlag"))
+        result.defaultOrdering = SyncedOrdering.read(try values.get(String?.self, prefix + "/defaultOrder") ?? nil, full: try values.get(String.self, prefix + "/defaultOrderFlag"))
         result.simulcastLimit = try values.get(SimulcastLimit.self, prefix + "/simulcast") ?? .two
         result.hiddenChannelIDs = Set(try values.members(Bool.self, prefix + "/hidden").filter(\.value).keys)
         result.disabledSources = Set(try values.members(Bool.self, prefix + "/disabled").filter(\.value).keys.compactMap(ChannelSource.init(rawValue:)))
         result.orderingOverrides = try values.members(String.self, prefix + "/order")
             .reduce(into: [:]) { overrides, entry in
-                if let ordering = SyncedOrdering.read(entry.value, flag: flags[entry.key]) { overrides[entry.key] = ordering }
+                if let ordering = SyncedOrdering.read(entry.value, full: flags[entry.key]) { overrides[entry.key] = ordering }
             }
         let custom = try values.members(ChannelDefinition.self, prefix + "/custom")
         guard custom.allSatisfy({ $0.key == $0.value.id && $0.value.source == .custom }) else { throw SettingsReplica.Failure.invalidRecord }
         result.customChannels = custom.values.sorted { ($0.number, $0.id) < ($1.number, $1.id) }.map { channel in
             var channel = channel
-            if channel.ordering == .marathon, flags[channel.id] == SyncedOrdering.releaseFlag { channel.ordering = .releaseOrder }
+            channel.ordering = SyncedOrdering.read(channel.ordering.rawValue, full: flags[channel.id]) ?? channel.ordering
             return channel
         }
         var numbers: Set<Int> = []
