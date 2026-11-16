@@ -67,7 +67,7 @@ struct ServerDetailView: View {
                     }
                 }
             }
-            .confirmationDialog("Remove \(account.name)? Its programs will leave every channel.", isPresented: $isConfirmingRemoval) {
+            .confirmationDialog("Remove \(account.name) (\(account.kind.displayName))? Its programs will leave every channel.", isPresented: $isConfirmingRemoval, titleVisibility: .visible) {
                 Button("Remove", role: .destructive) {
                     dismiss()
                     Task { await app.removeServer(id: serverID) }
