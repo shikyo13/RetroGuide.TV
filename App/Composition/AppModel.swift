@@ -32,10 +32,14 @@ final class AppModel {
 
     private(set) var isManagingStartup = false
 
-    private(set) var phase: Phase = .launching {
-        didSet {
-            if case .failed = phase, phase != oldValue { recordUsage(.libraryFailed) }
-        }
+    private(set) var phase: Phase = .launching
+
+    /// Loading channels failed with nothing to show: says so, and records why.
+    func failLoading(_ message: String, reason: UsageEvent.FailureReason) {
+        let failed = Phase.failed(message)
+        guard phase != failed else { return }
+        recordUsage(.libraryFailed, detail: reason.rawValue)
+        phase = failed
     }
     private(set) var lineup: [Channel] = []
     /// True while channel schedules are being rebuilt (seconds with a large library).
@@ -326,7 +330,7 @@ final class AppModel {
             return
         }
         guard !store.startupIncomplete else {
-            phase = .failed("The previous startup did not finish. You can change libraries or remove a server before trying again.")
+            failLoading("The previous startup did not finish. You can change libraries or remove a server before trying again.", reason: .interrupted)
             return
         }
         store.startupIncomplete = true
@@ -473,7 +477,7 @@ final class AppModel {
         healthTask?.cancel()
         networkMonitor.stop()
         isSessionStarted = false
-        phase = .failed("Channel loading was cancelled. Your saved servers and library selections have not changed.")
+        failLoading("Channel loading was cancelled. Your saved servers and library selections have not changed.", reason: .cancelled)
     }
 
     func manageStartup() {
@@ -676,7 +680,7 @@ final class AppModel {
             guard session == sessionGeneration else { return }
             refreshError = error.localizedDescription
             if showsProgress {
-                phase = .failed(error.localizedDescription)
+                failLoading(error.localizedDescription, reason: UsageEvent.FailureReason(error))
             }
         }
     }

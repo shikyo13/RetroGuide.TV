@@ -9,12 +9,20 @@ from datetime import date, datetime, timedelta, timezone
 import time
 
 SERVERS = {'none', 'plex', 'jellyfin', 'jellyfin+plex'}
+# UsageEvent.FailureReason and UsageEvent.SetupProblem in the app (1.9.1).
+REASONS = {'timeout', 'offline', 'unreachable', 'notSecure', 'certificate', 'unauthorized',
+           'serverError', 'rejected', 'unreadable', 'badAddress', 'cancelled', 'interrupted',
+           'noLibraries', 'other'}
+PROBLEMS = {'plexNoServers', 'jellyfinFoundNone', 'jellyfinFoundNotSecure', 'jellyfinFoundUntrusted',
+            'jellyfinNotSecure', 'jellyfinUntrusted', 'jellyfinNoAnswer'}
 EVENTS = {
     'active': SERVERS,
     'setup': {'welcome', 'plexLink', 'plexServers', 'jellyfinFind', 'jellyfinAddress',
               'jellyfinSignIn', 'libraries', 'failed'},
     'serverConnected': {'plex', 'jellyfin'},
-    'libraryFailed': {''},
+    'libraryFailed': {''} | REASONS,
+    'setupFailed': REASONS,
+    'setupProblem': PROBLEMS,
     'lineupReady': {'0', '1-9', '10-49', '50+'},
     'watched': {'', 'plex', 'jellyfin'},
     'proViewed': {''},
@@ -56,8 +64,10 @@ def store(database, installation, platform, version, events):
                        [(installation, name, detail, day, platform, version, now)
                         for name, detail, day in events])
 
+WHY = ('setupProblem', 'setupFailed', 'libraryFailed')
+
 FUNNEL = [('setup', 'welcome'), ('setup', 'plexLink'), ('setup', 'jellyfinFind'),
-          ('setup', 'libraries'), ('setup', 'failed'), ('serverConnected', None),
+          ('setup', 'libraries'), ('setup', 'failed'), ('setupProblem', None), ('serverConnected', None),
           ('libraryFailed', None), ('lineupReady', None), ('watched', None), ('proViewed', None)]
 
 def usage_report(database, start, end):
@@ -101,6 +111,13 @@ def usage_report(database, start, end):
         steps = {f'{n}:{d}' if d else n: count(installs, n, d) for n, d in FUNNEL}
         steps['activeOnLaterDay'] = sum(len(days_active[i] - {first_day[i]}) > 0 for i in installs)
         funnel[platform] = {'installations': len(installs), **steps}
+    # Why installations first seen in range stopped: installations per reason.
+    why = defaultdict(lambda: defaultdict(int))
+    for install in cohort:
+        for name, detail in reached[install]:
+            if name in WHY and detail:
+                why[name][detail] += 1
     return {'start': start.isoformat(), 'end': end.isoformat(),
             'daily': {day: {k: len(v) for k, v in sorted(names.items())} for day, names in sorted(daily.items())},
-            'firstSeenInRange': funnel}
+            'firstSeenInRange': funnel,
+            'whyFirstSeenInRange': {name: dict(sorted(counts.items())) for name, counts in sorted(why.items())}}

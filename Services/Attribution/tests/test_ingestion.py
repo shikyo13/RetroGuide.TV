@@ -172,3 +172,33 @@ def test_usage_needs_a_registered_installation_and_keeps_only_known_events(setup
     funnel = usage_report(db,today,today)['firstSeenInRange']['iPhone']
     assert funnel['installations'] == 1 and funnel['setup:welcome'] == 1 and funnel['watched'] == 1
     assert funnel['proViewed'] == 0
+
+def test_usage_reasons_match_the_app():
+    """The app's reason names must be the service's, or its events are dropped."""
+    import re
+    from pathlib import Path
+    from attribution.usage import REASONS, PROBLEMS
+    swift = (Path(__file__).parents[3] / 'Packages/RetroGuideKit/Sources/RetroGuideKit/Attribution/UsageEvent.swift').read_text()
+    def cases(enum):
+        body = swift.split(f'enum {enum}:')[1].split('\n    }\n')[0]
+        return set(re.findall(r'^\s+case (\w+)\s*$', body, re.M))
+    assert cases('FailureReason') == REASONS
+    assert cases('SetupProblem') == PROBLEMS
+
+def test_usage_report_says_why_setup_stopped(setup):
+    from datetime import datetime, timezone
+    from attribution.usage import usage_report
+    db,apple,client,identifier = setup
+    today = datetime.now(timezone.utc).date().isoformat()
+    assert register(client,identifier).status_code == 200
+    body = {'platform':'iPhone', 'version':'1.9.1', 'events':[
+        {'name':'setup', 'detail':'welcome', 'day':today},
+        {'name':'setupProblem', 'detail':'plexNoServers', 'day':today},
+        {'name':'libraryFailed', 'detail':'timeout', 'day':today},
+        {'name':'setupFailed', 'detail':'a message', 'day':today}]}
+    response = client.post(f'/v1/installations/{identifier}/usage',
+                           headers={'Authorization':f'Bearer {SECRET}'}, json=body)
+    assert response.json() == {'accepted':3}
+    report = usage_report(db, datetime.now(timezone.utc).date(), datetime.now(timezone.utc).date())
+    assert report['whyFirstSeenInRange'] == {'libraryFailed':{'timeout':1}, 'setupProblem':{'plexNoServers':1}}
+    assert report['firstSeenInRange']['iPhone']['setupProblem'] == 1
