@@ -38,6 +38,9 @@ class Database:
         self.path = path
         with self.connection() as db:
             db.executescript(SCHEMA + USAGE_SCHEMA)
+            # Added in 2026-11: the App Store country Apple signs into each purchase.
+            if 'storefront' not in {c['name'] for c in db.execute('PRAGMA table_info(purchases)')}:
+                db.execute('ALTER TABLE purchases ADD COLUMN storefront TEXT')
         os.chmod(self.path, 0o600)
 
     @contextmanager
@@ -84,7 +87,8 @@ class Database:
         values = (enum_value(tx.environment), tx.transactionId, tx.originalTransactionId,
                   str(tx.appAccountToken).lower() if tx.appAccountToken else None,
                   digest(str(identity)) if identity else None, tx.purchaseDate, tx.signedDate,
-                  tx.price, tx.currency, enum_value(tx.inAppOwnershipType), tx.revocationDate)
+                  tx.price, tx.currency, enum_value(tx.inAppOwnershipType), tx.revocationDate,
+                  getattr(tx, 'storefront', None))
         if not tx.purchaseDate or not tx.signedDate or not values[9]:
             raise ValueError('Incomplete transaction')
         with self.connection() as db:
@@ -92,10 +96,13 @@ class Database:
                 if db.execute('SELECT 1 FROM notifications WHERE id=?', (notification_id,)).fetchone():
                     return
                 db.execute('INSERT INTO notifications VALUES(?,?)', (notification_id, int(time.time())))
-            db.execute('''INSERT INTO purchases VALUES(?,?,?,?,?,?,?,?,?,?,?)
+            db.execute('''INSERT INTO purchases(environment,transaction_id,original_id,account_token,
+                app_identity,purchased_at,signed_at,price,currency,ownership,revoked_at,storefront)
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(environment,transaction_id) DO UPDATE SET
                 signed_at=excluded.signed_at,price=excluded.price,currency=excluded.currency,
                 ownership=excluded.ownership,revoked_at=excluded.revoked_at,
                 account_token=COALESCE(purchases.account_token,excluded.account_token),
-                app_identity=COALESCE(purchases.app_identity,excluded.app_identity)
+                app_identity=COALESCE(purchases.app_identity,excluded.app_identity),
+                storefront=COALESCE(excluded.storefront,purchases.storefront)
                 WHERE excluded.signed_at>purchases.signed_at''', values)

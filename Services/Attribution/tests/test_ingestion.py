@@ -202,3 +202,28 @@ def test_usage_report_says_why_setup_stopped(setup):
     report = usage_report(db, datetime.now(timezone.utc).date(), datetime.now(timezone.utc).date())
     assert report['whyFirstSeenInRange'] == {'libraryFailed':{'timeout':1}, 'setupProblem':{'plexNoServers':1}}
     assert report['firstSeenInRange']['iPhone']['setupProblem'] == 1
+
+def test_country_and_language_split_reports_without_costing_events(setup):
+    from datetime import datetime, timezone
+    from attribution.usage import usage_report
+    db,apple,client,identifier = setup
+    today = datetime.now(timezone.utc).date()
+    assert register(client,identifier).status_code == 200
+    post = lambda **extra: client.post(f'/v1/installations/{identifier}/usage',
+        headers={'Authorization':f'Bearer {SECRET}'},
+        json={'platform':'iPad', 'version':'1.9.2',
+              'events':[{'name':'setup', 'detail':'welcome', 'day':today.isoformat()}], **extra})
+    # Older apps send neither; a malformed value is ignored, never the events.
+    assert post().json() == {'accepted':1}
+    assert post(storefront='Germany', language='xx').json() == {'accepted':1}
+    report = usage_report(db,today,today)
+    assert report['firstSeenByStorefront'] == {'unknown': report['firstSeenInRange']['all']}
+    assert post(storefront='DEU', language='de').json() == {'accepted':1}
+    report = usage_report(db,today,today)
+    assert report['firstSeenByStorefront']['DEU']['setup:welcome'] == 1
+    assert report['firstSeenByLanguage']['de']['installations'] == 1
+    # Purchases carry the App Store country Apple signed into them.
+    apple.tx = transaction(appAccountToken=identifier, storefront='DEU', currency='EUR')
+    assert upload(client,identifier).status_code == 200
+    assert revenue_report(db,0,3000)['byStorefront'] == [
+        {'storefront':'DEU', 'currency':'EUR', 'purchases':1, 'refunds':0}]

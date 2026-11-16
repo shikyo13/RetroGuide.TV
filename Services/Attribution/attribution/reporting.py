@@ -17,6 +17,8 @@ def revenue_report(database, start_ms, end_ms, environment='Production'):
                 identities[installation['app_identity']].append(dict(installation))
     groups = defaultdict(lambda: {'purchases':0, 'refunds':0, 'unknownPricePurchases':0,
                                  'gross':Decimal(0), 'refunded':Decimal(0)})
+    # Purchases per App Store country (Apple-signed), in each currency.
+    countries = defaultdict(lambda: {'purchases':0, 'refunds':0})
     for row in rows:
         # Family Sharing is access, not a second paid transaction.
         if row['ownership'] != 'PURCHASED':
@@ -41,6 +43,9 @@ def revenue_report(database, start_ms, end_ms, environment='Production'):
                attribution.get('adGroupId') if attributed else None,
                attribution.get('keywordId') if attributed else None,
                row['currency'] or 'UNKNOWN')
+        country = countries[(row['storefront'] or 'unknown', row['currency'] or 'UNKNOWN')]
+        country['purchases'] += 1
+        country['refunds'] += row['revoked_at'] is not None
         group = groups[key]
         group['purchases'] += 1
         group['refunds'] += row['revoked_at'] is not None
@@ -58,4 +63,5 @@ def revenue_report(database, start_ms, end_ms, environment='Production'):
                            grossSales=str(group['gross']), refundedSales=str(group['refunded']),
                            netSales=str(group['gross']-group['refunded'])))
     return {'environment':environment, 'purchaseStartInclusive':start_ms, 'purchaseEndExclusive':end_ms,
-            'groups':result}
+            'groups':result,
+            'byStorefront':[dict(storefront=s, currency=c, **v) for (s, c), v in sorted(countries.items())]}

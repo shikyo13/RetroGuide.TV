@@ -6,6 +6,7 @@ add events without breaking older servers.
 """
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
+import re
 import time
 
 SERVERS = {'none', 'plex', 'jellyfin', 'jellyfin+plex'}
@@ -28,6 +29,12 @@ EVENTS = {
     'proViewed': {''},
 }
 PLATFORMS = ('iPhone', 'iPad', 'AppleTV', 'Mac')
+# The App Store country (StoreKit's Storefront.countryCode, ISO 3166-1 alpha-3),
+# not where the device is. Apple signs the same code into each purchase.
+STOREFRONT = re.compile(r'[A-Z]{3}')
+# The languages the app is translated into; it reports the one it shows.
+LANGUAGES = {'en', 'es', 'fr', 'de', 'it', 'pt-BR', 'nl', 'ja', 'ko', 'zh-Hans', 'zh-Hant', 'pl', 'sv'}
+UNKNOWN = 'unknown'
 # Events from devices with a wrong clock or a long time offline.
 ACCEPTED_DAYS_BACK = 14
 ACCEPTED_DAYS_AHEAD = 1
@@ -37,6 +44,9 @@ CREATE TABLE IF NOT EXISTS usage_events (
  installation TEXT NOT NULL, name TEXT NOT NULL, detail TEXT NOT NULL, day TEXT NOT NULL,
  platform TEXT NOT NULL, version TEXT NOT NULL, received_at INTEGER NOT NULL,
  PRIMARY KEY(installation, name, detail, day)
+);
+CREATE TABLE IF NOT EXISTS installation_context (
+ installation TEXT PRIMARY KEY, storefront TEXT, language TEXT, updated_at INTEGER NOT NULL
 );
 '''
 
@@ -57,12 +67,26 @@ def accepted(events, today=None):
             kept.add((event.name, event.detail, event.day))
     return kept
 
-def store(database, installation, platform, version, events):
+def context(storefront, language):
+    """The country and language worth keeping; anything unexpected is dropped."""
+    storefront = storefront if storefront and STOREFRONT.fullmatch(storefront) else None
+    language = language if language in LANGUAGES else None
+    return storefront, language
+
+def store(database, installation, platform, version, events, storefront=None, language=None):
     now = int(time.time())
+    storefront, language = context(storefront, language)
     with database.connection() as db:
         db.executemany('INSERT OR IGNORE INTO usage_events VALUES(?,?,?,?,?,?,?)',
                        [(installation, name, detail, day, platform, version, now)
                         for name, detail, day in events])
+        if storefront or language:
+            # The latest values win: people change their App Store country or language.
+            db.execute('''INSERT INTO installation_context VALUES(?,?,?,?)
+                ON CONFLICT(installation) DO UPDATE SET
+                storefront=COALESCE(excluded.storefront,installation_context.storefront),
+                language=COALESCE(excluded.language,installation_context.language),
+                updated_at=excluded.updated_at''', (installation, storefront, language, now))
 
 WHY = ('setupProblem', 'setupFailed', 'libraryFailed')
 
@@ -81,6 +105,7 @@ def usage_report(database, start, end):
         raise ValueError('Start must not follow end')
     with database.connection() as db:
         rows = db.execute('SELECT installation,name,detail,day,platform,version FROM usage_events').fetchall()
+        contexts = {row['installation']: row for row in db.execute('SELECT * FROM installation_context')}
     first_day, platform_of, reached, days_active = {}, {}, defaultdict(set), defaultdict(set)
     daily = defaultdict(lambda: defaultdict(set))
     for row in rows:
@@ -106,11 +131,17 @@ def usage_report(database, start, end):
     by_platform = defaultdict(list)
     for install in cohort:
         by_platform[platform_of[install]].append(install)
-    funnel = {}
-    for platform, installs in sorted(by_platform.items()) + [('all', cohort)]:
+    def funnel_of(installs):
         steps = {f'{n}:{d}' if d else n: count(installs, n, d) for n, d in FUNNEL}
         steps['activeOnLaterDay'] = sum(len(days_active[i] - {first_day[i]}) > 0 for i in installs)
-        funnel[platform] = {'installations': len(installs), **steps}
+        return {'installations': len(installs), **steps}
+    funnel = {platform: funnel_of(installs) for platform, installs in sorted(by_platform.items()) + [('all', cohort)]}
+    def grouped(field):
+        groups = defaultdict(list)
+        for install in cohort:
+            value = contexts[install][field] if install in contexts else None
+            groups[value or UNKNOWN].append(install)
+        return {key: funnel_of(installs) for key, installs in sorted(groups.items())}
     # Why installations first seen in range stopped: installations per reason.
     why = defaultdict(lambda: defaultdict(int))
     for install in cohort:
@@ -120,4 +151,6 @@ def usage_report(database, start, end):
     return {'start': start.isoformat(), 'end': end.isoformat(),
             'daily': {day: {k: len(v) for k, v in sorted(names.items())} for day, names in sorted(daily.items())},
             'firstSeenInRange': funnel,
+            'firstSeenByStorefront': grouped('storefront'),
+            'firstSeenByLanguage': grouped('language'),
             'whyFirstSeenInRange': {name: dict(sorted(counts.items())) for name, counts in sorted(why.items())}}
