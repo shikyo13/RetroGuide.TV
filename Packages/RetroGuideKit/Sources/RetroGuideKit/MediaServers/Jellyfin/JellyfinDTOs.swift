@@ -91,6 +91,12 @@ struct JellyfinPublicInfo: Decodable {
     let startupWizardCompleted: Bool?
 }
 
+struct JellyfinPublicUserDTO: Decodable {
+    let id: String
+    let name: String
+    let hasPassword: Bool?
+}
+
 struct JellyfinAuthenticationResult: Decodable {
     let accessToken: String
     let user: JellyfinUser

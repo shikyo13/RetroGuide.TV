@@ -61,9 +61,15 @@ final class MPVCore: @unchecked Sendable {
             // Check the server's certificate: stream addresses carry its access token.
             // Without this, FFmpeg would hand them to anyone presenting a certificate.
             ("tls-verify", "yes"),
-            ("stream-lavf-o", "protocol_whitelist=[https,tls,tcp,crypto,data,file]"),
-            ("demuxer-lavf-o", "protocol_whitelist=[https,tls,tcp,crypto,data,file]"),
+            (streamProtocols, secureProtocols),
+            (demuxerProtocols, secureProtocols),
         ]
+        static let streamProtocols = "stream-lavf-o"
+        static let demuxerProtocols = "demuxer-lavf-o"
+        static let secureProtocols = "protocol_whitelist=[https,tls,tcp,crypto,data,file]"
+        /// Only for a stream that is itself a plain-HTTP address the viewer allowed
+        /// (home network or VPN): an HTTPS stream can never fall back to HTTP.
+        static let plainProtocols = "protocol_whitelist=[http,https,tls,tcp,crypto,data,file]"
         /// FFmpeg's TLS (GnuTLS) can't read Apple's trust store, so it checks against
         /// a bundled copy of Mozilla's (see Tools/CABundle).
         static let certificateAuthoritiesFile = "tls-ca-file"
@@ -202,7 +208,11 @@ final class MPVCore: @unchecked Sendable {
         mpv_set_property_string(handle, Option.startPositionProperty, start)
         // A released background stream may have left the player paused.
         setPaused(false)
-        command(["loadfile", (DebugLaunchOptions.playURLOverride ?? url).absoluteString, "replace"])
+        let file = DebugLaunchOptions.playURLOverride ?? url
+        let protocols = file.scheme?.lowercased() == "http" ? Option.plainProtocols : Option.secureProtocols
+        mpv_set_property_string(handle, Option.streamProtocols, protocols)
+        mpv_set_property_string(handle, Option.demuxerProtocols, protocols)
+        command(["loadfile", file.absoluteString, "replace"])
     }
 
     func stop() {

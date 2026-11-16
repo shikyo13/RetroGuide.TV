@@ -15,6 +15,11 @@ extension OnboardingModel {
             guard !Task.isCancelled, let self else { return }
             if let problem = scan.problem { record(problem) }
             scan.servers.removeAll { excluded.contains($0.id) }
+            // One server and nothing else to choose: straight to signing in.
+            if scan.servers.count == 1, scan.notSecure.isEmpty, scan.untrusted.isEmpty, let only = scan.servers.first {
+                chooseJellyfin(only)
+                return
+            }
             setStep(.findingJellyfin(scan, isSearching: false))
         }
     }
@@ -97,12 +102,32 @@ extension OnboardingModel {
         }
     }
 
-    /// Signs in to `server`, starting with Quick Connect when it's turned on.
+    /// Signs in to `server`. On iPhone and iPad, a server that lists its users
+    /// starts with them as tiles (tap your name; saved passwords fill in);
+    /// otherwise, and on Apple TV, Quick Connect when it's turned on.
     func chooseJellyfin(_ server: JellyfinServerInfo) {
+        chooseJellyfin(server, preferQuickConnect: false)
+    }
+
+    private func chooseJellyfin(_ server: JellyfinServerInfo, preferQuickConnect: Bool) {
         task?.cancel()
         setStep(.jellyfinSignIn(JellyfinSignIn(server: server)))
         task = Task { [weak self] in
-            await self?.runQuickConnect(on: server)
+            guard let self else { return }
+            let users = await jellyfinService.publicUsers(on: server)
+            guard !Task.isCancelled else { return }
+            #if os(iOS)
+            if !preferQuickConnect, !users.isEmpty {
+                var signIn = JellyfinSignIn(server: server)
+                signIn.users = users
+                signIn.usesPassword = true
+                signIn.isQuickConnectAvailable = await jellyfinService.isQuickConnectEnabled(on: server)
+                guard !Task.isCancelled else { return }
+                setStep(.jellyfinSignIn(signIn))
+                return
+            }
+            #endif
+            await runQuickConnect(on: server, users: users)
         }
     }
 
@@ -116,7 +141,7 @@ extension OnboardingModel {
 
     func useJellyfinQuickConnect() {
         guard case let .jellyfinSignIn(signIn) = step else { return }
-        chooseJellyfin(signIn.server)
+        chooseJellyfin(signIn.server, preferQuickConnect: true)
     }
 
     func signInToJellyfin(username: String, password: String) {
@@ -142,9 +167,10 @@ extension OnboardingModel {
 
     // MARK: - Flow
 
-    private func runQuickConnect(on server: JellyfinServerInfo) async {
+    private func runQuickConnect(on server: JellyfinServerInfo, users: [JellyfinPublicUser]) async {
         guard await jellyfinService.isQuickConnectEnabled(on: server) else {
             var signIn = JellyfinSignIn(server: server)
+            signIn.users = users
             signIn.isQuickConnectAvailable = false
             signIn.usesPassword = true
             setStep(.jellyfinSignIn(signIn))
@@ -153,7 +179,9 @@ extension OnboardingModel {
         do {
             let code = try await jellyfinService.startQuickConnect(on: server)
             guard !Task.isCancelled else { return }
-            setStep(.jellyfinSignIn(JellyfinSignIn(server: server, code: code)))
+            var waiting = JellyfinSignIn(server: server, code: code)
+            waiting.users = users
+            setStep(.jellyfinSignIn(waiting))
             while !Task.isCancelled {
                 try await Task.sleep(for: JellyfinAPI.Defaults.quickConnectPollInterval)
                 if let session = try await jellyfinService.session(for: code, on: server) {
@@ -164,6 +192,7 @@ extension OnboardingModel {
         } catch {
             guard !Task.isCancelled else { return }
             var signIn = JellyfinSignIn(server: server)
+            signIn.users = users
             signIn.usesPassword = true
             signIn.message = "Quick Connect isn't working right now (\(error.localizedDescription)). Sign in with your password instead."
             setStep(.jellyfinSignIn(signIn))

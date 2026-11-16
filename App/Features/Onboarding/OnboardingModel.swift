@@ -37,6 +37,8 @@ final class OnboardingModel {
         var usesPassword = false
         var isSigningIn = false
         var message: String?
+        /// The users the server shows on its sign-in page, as tiles.
+        var users: [JellyfinPublicUser] = []
     }
 
     /// A server that is connected but not yet saved.

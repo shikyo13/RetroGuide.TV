@@ -59,6 +59,20 @@ public enum JellyfinAddressCheck: Sendable, Hashable {
     case invalid
 }
 
+/// A user a server shows on its sign-in page.
+public struct JellyfinPublicUser: Sendable, Hashable, Identifiable {
+    public let id: String
+    public let name: String
+    /// False for a user who signs in without a password: one tap.
+    public let hasPassword: Bool
+
+    public init(id: String, name: String, hasPassword: Bool) {
+        self.id = id
+        self.name = name
+        self.hasPassword = hasPassword
+    }
+}
+
 /// A signed-in Jellyfin user.
 public struct JellyfinSession: Sendable, Hashable {
     public let accessToken: String
@@ -162,6 +176,15 @@ public struct JellyfinAccountService: Sendable {
 
     private static func same(_ info: JellyfinServerInfo, _ serverID: String?) -> Bool {
         serverID.map(info.isServer) ?? true
+    }
+
+    /// The users `server` shows on its sign-in page; empty when it hides them
+    /// (a server setting) or doesn't answer.
+    public func publicUsers(on server: JellyfinServerInfo) async -> [JellyfinPublicUser] {
+        guard let request = try? builder(server.baseURL).request(path: JellyfinAPI.Path.publicUsers),
+              let users = try? await http.decode([JellyfinPublicUserDTO].self, for: request)
+        else { return [] }
+        return users.map { JellyfinPublicUser(id: $0.id, name: $0.name, hasPassword: $0.hasPassword ?? true) }
     }
 
     public func isQuickConnectEnabled(on server: JellyfinServerInfo) async -> Bool {

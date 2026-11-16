@@ -15,6 +15,8 @@ public enum JellyfinAPI {
         static let userViews = "/UserViews"
         static let items = "/Items"
         static let currentUser = "/Users/Me"
+        /// The users a server shows on its sign-in page (none when hidden).
+        static let publicUsers = "/Users/Public"
         static let authenticateByName = "/Users/AuthenticateByName"
         static let authenticateWithQuickConnect = "/Users/AuthenticateWithQuickConnect"
         static let quickConnectEnabled = "/QuickConnect/Enabled"

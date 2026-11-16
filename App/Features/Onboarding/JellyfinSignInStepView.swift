@@ -85,6 +85,9 @@ struct JellyfinSignInStepView: View {
 
     private var passwordForm: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+            if !signIn.users.isEmpty {
+                userTiles
+            }
             TextField("Username", text: $username)
                 .textContentType(.username)
                 #if os(iOS)
@@ -116,6 +119,39 @@ struct JellyfinSignInStepView: View {
                         .buttonStyle(.retro)
                 }
             }
+        }
+    }
+
+    /// The server's users, like Jellyfin's own sign-in page: tap a name to
+    /// fill it in, or to sign straight in when that user has no password.
+    private var userTiles: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            Text("Who's watching?")
+                .font(Typography.callout)
+                .foregroundStyle(theme.textSecondary)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: DesignTokens.Spacing.sm) {
+                    ForEach(signIn.users) { user in
+                        Button {
+                            choose(user)
+                        } label: {
+                            Label(user.name, systemImage: username == user.name ? "person.crop.circle.fill" : "person.crop.circle")
+                        }
+                        .buttonStyle(username == user.name ? .retroPrimary : .retro)
+                    }
+                }
+            }
+            .scrollClipDisabled()
+        }
+    }
+
+    private func choose(_ user: JellyfinPublicUser) {
+        username = user.name
+        if user.hasPassword {
+            focus = .password
+        } else {
+            password = ""
+            submit()
         }
     }
 
