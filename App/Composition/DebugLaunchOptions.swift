@@ -21,6 +21,9 @@ import SwiftUI
 ///
 /// - `RETROGUIDE_DEV_ATTRIBUTION_URL`: an HTTPS measurement service to use
 ///   instead of the real one (a local test server).
+/// - `RETROGUIDE_DEV_RELINK_PLEX`: `1` to make Settings › Add a server › Plex
+///   link the Plex account again instead of using the saved one, to test
+///   sign-in on a set-up device without removing anything.
 ///
 /// Release builds always return the defaults.
 enum DebugLaunchOptions {
@@ -56,6 +59,7 @@ enum DebugLaunchOptions {
         static let playStart = "RETROGUIDE_DEV_PLAY_START"
         static let mute = "RETROGUIDE_DEV_MUTE"
         static let attributionURL = "RETROGUIDE_DEV_ATTRIBUTION_URL"
+        static let relinkPlex = "RETROGUIDE_DEV_RELINK_PLEX"
     }
 
     private static let landscape = "landscape"
@@ -113,6 +117,10 @@ enum DebugLaunchOptions {
 
     static var attributionURL: String? {
         value(for: Variable.attributionURL)
+    }
+
+    static var relinksPlex: Bool {
+        value(for: Variable.relinkPlex) == enabled
     }
 
     private static func value(for variable: String) -> String? {

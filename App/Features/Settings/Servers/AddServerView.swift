@@ -25,7 +25,7 @@ struct AddServerView: View {
         .toolbar(.hidden, for: .navigationBar)
         .onAppear {
             guard model == nil else { return }
-            let savedToken = app.servers.plexAccountToken
+            let savedToken = DebugLaunchOptions.relinksPlex ? nil : app.servers.plexAccountToken
             let setup = OnboardingModel(
                 identities: app.identities,
                 accountToken: savedToken,
