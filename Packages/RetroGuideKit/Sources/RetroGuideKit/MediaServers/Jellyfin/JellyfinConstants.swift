@@ -7,6 +7,8 @@ public enum JellyfinAPI {
     /// Jellyfin's own HTTPS port, when HTTPS is turned on in the server itself.
     public static let defaultSecurePort = 8920
     static let secureScheme = "https"
+    /// Never contacted: stands in where an address is required but none was typed.
+    static let placeholderURL = URL(string: "https://jellyfin.invalid")!
 
     enum Path {
         static let publicInfo = "/System/Info/Public"

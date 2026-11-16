@@ -92,8 +92,14 @@ targets:
         # Picture in Picture keeps the channel playing with the app in the background.
         UIBackgroundModes: [audio, remote-notification]
         NSLocalNetworkUsageDescription: RetroGuide.TV connects to your media server on the local network.
+        # Plain HTTP only to Jellyfin servers the viewer allowed, and the app itself
+        # limits that to home-network and VPN addresses (PlainHTTPOrigins).
         NSAppTransportSecurity:
-          NSAllowsLocalNetworking: false
+          NSAllowsLocalNetworking: true
+          NSExceptionDomains:
+            ts.net:
+              NSIncludesSubdomains: true
+              NSExceptionAllowsInsecureHTTPLoads: true
           NSAllowsArbitraryLoads: false
           NSAllowsArbitraryLoadsForMedia: false
         # Only standard HTTPS is used, which is exempt from export documentation.

@@ -40,10 +40,47 @@ public struct ServerConnectionSettings: Codable, Sendable, Hashable {
     public var preference: ConnectionPreference
     /// Used with ``ConnectionPreference/custom``.
     public var customAddress: URL?
+    /// Jellyfin: the address on the home network, used whenever it answers.
+    public var homeAddress: URL?
+    /// Jellyfin: the internet or VPN (Tailscale) address, used when the home
+    /// address doesn't answer. Plex finds its own through plex.tv.
+    public var awayAddress: URL?
+    /// Jellyfin: the viewer agreed to plain HTTP for this server's home and
+    /// VPN addresses (never internet addresses).
+    public var allowsUnencrypted: Bool
 
-    public init(preference: ConnectionPreference = .automatic, customAddress: URL? = nil) {
+    public init(
+        preference: ConnectionPreference = .automatic,
+        customAddress: URL? = nil,
+        homeAddress: URL? = nil,
+        awayAddress: URL? = nil,
+        allowsUnencrypted: Bool = false
+    ) {
         self.preference = preference
         self.customAddress = customAddress
+        self.homeAddress = homeAddress
+        self.awayAddress = awayAddress
+        self.allowsUnencrypted = allowsUnencrypted
+    }
+
+    /// Tolerant decoding: settings saved before Jellyfin addresses existed.
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        preference = try container.decodeIfPresent(ConnectionPreference.self, forKey: .preference) ?? .automatic
+        customAddress = try container.decodeIfPresent(URL.self, forKey: .customAddress)
+        homeAddress = try container.decodeIfPresent(URL.self, forKey: .homeAddress)
+        awayAddress = try container.decodeIfPresent(URL.self, forKey: .awayAddress)
+        allowsUnencrypted = try container.decodeIfPresent(Bool.self, forKey: .allowsUnencrypted) ?? false
+    }
+
+    /// Jellyfin's addresses in the order to try: home first.
+    public var jellyfinAddresses: [URL] {
+        [homeAddress, awayAddress].compactMap { $0 }
+    }
+
+    /// The addresses plain HTTP is allowed for, if the viewer agreed.
+    public var plainHTTPAddresses: [URL] {
+        allowsUnencrypted ? jellyfinAddresses.filter { $0.scheme?.lowercased() == "http" } : []
     }
 
     public static let automatic = ServerConnectionSettings()

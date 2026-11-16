@@ -6,9 +6,7 @@ import SwiftUI
 struct JellyfinFindStepView: View {
     private enum Copy {
         static let none = "No Jellyfin servers answered on this network. Enter your server's address instead."
-        static func notSecure(_ hosts: [String]) -> String {
-            "Found a server at \(list(hosts)) that only answers without encryption (plain HTTP). RetroGuide.TV needs HTTPS with a trusted certificate. See HTTPS setup at retroguide.tv/support, then enter the secure address."
-        }
+        static let notSecure = "Found without encryption (no HTTPS). Choose one to connect anyway."
         static func untrusted(_ hosts: [String]) -> String {
             "Found a server at \(list(hosts)) whose certificate this device doesn't trust. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt."
         }
@@ -26,6 +24,8 @@ struct JellyfinFindStepView: View {
     let scan: JellyfinScan
     let isSearching: Bool
     let onChoose: (JellyfinServerInfo) -> Void
+    /// A server found without HTTPS, by host: offers connecting anyway.
+    let onChooseNotSecure: (String) -> Void
     let onSearchAgain: () -> Void
     let onEnterAddress: () -> Void
     let onCancel: () -> Void
@@ -52,9 +52,10 @@ struct JellyfinFindStepView: View {
                         .secondaryText()
                 }
                 if !scan.notSecure.isEmpty {
-                    Text(Copy.notSecure(scan.notSecure))
+                    Text(Copy.notSecure)
                         .secondaryText()
                         .fixedSize(horizontal: false, vertical: true)
+                    notSecureRows
                 }
                 if !scan.untrusted.isEmpty {
                     Text(Copy.untrusted(scan.untrusted))
@@ -72,9 +73,9 @@ struct JellyfinFindStepView: View {
             }
         }
         .columnWidth(Layout.listWidth)
-        .defaultFocus($focusedServer, servers.first?.id)
-        .onChange(of: servers) {
-            focusedServer = servers.first?.id
+        .defaultFocus($focusedServer, servers.first?.id ?? scan.notSecure.first)
+        .onChange(of: scan) {
+            focusedServer = servers.first?.id ?? scan.notSecure.first
         }
     }
 
@@ -91,6 +92,28 @@ struct JellyfinFindStepView: View {
         Button("Cancel", action: onCancel)
             .buttonStyle(.retro)
             .fixedSize()
+    }
+
+    private var notSecureRows: some View {
+        VStack(spacing: DesignTokens.Spacing.sm) {
+            ForEach(scan.notSecure.prefix(Layout.maxServersShown), id: \.self) { host in
+                Button {
+                    onChooseNotSecure(host)
+                } label: {
+                    HStack {
+                        Image(systemName: "server.rack")
+                        Text(host)
+                        Spacer()
+                        Label("Not encrypted", systemImage: "lock.open")
+                            .labelStyle(.titleAndIcon)
+                            .secondaryText()
+                    }
+                }
+                .buttonStyle(.retroRow)
+                .focused($focusedServer, equals: host)
+            }
+        }
+        .padding(DesignTokens.Spacing.md)
     }
 
     private var serverRows: some View {

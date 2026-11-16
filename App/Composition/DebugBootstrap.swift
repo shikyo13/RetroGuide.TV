@@ -88,10 +88,18 @@ enum DebugBootstrap {
         keychain: KeychainStore
     ) async {
         let service = JellyfinAccountService(identity: identity)
-        guard let server = await service.findServer(at: address),
+        // As if the viewer had chosen "Connect Anyway" for a plain-HTTP home server.
+        guard case let .reachable(server) = await service.check(address, serverID: nil, allowsUnencrypted: true),
               let session = try? await service.signIn(on: server, username: user, password: password)
         else { return }
-        let account = ServerAccount(id: server.id, kind: .jellyfin, name: server.name, baseURL: server.baseURL, userID: session.userID)
+        let isHome = NetworkLocation.isLikelyLocal(server.baseURL)
+        let connection = ServerConnectionSettings(
+            homeAddress: isHome ? server.baseURL : nil,
+            awayAddress: isHome ? nil : server.baseURL,
+            allowsUnencrypted: server.baseURL.scheme?.lowercased() == "http"
+        )
+        let account = ServerAccount(id: server.id, kind: .jellyfin, name: server.name, baseURL: server.baseURL,
+                                    connection: connection, userID: session.userID)
         keychain.setToken(session.accessToken, for: server.id)
         store.accounts.append(account)
     }

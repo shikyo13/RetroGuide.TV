@@ -18,6 +18,9 @@ final class OnboardingModel {
         case choosingServer([PlexServerCandidate], accountHasServers: Bool)
         case findingJellyfin(JellyfinScan, isSearching: Bool)
         case enteringJellyfinAddress(message: String?)
+        /// A home or VPN Jellyfin server that only offers plain HTTP: ask
+        /// before connecting without encryption.
+        case offeringPlainHTTP(URL)
         case jellyfinSignIn(JellyfinSignIn)
         case connecting(serverName: String)
         case choosingLibraries(PendingServer)
@@ -164,6 +167,7 @@ final class OnboardingModel {
 
     func cancel() {
         task?.cancel()
+        PlainHTTPOrigins.clearPending()
         step = .welcome
     }
 
@@ -268,7 +272,7 @@ extension OnboardingModel.Step {
         case .linking: .plexLink
         case .choosingServer: .plexServers
         case .findingJellyfin: .jellyfinFind
-        case .enteringJellyfinAddress: .jellyfinAddress
+        case .enteringJellyfinAddress, .offeringPlainHTTP: .jellyfinAddress
         case .jellyfinSignIn: .jellyfinSignIn
         case .choosingLibraries: .libraries
         case .failed: .failed

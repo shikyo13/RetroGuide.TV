@@ -55,6 +55,9 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         case jellyfinUntrusted
         /// Nothing answered at a typed Jellyfin address.
         case jellyfinNoAnswer
+        /// The viewer chose to connect to a home or VPN Jellyfin server without
+        /// encryption (not an obstacle, but where those setups go next).
+        case jellyfinUnencryptedChosen
     }
 
     /// Why something failed, in coarse categories (never the message itself).

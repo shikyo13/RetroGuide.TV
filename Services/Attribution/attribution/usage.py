@@ -14,7 +14,7 @@ REASONS = {'timeout', 'offline', 'unreachable', 'notSecure', 'certificate', 'una
            'serverError', 'rejected', 'unreadable', 'badAddress', 'cancelled', 'interrupted',
            'noLibraries', 'other'}
 PROBLEMS = {'plexNoServers', 'jellyfinFoundNone', 'jellyfinFoundNotSecure', 'jellyfinFoundUntrusted',
-            'jellyfinNotSecure', 'jellyfinUntrusted', 'jellyfinNoAnswer'}
+            'jellyfinNotSecure', 'jellyfinUntrusted', 'jellyfinNoAnswer', 'jellyfinUnencryptedChosen'}
 EVENTS = {
     'active': SERVERS,
     'setup': {'welcome', 'plexLink', 'plexServers', 'jellyfinFind', 'jellyfinAddress',

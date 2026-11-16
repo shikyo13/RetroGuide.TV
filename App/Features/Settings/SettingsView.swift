@@ -195,7 +195,7 @@ struct SettingsView: View {
                     case .pro: ProUpgradeView()
                     case .connection:
                         if let account = app.servers.accounts.first, account.kind == .jellyfin {
-                            JellyfinAddressView(serverID: account.id)
+                            JellyfinConnectionView(serverID: account.id)
                         } else {
                             ServerConnectionView(serverID: app.servers.accounts.first?.id ?? "")
                         }

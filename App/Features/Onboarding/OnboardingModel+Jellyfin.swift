@@ -44,7 +44,11 @@ extension OnboardingModel {
                 server = found
             case .notSecure:
                 record(.jellyfinNotSecure)
-                setStep(.enteringJellyfinAddress(message: JellyfinSetupText.notSecure))
+                if let plain = JellyfinAddress.plainHTTP(from: address) {
+                    setStep(.offeringPlainHTTP(plain))
+                } else {
+                    setStep(.enteringJellyfinAddress(message: JellyfinSetupText.notSecureOnInternet))
+                }
                 return
             case .untrustedCertificate:
                 record(.jellyfinUntrusted)
@@ -52,6 +56,36 @@ extension OnboardingModel {
                 return
             case .noAnswer:
                 record(.jellyfinNoAnswer)
+                setStep(.enteringJellyfinAddress(message: JellyfinSetupText.noAnswer))
+                return
+            }
+            guard !excludedServerIDs.contains(server.id) else {
+                setStep(.enteringJellyfinAddress(message: "\(server.name) is already added."))
+                return
+            }
+            chooseJellyfin(server)
+        }
+    }
+
+    /// A server the search found that only offers plain HTTP.
+    func offerPlainHTTP(host: String) {
+        guard let plain = JellyfinAddress.plainHTTP(from: host) else { return }
+        task?.cancel()
+        setStep(.offeringPlainHTTP(plain))
+    }
+
+    /// The viewer agreed: connects to `address` without encryption. Allowed
+    /// only for home-network and VPN addresses.
+    func connectWithoutEncryption(_ address: URL) {
+        task?.cancel()
+        PlainHTTPOrigins.allowPending(address)
+        record(.jellyfinUnencryptedChosen)
+        setStep(.connecting(serverName: JellyfinConnectionText.short(address)))
+        task = Task { [weak self] in
+            guard let self else { return }
+            let answer = await jellyfinService.probe(address)
+            guard !Task.isCancelled else { return }
+            guard case let .server(server) = answer else {
                 setStep(.enteringJellyfinAddress(message: JellyfinSetupText.noAnswer))
                 return
             }
@@ -138,12 +172,18 @@ extension OnboardingModel {
 
     private func finishJellyfin(_ server: JellyfinServerInfo, session: JellyfinSession) async {
         setStep(.connecting(serverName: server.name))
+        let isHome = NetworkLocation.isLikelyLocal(server.baseURL)
         let account = ServerAccount(
             id: server.id,
             kind: .jellyfin,
             name: server.name,
             baseURL: server.baseURL,
-            playback: NetworkLocation.isLikelyLocal(server.baseURL) ? .local : .remote,
+            playback: isHome ? .local : .remote,
+            connection: ServerConnectionSettings(
+                homeAddress: isHome ? server.baseURL : nil,
+                awayAddress: isHome ? nil : server.baseURL,
+                allowsUnencrypted: server.baseURL.scheme?.lowercased() == "http"
+            ),
             userID: session.userID
         )
         let client = JellyfinServerClient(
@@ -168,7 +208,15 @@ extension OnboardingModel {
 
 /// What Jellyfin setup says when a server can't be used, and why.
 enum JellyfinSetupText {
-    static let notSecure = "A server answered, but only without encryption (plain HTTP). RetroGuide.TV needs HTTPS with a trusted certificate. See HTTPS setup at retroguide.tv/support."
+    static let notSecureOnInternet = "A server answered, but only without encryption (plain HTTP). Over the internet, RetroGuide.TV needs HTTPS with a trusted certificate. At home or over a VPN like Tailscale, use the server's home or VPN address instead."
     static let untrusted = "A server answered, but this device doesn't trust its certificate. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt."
     static let noAnswer = "No Jellyfin server answered at that address. Check the address and port, and that the server uses HTTPS with a trusted certificate."
+}
+
+/// Jellyfin addresses as people type them.
+enum JellyfinConnectionText {
+    /// "10.10.1.25:8096" or "jellyfin.example.com".
+    static func short(_ url: URL) -> String {
+        (url.host() ?? url.absoluteString) + (url.port.map { ":\($0)" } ?? "")
+    }
 }

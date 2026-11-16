@@ -575,16 +575,16 @@ final class AppModel {
         }
     }
 
-    func changeJellyfinAddress(_ text: String, serverID: String) async -> ServerLibrary.AddressChange {
-        guard !parentalControls.needsAuthorization else { return .notFound }
-        let change = await servers.changeJellyfinAddress(of: serverID, to: text)
-        guard case .moved = change else { return change }
+    func setJellyfinAddresses(home: String, away: String, allowsUnencrypted: Bool, serverID: String) async -> ServerLibrary.JellyfinAddressesResult {
+        guard !parentalControls.needsAuthorization else { return ServerLibrary.JellyfinAddressesResult() }
+        let result = await servers.setJellyfinAddresses(home: home, away: away, allowsUnencrypted: allowsUnencrypted, serverID: serverID)
+        guard result.saved else { return result }
         refreshError = offlineServersMessage
         await rebuildIndexAndLineup()
         if let channel = tuner.channel {
             tuner.tune(to: channel, isAutomatic: true)
         }
-        return change
+        return result
     }
 
     func signOut() {

@@ -42,7 +42,17 @@
 		<key>NSAllowsArbitraryLoadsForMedia</key>
 		<false/>
 		<key>NSAllowsLocalNetworking</key>
-		<false/>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>ts.net</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
+		</dict>
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>RetroGuide.TV connects to your media server on the local network.</string>

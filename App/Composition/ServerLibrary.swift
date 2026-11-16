@@ -18,7 +18,10 @@ final class ServerLibrary {
         static let plexAccount = "plex.account"
     }
 
-    private(set) var accounts: [ServerAccount] = []
+    private(set) var accounts: [ServerAccount] = [] {
+        // Plain HTTP stays limited to the saved servers the viewer agreed for.
+        didSet { PlainHTTPOrigins.set(accounts.flatMap(Self.plainHTTPAddresses)) }
+    }
     private(set) var status: [String: Status] = [:]
     private(set) var artworkResolver = ArtworkResolver.unavailable
 
@@ -116,7 +119,7 @@ final class ServerLibrary {
 
     /// Reconnects saved servers and loads their cached libraries.
     func restore() async {
-        accounts = store.accounts
+        accounts = store.accounts.map(Self.withJellyfinAddresses)
         let missingTokens = registry.connect(accounts)
         accounts.removeAll { account in missingTokens.contains { $0.id == account.id } }
         artworkResolver = registry.artworkResolver
@@ -176,29 +179,54 @@ final class ServerLibrary {
         if account.kind == .plex, let newURL = await relocatePlexServer(account), newURL != account.baseURL {
             apply(newURL, to: account)
         }
-        let reachable = await registry.client(for: serverID)?.isReachable() ?? false
+        let reachable = account.kind == .jellyfin
+            ? await reachJellyfin(account)
+            : await registry.client(for: serverID)?.isReachable() ?? false
         status[serverID] = reachable ? .online : .offline
         return reachable
     }
 
-    /// What happened when a Jellyfin server's address was changed.
-    enum AddressChange {
-        case moved
-        case notFound
-        case differentServer(name: String)
+    /// What saving a Jellyfin server's addresses found, per address.
+    struct JellyfinAddressesResult {
+        var home: JellyfinAddressCheck?
+        var away: JellyfinAddressCheck?
+        var saved = false
     }
 
-    /// Moves a Jellyfin server to the address typed in `text`, if the same
-    /// server answers there. Jellyfin servers have one address, so this is
-    /// their whole connection setting.
-    func changeJellyfinAddress(of serverID: String, to text: String) async -> AddressChange {
-        guard let account = accounts.first(where: { $0.id == serverID }),
-              let server = await JellyfinAccountService(identity: identities.jellyfin).findServer(at: text)
-        else { return .notFound }
-        guard server.isServer(account.id) else { return .differentServer(name: server.name) }
-        apply(server.baseURL, to: account)
-        status[serverID] = .online
-        return .moved
+    /// Checks and saves a Jellyfin server's home and away addresses (either may
+    /// be empty, not both), then connects through the best one. An address that
+    /// doesn't answer from here is kept: away addresses often can't be reached
+    /// from home. Wrong, insecure or untrusted addresses aren't saved.
+    func setJellyfinAddresses(home: String, away: String, allowsUnencrypted: Bool, serverID: String) async -> JellyfinAddressesResult {
+        guard let account = accounts.first(where: { $0.id == serverID }) else { return JellyfinAddressesResult() }
+        let service = JellyfinAccountService(identity: identities.jellyfin)
+        func check(_ text: String) async -> JellyfinAddressCheck? {
+            text.trimmingCharacters(in: .whitespaces).isEmpty
+                ? nil
+                : await service.check(text, serverID: account.id, allowsUnencrypted: allowsUnencrypted)
+        }
+        var result = JellyfinAddressesResult(home: await check(home), away: await check(away))
+        defer { PlainHTTPOrigins.clearPending() }
+        guard let homeURL = Self.usable(result.home), let awayURL = Self.usable(result.away),
+              homeURL != nil || awayURL != nil else { return result }
+        var connection = account.connection
+        connection.homeAddress = homeURL
+        connection.awayAddress = awayURL
+        connection.allowsUnencrypted = allowsUnencrypted
+        result.saved = true
+        await setConnection(connection, serverID: serverID)
+        return result
+    }
+
+    /// The address to save for a check: `.some(nil)` for an empty field,
+    /// `nil` when the address can't be used.
+    private static func usable(_ check: JellyfinAddressCheck?) -> URL?? {
+        switch check {
+        case .none: .some(nil)
+        case let .reachable(info): .some(info.baseURL)
+        case let .noAnswer(url): .some(url)
+        default: nil
+        }
     }
 
     /// Saves connection settings without switching addresses yet (for example
@@ -342,6 +370,7 @@ final class ServerLibrary {
     }
 
     private func isReachable(_ account: ServerAccount) async -> Bool {
+        if account.kind == .jellyfin { return await reachJellyfin(account) }
         let currentWorks = await registry.client(for: account.id)?.isReachable() ?? false
         let currentRank = PlexConnectionResolver.rank(of: account.baseURL, settings: account.connection)
         if currentWorks, currentRank <= PlexConnectionResolver.bestPossibleRank(for: account.connection) {
@@ -355,6 +384,43 @@ final class ServerLibrary {
         }
         apply(newURL, to: account)
         return await registry.client(for: account.id)?.isReachable() ?? false
+    }
+
+    /// Jellyfin has no relay: the home address whenever it answers (at home or
+    /// over a VPN that reaches home), otherwise the away address.
+    private func reachJellyfin(_ account: ServerAccount) async -> Bool {
+        let current = await registry.client(for: account.id)?.isReachable() ?? false
+        let addresses = account.connection.jellyfinAddresses
+        let service = JellyfinAccountService(identity: identities.jellyfin)
+        for address in addresses {
+            if address == account.baseURL {
+                if current { return true }
+                continue
+            }
+            guard case let .server(info) = await service.probe(address), info.isServer(account.id) else { continue }
+            apply(address, to: account)
+            return await registry.client(for: account.id)?.isReachable() ?? false
+        }
+        return current
+    }
+
+    /// Plain-HTTP addresses `account`'s viewer agreed to, including the one in use.
+    private static func plainHTTPAddresses(_ account: ServerAccount) -> [URL] {
+        guard account.connection.allowsUnencrypted else { return [] }
+        return account.connection.plainHTTPAddresses + [account.baseURL]
+    }
+
+    /// Servers saved before Jellyfin had home and away addresses keep theirs as
+    /// whichever it is.
+    private static func withJellyfinAddresses(_ account: ServerAccount) -> ServerAccount {
+        guard account.kind == .jellyfin, account.connection.jellyfinAddresses.isEmpty else { return account }
+        var updated = account
+        if NetworkLocation.isLikelyLocal(account.baseURL) {
+            updated.connection.homeAddress = account.baseURL
+        } else {
+            updated.connection.awayAddress = account.baseURL
+        }
+        return updated
     }
 
     private func apply(_ baseURL: URL, to account: ServerAccount) {

@@ -41,6 +41,22 @@ public enum JellyfinAddress {
         return secureScheme + schemeSeparator + trimmed.dropFirst(insecurePrefix.count)
     }
 
+    /// The plain-HTTP address `text` means (Jellyfin's usual port unless one
+    /// is given), when it's on the home network or a VPN; otherwise `nil`.
+    public static func plainHTTP(from text: String) -> URL? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let withoutScheme = trimmed.range(of: schemeSeparator).map { String(trimmed[$0.upperBound...]) } ?? trimmed
+        guard !withoutScheme.isEmpty,
+              var components = URLComponents(string: "http" + schemeSeparator + withoutScheme),
+              components.user == nil, components.password == nil else { return nil }
+        if components.port == nil { components.port = JellyfinAPI.defaultPort }
+        while components.path.hasSuffix("/") { components.path.removeLast() }
+        components.query = nil
+        components.fragment = nil
+        guard let url = components.url, url.host()?.isEmpty == false, PlainHTTPOrigins.qualifies(url) else { return nil }
+        return url
+    }
+
     private static func withPort(_ url: URL, _ port: Int) -> URL? {
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         components?.port = port

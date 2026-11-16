@@ -45,6 +45,20 @@ public enum JellyfinProbe: Sendable, Hashable {
     }
 }
 
+/// What checking a typed Jellyfin address found.
+public enum JellyfinAddressCheck: Sendable, Hashable {
+    /// The server answered, over HTTPS or allowed plain HTTP.
+    case reachable(JellyfinServerInfo)
+    /// A server answered without encryption. `plainAddress` is the plain-HTTP
+    /// address to offer, when it's on the home network or a VPN.
+    case notSecure(plainAddress: URL?)
+    case untrusted
+    /// Nothing answered from here; `address` is what would be tried later.
+    case noAnswer(URL)
+    case differentServer(String)
+    case invalid
+}
+
 /// A signed-in Jellyfin user.
 public struct JellyfinSession: Sendable, Hashable {
     public let accessToken: String
@@ -120,6 +134,34 @@ public struct JellyfinAccountService: Sendable {
         }
         // The earliest candidate wins among servers, as if tried in order.
         return answers.min { ($0.1.rank, $0.0) < ($1.1.rank, $1.0) }?.1 ?? .noAnswer
+    }
+
+    /// Whether `text` reaches the Jellyfin server `serverID` (or any server
+    /// when `nil`), and how. Plain HTTP is tried only when `allowsUnencrypted`
+    /// and the address is on the home network or a VPN.
+    public func check(_ text: String, serverID: String?, allowsUnencrypted: Bool) async -> JellyfinAddressCheck {
+        let candidates = JellyfinAddress.candidates(from: JellyfinAddress.upgradingInsecureScheme(text))
+        let plain = JellyfinAddress.plainHTTP(from: text)
+        guard !candidates.isEmpty || plain != nil else { return .invalid }
+        switch await lookUp(text) {
+        case let .server(info):
+            return Self.same(info, serverID) ? .reachable(info) : .differentServer(info.name)
+        case .notSecure:
+            guard let plain else { return .notSecure(plainAddress: nil) }
+            guard allowsUnencrypted else { return .notSecure(plainAddress: plain) }
+            PlainHTTPOrigins.allowPending(plain)
+            guard case let .server(info) = await probe(plain) else { return .noAnswer(candidates.first ?? plain) }
+            return Self.same(info, serverID) ? .reachable(info) : .differentServer(info.name)
+        case .untrustedCertificate:
+            return .untrusted
+        case .noAnswer:
+            // Away addresses often can't be reached from home: worth keeping anyway.
+            return .noAnswer(candidates.first ?? plain ?? JellyfinAPI.placeholderURL)
+        }
+    }
+
+    private static func same(_ info: JellyfinServerInfo, _ serverID: String?) -> Bool {
+        serverID.map(info.isServer) ?? true
     }
 
     public func isQuickConnectEnabled(on server: JellyfinServerInfo) async -> Bool {

@@ -37,9 +37,16 @@ struct ServerSetupStepsView: View {
                     scan: scan,
                     isSearching: isSearching,
                     onChoose: model.chooseJellyfin,
+                    onChooseNotSecure: model.offerPlainHTTP,
                     onSearchAgain: model.findJellyfinServers,
                     onEnterAddress: model.enterJellyfinAddress,
                     onCancel: onCancel
+                )
+            case let .offeringPlainHTTP(address):
+                JellyfinPlainHTTPStepView(
+                    address: address,
+                    onConnect: { model.connectWithoutEncryption(address) },
+                    onBack: model.enterJellyfinAddress
                 )
             case let .enteringJellyfinAddress(message):
                 JellyfinAddressStepView(

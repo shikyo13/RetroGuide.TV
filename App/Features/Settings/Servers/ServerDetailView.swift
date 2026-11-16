@@ -50,9 +50,9 @@ struct ServerDetailView: View {
                         }
                     case .jellyfin:
                         NavigationLink {
-                            JellyfinAddressView(serverID: serverID)
+                            JellyfinConnectionView(serverID: serverID)
                         } label: {
-                            SettingsRowLabel(title: "Server address", systemImage: "network", value: JellyfinAddressView.displayAddress(account.baseURL))
+                            SettingsRowLabel(title: "Connection", systemImage: "network", value: JellyfinConnectionView.summary(account.connection))
                         }
                     }
                     NavigationLink {
