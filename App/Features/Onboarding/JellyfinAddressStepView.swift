@@ -28,8 +28,8 @@ struct JellyfinAddressStepView: View {
             Text("Enter your server's address")
                 .font(Typography.title)
                 .foregroundStyle(theme.textPrimary)
-            // Verbatim, so the example address isn't a link to a site that doesn't exist.
-            Text(verbatim: "Enter an HTTPS address with a trusted certificate, like https://jellyfin.example.com. For a custom HTTPS port, include it in the address. HTTP connections are not supported.")
+            // Verbatim, so the example addresses aren't links to sites that don't exist.
+            Text(verbatim: "At home, like 192.168.1.20:8096. Over the internet, an HTTPS address like https://jellyfin.example.com.")
                 .secondaryText()
             TextField("Server address", text: $address)
                 #if os(iOS)

@@ -46,7 +46,7 @@ struct ServerSetupStepsView: View {
                 JellyfinPlainHTTPStepView(
                     address: address,
                     onConnect: { model.connectWithoutEncryption(address) },
-                    onBack: model.enterJellyfinAddress
+                    onBack: model.backFromPlainHTTPOffer
                 )
             case let .enteringJellyfinAddress(message):
                 JellyfinAddressStepView(

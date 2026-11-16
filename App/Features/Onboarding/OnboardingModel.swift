@@ -79,6 +79,8 @@ final class OnboardingModel {
     private(set) var plexSignIn = PlexSignIn.preferred
     /// The Jellyfin address typed last, shown again after a failed try.
     @ObservationIgnored var lastJellyfinAddress = ""
+    /// The last search's results, to return to from a server chosen there.
+    @ObservationIgnored var lastJellyfinScan: JellyfinScan?
 
     private(set) var step: Step {
         didSet {

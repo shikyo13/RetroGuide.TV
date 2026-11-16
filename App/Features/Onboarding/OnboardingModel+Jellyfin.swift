@@ -15,6 +15,7 @@ extension OnboardingModel {
             guard !Task.isCancelled, let self else { return }
             if let problem = scan.problem { record(problem) }
             scan.servers.removeAll { excluded.contains($0.id) }
+            lastJellyfinScan = scan
             // One server and nothing else to choose: straight to signing in.
             if scan.servers.count == 1, scan.notSecure.isEmpty, scan.untrusted.isEmpty, let only = scan.servers.first {
                 chooseJellyfin(only)
@@ -26,6 +27,7 @@ extension OnboardingModel {
 
     func enterJellyfinAddress() {
         task?.cancel()
+        lastJellyfinScan = nil
         setStep(.enteringJellyfinAddress(message: nil))
     }
 
@@ -69,6 +71,17 @@ extension OnboardingModel {
                 return
             }
             chooseJellyfin(server)
+        }
+    }
+
+    /// Back from "Connect without encryption?": to the search results when
+    /// that's where it was chosen, otherwise to typing an address.
+    func backFromPlainHTTPOffer() {
+        if let scan = lastJellyfinScan {
+            task?.cancel()
+            setStep(.findingJellyfin(scan, isSearching: false))
+        } else {
+            enterJellyfinAddress()
         }
     }
 
