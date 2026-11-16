@@ -329,9 +329,15 @@ final class AppModel {
             phase = .onboarding
             return
         }
-        guard !store.startupIncomplete else {
-            failLoading("The previous startup did not finish. You can change libraries or remove a server before trying again.", reason: .interrupted)
-            return
+        if store.startupIncomplete {
+            // The last load was cut short, usually because the app was closed or
+            // stopped in the background during a long first load: try once more
+            // by itself. Twice in a row may be a crash, so then ask.
+            guard !store.startupRetried else {
+                failLoading("The previous startup did not finish. You can change libraries or remove a server before trying again.", reason: .interrupted)
+                return
+            }
+            store.startupRetried = true
         }
         store.startupIncomplete = true
         startConnectedSession()

@@ -26,6 +26,12 @@ struct WelcomeStepView: View {
                 .multilineTextAlignment(.center)
                 .columnWidth(Layout.textWidth)
             ServerKindButtons(onPlex: onPlex, onJellyfin: onJellyfin)
+            // Said before setup, so nobody signs in only to find out at the end.
+            Label("Needs a Plex or Jellyfin server, yours or one shared with you. No videos are included.", systemImage: "server.rack")
+                .font(Typography.caption)
+                .foregroundStyle(theme.textSecondary)
+                .multilineTextAlignment(.center)
+                .columnWidth(Layout.textWidth)
         }
     }
 }

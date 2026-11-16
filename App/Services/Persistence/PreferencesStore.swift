@@ -36,6 +36,7 @@ struct UserPreferences: Codable, Equatable, Sendable {
 struct PreferencesStore {
     private enum Key {
         static let startupIncomplete = "startupIncomplete.v1"
+        static let startupRetried = "startupRetried.v1"
         static let preferences = "preferences.v1"
         static let accounts = "accounts.v1"
         static let customization = "lineupCustomization.v1"
@@ -55,9 +56,20 @@ struct PreferencesStore {
         self.defaults = defaults
     }
 
+    /// Set while channels load; still set at launch means the last load was cut short.
     var startupIncomplete: Bool {
         get { defaults.bool(forKey: Key.startupIncomplete) }
-        nonmutating set { defaults.set(newValue, forKey: Key.startupIncomplete) }
+        nonmutating set {
+            defaults.set(newValue, forKey: Key.startupIncomplete)
+            // A load that finished (or was given up) forgets the retry.
+            if !newValue { defaults.removeObject(forKey: Key.startupRetried) }
+        }
+    }
+
+    /// The launch after a cut-short load already tried once more by itself.
+    var startupRetried: Bool {
+        get { defaults.bool(forKey: Key.startupRetried) }
+        nonmutating set { defaults.set(newValue, forKey: Key.startupRetried) }
     }
 
     var preferences: UserPreferences {
@@ -133,7 +145,7 @@ struct PreferencesStore {
     }
 
     func resetAll() {
-        [Key.startupIncomplete, Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID, Key.showSubtitleOffsets, Key.sharedLibraries, Key.sharedReminders].forEach(defaults.removeObject(forKey:))
+        [Key.startupIncomplete, Key.startupRetried, Key.preferences, Key.accounts, Key.customization, Key.languagePreferences, Key.trackRules, Key.viewing, Key.lastChannelID, Key.showSubtitleOffsets, Key.sharedLibraries, Key.sharedReminders].forEach(defaults.removeObject(forKey:))
     }
 
     /// Refuse a cloud import before writing any field if it would exceed the
