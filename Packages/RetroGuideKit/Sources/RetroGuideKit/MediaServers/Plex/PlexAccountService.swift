@@ -59,6 +59,34 @@ public struct PlexAccountService: Sendable {
         return PlexLinkCode(id: pin.id, code: pin.code, linkURL: PlexAPI.linkPageURL)
     }
 
+    /// Requests a code for Plex's sign-in page, for signing in on this device:
+    /// `linkURL` opens the page with the code filled in, so nothing is typed.
+    public func createSignIn() async throws -> PlexLinkCode {
+        let request = try builder.request(
+            path: PlexAPI.Path.pins,
+            method: "POST",
+            query: [URLQueryItem(name: "strong", value: "true")]
+        )
+        let pin = try await http.decode(PlexPin.self, for: request, rateLimitRetries: PlexAPI.Defaults.accountRateLimitRetries)
+        return PlexLinkCode(id: pin.id, code: pin.code, linkURL: Self.signInPage(code: pin.code, identity: identity))
+    }
+
+    /// `https://app.plex.tv/auth#?clientID=…&code=…`: Plex reads its
+    /// parameters from the fragment.
+    static func signInPage(code: String, identity: PlexClientIdentity) -> URL {
+        var parameters = URLComponents()
+        parameters.queryItems = [
+            URLQueryItem(name: "clientID", value: identity.clientIdentifier),
+            URLQueryItem(name: "code", value: code),
+            URLQueryItem(name: "context[device][product]", value: identity.product),
+        ]
+        var page = URLComponents(url: PlexAPI.signInPageURL, resolvingAgainstBaseURL: false)
+        page?.percentEncodedFragment = "?" + (parameters.percentEncodedQuery ?? "")
+            .replacingOccurrences(of: "[", with: "%5B")
+            .replacingOccurrences(of: "]", with: "%5D")
+        return page?.url ?? PlexAPI.linkPageURL
+    }
+
     /// Returns the account token once the user has entered the code, otherwise `nil`.
     public func token(for code: PlexLinkCode) async throws -> String? {
         let request = try builder.request(path: "\(PlexAPI.Path.pins)/\(code.id)")

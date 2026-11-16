@@ -7,13 +7,15 @@ extension OnboardingModel {
     /// Searches the local network; servers already added are left out.
     func findJellyfinServers() {
         task?.cancel()
-        setStep(.findingJellyfin(servers: [], isSearching: true))
+        setStep(.findingJellyfin(JellyfinScan(), isSearching: true))
         let discovery = JellyfinDiscovery(service: jellyfinService)
         let excluded = excludedServerIDs
         task = Task { [weak self] in
-            let servers = await discovery.scan().filter { !excluded.contains($0.id) }
-            guard !Task.isCancelled else { return }
-            self?.setStep(.findingJellyfin(servers: servers, isSearching: false))
+            var scan = await discovery.scan()
+            guard !Task.isCancelled, let self else { return }
+            if let problem = scan.problem { record(problem) }
+            scan.servers.removeAll { excluded.contains($0.id) }
+            setStep(.findingJellyfin(scan, isSearching: false))
         }
     }
 
@@ -22,19 +24,35 @@ extension OnboardingModel {
         setStep(.enteringJellyfinAddress(message: nil))
     }
 
-    /// Looks for a Jellyfin server at what the viewer typed.
+    /// Looks for a Jellyfin server at what the viewer typed. An `http://`
+    /// address is tried over HTTPS at the same place.
     func connectToJellyfin(address: String) {
         task?.cancel()
-        guard !JellyfinAddress.candidates(from: address).isEmpty else {
-            setStep(.enteringJellyfinAddress(message: HTTPError.secureConnectionRequired.localizedDescription))
+        lastJellyfinAddress = address
+        guard !JellyfinAddress.candidates(from: JellyfinAddress.upgradingInsecureScheme(address)).isEmpty else {
+            setStep(.enteringJellyfinAddress(message: HTTPError.invalidURL.localizedDescription))
             return
         }
         setStep(.connecting(serverName: address.trimmingCharacters(in: .whitespaces)))
         task = Task { [weak self] in
             guard let self else { return }
-            guard let server = await jellyfinService.findServer(at: address) else {
-                guard !Task.isCancelled else { return }
-                setStep(.enteringJellyfinAddress(message: "No Jellyfin server answered securely. Check the HTTPS address and that the server has a trusted certificate."))
+            let answer = await jellyfinService.lookUp(address)
+            guard !Task.isCancelled else { return }
+            let server: JellyfinServerInfo
+            switch answer {
+            case let .server(found):
+                server = found
+            case .notSecure:
+                record(.jellyfinNotSecure)
+                setStep(.enteringJellyfinAddress(message: JellyfinSetupText.notSecure))
+                return
+            case .untrustedCertificate:
+                record(.jellyfinUntrusted)
+                setStep(.enteringJellyfinAddress(message: JellyfinSetupText.untrusted))
+                return
+            case .noAnswer:
+                record(.jellyfinNoAnswer)
+                setStep(.enteringJellyfinAddress(message: JellyfinSetupText.noAnswer))
                 return
             }
             guard !excludedServerIDs.contains(server.id) else {
@@ -137,11 +155,20 @@ extension OnboardingModel {
         )
         do {
             let libraries = try await client.fetchLibraries().filter(\.isSchedulable)
-            setStep(libraries.isEmpty
-                ? .failed("\(server.name) has no movie or TV show libraries this account can see.")
-                : .choosingLibraries(PendingServer(account: account, token: session.accessToken, accountToken: nil, libraries: libraries)))
+            if libraries.isEmpty {
+                fail("\(server.name) has no movie or TV show libraries this account can see.", reason: .noLibraries)
+            } else {
+                setStep(.choosingLibraries(PendingServer(account: account, token: session.accessToken, accountToken: nil, libraries: libraries)))
+            }
         } catch {
-            setStep(.failed(error.localizedDescription))
+            fail(error)
         }
     }
+}
+
+/// What Jellyfin setup says when a server can't be used, and why.
+enum JellyfinSetupText {
+    static let notSecure = "A server answered, but only without encryption (plain HTTP). RetroGuide.TV needs HTTPS with a trusted certificate. See HTTPS setup at retroguide.tv/support."
+    static let untrusted = "A server answered, but this device doesn't trust its certificate. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt."
+    static let noAnswer = "No Jellyfin server answered at that address. Check the address and port, and that the server uses HTTPS with a trusted certificate."
 }

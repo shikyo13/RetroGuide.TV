@@ -13,8 +13,10 @@ final class OnboardingModel {
         /// "Plex or Jellyfin?" without the welcome text (adding a server).
         case choosingKind
         case linking(PlexLinkCode?)
-        case choosingServer([PlexServerCandidate])
-        case findingJellyfin(servers: [JellyfinServerInfo], isSearching: Bool)
+        /// `accountHasServers` is false when the Plex account has no server,
+        /// neither its own nor shared with it.
+        case choosingServer([PlexServerCandidate], accountHasServers: Bool)
+        case findingJellyfin(JellyfinScan, isSearching: Bool)
         case enteringJellyfinAddress(message: String?)
         case jellyfinSignIn(JellyfinSignIn)
         case connecting(serverName: String)
@@ -51,6 +53,27 @@ final class OnboardingModel {
         case plex
         case jellyfin
     }
+
+    /// How a Plex account is linked.
+    enum PlexSignIn {
+        /// Plex's sign-in page in a sheet on this device: nothing to type.
+        case signInPage
+        /// A four-character code entered at plex.tv/link on any device.
+        case code
+
+        /// The sign-in page on iPhone and iPad; Apple TV has no browser.
+        static var preferred: Self {
+            #if os(tvOS)
+            .code
+            #else
+            .signInPage
+            #endif
+        }
+    }
+
+    private(set) var plexSignIn = PlexSignIn.preferred
+    /// The Jellyfin address typed last, shown again after a failed try.
+    @ObservationIgnored var lastJellyfinAddress = ""
 
     private(set) var step: Step {
         didSet {
@@ -118,6 +141,19 @@ final class OnboardingModel {
         findJellyfinServers()
     }
 
+    /// Links the Plex account with the other method (sign-in page or code).
+    func switchPlexSignIn() {
+        plexSignIn = plexSignIn == .code ? .signInPage : .code
+        beginPlex()
+    }
+
+    /// Forgets the linked Plex account and links another one.
+    func useAnotherPlexAccount() {
+        accountToken = nil
+        onPlexAccountTokenChanged(nil)
+        beginPlex()
+    }
+
     /// Starts over with whichever server type was being set up.
     func retry() {
         switch flow {
@@ -143,7 +179,7 @@ final class OnboardingModel {
     private func runLinkLoop() async {
         while !Task.isCancelled {
             do {
-                let code = try await accountService.createLinkCode()
+                let code = try await (plexSignIn == .code ? accountService.createLinkCode() : accountService.createSignIn())
                 step = .linking(code)
                 if let token = try await waitForApproval(of: code) {
                     accountToken = token
@@ -153,7 +189,7 @@ final class OnboardingModel {
                 }
             } catch {
                 guard !Task.isCancelled else { return }
-                step = .failed(error.localizedDescription)
+                fail(error)
                 return
             }
         }
@@ -161,15 +197,15 @@ final class OnboardingModel {
 
     private func showServers(accountToken: String) async {
         do {
-            let servers = try await accountService.servers(accountToken: accountToken)
-                .filter { !excludedServerIDs.contains($0.id) }
-            step = .choosingServer(servers)
+            let all = try await accountService.servers(accountToken: accountToken)
+            if all.isEmpty { record(.plexNoServers) }
+            step = .choosingServer(all.filter { !excludedServerIDs.contains($0.id) }, accountHasServers: !all.isEmpty)
         } catch HTTPError.unauthorized {
             self.accountToken = nil
             onPlexAccountTokenChanged(nil)
             beginPlex()
         } catch {
-            step = .failed(error.localizedDescription)
+            fail(error)
         }
     }
 
@@ -202,8 +238,24 @@ final class OnboardingModel {
                 PendingServer(account: account, token: server.accessToken, accountToken: accountToken, libraries: libraries)
             )
         } catch {
-            step = .failed(error.localizedDescription)
+            fail(error)
         }
+    }
+
+    // MARK: - Measurement
+
+    /// Shows `error` and records why setup stopped.
+    func fail(_ error: any Error) {
+        fail(error.localizedDescription, reason: UsageEvent.FailureReason(error))
+    }
+
+    func fail(_ message: String, reason: UsageEvent.FailureReason) {
+        PurchaseAttribution.shared.record(UsageEvent(.setupFailed, detail: reason.rawValue))
+        step = .failed(message)
+    }
+
+    func record(_ problem: UsageEvent.SetupProblem) {
+        PurchaseAttribution.shared.record(UsageEvent(.setupProblem, detail: problem.rawValue))
     }
 }
 

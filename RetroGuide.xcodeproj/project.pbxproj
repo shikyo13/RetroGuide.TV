@@ -214,6 +214,7 @@
 		D16DD3C8FF500FA045724A62 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2571220B18B8C4CD477DF8BF /* AVKit.framework */; };
 		D19447801B956C0F4121F97F /* LoopbackPlaybackRelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DBC24F7D4773288BB7FBE1E /* LoopbackPlaybackRelay.swift */; };
 		D1AA86891B25836BF9C84C8A /* ParentalAllowedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17AF5172E646D18AE60F4779 /* ParentalAllowedContentView.swift */; };
+		D20FE9048E82E640501243AF /* PlexSignInSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9B8265E6EDDF9DB13F03F7D /* PlexSignInSheet.swift */; };
 		D25CB8955CEDB7A5BBAF8341 /* ParentalRatingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33D2C78733AA1848FCBA8E64 /* ParentalRatingsView.swift */; };
 		D38461B2A6BB9A75D7C5D66D /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B3620D1BDA643D8841A03F /* Color+Hex.swift */; };
 		D40160AAAB3081C927CEEB87 /* DebugSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2592C4AE803F82DB05F07DAD /* DebugSnapshot.swift */; };
@@ -468,6 +469,7 @@
 		B8DD72EEF3859ADF289BE851 /* JellyfinFindStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinFindStepView.swift; sourceTree = "<group>"; };
 		B8E6421682822DF9EB4C7D65 /* Surfaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Surfaces.swift; sourceTree = "<group>"; };
 		B96343D6443D2CBC02C9A967 /* DebugLaunchOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugLaunchOptions.swift; sourceTree = "<group>"; };
+		B9B8265E6EDDF9DB13F03F7D /* PlexSignInSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlexSignInSheet.swift; sourceTree = "<group>"; };
 		B9E50C064A165BFB6D7CE915 /* ParentalPINView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentalPINView.swift; sourceTree = "<group>"; };
 		BC46D819D23A297C0A6FE728 /* RetroGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroGuideApp.swift; sourceTree = "<group>"; };
 		BDF3B69A97C06359C34C23DE /* DemoCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoCatalog.swift; sourceTree = "<group>"; };
@@ -701,6 +703,7 @@
 				651E3EB72BF671C9E1ABE5CA /* OnboardingModel.swift */,
 				30E77B88A04DED5A68588776 /* OnboardingModel+Jellyfin.swift */,
 				C08BDDF85EEA045DAB1751FA /* PlexLinkStepView.swift */,
+				B9B8265E6EDDF9DB13F03F7D /* PlexSignInSheet.swift */,
 				D63AA8E86BF9C02B61AE1DCF /* ServerPickerStepView.swift */,
 				529E54D5CBE1128C70DF51E6 /* ServerSetupStepsView.swift */,
 				46F65DFF726E08D9C5D9CAD1 /* WelcomeStepView.swift */,
@@ -1443,6 +1446,7 @@
 				D46EB4BED536DEB50D89632D /* PlayerRemoteInput.swift in Sources */,
 				F0BBC4BCF16C95FC7EFC2BB4 /* PlayerTouchInput.swift in Sources */,
 				C8C458DD7D2834B3706F210B /* PlexLinkStepView.swift in Sources */,
+				D20FE9048E82E640501243AF /* PlexSignInSheet.swift in Sources */,
 				EFD83E959D6D885EE2791FF4 /* PreferencesStore.swift in Sources */,
 				3D8929C0A4F7F1BD7B745C12 /* PresentingViewController.swift in Sources */,
 				DA0C1C0E6B8087F61A515128 /* PrivacyChoicesRow.swift in Sources */,

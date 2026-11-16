@@ -5,7 +5,6 @@ import Foundation
 public enum JellyfinAddress {
     private static let schemeSeparator = "://"
     private static let secureScheme = "https"
-    private static let securePort = 8_920
 
     public static func candidates(from text: String) -> [URL] {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -16,8 +15,10 @@ public enum JellyfinAddress {
         }
         guard let parsed = URL(string: secureScheme + schemeSeparator + trimmed) else { return [] }
         if parsed.port != nil { return normalized(parsed).map { [$0] } ?? [] }
-        // Standard HTTPS proxy first, then Jellyfin's native HTTPS port.
-        return [parsed, withPort(parsed, securePort)].compactMap { $0.flatMap(normalized) }
+        // Standard HTTPS proxy first, then Jellyfin's native HTTPS port, then its
+        // usual port (which, over plain HTTP, at least tells the viewer why).
+        return [parsed, withPort(parsed, JellyfinAPI.defaultSecurePort), withPort(parsed, JellyfinAPI.defaultPort)]
+            .compactMap { $0.flatMap(normalized) }
     }
 
     /// Without a trailing slash, so API paths append cleanly.
@@ -30,6 +31,14 @@ public enum JellyfinAddress {
         components.query = nil
         components.fragment = nil
         return components.url
+    }
+
+    /// `text` with an `http://` scheme replaced by `https://`; anything else unchanged.
+    public static func upgradingInsecureScheme(_ text: String) -> String {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let insecurePrefix = "http" + schemeSeparator
+        guard trimmed.lowercased().hasPrefix(insecurePrefix) else { return trimmed }
+        return secureScheme + schemeSeparator + trimmed.dropFirst(insecurePrefix.count)
     }
 
     private static func withPort(_ url: URL, _ port: Int) -> URL? {

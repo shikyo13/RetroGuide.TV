@@ -4,6 +4,13 @@ import Foundation
 public enum PlexAPI {
     public static let accountBaseURL = URL(string: "https://plex.tv")!
     public static let linkPageURL = URL(string: "https://plex.tv/link")!
+    /// Plex's sign-in page, which approves a strong code without typing it.
+    static let signInPageURL = URL(string: "https://app.plex.tv/auth")!
+    /// The app's URL scheme, which the in-app sign-in sheet requires. Plex's
+    /// page never returns to it (a `forwardUrl` to an app scheme makes Plex
+    /// show its home page instead of signing in), so the app closes the sheet
+    /// itself once the code is approved.
+    public static let signInCallbackScheme = "retroguide"
     /// Guids from Plex's online agents; identical across servers.
     static let globalGuidPrefix = "plex://"
 

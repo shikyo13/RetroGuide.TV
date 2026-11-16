@@ -25,6 +25,26 @@ public struct JellyfinServerInfo: Sendable, Hashable, Identifiable {
     }
 }
 
+/// What answered when looking for a Jellyfin server at an address.
+public enum JellyfinProbe: Sendable, Hashable {
+    case server(JellyfinServerInfo)
+    /// Something answered, but not over HTTPS (usually Jellyfin's plain-HTTP port).
+    case notSecure
+    /// HTTPS answered with a certificate this device doesn't trust.
+    case untrustedCertificate
+    case noAnswer
+
+    /// Lower explains more.
+    fileprivate var rank: Int {
+        switch self {
+        case .server: 0
+        case .notSecure: 1
+        case .untrustedCertificate: 2
+        case .noAnswer: 3
+        }
+    }
+}
+
 /// A signed-in Jellyfin user.
 public struct JellyfinSession: Sendable, Hashable {
     public let accessToken: String
@@ -50,26 +70,56 @@ public struct JellyfinAccountService: Sendable {
 
     /// The server answering at `baseURL`, or `nil` if nothing Jellyfin does.
     public func serverInfo(at baseURL: URL, timeout: TimeInterval = JellyfinAPI.Defaults.probeTimeout) async -> JellyfinServerInfo? {
-        guard let request = try? builder(baseURL, timeout: timeout).request(path: JellyfinAPI.Path.publicInfo),
-              let info = try? await http.decode(JellyfinPublicInfo.self, for: request)
-        else { return nil }
-        return JellyfinServerInfo(
-            id: info.id,
-            name: info.serverName ?? baseURL.host() ?? info.id,
-            version: info.version,
-            baseURL: baseURL,
-            localAddress: info.localAddress.flatMap(URL.init(string:))
-        )
+        if case let .server(info) = await probe(baseURL, timeout: timeout) { return info }
+        return nil
     }
 
-    /// The first address `text` could mean that a Jellyfin server answers on.
-    public func findServer(at text: String) async -> JellyfinServerInfo? {
-        for url in JellyfinAddress.candidates(from: text) {
-            if let server = await serverInfo(at: url) {
-                return server
+    /// What answers at `baseURL` over HTTPS: a Jellyfin server, a server
+    /// that doesn't offer HTTPS or has an untrusted certificate, or nothing.
+    public func probe(_ baseURL: URL, timeout: TimeInterval = JellyfinAPI.Defaults.probeTimeout) async -> JellyfinProbe {
+        do {
+            let request = try builder(baseURL, timeout: timeout).request(path: JellyfinAPI.Path.publicInfo)
+            let info = try await http.decode(JellyfinPublicInfo.self, for: request)
+            return .server(JellyfinServerInfo(
+                id: info.id,
+                name: info.serverName ?? baseURL.host() ?? info.id,
+                version: info.version,
+                baseURL: baseURL,
+                localAddress: info.localAddress.flatMap(URL.init(string:))
+            ))
+        } catch {
+            switch UsageEvent.FailureReason(error) {
+            case .notSecure: return .notSecure
+            case .certificate: return .untrustedCertificate
+            default: return .noAnswer
             }
         }
+    }
+
+    /// The first address `text` could mean that a Jellyfin server answers on,
+    /// or `nil` if none does.
+    public func findServer(at text: String) async -> JellyfinServerInfo? {
+        if case let .server(info) = await lookUp(text) { return info }
         return nil
+    }
+
+    /// Tries each address `text` could mean. An `http://` address is tried
+    /// over HTTPS at the same place, since many people type it out of habit.
+    /// Without a server, the most telling answer: a server that isn't secure,
+    /// then an untrusted certificate, then nothing.
+    public func lookUp(_ text: String) async -> JellyfinProbe {
+        let candidates = JellyfinAddress.candidates(from: JellyfinAddress.upgradingInsecureScheme(text))
+        // All at once, so an address that doesn't answer costs one timeout, not several.
+        let answers = await withTaskGroup(of: (Int, JellyfinProbe).self) { group in
+            for (index, url) in candidates.enumerated() {
+                group.addTask { (index, await probe(url)) }
+            }
+            var answers: [(Int, JellyfinProbe)] = []
+            for await answer in group { answers.append(answer) }
+            return answers
+        }
+        // The earliest candidate wins among servers, as if tried in order.
+        return answers.min { ($0.1.rank, $0.0) < ($1.1.rank, $1.0) }?.1 ?? .noAnswer
     }
 
     public func isQuickConnectEnabled(on server: JellyfinServerInfo) async -> Bool {

@@ -1,19 +1,46 @@
 import Darwin
 import Foundation
 
+/// What a search of the local network found.
+public struct JellyfinScan: Sendable, Hashable {
+    /// Servers that answered over HTTPS with a trusted certificate, by name.
+    public var servers: [JellyfinServerInfo] = []
+    /// Addresses where a server answered on a Jellyfin port, but not over HTTPS.
+    public var notSecure: [String] = []
+    /// Addresses where HTTPS answered with a certificate this device doesn't trust.
+    public var untrusted: [String] = []
+
+    public init(servers: [JellyfinServerInfo] = [], notSecure: [String] = [], untrusted: [String] = []) {
+        self.servers = servers
+        self.notSecure = notSecure
+        self.untrusted = untrusted
+    }
+
+    /// Why nothing usable was found, if so.
+    public var problem: UsageEvent.SetupProblem? {
+        guard servers.isEmpty else { return nil }
+        if !notSecure.isEmpty { return .jellyfinFoundNotSecure }
+        if !untrusted.isEmpty { return .jellyfinFoundUntrusted }
+        return .jellyfinFoundNone
+    }
+}
+
 /// Finds Jellyfin servers on the local network by asking every address of
-/// this device's subnet, on Jellyfin's port, who it is.
+/// this device's subnet, on Jellyfin's ports and over HTTPS, who it is.
 ///
 /// Jellyfin also answers UDP broadcasts, but receiving broadcast replies
-/// needs Apple's multicast entitlement; plain HTTP probes don't.
+/// needs Apple's multicast entitlement; HTTPS probes don't.
 public struct JellyfinDiscovery: Sendable {
     private enum Tuning {
         /// Simultaneous probes; most addresses never answer, so this bounds the wait.
-        static let concurrentProbes = 64
+        static let concurrentProbes = 128
         static let probeTimeout: TimeInterval = 1.5
         /// Only the device's own /24 is searched, even on larger networks.
         static let hostsPerSubnet: UInt32 = 254
         static let subnetMask: UInt32 = 0xFFFF_FF00
+        /// Jellyfin's plain port (HTTPS behind it is rare but tells us a server is
+        /// there when it isn't) and its own HTTPS port.
+        static let ports = [JellyfinAPI.defaultPort, JellyfinAPI.defaultSecurePort]
     }
 
     private let service: JellyfinAccountService
@@ -22,17 +49,33 @@ public struct JellyfinDiscovery: Sendable {
         self.service = service
     }
 
-    /// Every server that answered, sorted by name. Takes a few seconds.
-    public func scan() async -> [JellyfinServerInfo] {
-        let hosts = Self.localSubnetHosts()
-        let found = (try? await hosts.concurrentMap(limit: Tuning.concurrentProbes) { host -> JellyfinServerInfo? in
-            guard let url = URL(string: "\(JellyfinAPI.defaultScheme)://\(host):\(JellyfinAPI.defaultPort)") else { return nil }
-            return await service.serverInfo(at: url, timeout: Tuning.probeTimeout)
+    /// Every server that answered. Takes a few seconds.
+    public func scan() async -> JellyfinScan {
+        let targets = Self.localSubnetHosts().flatMap { host in Tuning.ports.map { (host, $0) } }
+        let answers = (try? await targets.concurrentMap(limit: Tuning.concurrentProbes) { host, port -> (String, JellyfinProbe) in
+            guard let url = URL(string: "\(JellyfinAPI.secureScheme)://\(host):\(port)") else { return (host, .noAnswer) }
+            return (host, await service.probe(url, timeout: Tuning.probeTimeout))
         }) ?? []
+        var scan = JellyfinScan()
         var seen = Set<String>()
-        return found.compactMap { $0 }
-            .filter { seen.insert($0.id.lowercased()).inserted }
-            .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        for (host, answer) in answers {
+            switch answer {
+            case let .server(info) where seen.insert(info.id.lowercased()).inserted:
+                scan.servers.append(info)
+            case .notSecure where !scan.notSecure.contains(host):
+                scan.notSecure.append(host)
+            case .untrustedCertificate where !scan.untrusted.contains(host):
+                scan.untrusted.append(host)
+            default:
+                break
+            }
+        }
+        scan.servers.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        // A host with a working server isn't also reported as a problem.
+        let working = Set(scan.servers.compactMap { $0.baseURL.host() })
+        scan.notSecure.removeAll(where: working.contains)
+        scan.untrusted.removeAll(where: working.contains)
+        return scan
     }
 
     /// The other addresses in the /24 of each private IPv4 address this device has.

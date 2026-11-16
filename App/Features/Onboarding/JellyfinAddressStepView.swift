@@ -12,7 +12,15 @@ struct JellyfinAddressStepView: View {
     let onBack: () -> Void
 
     @Environment(\.theme) private var theme
-    @State private var address = ""
+    @State private var address: String
+
+    /// `address` starts as what was typed last, so a failed try can be corrected.
+    init(address: String, message: String?, onConnect: @escaping (String) -> Void, onBack: @escaping () -> Void) {
+        _address = State(initialValue: address)
+        self.message = message
+        self.onConnect = onConnect
+        self.onBack = onBack
+    }
     @FocusState private var isFieldFocused: Bool
 
     var body: some View {
@@ -20,7 +28,8 @@ struct JellyfinAddressStepView: View {
             Text("Enter your server's address")
                 .font(Typography.title)
                 .foregroundStyle(theme.textPrimary)
-            Text("Enter an HTTPS address with a trusted certificate, like https://jellyfin.example.com. For a custom HTTPS port, include it in the address. HTTP connections are not supported.")
+            // Verbatim, so the example address isn't a link to a site that doesn't exist.
+            Text(verbatim: "Enter an HTTPS address with a trusted certificate, like https://jellyfin.example.com. For a custom HTTPS port, include it in the address. HTTP connections are not supported.")
                 .secondaryText()
             TextField("Server address", text: $address)
                 #if os(iOS)

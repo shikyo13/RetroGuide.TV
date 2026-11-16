@@ -4,7 +4,9 @@ import Foundation
 public enum JellyfinAPI {
     /// The port Jellyfin listens on unless its owner changed it.
     public static let defaultPort = 8096
-    static let defaultScheme = "http"
+    /// Jellyfin's own HTTPS port, when HTTPS is turned on in the server itself.
+    public static let defaultSecurePort = 8920
+    static let secureScheme = "https"
 
     enum Path {
         static let publicInfo = "/System/Info/Public"

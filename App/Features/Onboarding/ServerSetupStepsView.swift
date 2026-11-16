@@ -17,12 +17,24 @@ struct ServerSetupStepsView: View {
             case .choosingKind:
                 ServerKindStepView(onPlex: model.beginPlex, onJellyfin: model.beginJellyfin, onCancel: onCancel)
             case let .linking(code):
-                PlexLinkStepView(code: code, onCancel: onCancel)
-            case let .choosingServer(servers):
-                ServerPickerStepView(servers: servers, onChoose: model.choose, onJellyfin: model.beginJellyfin, onCancel: onCancel)
-            case let .findingJellyfin(servers, isSearching):
-                JellyfinFindStepView(
+                PlexLinkStepView(
+                    code: code,
+                    signIn: model.plexSignIn,
+                    onSwitchSignIn: model.switchPlexSignIn,
+                    onCancel: onCancel
+                )
+            case let .choosingServer(servers, accountHasServers):
+                ServerPickerStepView(
                     servers: servers,
+                    accountHasServers: accountHasServers,
+                    onChoose: model.choose,
+                    onAnotherAccount: model.useAnotherPlexAccount,
+                    onJellyfin: model.beginJellyfin,
+                    onCancel: onCancel
+                )
+            case let .findingJellyfin(scan, isSearching):
+                JellyfinFindStepView(
+                    scan: scan,
                     isSearching: isSearching,
                     onChoose: model.chooseJellyfin,
                     onSearchAgain: model.findJellyfinServers,
@@ -30,7 +42,12 @@ struct ServerSetupStepsView: View {
                     onCancel: onCancel
                 )
             case let .enteringJellyfinAddress(message):
-                JellyfinAddressStepView(message: message, onConnect: model.connectToJellyfin, onBack: model.beginJellyfin)
+                JellyfinAddressStepView(
+                    address: model.lastJellyfinAddress,
+                    message: message,
+                    onConnect: model.connectToJellyfin,
+                    onBack: model.beginJellyfin
+                )
             case let .jellyfinSignIn(signIn):
                 JellyfinSignInStepView(
                     signIn: signIn,
