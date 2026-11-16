@@ -70,10 +70,12 @@ actor AttributionDelivery {
                     guard let self else { throw URLError(.cancelled) }
                     _ = try await self.post(path: "purchases", payload: ["signedTransaction": record.signedTransaction])
                 }
+                let context = await UsageContext.current()
                 let events = await usage.drain { [weak self] batch in
                     guard let self else { throw URLError(.cancelled) }
                     do {
-                        _ = try await self.post(path: "usage", payload: UsageBatch(client: client, events: batch))
+                        let payload = UsageBatch(client: client, context: context, events: batch)
+                        _ = try await self.post(path: "usage", payload: payload)
                     } catch let failure as HTTPFailure where failure.isPermanent {
                         throw UsageLedger.Rejected()
                     }
@@ -154,11 +156,15 @@ actor AttributionDelivery {
     private struct UsageBatch: Encodable {
         let platform: String
         let version: String
+        let storefront: String?
+        let language: String?
         let events: [UsageEvent]
 
-        init(client: UsageClient, events: [UsageEvent]) {
+        init(client: UsageClient, context: UsageContext, events: [UsageEvent]) {
             platform = client.platform
             version = client.version
+            storefront = context.storefront
+            language = context.language
             self.events = events
         }
     }
@@ -168,6 +174,20 @@ actor AttributionDelivery {
 struct UsageClient: Sendable {
     let platform: String
     let version: String
+}
+
+/// Where usage comes from, coarsely: the App Store country the person buys from
+/// (not the device's location) and the language the app is showing.
+struct UsageContext: Sendable {
+    /// ISO 3166-1 alpha-3, e.g. "DEU"; the same code Apple signs into purchases.
+    let storefront: String?
+    /// The app localization in use, e.g. "de" or "pt-BR".
+    let language: String?
+
+    static func current() async -> UsageContext {
+        UsageContext(storefront: await Storefront.current?.countryCode,
+                     language: Bundle.main.preferredLocalizations.first)
+    }
 }
 
 private final class AttributionRedirectPolicy: NSObject, URLSessionTaskDelegate, Sendable {
