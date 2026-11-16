@@ -19,6 +19,8 @@ struct AddServerView: View {
                 }
             }
         }
+        // The same side margins as first-run setup, so titles don't touch the edge.
+        .padding(.horizontal, PlatformMetric.value(tv: .zero, touch: DesignTokens.Spacing.md))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .screenBackground()
         .crtEffect()
