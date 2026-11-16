@@ -52,10 +52,18 @@ struct JellyfinConnectionView: View {
                     Text(Copy.allowDetail)
                         .font(Typography.caption)
                         .foregroundStyle(theme.textSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                Button(isSaving ? "Checking…" : "Save", systemImage: "checkmark", action: save)
-                    .buttonStyle(.retroPrimary)
-                    .disabled(isSaving || (homeText.isBlank && awayText.isBlank))
+                HStack(spacing: DesignTokens.Spacing.md) {
+                    Button(isSaving ? "Checking…" : "Save", systemImage: "checkmark", action: save)
+                        .buttonStyle(.retroPrimary)
+                        .disabled(isSaving || (homeText.isBlank && awayText.isBlank))
+                    if !isSaving, let result {
+                        Text(result.saved ? "Saved" : "Not saved: fix the address above")
+                            .font(Typography.caption)
+                            .foregroundStyle(result.saved ? theme.textSecondary : theme.accent)
+                    }
+                }
                 help
             }
             .onAppear {
@@ -76,6 +84,7 @@ struct JellyfinConnectionView: View {
                 #if os(iOS)
                 .keyboardType(.URL)
                 .textInputAutocapitalization(.never)
+                .textFieldStyle(.roundedBorder)
                 #endif
                 .autocorrectionDisabled()
                 .onSubmit(save)
