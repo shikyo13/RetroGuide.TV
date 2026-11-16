@@ -21,12 +21,37 @@ public enum GenreCategory: String, Codable, Sendable, CaseIterable, Hashable {
 
     public var displayName: String {
         switch self {
-        case .gameShow: "Game Show"
-        case .martialArts: "Martial Arts"
-        case .sciFi: "Science Fiction"
-        case .talk: "Talk Show"
-        case .children: "Kids"
-        default: rawValue.prefix(1).uppercased() + rawValue.dropFirst()
+        case .action: String(localized: "Action", bundle: .module, comment: "Genre.")
+        case .adventure: String(localized: "Adventure", bundle: .module, comment: "Genre.")
+        case .animation: String(localized: "Animation", bundle: .module, comment: "Genre.")
+        case .anime: String(localized: "Anime", bundle: .module, comment: "Genre.")
+        case .biography: String(localized: "Biography", bundle: .module, comment: "Genre.")
+        case .children: String(localized: "Kids", bundle: .module)
+        case .comedy: String(localized: "Comedy", bundle: .module, comment: "Genre.")
+        case .crime: String(localized: "Crime", bundle: .module, comment: "Genre.")
+        case .documentary: String(localized: "Documentary", bundle: .module, comment: "Genre.")
+        case .drama: String(localized: "Drama", bundle: .module, comment: "Genre.")
+        case .family: String(localized: "Family", bundle: .module)
+        case .fantasy: String(localized: "Fantasy", bundle: .module, comment: "Genre.")
+        case .food: String(localized: "Food", bundle: .module, comment: "Genre.")
+        case .gameShow: String(localized: "Game Show", bundle: .module, comment: "Genre.")
+        case .history: String(localized: "History", bundle: .module, comment: "Genre.")
+        case .horror: String(localized: "Horror", bundle: .module, comment: "Genre.")
+        case .martialArts: String(localized: "Martial Arts", bundle: .module, comment: "Genre.")
+        case .music: String(localized: "Music", bundle: .module, comment: "Genre.")
+        case .musical: String(localized: "Musical", bundle: .module, comment: "Genre.")
+        case .mystery: String(localized: "Mystery", bundle: .module, comment: "Genre.")
+        case .news: String(localized: "News", bundle: .module, comment: "Genre.")
+        case .reality: String(localized: "Reality", bundle: .module, comment: "Genre.")
+        case .romance: String(localized: "Romance", bundle: .module, comment: "Genre.")
+        case .sciFi: String(localized: "Science Fiction", bundle: .module, comment: "Genre.")
+        case .soap: String(localized: "Soap", bundle: .module, comment: "Genre: soap opera.")
+        case .sport: String(localized: "Sport", bundle: .module, comment: "Genre.")
+        case .talk: String(localized: "Talk Show", bundle: .module, comment: "Genre.")
+        case .thriller: String(localized: "Thriller", bundle: .module, comment: "Genre.")
+        case .travel: String(localized: "Travel", bundle: .module, comment: "Genre.")
+        case .war: String(localized: "War", bundle: .module, comment: "Genre.")
+        case .western: String(localized: "Western", bundle: .module, comment: "Genre.")
         }
     }
 }

@@ -10,13 +10,13 @@ public enum HTTPError: Error, Equatable, LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case .secureConnectionRequired: "A secure HTTPS connection is required. Configure HTTPS with a trusted certificate on your server, then update its address."
-        case .invalidURL: "The server address is not valid."
-        case .invalidResponse: "The server sent an unexpected response."
-        case .unauthorized: "The server rejected the sign-in. Please sign in again."
-        case .status(429): "Too many requests. Please wait a moment before trying again."
-        case let .status(code): "The server responded with error \(code)."
-        case let .decoding(detail): "The server's response could not be read (\(detail))."
+        case .secureConnectionRequired: String(localized: "A secure HTTPS connection is required. Configure HTTPS with a trusted certificate on your server, then update its address.", bundle: .module)
+        case .invalidURL: String(localized: "The server address is not valid.", bundle: .module)
+        case .invalidResponse: String(localized: "The server sent an unexpected response.", bundle: .module)
+        case .unauthorized: String(localized: "The server rejected the sign-in. Please sign in again.", bundle: .module)
+        case .status(429): String(localized: "Too many requests. Please wait a moment before trying again.", bundle: .module)
+        case let .status(code): String(localized: "The server responded with error \(code).", bundle: .module, comment: "%lld is an HTTP status code, such as 404.")
+        case let .decoding(detail): String(localized: "The server's response could not be read (\(detail)).", bundle: .module, comment: "%@ is a technical decoding error, shown untranslated.")
         }
     }
 }

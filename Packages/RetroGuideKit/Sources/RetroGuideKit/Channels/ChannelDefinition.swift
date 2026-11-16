@@ -19,13 +19,13 @@ public enum ChannelSource: String, Codable, Sendable, CaseIterable, Hashable {
 
     public var displayName: String {
         switch self {
-        case .curated: "Featured"
-        case .decade: "Decades"
-        case .library: "Libraries"
-        case .network: "Networks"
-        case .collection: "Collections"
-        case .series: "Marathons"
-        case .custom: "My Channels"
+        case .curated: String(localized: "Featured", bundle: .module, comment: "Channel category: hand-picked themed channels.")
+        case .decade: String(localized: "Decades", bundle: .module)
+        case .library: String(localized: "Libraries", bundle: .module)
+        case .network: String(localized: "Networks", bundle: .module, comment: "Channel category: channels for TV networks such as NBC.")
+        case .collection: String(localized: "Collections", bundle: .module)
+        case .series: String(localized: "Marathons", bundle: .module, comment: "Channel category: 24/7 channels of a single show.")
+        case .custom: String(localized: "My Channels", bundle: .module)
         }
     }
 }

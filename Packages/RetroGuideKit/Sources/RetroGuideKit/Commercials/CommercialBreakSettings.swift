@@ -3,7 +3,11 @@ import Foundation
 public struct CommercialBreakSettings: Codable, Equatable, Sendable {
     public enum Count: Int, Codable, CaseIterable, Sendable {
         case one = 1, two = 2, three = 3
-        public var displayName: String { rawValue == 1 ? "1 commercial" : "\(rawValue) commercials" }
+        public var displayName: String {
+            rawValue == 1
+                ? String(localized: "1 commercial", bundle: .module)
+                : String(localized: "\(rawValue) commercials", bundle: .module)
+        }
     }
     public var isEnabled = false
     public var libraryIDs: Set<String> = []

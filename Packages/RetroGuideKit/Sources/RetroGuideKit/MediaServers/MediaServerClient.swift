@@ -146,9 +146,9 @@ public enum StreamError: Error, Equatable, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .noPlayableVersion:
-            "The server can't play this title. Its files may have been moved or deleted."
+            String(localized: "The server can't play this title. Its files may have been moved or deleted.", bundle: .module)
         case .serverUnreachable:
-            "The server isn't responding."
+            String(localized: "The server isn't responding.", bundle: .module)
         }
     }
 }

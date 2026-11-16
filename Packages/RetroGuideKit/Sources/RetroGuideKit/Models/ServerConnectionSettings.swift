@@ -11,26 +11,26 @@ public enum ConnectionPreference: String, Codable, Sendable, CaseIterable, Hasha
 
     public var displayName: String {
         switch self {
-        case .automatic: "Automatic"
-        case .preferHome: "Prefer home or VPN address"
-        case .custom: "Custom address"
+        case .automatic: String(localized: "Automatic", bundle: .module, comment: "Server connection preference.")
+        case .preferHome: String(localized: "Prefer home or VPN address", bundle: .module)
+        case .custom: String(localized: "Custom address", bundle: .module)
         }
     }
 
     /// For a settings row's value.
     public var shortName: String {
         switch self {
-        case .automatic: "Automatic"
-        case .preferHome: "Home first"
-        case .custom: "Custom"
+        case .automatic: String(localized: "Automatic", bundle: .module, comment: "Server connection preference.")
+        case .preferHome: String(localized: "Home first", bundle: .module, comment: "Short value for the server connection preference.")
+        case .custom: String(localized: "Custom", bundle: .module, comment: "Short value for a custom server address.")
         }
     }
 
     public var explanation: String {
         switch self {
-        case .automatic: "Uses the home address at home or over a VPN, and the internet address elsewhere."
-        case .preferHome: "Always tries the home address first. Good for Tailscale subnet routes and other VPNs."
-        case .custom: "Tries the address you enter first, such as the server's Tailscale IP."
+        case .automatic: String(localized: "Uses the home address at home or over a VPN, and the internet address elsewhere.", bundle: .module)
+        case .preferHome: String(localized: "Always tries the home address first. Good for Tailscale subnet routes and other VPNs.", bundle: .module)
+        case .custom: String(localized: "Tries the address you enter first, such as the server's Tailscale IP.", bundle: .module)
         }
     }
 }

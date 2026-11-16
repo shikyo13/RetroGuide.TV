@@ -6,10 +6,10 @@ public struct ViewingPreferences: Codable, Equatable, Sendable {
         case recent, favorites, selected, pinned
         public var title: String {
             switch self {
-            case .recent: "Last watched & nearby"
-            case .favorites: "Favorites"
-            case .selected: "Selected channels"
-            case .pinned: "One pinned channel"
+            case .recent: String(localized: "Last watched & nearby", bundle: .module, comment: "Widget channel source: the last watched channel and the ones next to it.")
+            case .favorites: String(localized: "Favorites", bundle: .module)
+            case .selected: String(localized: "Selected channels", bundle: .module)
+            case .pinned: String(localized: "One pinned channel", bundle: .module)
             }
         }
     }

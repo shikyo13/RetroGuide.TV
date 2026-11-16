@@ -20,7 +20,7 @@ struct JellyfinLibraryLoader: Sendable {
         if let limit { return try await loadBounded(libraries, limit: limit, progress: progress) }
         let schedulable = libraries.filter(\.isSchedulable)
         guard !schedulable.isEmpty else { return [] }
-        progress(LibraryLoadProgress(fraction: .zero, message: "Reading collections…"))
+        progress(LibraryLoadProgress(fraction: .zero, message: String(localized: "Reading collections…", bundle: .module)))
         // Collections span libraries on Jellyfin, so they're read once.
         let collections = try await collectionMembership()
         var items: [MediaItem] = []
@@ -38,7 +38,7 @@ struct JellyfinLibraryLoader: Sendable {
             case .unsupported: continue
             }
         }
-        progress(LibraryLoadProgress(fraction: 1, message: "Finishing up…"))
+        progress(LibraryLoadProgress(fraction: 1, message: String(localized: "Finishing up…", bundle: .module)))
         return items
     }
 
@@ -48,9 +48,9 @@ struct JellyfinLibraryLoader: Sendable {
         collections: [String: [String]],
         report: @Sendable (Double, String) -> Void
     ) async throws -> [MediaItem] {
-        report(.zero, "Reading \(library.title) movies…")
+        report(.zero, String(localized: "Reading \(library.title) movies…", bundle: .module, comment: "Library loading progress; %@ is a library name."))
         let movies = try await context.allItems(query: listing(in: library, type: JellyfinAPI.ItemType.movie, fields: JellyfinAPI.Fields.playable), limit: limit)
-        report(1, "Indexed \(movies.count) movies")
+        report(1, String(localized: "Indexed \(movies.count) movies", bundle: .module))
         return movies.compactMap { JellyfinItemMapper.movie($0, library: library, collections: collections) }
     }
 
@@ -60,13 +60,13 @@ struct JellyfinLibraryLoader: Sendable {
         collections: [String: [String]],
         report: @Sendable (Double, String) -> Void
     ) async throws -> [MediaItem] {
-        report(.zero, "Reading \(library.title)…")
+        report(.zero, String(localized: "Reading \(library.title)…", bundle: .module, comment: "Library loading progress; %@ is a library name."))
         let shows = try await context.allItems(query: listing(in: library, type: JellyfinAPI.ItemType.series, fields: JellyfinAPI.Fields.titles))
         let showsByID = Dictionary(shows.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         let networks = JellyfinNetworks(shows: shows)
-        report(Stage.shows, "Reading episodes in \(library.title)…")
+        report(Stage.shows, String(localized: "Reading episodes in \(library.title)…", bundle: .module, comment: "Library loading progress; %@ is a library name."))
         let episodes = try await context.allItems(query: listing(in: library, type: JellyfinAPI.ItemType.episode, fields: JellyfinAPI.Fields.playable), limit: limit)
-        report(1, "Indexed \(episodes.count) episodes from \(shows.count) shows")
+        report(1, String(localized: "Indexed \(episodes.count) episodes from \(shows.count) shows", bundle: .module))
         return episodes.compactMap { episode in
             let show = episode.seriesId.flatMap { showsByID[$0] }
             return JellyfinItemMapper.episode(

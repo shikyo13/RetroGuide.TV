@@ -27,7 +27,7 @@ struct PlexLibraryLoader: Sendable {
             case .unsupported: continue
             }
         }
-        progress(LibraryLoadProgress(fraction: 1, message: "Finishing up…"))
+        progress(LibraryLoadProgress(fraction: 1, message: String(localized: "Finishing up…", bundle: .module)))
         return items
     }
 
@@ -43,13 +43,13 @@ struct PlexLibraryLoader: Sendable {
         limit: Int?,
         report: @Sendable (Double, String) -> Void
     ) async throws -> [MediaItem] {
-        report(.zero, "Reading \(library.title)…")
+        report(.zero, String(localized: "Reading \(library.title)…", bundle: .module, comment: "Library loading progress; %@ is a library name."))
         var memberships = PlexTagMemberships()
         memberships.genres = try await membership(library, field: PlexAPI.FilterField.genre, type: .movie)
         memberships.collections = try await collectionMembership(library)
-        report(MovieStage.tags, "Reading \(library.title) movies…")
+        report(MovieStage.tags, String(localized: "Reading \(library.title) movies…", bundle: .module, comment: "Library loading progress; %@ is a library name."))
         let movies = try await context.allMetadata(path: PlexAPI.Path.sectionItems(library.key), query: typeQuery(.movie) + PlexAPI.Trim.listingWithIDs, limit: limit)
-        report(MovieStage.movies, "Indexed \(movies.count) movies")
+        report(MovieStage.movies, String(localized: "Indexed \(movies.count) movies", bundle: .module))
         return movies.compactMap { PlexItemMapper.movie($0, library: library, memberships: memberships) }
     }
 
@@ -65,20 +65,20 @@ struct PlexLibraryLoader: Sendable {
         limit: Int?,
         report: @Sendable (Double, String) -> Void
     ) async throws -> [MediaItem] {
-        report(.zero, "Reading \(library.title)…")
+        report(.zero, String(localized: "Reading \(library.title)…", bundle: .module, comment: "Library loading progress; %@ is a library name."))
         let path = PlexAPI.Path.sectionItems(library.key)
         let shows = try await context.allMetadata(path: path, query: typeQuery(.show) + PlexAPI.Trim.listingWithIDs)
         let showsByKey = Dictionary(shows.map { ($0.ratingKey, $0) }, uniquingKeysWith: { first, _ in first })
-        report(ShowStage.shows, "Reading genres and networks in \(library.title)…")
+        report(ShowStage.shows, String(localized: "Reading genres and networks in \(library.title)…", bundle: .module, comment: "Library loading progress; %@ is a library name."))
 
         var memberships = PlexTagMemberships()
         memberships.genres = try await membership(library, field: PlexAPI.FilterField.genre, type: .show)
         memberships.networks = try await membership(library, field: PlexAPI.FilterField.network, type: .show)
         memberships.collections = try await collectionMembership(library)
-        report(ShowStage.tags, "Reading episodes in \(library.title)…")
+        report(ShowStage.tags, String(localized: "Reading episodes in \(library.title)…", bundle: .module, comment: "Library loading progress; %@ is a library name."))
 
         let episodes = try await context.allMetadata(path: path, query: typeQuery(.episode) + PlexAPI.Trim.listing, limit: limit)
-        report(1, "Indexed \(episodes.count) episodes from \(shows.count) shows")
+        report(1, String(localized: "Indexed \(episodes.count) episodes from \(shows.count) shows", bundle: .module))
         return episodes.compactMap { episode in
             PlexItemMapper.episode(
                 episode,

@@ -17,21 +17,21 @@ public enum ScheduleOrdering: String, Codable, Sendable, CaseIterable, Hashable 
 
     public var displayName: String {
         switch self {
-        case .shuffle: "Shuffle"
-        case .blockShuffle: "Block Shuffle"
-        case .syndication: "Show Rotation"
-        case .marathon: "Marathon"
-        case .releaseOrder: "Release Order"
+        case .shuffle: String(localized: "Shuffle", bundle: .module, comment: "Schedule ordering: shows in random order.")
+        case .blockShuffle: String(localized: "Block Shuffle", bundle: .module, comment: "Schedule ordering: shows take turns in short blocks.")
+        case .syndication: String(localized: "Show Rotation", bundle: .module, comment: "Schedule ordering: one episode from each show in turn.")
+        case .marathon: String(localized: "Marathon", bundle: .module, comment: "Schedule ordering: every episode of a show in order, then the next show.")
+        case .releaseOrder: String(localized: "Release Order", bundle: .module)
         }
     }
 
     public var explanation: String {
         switch self {
-        case .shuffle: "Shows in random order; each show's episodes stay in order."
-        case .blockShuffle: "Shows take turns in short blocks, episodes stay in order."
-        case .syndication: "One episode from each show in turn, in order."
-        case .marathon: "Every episode of a show in order, then the next show."
-        case .releaseOrder: "Oldest first, by the release dates on your server, then it starts over."
+        case .shuffle: String(localized: "Shows in random order; each show's episodes stay in order.", bundle: .module)
+        case .blockShuffle: String(localized: "Shows take turns in short blocks, episodes stay in order.", bundle: .module)
+        case .syndication: String(localized: "One episode from each show in turn, in order.", bundle: .module)
+        case .marathon: String(localized: "Every episode of a show in order, then the next show.", bundle: .module)
+        case .releaseOrder: String(localized: "Oldest first, by the release dates on your server, then it starts over.", bundle: .module)
         }
     }
 

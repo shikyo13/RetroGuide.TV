@@ -21,19 +21,19 @@ public enum SimulcastLimit: String, Codable, Sendable, CaseIterable, Hashable {
 
     public var displayName: String {
         switch self {
-        case .one: "1 channel"
-        case .two: "2 channels"
-        case .three: "3 channels"
-        case .unlimited: "No limit"
+        case .one: String(localized: "1 channel", bundle: .module)
+        case .two: String(localized: "2 channels", bundle: .module)
+        case .three: String(localized: "3 channels", bundle: .module)
+        case .unlimited: String(localized: "No limit", bundle: .module)
         }
     }
 
     public var explanation: String {
         switch self {
-        case .one: "Aim to show each series on one automatic channel at a time, for more variety."
-        case .two: "Aim to show each series on no more than two automatic channels at a time, using different episodes."
-        case .three: "Aim to show each series on no more than three automatic channels at a time, using different episodes."
-        case .unlimited: "Allow each series on any number of automatic channels at a time. Episode and movie overlap is still avoided when possible."
+        case .one: String(localized: "Aim to show each series on one automatic channel at a time, for more variety.", bundle: .module)
+        case .two: String(localized: "Aim to show each series on no more than two automatic channels at a time, using different episodes.", bundle: .module)
+        case .three: String(localized: "Aim to show each series on no more than three automatic channels at a time, using different episodes.", bundle: .module)
+        case .unlimited: String(localized: "Allow each series on any number of automatic channels at a time. Episode and movie overlap is still avoided when possible.", bundle: .module)
         }
     }
 }

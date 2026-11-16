@@ -26,8 +26,12 @@ public enum SubtitleTiming {
     /// "Original timing", "1.5 s later" or "2 s earlier".
     public static func description(of delay: TimeInterval) -> String {
         let delay = clamped(delay)
-        guard abs(delay) >= fineStep / 2 else { return "Original timing" }
+        guard abs(delay) >= fineStep / 2 else {
+            return String(localized: "Original timing", bundle: .module, comment: "Subtitle timing with no delay.")
+        }
         let seconds = abs(delay).formatted(.number.precision(.fractionLength(0...1)))
-        return delay > .zero ? "\(seconds) s later" : "\(seconds) s earlier"
+        return delay > .zero
+            ? String(localized: "\(seconds) s later", bundle: .module, comment: "Subtitle delay; %@ is a number of seconds, such as 1.5.")
+            : String(localized: "\(seconds) s earlier", bundle: .module, comment: "Subtitle advance; %@ is a number of seconds, such as 1.5.")
     }
 }

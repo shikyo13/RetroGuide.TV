@@ -10,7 +10,7 @@ extension JellyfinLibraryLoader {
         for library in libraries where library.isSchedulable {
             let remaining = limit - result.count
             guard remaining > 0 else { break }
-            progress(LibraryLoadProgress(fraction: .zero, message: "Reading \(library.title)…"))
+            progress(LibraryLoadProgress(fraction: .zero, message: String(localized: "Reading \(library.title)…", bundle: .module, comment: "Library loading progress; %@ is a library name.")))
             let items = try await context.allItems(query: boundedListing(library, type: library.kind == .movies ? JellyfinAPI.ItemType.movie : JellyfinAPI.ItemType.episode, fields: JellyfinAPI.Fields.playable), limit: remaining)
             let parents = Set(items.compactMap(\.seriesId))
             var shows: [String: JellyfinItem] = [:]
@@ -27,7 +27,7 @@ extension JellyfinLibraryLoader {
                 return JellyfinItemMapper.episode(item, series: show, networks: networks.networks(of: show), library: library, collections: collections)
             }
         }
-        progress(LibraryLoadProgress(fraction: 1, message: "Finishing up…"))
+        progress(LibraryLoadProgress(fraction: 1, message: String(localized: "Finishing up…", bundle: .module)))
         return result
     }
 

@@ -12,7 +12,7 @@ extension PlexLibraryLoader {
         for library in libraries where library.isSchedulable {
             let remaining = limit - result.count
             guard remaining > 0 else { break }
-            progress(LibraryLoadProgress(fraction: .zero, message: "Reading \(library.title)…"))
+            progress(LibraryLoadProgress(fraction: .zero, message: String(localized: "Reading \(library.title)…", bundle: .module, comment: "Library loading progress; %@ is a library name.")))
             let type: PlexAPI.MetadataType = library.kind == .movies ? .movie : .episode
             let items = try await context.allMetadata(
                 path: PlexAPI.Path.sectionItems(library.key),
@@ -43,7 +43,7 @@ extension PlexLibraryLoader {
                 return PlexItemMapper.episode(item, show: item.grandparentRatingKey.flatMap { shows[$0] }, library: library, memberships: memberships)
             }
         }
-        progress(LibraryLoadProgress(fraction: 1, message: "Finishing up…"))
+        progress(LibraryLoadProgress(fraction: 1, message: String(localized: "Finishing up…", bundle: .module)))
         return result
     }
 

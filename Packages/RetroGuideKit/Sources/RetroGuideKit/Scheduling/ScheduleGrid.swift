@@ -17,10 +17,10 @@ public enum ScheduleGrid: Int, Codable, Sendable, CaseIterable, Hashable {
 
     public var displayName: String {
         switch self {
-        case .continuous: "Back to back"
-        case .fiveMinutes: "5 minutes"
-        case .quarterHour: "15 minutes"
-        case .halfHour: "30 minutes"
+        case .continuous: String(localized: "Back to back", bundle: .module, comment: "Schedule grid option: programs start right after each other, with no alignment.")
+        case .fiveMinutes: String(localized: "5 minutes", bundle: .module)
+        case .quarterHour: String(localized: "15 minutes", bundle: .module)
+        case .halfHour: String(localized: "30 minutes", bundle: .module)
         }
     }
 

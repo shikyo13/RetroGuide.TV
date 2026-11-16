@@ -7,8 +7,8 @@ public enum MediaKind: String, Codable, Sendable, CaseIterable, Hashable {
 
     public var displayName: String {
         switch self {
-        case .movie: "Movies"
-        case .episode: "TV Episodes"
+        case .movie: String(localized: "Movies", bundle: .module)
+        case .episode: String(localized: "TV Episodes", bundle: .module)
         }
     }
 }

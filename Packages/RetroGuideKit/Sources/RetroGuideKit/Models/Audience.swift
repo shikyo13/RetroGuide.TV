@@ -13,11 +13,11 @@ public enum Audience: String, Codable, Sendable, CaseIterable, Hashable, Compara
 
     public var displayName: String {
         switch self {
-        case .kids: "Kids"
-        case .family: "Family"
-        case .teen: "Teen"
-        case .mature: "Mature"
-        case .unrated: "Unrated"
+        case .kids: String(localized: "Kids", bundle: .module)
+        case .family: String(localized: "Family", bundle: .module)
+        case .teen: String(localized: "Teen", bundle: .module)
+        case .mature: String(localized: "Mature", bundle: .module)
+        case .unrated: String(localized: "Unrated", bundle: .module)
         }
     }
 

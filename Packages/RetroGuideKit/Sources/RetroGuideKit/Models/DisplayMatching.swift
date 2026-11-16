@@ -56,20 +56,20 @@ public enum DisplayMatching: String, Codable, CaseIterable, Identifiable, Sendab
 
     public var displayName: String {
         switch self {
-        case .off: "Off"
-        case .dynamicRange: "HDR"
-        case .dynamicRangeAndFrameRate: "HDR and frame rate"
+        case .off: String(localized: "Off", bundle: .module, comment: "Match content setting: off.")
+        case .dynamicRange: String(localized: "HDR", bundle: .module, comment: "Match content setting: match dynamic range only.")
+        case .dynamicRangeAndFrameRate: String(localized: "HDR and frame rate", bundle: .module)
         }
     }
 
     public var explanation: String {
         switch self {
         case .off:
-            "Always use the Apple TV's usual output. HDR programs are converted to standard range."
+            String(localized: "Always use the Apple TV's usual output. HDR programs are converted to standard range.", bundle: .module)
         case .dynamicRange:
-            "Switch the TV to HDR for HDR programs. Recommended: switches only happen when the dynamic range changes."
+            String(localized: "Switch the TV to HDR for HDR programs. Recommended: switches only happen when the dynamic range changes.", bundle: .module)
         case .dynamicRangeAndFrameRate:
-            "Also match each program's frame rate for the smoothest motion. The TV blanks briefly more often while you change channels."
+            String(localized: "Also match each program's frame rate for the smoothest motion. The TV blanks briefly more often while you change channels.", bundle: .module)
         }
     }
 

@@ -10,19 +10,19 @@ public enum VideoQuality: String, Codable, Sendable, CaseIterable, Hashable {
 
     public var displayName: String {
         switch self {
-        case .original: "Original"
-        case .upTo1080p: "Up to 1080p"
-        case .upTo720p: "Up to 720p"
-        case .smallest: "Smallest available"
+        case .original: String(localized: "Original", bundle: .module, comment: "Playback quality: always the original, highest-quality copy.")
+        case .upTo1080p: String(localized: "Up to 1080p", bundle: .module)
+        case .upTo720p: String(localized: "Up to 720p", bundle: .module)
+        case .smallest: String(localized: "Smallest available", bundle: .module, comment: "Playback quality: the smallest copy available.")
         }
     }
 
     public var explanation: String {
         switch self {
-        case .original: "Always the highest-quality copy. Best for servers in your home."
-        case .upTo1080p: "Skips 4K copies when a 1080p or smaller copy exists. Good for most remote servers."
-        case .upTo720p: "Prefers 720p or smaller copies. For slow connections."
-        case .smallest: "Always the smallest copy the server has."
+        case .original: String(localized: "Always the highest-quality copy. Best for servers in your home.", bundle: .module)
+        case .upTo1080p: String(localized: "Skips 4K copies when a 1080p or smaller copy exists. Good for most remote servers.", bundle: .module)
+        case .upTo720p: String(localized: "Prefers 720p or smaller copies. For slow connections.", bundle: .module)
+        case .smallest: String(localized: "Always the smallest copy the server has.", bundle: .module)
         }
     }
 
