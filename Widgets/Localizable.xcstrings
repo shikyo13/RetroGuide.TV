@@ -1,0 +1,58 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    ".TV" : {
+
+    },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
+    "A larger RetroGuide icon. Choose What's On for live listings and channel controls." : {
+
+    },
+    "App Icon" : {
+
+    },
+    "Flip Channel" : {
+
+    },
+    "Next channel" : {
+
+    },
+    "ON NOW" : {
+
+    },
+    "Open RetroGuide to refresh your channels" : {
+
+    },
+    "Open RetroGuide.TV" : {
+
+    },
+    "Previous channel" : {
+
+    },
+    "RetroGuide" : {
+
+    },
+    "Step" : {
+
+    },
+    "UP NEXT" : {
+
+    },
+    "What's On" : {
+
+    },
+    "What's on your channels right now." : {
+
+    }
+  },
+  "version" : "1.0"
+}

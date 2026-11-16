@@ -3,6 +3,7 @@ import PackageDescription
 
 let package = Package(
     name: "RetroGuideKit",
+    defaultLocalization: "en",
     platforms: [
         .tvOS(.v17),
         .iOS(.v17),

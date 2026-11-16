@@ -1,0 +1,796 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ %@ (%@) · Open source under the MIT License" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@ (%3$@) · Open source under the MIT License"
+          }
+        }
+      }
+    },
+    "%@ by %@ seconds" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ by %2$@ seconds"
+          }
+        }
+      }
+    },
+    "%@ is open-source software under the MIT License. Video playback uses the following libraries. You can rebuild the app with modified versions of them from the public source code." : {
+
+    },
+    "%@ is starting on %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is starting on %2$@."
+          }
+        }
+      }
+    },
+    "%@, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@, %2$@"
+          }
+        }
+      }
+    },
+    "%lld · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld · %2$@"
+          }
+        }
+      }
+    },
+    "%lld %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld %2$@"
+          }
+        }
+      }
+    },
+    "%lld commercials available" : {
+
+    },
+    "%lld programs · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld programs · %2$@"
+          }
+        }
+      }
+    },
+    "100.x.x.x or hostname" : {
+
+    },
+    "Add a server" : {
+
+    },
+    "Add Another Server" : {
+
+    },
+    "Add the servers you want, then build your channels. Programs from all selected servers appear in one guide." : {
+
+    },
+    "Add What's On for artwork, current programs and channel controls, or App Icon for a larger icon. Both follow your app theme." : {
+
+    },
+    "Add your first channel. An empty custom lineup shows no channels." : {
+
+    },
+    "All channels" : {
+
+    },
+    "Allow Without Encryption" : {
+
+    },
+    "and enter this code:" : {
+
+    },
+    "Animation and Documentary do not necessarily mean suitable for children or educational. For a specific learning lineup, select a curated collection in Allowed Content." : {
+
+    },
+    "Applies to automatic channels. 24/7 and custom channels are excluded from this limit. If no other show can fill a slot, the limit may be exceeded." : {
+
+    },
+    "Applying parental controls…" : {
+
+    },
+    "Back" : {
+
+    },
+    "Back to Selected Servers" : {
+
+    },
+    "Breaks use the combined running time of the selected clips, which is included in the guide. If fewer clips are available, each plays once. Program start-time alignment may add an intermission before the next program." : {
+
+    },
+    "Browse ahead in the guide, select a program, then choose Remind me. Reminders never change channels automatically." : {
+
+    },
+    "Build My Channels" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Cancel reminder" : {
+
+    },
+    "Cancel reminder for %@" : {
+
+    },
+    "Cancel sleep timer" : {
+
+    },
+    "Channel %lld, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Channel %1$lld, %2$@"
+          }
+        }
+      }
+    },
+    "Channel down" : {
+
+    },
+    "Channel loading cancelled" : {
+
+    },
+    "Channel name" : {
+
+    },
+    "Channel up" : {
+
+    },
+    "Channels can mix programs from every server you add." : {
+
+    },
+    "Channels combine content from your selected libraries. For matching copies, servers higher in this list are preferred. Availability, parental restrictions and playable versions can affect which copy is used." : {
+
+    },
+    "Checking…" : {
+
+    },
+    "Choose a channel below to show programs in your widget." : {
+
+    },
+    "Choose a library containing only commercials to enable breaks." : {
+
+    },
+    "Choose a server" : {
+
+    },
+    "Choose Favorites in Settings, or switch back to All Channels." : {
+
+    },
+    "Choose the highest rating allowed for each type of content." : {
+
+    },
+    "Choose up to %lld channels." : {
+
+    },
+    "Choose which existing copy to prefer on %@, such as 4K or 1080p. This does not set a streaming bitrate. Playback may still need conversion for compatibility." : {
+
+    },
+    "Choose which kinds of channels are built automatically from your library. Your own channels are always kept." : {
+
+    },
+    "Choose your Jellyfin server" : {
+
+    },
+    "Clear" : {
+
+    },
+    "Close" : {
+
+    },
+    "Close guide" : {
+
+    },
+    "Connect" : {
+
+    },
+    "Connect Anyway" : {
+
+    },
+    "Connect Jellyfin" : {
+
+    },
+    "Connect Multiple Servers with Pro" : {
+
+    },
+    "Connect Plex" : {
+
+    },
+    "Connect without encryption?" : {
+
+    },
+    "Connected through: %@ (%@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Connected through: %1$@ (%2$@)."
+          }
+        }
+      }
+    },
+    "Connecting to %@…" : {
+
+    },
+    "Create Channel" : {
+
+    },
+    "Custom timer minutes" : {
+
+    },
+    "Decrease %@" : {
+
+    },
+    "Delete Channel" : {
+
+    },
+    "Delete this channel?" : {
+
+    },
+    "Dismiss" : {
+
+    },
+    "Done" : {
+
+    },
+    "Done entering minutes" : {
+
+    },
+    "Double-tap for controls. Swipe up or down to change channel." : {
+
+    },
+    "Earlier" : {
+
+    },
+    "End of this program" : {
+
+    },
+    "Enter %lld–%lld minutes." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Enter %1$lld–%2$lld minutes."
+          }
+        }
+      }
+    },
+    "Enter Address" : {
+
+    },
+    "Enter an HTTPS address with a trusted certificate. Port 32400 is used unless you add one. A Tailscale IP uses the server’s secure plex.direct hostname when available. HTTP connections are not supported." : {
+
+    },
+    "Enter your PIN to change settings. Content restrictions stay active while you make changes." : {
+
+    },
+    "Enter your server's address" : {
+
+    },
+    "Extra buffering reads further ahead so playback rides out slow or uneven internet. Turn it on for servers outside your home." : {
+
+    },
+    "Favorites" : {
+
+    },
+    "Find a channel" : {
+
+    },
+    "FROM BEGINNING" : {
+
+    },
+    "Guide" : {
+
+    },
+    "Hide %@" : {
+
+    },
+    "In Jellyfin on your phone or computer, open your profile, choose Quick Connect and enter this code:" : {
+
+    },
+    "Increase %@" : {
+
+    },
+    "It stays on your other channels. You can put it back any time in Settings › Channels › Removed from channels." : {
+
+    },
+    "Last channel" : {
+
+    },
+    "Later" : {
+
+    },
+    "Left and Right move subtitles earlier or later. Select restores the original timing." : {
+
+    },
+    "Link your Plex account" : {
+
+    },
+    "Live TV" : {
+
+    },
+    "Loading allowed content…" : {
+
+    },
+    "Loading commercials…" : {
+
+    },
+    "Looking for servers on your network…" : {
+
+    },
+    "minutes" : {
+
+    },
+    "Minutes" : {
+
+    },
+    "Move RetroGuide.TV to the top row of your Apple TV Home Screen to see what's on." : {
+
+    },
+    "Movies" : {
+
+    },
+    "Needs a Plex or Jellyfin server, yours or one shared with you. No videos are included." : {
+
+    },
+    "No allowed channels" : {
+
+    },
+    "No available channels match your parental controls. A parent can change the lineup or content restrictions in Settings." : {
+
+    },
+    "No channels are available yet." : {
+
+    },
+    "No channels in this view" : {
+
+    },
+    "No commercials available. Check your libraries and Parental Controls." : {
+
+    },
+    "No favorite channels are available. Add channels in Favorites below to show them on Top Shelf." : {
+
+    },
+    "No favorite channels are available. Choose Favorites below to add channels to your widget." : {
+
+    },
+    "No matching channels" : {
+
+    },
+    "NO SIGNAL" : {
+
+    },
+    "No upcoming reminders" : {
+
+    },
+    "Not encrypted" : {
+
+    },
+    "Not saved: fix the address above" : {
+
+    },
+    "Not selected" : {
+
+    },
+    "Nothing is removed from any channel. To remove a show from one, open Options while it's on and choose Remove this show from this channel." : {
+
+    },
+    "Nothing matches yet" : {
+
+    },
+    "Nothing on your channels matches “%@”." : {
+
+    },
+    "NOW" : {
+
+    },
+    "OK" : {
+
+    },
+    "On Apple TV, reminders appear while RetroGuide is open. Set reminders on your iPhone or iPad for notifications outside the app." : {
+
+    },
+    "On this device or any other, go to" : {
+
+    },
+    "On your phone or computer, go to" : {
+
+    },
+    "One purchase, no subscription. It unlocks Pro on your iPhone, iPad and Apple TV." : {
+
+    },
+    "Open %@" : {
+
+    },
+    "Options" : {
+
+    },
+    "Parental Controls" : {
+
+    },
+    "Parental Controls also apply to commercials. Unrated clips are excluded when unrated content is blocked." : {
+
+    },
+    "Password" : {
+
+    },
+    "Pin one channel to stop automatic rotation." : {
+
+    },
+    "Play clips from a separate commercial library between programs. Shows and movies play without interruptions." : {
+
+    },
+    "Playback options, audio and subtitles" : {
+
+    },
+    "Playback stops at %@" : {
+
+    },
+    "Program reminder" : {
+
+    },
+    "Programming your channels" : {
+
+    },
+    "QR code" : {
+
+    },
+    "Ratings come from your servers. Content without a U.S. rating, including other countries' ratings, is blocked unless you allow it here." : {
+
+    },
+    "Real TV starts shows on the hour and half hour. Aligning to a grid adds a short \"We'll be right back\" break between programs so the guide lines up neatly." : {
+
+    },
+    "Refresh commercials" : {
+
+    },
+    "Remind me" : {
+
+    },
+    "Reminders" : {
+
+    },
+    "Remove" : {
+
+    },
+    "Remove %@" : {
+
+    },
+    "Remove %@ (%@)? Its programs will leave every channel." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Remove %1$@ (%2$@)? Its programs will leave every channel."
+          }
+        }
+      }
+    },
+    "Remove %@ from %@?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Remove %1$@ from %2$@?"
+          }
+        }
+      }
+    },
+    "Remove unavailable selections" : {
+
+    },
+    "Replace the iCloud setup?" : {
+
+    },
+    "Reset" : {
+
+    },
+    "Restart from Beginning" : {
+
+    },
+    "Restore Purchase" : {
+
+    },
+    "Restore Setup" : {
+
+    },
+    "Restore the previous setup?" : {
+
+    },
+    "Restores this track's original timing." : {
+
+    },
+    "Resume watching" : {
+
+    },
+    "RetroGuide plays the original files from your server whenever it can, so your server doesn't have to convert video." : {
+
+    },
+    "RetroGuide.TV turns your Plex or Jellyfin library into live TV channels with a program guide. Flip through channels, drop into whatever is on, and let the schedule do the choosing." : {
+
+    },
+    "Retrying automatically…" : {
+
+    },
+    "Return to Live" : {
+
+    },
+    "Review synced restrictions and lineup" : {
+
+    },
+    "Review the choices below, then Save to apply them here. Your PIN and whether parental controls are on stay unchanged." : {
+
+    },
+    "Save" : {
+
+    },
+    "Save Changes" : {
+
+    },
+    "Save on the Parental Controls screen to apply your changes. Cancel there discards them." : {
+
+    },
+    "Saved" : {
+
+    },
+    "Saving…" : {
+
+    },
+    "Scan to open Plex link" : {
+
+    },
+    "Search" : {
+
+    },
+    "Search %@" : {
+
+    },
+    "Search Again" : {
+
+    },
+    "Search every show and movie on your channels." : {
+
+    },
+    "Selected" : {
+
+    },
+    "Server address" : {
+
+    },
+    "Set the program order for the current lineup. You can change individual channels in Manage channels. Choosing Each channel's own restores automatic-channel defaults and keeps custom-channel orders." : {
+
+    },
+    "Set timer" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Shared with you" : {
+
+    },
+    "Show %@" : {
+
+    },
+    "Show all channels" : {
+
+    },
+    "Shows and movies" : {
+
+    },
+    "Sign In" : {
+
+    },
+    "Sign In on This Device Instead" : {
+
+    },
+    "Sign in to %@" : {
+
+    },
+    "Sign In with Plex" : {
+
+    },
+    "Sign Out" : {
+
+    },
+    "Sign out and remove all channels from this device?" : {
+
+    },
+    "Sleep timer finished" : {
+
+    },
+    "Some selected libraries are unavailable. Reconnect their servers or remove these selections." : {
+
+    },
+    "Something went wrong" : {
+
+    },
+    "Star channels below. Hidden and unavailable channels stay saved and return when available." : {
+
+    },
+    "Start this program at 0:00. You can return to the live channel at any time." : {
+
+    },
+    "Stops video, audio and Picture in Picture. Changing channels keeps the chosen stop time." : {
+
+    },
+    "Subtitle timing" : {
+
+    },
+    "Switches your TV into HDR for HDR programs, and optionally to each program's frame rate, like Apple's own player." : {
+
+    },
+    "Syncing settings…" : {
+
+    },
+    "The scheduler also avoids airing the exact same episode or movie on multiple channels when alternatives are available." : {
+
+    },
+    "The server at %@ doesn't use HTTPS." : {
+
+    },
+    "This channel no longer has any programs." : {
+
+    },
+    "This device’s shared settings will replace those in iCloud and update your other connected devices. Their parental restrictions still require review." : {
+
+    },
+    "This lineup takes over when parental controls are on. Turning them off restores your regular lineup. All content restrictions still apply." : {
+
+    },
+    "This restores the shared settings saved before this device joined iCloud Sync. If sync is on, the restored choices will also sync to your other devices. Parental restrictions remain unchanged until reviewed." : {
+
+    },
+    "This server can't be reached right now. Its programs are left out of the guide until it's back." : {
+
+    },
+    "Touch and hold your Home Screen, choose Edit › Add Widget, then search for RetroGuide.TV. Reopen the app to refresh the saved schedule; iOS decides when widgets update." : {
+
+    },
+    "Try again" : {
+
+    },
+    "Try Again" : {
+
+    },
+    "Turn on Match Content in the Apple TV's Settings → Video and Audio to allow this." : {
+
+    },
+    "TV Shows" : {
+
+    },
+    "Unlock Settings" : {
+
+    },
+    "UP NEXT" : {
+
+    },
+    "Up next on %@" : {
+
+    },
+    "Updating the schedule…" : {
+
+    },
+    "Use a Code Instead" : {
+
+    },
+    "Use a separate library containing only commercials. Selected libraries are used only for commercials and are excluded from regular channels." : {
+
+    },
+    "Use Another Plex Account" : {
+
+    },
+    "Use Password Instead" : {
+
+    },
+    "Use Quick Connect" : {
+
+    },
+    "Use this address" : {
+
+    },
+    "Use This Device’s Setup" : {
+
+    },
+    "Use this PIN to change settings or turn off parental controls. Keep it somewhere safe." : {
+
+    },
+    "Username" : {
+
+    },
+    "Waiting for approval…" : {
+
+    },
+    "Watch channel %lld" : {
+
+    },
+    "Watch from Beginning" : {
+
+    },
+    "Watch full screen" : {
+
+    },
+    "Watch Live" : {
+
+    },
+    "Watch now" : {
+
+    },
+    "Watching from beginning" : {
+
+    },
+    "Watching from beginning. Your channels are still following their normal schedule." : {
+
+    },
+    "We'll be right back" : {
+
+    },
+    "We're experiencing technical difficulties" : {
+
+    },
+    "When Selected genres is enabled, each copy needs a matching server tag. Your rating, library and title restrictions also apply." : {
+
+    },
+    "Which libraries should be on TV?" : {
+
+    },
+    "Who's watching?" : {
+
+    },
+    "You can add HTTPS later. See retroguide.tv/support." : {
+
+    },
+    "You have RetroGuide Pro. Thank you for supporting the app!" : {
+
+    },
+    "Your genre, library and rating limits always apply. New episodes and additions to selected collections follow the same limits." : {
+
+    },
+    "Your library, on the air." : {
+
+    },
+    "Your server" : {
+
+    },
+    "Your servers" : {
+
+    }
+  },
+  "version" : "1.0"
+}
