@@ -33,7 +33,7 @@ PLATFORMS = ('iPhone', 'iPad', 'AppleTV', 'Mac')
 # not where the device is. Apple signs the same code into each purchase.
 STOREFRONT = re.compile(r'[A-Z]{3}')
 # The languages the app is translated into; it reports the one it shows.
-LANGUAGES = {'en', 'es', 'fr', 'de', 'it', 'pt-BR', 'nl', 'ja', 'ko', 'zh-Hans', 'zh-Hant', 'pl', 'sv'}
+LANGUAGES = {'en', 'es', 'fr', 'de', 'it', 'pt-BR', 'nl', 'ja', 'ko', 'zh-Hans', 'zh-Hant', 'pl', 'sv', 'ru', 'cs'}
 UNKNOWN = 'unknown'
 # Events from devices with a wrong clock or a long time offline.
 ACCEPTED_DAYS_BACK = 14
