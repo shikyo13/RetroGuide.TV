@@ -57,13 +57,14 @@ enum DecadeChannelMerger {
         if firstDecades.count > 1 {
             return first.definition.name
         }
-        let from = firstDecades.min().map(label(for:)) ?? ""
-        let to = last.definition.rule.decades.max().map(label(for:)) ?? ""
+        // Years, not decade labels: each language writes a span its own way ("Años 80–90").
+        let from = firstDecades.min().map(year(of:)) ?? ""
+        let to = last.definition.rule.decades.max().map(year(of:)) ?? ""
         return isMovies
-            ? String(localized: "\(from)–\(to) Movies", bundle: .module,
-                     comment: "Name of a channel of movies from a span of decades, such as 80s–90s Movies; each %@ is a decade, such as 80s or 2010s.")
-            : String(localized: "\(from)–\(to) TV", bundle: .module,
-                     comment: "Name of a channel of TV shows from a span of decades, such as 80s–90s TV; each %@ is a decade, such as 80s or 2010s.")
+            ? String(localized: "\(from)s–\(to)s Movies", bundle: .module,
+                     comment: "Name of a channel of movies from a span of decades, such as 80s–90s Movies. Each %@ is a decade's first year: two digits (80) before 2000, in full (2010) after. Write the span as your language does, e.g. Años 80–90; keep it short.")
+            : String(localized: "\(from)s–\(to)s TV", bundle: .module,
+                     comment: "Name of a channel of TV shows from a span of decades, such as 80s–90s TV. Each %@ is a decade's first year: two digits (80) before 2000, in full (2010) after. Write the span as your language does, e.g. TV años 80–90; keep it short.")
     }
 
     private enum Label {
@@ -72,8 +73,9 @@ enum DecadeChannelMerger {
         static let centurySpan = 100
     }
 
-    private static func label(for decade: Int) -> String {
-        Decade.label(for: decade >= Label.fullYearsFrom ? decade : decade % Label.centurySpan)
+    /// "80" or "2010", as text so it never gets a grouping separator.
+    private static func year(of decade: Int) -> String {
+        String(decade >= Label.fullYearsFrom ? decade : decade % Label.centurySpan)
     }
 
     private static let idSeparator = "+"
