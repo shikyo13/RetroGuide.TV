@@ -140,7 +140,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nachtvoorstelling"
+            "value" : "Nacht­voorstelling"
           }
         },
         "sv" : {
@@ -428,7 +428,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Animatiestation"
+            "value" : "Animatie­station"
           }
         },
         "sv" : {
@@ -812,7 +812,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Filmklassiekers"
+            "value" : "Film­klassiekers"
           }
         },
         "sv" : {
@@ -1190,7 +1190,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dokumentarfilme"
+            "value" : "Dokumentar­filme"
           }
         },
         "nl" : {
@@ -1298,7 +1298,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dokumentärkanalen"
+            "value" : "Dokumentär­kanalen"
           }
         },
         "pl" : {
@@ -1316,7 +1316,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Документалистика"
+            "value" : "Документа­листика"
           }
         },
         "ja" : {
@@ -1868,7 +1868,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fantasiewerelden"
+            "value" : "Fantasierijk"
           }
         },
         "sv" : {
@@ -2156,7 +2156,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spelletjesavond"
+            "value" : "Spelletjes­avond"
           }
         },
         "sv" : {
@@ -2246,13 +2246,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geschichtsstunde"
+            "value" : "Geschichts­stunde"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Geschiedenisles"
+            "value" : "Geschiedenis­les"
           }
         },
         "sv" : {
@@ -2348,13 +2348,13 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Feestdagenspecial"
+            "value" : "Feestdagen­special"
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Helgdagsspecial"
+            "value" : "Helgdags­special"
           }
         },
         "pl" : {
@@ -3602,7 +3602,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verklighetskoll"
+            "value" : "Verklighets­koll"
           }
         },
         "pl" : {
@@ -3884,7 +3884,7 @@
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaterdagochtend"
+            "value" : "Zaterdag­ochtend"
           }
         },
         "sv" : {
@@ -4376,7 +4376,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Superbohaterowie"
+            "value" : "Super­bohaterowie"
           }
         },
         "cs" : {
@@ -4658,7 +4658,7 @@
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spänningsteatern"
+            "value" : "Spännings­teatern"
           }
         },
         "pl" : {
@@ -5414,13 +5414,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kriegsgeschichten"
+            "value" : "Kriegs­geschichten"
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oorlogsverhalen"
+            "value" : "Oorlogs­verhalen"
           }
         },
         "sv" : {
