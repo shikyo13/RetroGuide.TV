@@ -184,6 +184,6 @@ public enum Decade {
 
     public static func label(for decade: Int) -> String {
         // The year is passed as text so it never gets a grouping separator ("1,980s").
-        String(localized: "\(String(decade))s", bundle: .module, comment: "A decade, such as 1980s; %@ is its first year.")
+        String(localized: "\(String(decade))s", bundle: .module, comment: "A decade, such as 1980s, or 80s in channel names; %@ is its first year, in full or as two digits.")
     }
 }

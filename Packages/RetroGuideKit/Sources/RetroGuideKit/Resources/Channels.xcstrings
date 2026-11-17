@@ -1,0 +1,702 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "curated.action" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Action Hour"
+          }
+        }
+      }
+    },
+    "curated.action-movies-mature" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "After Dark"
+          }
+        }
+      }
+    },
+    "curated.adult-animation" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Late Night Toons"
+          }
+        }
+      }
+    },
+    "curated.all-shows" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Shows"
+          }
+        }
+      }
+    },
+    "curated.animated-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Animation Station"
+          }
+        }
+      }
+    },
+    "curated.anime" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anime Block"
+          }
+        }
+      }
+    },
+    "curated.anime-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anime Cinema"
+          }
+        }
+      }
+    },
+    "curated.blockbusters" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blockbusters"
+          }
+        }
+      }
+    },
+    "curated.classic-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classic Cinema"
+          }
+        }
+      }
+    },
+    "curated.classic-tv" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Classic TV"
+          }
+        }
+      }
+    },
+    "curated.comedy-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comedy Movies"
+          }
+        }
+      }
+    },
+    "curated.crime" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crime Time"
+          }
+        }
+      }
+    },
+    "curated.doc-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Documentary Films"
+          }
+        }
+      }
+    },
+    "curated.docs" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Doc Channel"
+          }
+        }
+      }
+    },
+    "curated.drama" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Primetime Drama"
+          }
+        }
+      }
+    },
+    "curated.drama-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drama Theater"
+          }
+        }
+      }
+    },
+    "curated.everything" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everything"
+          }
+        }
+      }
+    },
+    "curated.family" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Family Room"
+          }
+        }
+      }
+    },
+    "curated.family-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Family Flix"
+          }
+        }
+      }
+    },
+    "curated.fantasy" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Realms"
+          }
+        }
+      }
+    },
+    "curated.fantasy-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fantasy Films"
+          }
+        }
+      }
+    },
+    "curated.food" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Kitchen"
+          }
+        }
+      }
+    },
+    "curated.game-shows" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Game Night"
+          }
+        }
+      }
+    },
+    "curated.history" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History Hour"
+          }
+        }
+      }
+    },
+    "curated.holiday" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Holiday Special"
+          }
+        }
+      }
+    },
+    "curated.horror" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fright Night"
+          }
+        }
+      }
+    },
+    "curated.horror-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scream Screen"
+          }
+        }
+      }
+    },
+    "curated.kids" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kids Club"
+          }
+        }
+      }
+    },
+    "curated.martial-arts" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kung Fu Theater"
+          }
+        }
+      }
+    },
+    "curated.movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Movie Channel"
+          }
+        }
+      }
+    },
+    "curated.movies-00s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2000s Movies"
+          }
+        }
+      }
+    },
+    "curated.movies-10s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2010s Movies"
+          }
+        }
+      }
+    },
+    "curated.movies-20s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Now Showing"
+          }
+        }
+      }
+    },
+    "curated.movies-80s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "80s Movies"
+          }
+        }
+      }
+    },
+    "curated.movies-90s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90s Movies"
+          }
+        }
+      }
+    },
+    "curated.music" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Music Box"
+          }
+        }
+      }
+    },
+    "curated.mystery" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whodunit"
+          }
+        }
+      }
+    },
+    "curated.reality" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reality Check"
+          }
+        }
+      }
+    },
+    "curated.romance" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heartstrings"
+          }
+        }
+      }
+    },
+    "curated.romance-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date Night"
+          }
+        }
+      }
+    },
+    "curated.saturday-morning" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saturday Morning"
+          }
+        }
+      }
+    },
+    "curated.scifi" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sci-Fi Zone"
+          }
+        }
+      }
+    },
+    "curated.scifi-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sci-Fi Cinema"
+          }
+        }
+      }
+    },
+    "curated.sitcoms" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laugh Track"
+          }
+        }
+      }
+    },
+    "curated.sports" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sports Desk"
+          }
+        }
+      }
+    },
+    "curated.superheroes" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heroes"
+          }
+        }
+      }
+    },
+    "curated.talk" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Late Night Talk"
+          }
+        }
+      }
+    },
+    "curated.thriller" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edge of Your Seat"
+          }
+        }
+      }
+    },
+    "curated.thriller-movies" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suspense Theater"
+          }
+        }
+      }
+    },
+    "curated.toons" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toon Town"
+          }
+        }
+      }
+    },
+    "curated.travel" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Getaway"
+          }
+        }
+      }
+    },
+    "curated.tv-00s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Y2K TV"
+          }
+        }
+      }
+    },
+    "curated.tv-10s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "2010s TV"
+          }
+        }
+      }
+    },
+    "curated.tv-20s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Now on TV"
+          }
+        }
+      }
+    },
+    "curated.tv-80s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Totally 80s TV"
+          }
+        }
+      }
+    },
+    "curated.tv-90s" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "90s Rewind"
+          }
+        }
+      }
+    },
+    "curated.war" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "War Stories"
+          }
+        }
+      }
+    },
+    "curated.western" : {
+      "comment" : "Name of a themed channel in a retro TV guide. Localize creatively, not literally: a short, playful name in the style of a classic TV channel.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wild West"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

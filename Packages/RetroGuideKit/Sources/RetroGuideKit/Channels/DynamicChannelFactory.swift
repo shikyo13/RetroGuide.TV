@@ -61,7 +61,7 @@ enum DynamicChannelFactory {
             ChannelDefinition(
                 id: "series.\(value.id)",
                 number: number,
-                name: "\(value.name) 24/7",
+                name: String(localized: "\(value.name) 24/7", bundle: .module, comment: "Name of a channel that airs one show around the clock; %@ is the show's title."),
                 callSign: CallSign.make(from: value.name),
                 rule: ChannelRule(seriesIDs: [value.id]),
                 ordering: .marathon,

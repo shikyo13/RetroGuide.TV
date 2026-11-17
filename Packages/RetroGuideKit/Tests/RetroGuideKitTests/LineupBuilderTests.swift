@@ -102,4 +102,26 @@ struct ChannelCatalogTests {
         #expect(catalog.allSatisfy { $0.number < ChannelNumbering.libraries.lowerBound })
         #expect(catalog.allSatisfy { [.curated, .decade].contains($0.source) })
     }
+
+    /// The names table is edited by hand next to the JSON. A channel added or
+    /// renamed in one but not the other would show a stale or missing name.
+    @Test("Every curated channel's name is in the Channels string table, in English as in the catalog")
+    func namesTableMatchesCatalog() throws {
+        let resources = URL(filePath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appending(path: "Sources/RetroGuideKit/Resources")
+        struct Entry: Decodable { let id: String; let name: String }
+        let catalog = try JSONDecoder().decode([Entry].self, from: Data(contentsOf: resources.appending(path: "curated-channels.json")))
+        let table = try JSONSerialization.jsonObject(with: Data(contentsOf: resources.appending(path: "\(ChannelCatalog.namesTable).xcstrings"))) as? [String: Any]
+        let strings = table?["strings"] as? [String: [String: Any]] ?? [:]
+        let english = strings.compactMapValues { entry in
+            ((entry["localizations"] as? [String: Any])?["en"] as? [String: Any])
+                .flatMap { $0["stringUnit"] as? [String: Any] }?["value"] as? String
+        }
+        let expected = Dictionary(uniqueKeysWithValues: catalog.map { ($0.id, $0.name) })
+        let mismatches = Set(english.keys).union(expected.keys).sorted()
+            .filter { english[$0] != expected[$0] }
+            .map { "\($0): table \(english[$0] ?? "missing"), catalog \(expected[$0] ?? "missing")" }
+        #expect(mismatches.isEmpty, "\(mismatches.joined(separator: "; "))")
+    }
 }

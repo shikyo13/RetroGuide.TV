@@ -59,19 +59,21 @@ enum DecadeChannelMerger {
         }
         let from = firstDecades.min().map(label(for:)) ?? ""
         let to = last.definition.rule.decades.max().map(label(for:)) ?? ""
-        return "\(from)–\(to) \(isMovies ? Label.movies : Label.shows)"
+        return isMovies
+            ? String(localized: "\(from)–\(to) Movies", bundle: .module,
+                     comment: "Name of a channel of movies from a span of decades, such as 80s–90s Movies; each %@ is a decade, such as 80s or 2010s.")
+            : String(localized: "\(from)–\(to) TV", bundle: .module,
+                     comment: "Name of a channel of TV shows from a span of decades, such as 80s–90s TV; each %@ is a decade, such as 80s or 2010s.")
     }
 
     private enum Label {
-        static let shows = "TV"
-        static let movies = "Movies"
         /// Decades before this are written short ("80s"), later ones in full ("2010s").
         static let fullYearsFrom = 2000
         static let centurySpan = 100
     }
 
     private static func label(for decade: Int) -> String {
-        decade >= Label.fullYearsFrom ? "\(decade)s" : "\(decade % Label.centurySpan)s"
+        Decade.label(for: decade >= Label.fullYearsFrom ? decade : decade % Label.centurySpan)
     }
 
     private static let idSeparator = "+"
