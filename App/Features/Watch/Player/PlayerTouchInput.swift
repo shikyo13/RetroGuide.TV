@@ -70,8 +70,13 @@ struct PlayerTouchControls: View {
                 onCommand(.openGuide)
             } label: {
                 Label("Guide", systemImage: "list.bullet.rectangle")
+                    // One line in every language ("TV-Programm" wrapped mid-word):
+                    // it gets the row's spare width first, then shrinks a little.
+                    .lineLimit(1)
+                    .minimumScaleFactor(Typography.minimumScaleFactor)
             }
             .buttonStyle(.retroPrimary)
+            .layoutPriority(1)
             Button {
                 onCommand(.openOptions)
             } label: {

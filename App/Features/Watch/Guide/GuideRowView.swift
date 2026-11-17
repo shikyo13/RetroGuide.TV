@@ -51,10 +51,11 @@ struct GuideRowView: View {
                     Text(String(channel.number))
                         .font(Typography.channelNumber)
                         .foregroundStyle(theme.accent)
+                    // Two lines: translated channel names run longer than English.
                     Text(channel.name)
                         .font(Typography.micro)
                         .foregroundStyle(theme.textPrimary)
-                        .lineLimit(1)
+                        .lineLimit(2)
                         .minimumScaleFactor(Typography.minimumScaleFactor)
                 }
             } else {
