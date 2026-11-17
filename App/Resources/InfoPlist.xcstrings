@@ -94,6 +94,66 @@
             "state" : "translated",
             "value" : "RetroGuide.TV 會透過區域網路連線到媒體伺服器。"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV लोकल नेटवर्क पर आपके मीडिया सर्वर से कनेक्ट होता है।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV লোকাল নেটওয়ার্কে আপনার মিডিয়া সার্ভারের সাথে কানেক্ট করে।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV स्थानिक नेटवर्कवरील तुमच्या मीडिया सर्व्हरशी कनेक्ट होते."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV உள்ளூர் நெட்வொர்க்கில் உள்ள உங்கள் மீடியா சர்வருடன் இணைகிறது."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV లోకల్ నెట్‌వర్క్‌లోని మీ మీడియా సర్వర్‌కు కనెక్ట్ అవుతుంది."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV સ્થાનિક નેટવર્ક પર તમારા મીડિયા સર્વર સાથે કનેક્ટ થાય છે."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ನಿಮ್ಮ ಮೀಡಿಯಾ ಸರ್ವರ್‌ಗೆ ಸಂಪರ್ಕಿಸುತ್ತದೆ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ലോക്കൽ നെറ്റ്‌വർക്കിലുള്ള നിങ്ങളുടെ മീഡിയ സെർവറുമായി RetroGuide.TV കണക്റ്റ് ചെയ്യുന്നു."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV ਲੋਕਲ ਨੈੱਟਵਰਕ 'ਤੇ ਤੁਹਾਡੇ ਮੀਡੀਆ ਸਰਵਰ ਨਾਲ ਕਨੈਕਟ ਕਰਦਾ ਹੈ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV ସ୍ଥାନୀୟ ନେଟୱର୍କରେ ଆପଣଙ୍କ ମିଡିଆ ସର୍ଭର ସହ ସଂଯୋଗ କରେ।"
+          }
         }
       }
     },

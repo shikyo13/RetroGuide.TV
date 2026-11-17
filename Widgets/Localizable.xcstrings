@@ -87,6 +87,66 @@
             "state" : "translated",
             "value" : "剩下 %@"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ बाकी"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ বাকি"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ शिल्लक"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ மீதம்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ మిగిలింది"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ બાકી"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ಉಳಿದಿದೆ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ബാക്കി"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ਬਾਕੀ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ବାକି"
+          }
         }
       }
     },
@@ -181,6 +241,66 @@
             "state" : "translated",
             "value" : "%1$lld %2$@"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld %2$@"
+          }
         }
       }
     },
@@ -265,6 +385,66 @@
           }
         },
         "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".TV"
+          }
+        },
+        "or" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : ".TV"
@@ -357,6 +537,66 @@
             "state" : "translated",
             "value" : "較大的 RetroGuide 圖像。選擇「現在播什麼」可查看即時節目表和頻道控制項目。"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide का बड़ा आइकन। लाइव प्रोग्राम और चैनल कंट्रोल के लिए “क्या चल रहा है” चुनें।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide-এর বড় আইকন। লাইভ অনুষ্ঠান ও চ্যানেল কন্ট্রোলের জন্য “এখন কী চলছে” বেছে নিন।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मोठा RetroGuide आयकॉन. लाइव्ह कार्यक्रम आणि चॅनेल नियंत्रणांसाठी “आता काय सुरू” निवडा."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "பெரிய RetroGuide ஐகான். நேரலை நிகழ்ச்சிகளுக்கும் சேனல் கட்டுப்பாடுகளுக்கும் ‘இப்போது என்ன’ என்பதைத் தேர்ந்தெடுக்கவும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "పెద్ద RetroGuide ఐకాన్. లైవ్ కార్యక్రమాలు, ఛానెల్ కంట్రోల్స్ కోసం ‘ఇప్పుడు ఏముంది’ ఎంచుకోండి."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuideનું મોટું આઇકન. લાઇવ કાર્યક્રમો અને ચેનલ કંટ્રોલ માટે “શું ચાલે છે” પસંદ કરો."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ದೊಡ್ಡ RetroGuide ಐಕಾನ್. ಲೈವ್ ಪಟ್ಟಿಗಳು ಮತ್ತು ಚಾನಲ್ ನಿಯಂತ್ರಣಗಳಿಗಾಗಿ “ಈಗ ಏನಿದೆ” ಆಯ್ಕೆಮಾಡಿ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "വലിയ RetroGuide ഐക്കൺ. തത്സമയ പരിപാടികൾക്കും ചാനൽ നിയന്ത്രണങ്ങൾക്കും \"ഇപ്പോൾ ടിവിയിൽ\" തിരഞ്ഞെടുക്കുക."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਵੱਡਾ RetroGuide ਆਈਕਨ। ਲਾਈਵ ਪ੍ਰੋਗਰਾਮਾਂ ਅਤੇ ਚੈਨਲ ਕੰਟਰੋਲਾਂ ਲਈ ‘ਹੁਣ ਕੀ ਚੱਲ ਰਿਹਾ’ ਚੁਣੋ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଏକ ବଡ଼ RetroGuide ଆଇକନ୍। ଲାଇଭ୍ ତାଲିକା ଓ ଚ୍ୟାନେଲ ନିୟନ୍ତ୍ରଣ ପାଇଁ “କ'ଣ ଚାଲିଛି” ବାଛନ୍ତୁ।"
+          }
         }
       }
     },
@@ -444,6 +684,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "App 圖像"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ऐप आइकन"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "অ্যাপ আইকন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ॲप आयकॉन"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ஆப் ஐகான்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "యాప్ ఐకాన్"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ઍપ આઇકન"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಆ್ಯಪ್ ಐಕಾನ್"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ആപ്പ് ഐക്കൺ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਐਪ ਆਈਕਨ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଆପ୍ ଆଇକନ୍"
           }
         }
       }
@@ -534,6 +834,66 @@
             "state" : "translated",
             "value" : "卡通"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कार्टून"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "কার্টুন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कार्टून्स"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "கார்ட்டூன்கள்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "కార్టూన్లు"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "કાર્ટૂન"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಕಾರ್ಟೂನ್‌ಗಳು"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "കാർട്ടൂണുകൾ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਕਾਰਟੂਨ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "କାର୍ଟୁନ୍"
+          }
         }
       }
     },
@@ -622,6 +982,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "經典情境喜劇"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "क्लासिक सिटकॉम"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ক্লাসিক সিটকম"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "क्लासिक सिटकॉम"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "கிளாசிக் சிட்காம்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "క్లాసిక్ సిట్‌కామ్"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ક્લાસિક સિટકૉમ"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಕ್ಲಾಸಿಕ್ ಸಿಟ್‌ಕಾಮ್"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "പഴയ സിറ്റ്കോം"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਪੁਰਾਣਾ ਸਿਟਕਾਮ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "କ୍ଲାସିକ୍ ସିଟକମ୍"
           }
         }
       }
@@ -712,6 +1132,66 @@
             "state" : "translated",
             "value" : "大雜燴"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सब कुछ"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সবকিছু"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सगळं काही"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "எல்லாம்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అన్నీ"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "બધું જ"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಎಲ್ಲವೂ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "എല്ലാം"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਭ ਕੁਝ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସବୁକିଛି"
+          }
         }
       }
     },
@@ -799,6 +1279,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "轉台"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चैनल बदलें"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "চ্যানেল বদলান"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चॅनेल बदला"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "சேனலை மாற்று"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఛానెల్ మార్చండి"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ચેનલ બદલો"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಚಾನಲ್ ಬದಲಿಸಿ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ചാനൽ മാറ്റുക"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਚੈਨਲ ਬਦਲੋ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଚ୍ୟାନେଲ ବଦଳାନ୍ତୁ"
           }
         }
       }
@@ -888,6 +1428,66 @@
             "state" : "translated",
             "value" : "下一個頻道"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अगला चैनल"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "পরের চ্যানেল"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पुढील चॅनेल"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "அடுத்த சேனல்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "తర్వాతి ఛానెల్"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "આગલી ચેનલ"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಮುಂದಿನ ಚಾನಲ್"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "അടുത്ത ചാനൽ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਅਗਲਾ ਚੈਨਲ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ପରବର୍ତ୍ତୀ ଚ୍ୟାନେଲ"
+          }
         }
       }
     },
@@ -975,6 +1575,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "現正播出"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अभी"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "এখন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आता सुरू"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "இப்போது"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇప్పుడు"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "અત્યારે"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಈಗ ಪ್ರಸಾರ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഇപ്പോൾ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਹੁਣ ਚੱਲ ਰਿਹਾ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଏବେ ଚାଲୁଛି"
           }
         }
       }
@@ -1064,6 +1724,66 @@
             "state" : "translated",
             "value" : "打開 RetroGuide 以重新整理頻道"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अपने चैनल रीफ़्रेश करने के लिए RetroGuide खोलें"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "চ্যানেল রিফ্রেশ করতে RetroGuide খুলুন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "तुमचे चॅनेल रिफ्रेश करण्यासाठी RetroGuide उघडा"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "சேனல்களைப் புதுப்பிக்க RetroGuide-ஐத் திறக்கவும்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "మీ ఛానెల్‌లను రిఫ్రెష్ చేయడానికి RetroGuide తెరవండి"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "તમારી ચેનલો રિફ્રેશ કરવા RetroGuide ખોલો"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಚಾನಲ್‌ಗಳನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಲು RetroGuide ತೆರೆಯಿರಿ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ചാനലുകൾ പുതുക്കാൻ RetroGuide തുറക്കുക"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਆਪਣੇ ਚੈਨਲ ਤਾਜ਼ਾ ਕਰਨ ਲਈ RetroGuide ਖੋਲ੍ਹੋ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଚ୍ୟାନେଲ ରିଫ୍ରେସ୍ କରିବାକୁ RetroGuide ଖୋଲନ୍ତୁ"
+          }
         }
       }
     },
@@ -1151,6 +1871,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打開 RetroGuide.TV"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV खोलें"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV খুলুন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV उघडा"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV-ஐத் திற"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV తెరవండి"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV ખોલો"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV ತೆರೆಯಿರಿ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV തുറക്കുക"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV ਖੋਲ੍ਹੋ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV ଖୋଲନ୍ତୁ"
           }
         }
       }
@@ -1240,6 +2020,66 @@
             "state" : "translated",
             "value" : "上一個頻道"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पिछला चैनल"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "আগের চ্যানেল"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मागील चॅनेल"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "முந்தைய சேனல்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "మునుపటి ఛానెల్"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "પાછલી ચેનલ"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಹಿಂದಿನ ಚಾನಲ್"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "മുമ്പത്തെ ചാനൽ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਪਿਛਲਾ ਚੈਨਲ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ପୂର୍ବ ଚ୍ୟାନେଲ"
+          }
         }
       }
     },
@@ -1324,6 +2164,66 @@
           }
         },
         "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide"
+          }
+        },
+        "or" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "RetroGuide"
@@ -1417,6 +2317,66 @@
             "state" : "translated",
             "value" : "第 1 季第 3 集 · 火箭競速"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · रॉकेट रेस"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · রকেট রেস"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · रॉकेटची शर्यत"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · ராக்கெட் ரேஸ்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · రాకెట్ రేస్"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · રૉકેટ રેસ"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · ರಾಕೆಟ್ ರೇಸ್"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · റോക്കറ്റ് റേസ്"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · ਰਾਕੇਟ ਰੇਸ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S1 E3 · ରକେଟ୍ ଦୌଡ଼"
+          }
         }
       }
     },
@@ -1505,6 +2465,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "第 2 季第 5 集 · 大日子"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · बड़ा दिन"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · বড় দিন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · मोठा दिवस"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · பெரிய நாள்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · ఆ పెద్ద రోజు"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · મોટો દિવસ"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · ಮಹಾ ದಿನ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · ആ വലിയ ദിവസം"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · ਵੱਡਾ ਦਿਨ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "S2 E5 · ବଡ଼ ଦିନ"
           }
         }
       }
@@ -1595,6 +2615,66 @@
             "state" : "translated",
             "value" : "週六卡通"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "शनिवार के कार्टून"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "শনিবারের কার্টুন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "शनिवारचे कार्टून्स"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "சனிக்கிழமை கார்ட்டூன்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "శనివారం కార్టూన్లు"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "શનિવારનાં કાર્ટૂન"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಶನಿವಾರದ ಕಾರ್ಟೂನ್"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ശനിയാഴ്ച കാർട്ടൂൺ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸ਼ਨੀਵਾਰ ਦੇ ਕਾਰਟੂਨ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଶନିବାର କାର୍ଟୁନ୍"
+          }
         }
       }
     },
@@ -1682,6 +2762,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "步數"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "स्टेप"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ধাপ"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पायरी"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "படி"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అడుగు"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "પગલું"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಹಂತ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ചുവട്"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਕਦਮ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ପଦକ୍ଷେପ"
           }
         }
       }
@@ -1771,6 +2911,66 @@
             "state" : "translated",
             "value" : "即將播出"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आगे"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "এরপর"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यानंतर"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "அடுத்து"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "తర్వాత"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "હવે પછી"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಮುಂದೆ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "അടുത്തത്"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਅੱਗੇ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ପରବର୍ତ୍ତୀ"
+          }
         }
       }
     },
@@ -1859,6 +3059,66 @@
             "state" : "translated",
             "value" : "現在播什麼"
           }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "क्या चल रहा है"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "এখন কী চলছে"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आता काय सुरू"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "இப்போது என்ன"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇప్పుడు ఏముంది"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "શું ચાલે છે"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಈಗ ಏನಿದೆ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഇപ്പോൾ ടിവിയിൽ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਹੁਣ ਕੀ ਚੱਲ ਰਿਹਾ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "କ'ଣ ଚାଲିଛି"
+          }
         }
       }
     },
@@ -1946,6 +3206,66 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "各頻道此刻正在播出的節目。"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आपके चैनलों पर अभी क्या चल रहा है।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "আপনার চ্যানেলে এখন কী চলছে।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "तुमच्या चॅनेलवर आत्ता काय सुरू आहे."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "உங்கள் சேனல்களில் இப்போது என்ன ஒளிபரப்பாகிறது."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇప్పుడు మీ ఛానెల్‌లలో ఏం వస్తోంది."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "તમારી ચેનલો પર અત્યારે શું ચાલે છે."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಈಗ ನಿಮ್ಮ ಚಾನಲ್‌ಗಳಲ್ಲಿ ಏನಿದೆ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "നിങ്ങളുടെ ചാനലുകളിൽ ഇപ്പോൾ എന്താണെന്ന് കാണുക."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਇਸ ਵੇਲੇ ਤੁਹਾਡੇ ਚੈਨਲਾਂ 'ਤੇ ਕੀ ਚੱਲ ਰਿਹਾ ਹੈ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଏବେ ଆପଣଙ୍କ ଚ୍ୟାନେଲରେ କ'ଣ ଚାଲିଛି।"
           }
         }
       }
