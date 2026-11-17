@@ -272,8 +272,16 @@ private extension View {
 /// Times in the guide's words.
 enum WidgetTime {
     private static let secondsPerMinute = 60
-    private static let minutesPerHour = 60
     private static let noon = 12
+
+    /// "26m", "1h 5m", "1h 0m": hours only when there are any.
+    private static let duration: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute]
+        formatter.unitsStyle = .abbreviated
+        formatter.zeroFormattingBehavior = .dropLeading
+        return formatter
+    }()
 
     /// "8:46–9:28 PM": the start leaves out AM/PM when it's the same as the end's.
     static func range(_ start: Date, _ end: Date) -> String {
@@ -293,7 +301,7 @@ enum WidgetTime {
     /// "26m left", "1h 5m left".
     static func remaining(until end: Date, from date: Date) -> String {
         let minutes = max(1, Int((end.timeIntervalSince(date) / Double(secondsPerMinute)).rounded(.up)))
-        let hours = minutes / minutesPerHour
-        return hours > 0 ? "\(hours)h \(minutes % minutesPerHour)m left" : "\(minutes)m left"
+        let left = duration.string(from: TimeInterval(minutes * secondsPerMinute)) ?? ""
+        return String(localized: "\(left) left", comment: "Time left in a program: “26m left”")
     }
 }

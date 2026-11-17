@@ -36,7 +36,7 @@ final class ContentProvider: TVTopShelfContentProvider {
         TopShelfArtwork.prune(keeping: images)
         guard !items.isEmpty else { return nil }
         let section = TVTopShelfItemCollection(items: items)
-        section.title = "On now"
+        section.title = String(localized: "On now", comment: "Top Shelf row title: programs on the air now")
         return TVTopShelfSectionedContent(sections: [section])
     }
 }

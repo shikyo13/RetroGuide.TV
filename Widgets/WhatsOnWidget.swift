@@ -113,7 +113,14 @@ extension WhatsOnSnapshot {
     /// Shown in the widget gallery before anything has been watched.
     static let sample: WhatsOnSnapshot = {
         let start = Date.now.addingTimeInterval(-Sample.elapsed)
-        let shows = [(3, "ALL", "Everything", "Classic Sitcom", "S2 E5 · The Big Day"), (5, "TOON", "Cartoons", "Saturday Cartoons", "S1 E3 · Rocket Race")]
+        let shows = [
+            (3, "ALL", String(localized: "Everything", comment: "Sample channel name shown in the widget gallery"),
+             String(localized: "Classic Sitcom", comment: "Sample show title shown in the widget gallery"),
+             String(localized: "S2 E5 · The Big Day", comment: "Sample season, episode and episode title shown in the widget gallery")),
+            (5, "TOON", String(localized: "Cartoons", comment: "Sample channel name shown in the widget gallery"),
+             String(localized: "Saturday Cartoons", comment: "Sample show title shown in the widget gallery"),
+             String(localized: "S1 E3 · Rocket Race", comment: "Sample season, episode and episode title shown in the widget gallery")),
+        ]
         return WhatsOnSnapshot(channels: shows.map { show in
             Channel(id: show.1, number: show.0, name: show.2, callSign: show.1, programs: [
                 Program(title: show.3, episode: show.4, start: start, end: start.addingTimeInterval(Sample.length), backdropFile: nil, logoFile: nil, stillFile: nil),
