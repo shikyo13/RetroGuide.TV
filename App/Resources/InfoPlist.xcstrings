@@ -10,6 +10,90 @@
             "state" : "new",
             "value" : "RetroGuide.TV connects to your media server on the local network."
           }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV se conecta a tu servidor multimedia en la red local."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O RetroGuide.TV se conecta ao seu servidor de mídia na rede local."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV se connecte à votre serveur multimédia sur le réseau local."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV si collega al tuo server multimediale sulla rete locale."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV verbindet sich im lokalen Netzwerk mit deinem Medienserver."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV maakt via het lokale netwerk verbinding met je mediaserver."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV ansluter till din medieserver på det lokala nätverket."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV łączy się z twoim serwerem multimediów w sieci lokalnej."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV se připojuje k tvému mediálnímu serveru v místní síti."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV подключается к вашему медиасерверу в локальной сети."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TVはローカルネットワーク上のメディアサーバに接続します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV가 로컬 네트워크의 미디어 서버에 연결합니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV 会通过本地网络连接到媒体服务器。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RetroGuide.TV 會透過區域網路連線到媒體伺服器。"
+          }
         }
       }
     },
