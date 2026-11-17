@@ -1,12 +1,13 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%@ · %@" : {
+    "%@ %@" : {
+      "comment" : "A day and date, then a time: “Sat, Sep 27 9:00 AM”",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@ · %2$@"
+            "value" : "%1$@ %2$@"
           }
         }
       }
@@ -21,18 +22,95 @@
         }
       }
     },
-    "%@ by %@ seconds" : {
+    "%@ aired on %@." : {
+      "comment" : "A show and the TV network it aired on",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@ by %2$@ seconds"
+            "value" : "%1$@ aired on %2$@."
           }
         }
       }
     },
-    "%@ is open-source software under the MIT License. Video playback uses the following libraries. You can rebuild the app with modified versions of them from the public source code." : {
-
+    "%@ airs %@ around the clock." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ airs %2$@ around the clock."
+          }
+        }
+      }
+    },
+    "%@ carries every movie in your library." : {},
+    "%@ carries every show and movie in your library." : {},
+    "%@ carries every show in your library." : {},
+    "%@ carries everything in one of your libraries, including %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ carries everything in one of your libraries, including %2$@."
+          }
+        }
+      }
+    },
+    "%@ has no movie or TV show libraries this account can see." : {},
+    "%@ is already added." : {},
+    "%@ is for %@, and %@ is %@, going by RetroGuide's title data, checked against your server's genre tags." : {
+      "comment" : "Channel name, the genres it carries, a show or movie title, and the genres it has",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is for %2$@, and %3$@ is %4$@, going by RetroGuide's title data, checked against your server's genre tags."
+          }
+        }
+      }
+    },
+    "%@ is for %@, and %@ is %@, going by your server's genre tags." : {
+      "comment" : "Channel name, the genres it carries, a show or movie title, and the genres it has",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is for %2$@, and %3$@ is %4$@, going by your server's genre tags."
+          }
+        }
+      }
+    },
+    "%@ is from the %@." : {
+      "comment" : "A show or movie and its decade: “Cheers is from the 1980s.”",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is from the %2$@."
+          }
+        }
+      }
+    },
+    "%@ is in your %@ collection." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is in your %2$@ collection."
+          }
+        }
+      }
+    },
+    "%@ is open-source software under the MIT License. Video playback uses the following libraries. You can rebuild the app with modified versions of them from the public source code." : {},
+    "%@ is removed from %@. Settings › Channels › Removed from channels lists everything you've removed." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ is removed from %2$@. Settings › Channels › Removed from channels lists everything you've removed."
+          }
+        }
+      }
     },
     "%@ is starting on %@." : {
       "localizations" : {
@@ -40,6 +118,60 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@ is starting on %2$@."
+          }
+        }
+      }
+    },
+    "%@ left" : {
+      "comment" : "Time left in a program: “25m left”"
+    },
+    "%@ matches the rules you set for %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ matches the rules you set for %2$@."
+          }
+        }
+      }
+    },
+    "%@ matches what %@ is about." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ matches what %2$@ is about."
+          }
+        }
+      }
+    },
+    "%@ or %@" : {
+      "comment" : "The end of a list of genres: “Comedy, Drama or Western”",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ or %2$@"
+          }
+        }
+      }
+    },
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@'s title matches %@'s theme." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@'s title matches %2$@'s theme."
           }
         }
       }
@@ -54,12 +186,13 @@
         }
       }
     },
-    "%lld · %@" : {
+    "%@: %@" : {
+      "comment" : "Loading status line: server name, then its status",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$lld · %2$@"
+            "value" : "%1$@: %2$@"
           }
         }
       }
@@ -74,81 +207,336 @@
         }
       }
     },
-    "%lld commercials available" : {
-
-    },
-    "%lld programs · %@" : {
+    "%lld channels" : {
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$lld programs · %2$@"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld channel"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld channels"
+                }
+              }
+            }
           }
         }
       }
     },
-    "100.x.x.x or hostname" : {
-
+    "%lld channels, %lld hidden" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld channels, %2$lld hidden"
+          }
+        }
+      }
     },
-    "Add a server" : {
-
+    "%lld commercials available" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld commercial available"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld commercials available"
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "Add Another Server" : {
-
+    "%lld custom channels" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld custom channel"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld custom channels"
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "Add the servers you want, then build your channels. Programs from all selected servers appear in one guide." : {
-
+    "%lld looks, from Local Forecast to Teletext." : {},
+    "%lld minutes" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld minute"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld minutes"
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "Add What's On for artwork, current programs and channel controls, or App Icon for a larger icon. Both follow your app theme." : {
-
+    "%lld programs · %@" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld program · %@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld programs · %@"
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "Add your first channel. An empty custom lineup shows no channels." : {
-
+    "%lld programs · %@\nFeaturing %@" : {
+      "comment" : "Channel summary; the last argument lists show names",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld program · %@\nFeaturing %@"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld programs · %@\nFeaturing %@"
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "All channels" : {
-
+    "%lld reminder(s) were removed because their scheduled programs changed." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld reminder was removed because its scheduled program changed."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld reminders were removed because their scheduled programs changed."
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "Allow Without Encryption" : {
-
+    "%lld selected" : {},
+    "%lld servers" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld server"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld servers"
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "and enter this code:" : {
-
+    "%lld · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld · %2$@"
+          }
+        }
+      }
     },
-    "Animation and Documentary do not necessarily mean suitable for children or educational. For a specific learning lineup, select a curated collection in Allowed Content." : {
-
+    "%llds left" : {
+      "comment" : "Seconds left in a commercial break, abbreviated"
     },
-    "Applies to automatic channels. 24/7 and custom channels are excluded from this limit. If no other show can fill a slot, the limit may be exceeded." : {
-
+    ", " : {
+      "comment" : "Separator between items of a list of genres"
     },
-    "Applying parental controls…" : {
-
+    "1 channel" : {},
+    "1 custom channel" : {},
+    "100.x.x.x or hostname" : {},
+    "100.x.x.x or https://jellyfin.example.com" : {
+      "comment" : "Example server addresses; keep the addresses as they are"
     },
-    "Back" : {
-
+    "A Tailscale or other VPN address, or an HTTPS internet address. Used when home doesn't answer." : {},
+    "A channel no longer in the lineup" : {},
+    "A secure connection to this stream could not be established." : {},
+    "A server answered, but only without encryption (plain HTTP). Over the internet, RetroGuide.TV needs HTTPS with a trusted certificate. At home or over a VPN like Tailscale, use the server's home or VPN address instead." : {},
+    "A server answered, but this device doesn't trust its certificate. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt." : {},
+    "A setup is already in iCloud" : {},
+    "A show no longer in your library" : {},
+    "A title needs at least one selected genre. Titles without a matching tag are excluded." : {},
+    "About" : {},
+    "About iCloud Sync" : {},
+    "Account and Security" : {},
+    "Acknowledgements" : {},
+    "Active" : {
+      "comment" : "Settings row value: the RetroGuide Pro purchase is in effect"
     },
-    "Back to Selected Servers" : {
-
+    "Add Another Server" : {},
+    "Add Channel" : {},
+    "Add What's On for artwork, current programs and channel controls, or App Icon for a larger icon. Both follow your app theme." : {},
+    "Add a server" : {},
+    "Add another channel" : {},
+    "Add another server" : {},
+    "Add favorite" : {},
+    "Add the servers you want, then build your channels. Programs from all selected servers appear in one guide." : {},
+    "Add your first channel. An empty custom lineup shows no channels." : {},
+    "All" : {
+      "comment" : "Settings row value: every library or genre is allowed"
     },
-    "Breaks use the combined running time of the selected clips, which is included in the guide. If fewer clips are available, each plays once. Program start-time alignment may add an intermission before the next program." : {
-
+    "All channels" : {},
+    "All connected libraries" : {},
+    "All genres" : {},
+    "All shows and movies within limits" : {},
+    "All within limits" : {},
+    "Allow Without Encryption" : {},
+    "Allow unrated or unrecognized content" : {},
+    "Allow without encryption" : {},
+    "Allowed Content" : {},
+    "Allowed Genres" : {},
+    "Amber Terminal" : {
+      "comment" : "Name of a color theme"
     },
-    "Browse ahead in the guide, select a program, then choose Remind me. Reminders never change channels automatically." : {
-
+    "Animation and Documentary do not necessarily mean suitable for children or educational. For a specific learning lineup, select a curated collection in Allowed Content." : {},
+    "Answers only without encryption. Over the internet, use HTTPS or a VPN address." : {},
+    "Answers only without encryption. Turn on “%@” to use it." : {
+      "comment" : "The argument is the name of the setting that allows unencrypted connections"
     },
-    "Build My Channels" : {
-
+    "Any" : {
+      "comment" : "Filter value when nothing is chosen: every item matches"
     },
-    "Cancel" : {
-
+    "Apple Player" : {
+      "comment" : "Video player choice: the system's built-in player"
     },
-    "Cancel reminder" : {
-
+    "Applies to automatic channels. 24/7 and custom channels are excluded from this limit. If no other show can fill a slot, the limit may be exceeded." : {},
+    "Applying parental controls…" : {},
+    "At home" : {},
+    "At home, like 192.168.1.20:8096. Over the internet, an HTTPS address like https://jellyfin.example.com." : {},
+    "Audience" : {},
+    "Audio" : {
+      "comment" : "Menu of a program's audio tracks"
     },
-    "Cancel reminder for %@" : {
-
+    "Audio & Subtitles" : {},
+    "Audio for" : {
+      "comment" : "Menu: how widely the chosen audio track applies (this episode, season, show…)"
     },
-    "Cancel sleep timer" : {
-
+    "Automatic" : {
+      "comment" : "Track choice left to the server and account defaults"
+    },
+    "Away from home" : {},
+    "Away only" : {
+      "comment" : "Server connection: only an away-from-home address is set"
+    },
+    "Back" : {},
+    "Back to Selected Servers" : {},
+    "Back: Home" : {
+      "comment" : "Remote hint: the Back button returns to the Apple TV Home Screen"
+    },
+    "Back: close guide" : {
+      "comment" : "Remote hint: the Back button closes the guide"
+    },
+    "Back: menus" : {
+      "comment" : "Remote hint: the Back button moves focus up to the guide's menu buttons"
+    },
+    "Between programs" : {},
+    "Blend your server and ones shared with you into one lineup." : {},
+    "Blocked Shows and Movies" : {},
+    "Blocked shows and movies are hidden from every channel, including matching copies on other servers." : {},
+    "Breaks use the combined running time of the selected clips, which is included in the guide. If fewer clips are available, each plays once. Program start-time alignment may add an intermission before the next program." : {},
+    "Browse ahead in the guide, select a program, then choose Remind me. Reminders never change channels automatically." : {},
+    "Browsing" : {},
+    "Build My Channels" : {},
+    "Build as many of your own channels as you like." : {},
+    "CRT Green" : {
+      "comment" : "Name of a color theme"
+    },
+    "Can't reach %@ at either address right now." : {},
+    "Can't reach %@ from here. To watch away from home, add an away address." : {},
+    "Can't reach %@ right now." : {},
+    "Cancel" : {},
+    "Cancel Channel Loading" : {},
+    "Cancel reminder" : {},
+    "Cancel reminder for %@" : {},
+    "Cancel sleep timer" : {},
+    "Change schedule order" : {},
+    "Changes are saved locally and sync when iCloud is available. Turning sync off keeps your current setup and leaves the iCloud copy in place." : {},
+    "Changes waiting" : {
+      "comment" : "iCloud Sync status"
+    },
+    "Changing a channel's schedule order is part of RetroGuide Pro (Settings › RetroGuide Pro)." : {},
+    "Channel" : {
+      "comment" : "Remote hint: up and down change the channel"
+    },
+    "Channel %lld · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Channel %1$lld · %2$@"
+          }
+        }
+      }
     },
     "Channel %lld, %@" : {
       "localizations" : {
@@ -160,80 +548,99 @@
         }
       }
     },
-    "Channel down" : {
-
+    "Channel Groups" : {},
+    "Channel down" : {},
+    "Channel groups" : {},
+    "Channel loading cancelled" : {},
+    "Channel loading was cancelled. Your saved servers and library selections have not changed." : {},
+    "Channel name" : {},
+    "Channel settings include custom channels, hidden channels, removed shows and movies, and schedule ordering. Media files and generated program guides are not uploaded." : {},
+    "Channel up" : {},
+    "Channels" : {},
+    "Channels can mix programs from every server you add." : {},
+    "Channels combine content from your selected libraries. For matching copies, servers higher in this list are preferred. Availability, parental restrictions and playable versions can affect which copy is used." : {},
+    "Channels per Show" : {},
+    "Channels per show" : {},
+    "Checking…" : {},
+    "Choose Favorites" : {},
+    "Choose Favorites in Settings, or switch back to All Channels." : {},
+    "Choose Genres" : {},
+    "Choose Libraries" : {},
+    "Choose a channel below to show programs in your widget." : {},
+    "Choose a library containing only commercials to enable breaks." : {},
+    "Choose a server" : {},
+    "Choose content" : {},
+    "Choose libraries" : {},
+    "Choose setup" : {
+      "comment" : "iCloud Sync status: waiting for the viewer to choose which setup to keep"
     },
-    "Channel loading cancelled" : {
-
-    },
-    "Channel name" : {
-
-    },
-    "Channel up" : {
-
-    },
-    "Channels can mix programs from every server you add." : {
-
-    },
-    "Channels combine content from your selected libraries. For matching copies, servers higher in this list are preferred. Availability, parental restrictions and playable versions can affect which copy is used." : {
-
-    },
-    "Checking…" : {
-
-    },
-    "Choose a channel below to show programs in your widget." : {
-
-    },
-    "Choose a library containing only commercials to enable breaks." : {
-
-    },
-    "Choose a server" : {
-
-    },
-    "Choose Favorites in Settings, or switch back to All Channels." : {
-
-    },
-    "Choose the highest rating allowed for each type of content." : {
-
-    },
+    "Choose the highest rating allowed for each type of content." : {},
     "Choose up to %lld channels." : {
-
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Choose up to %lld channel."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Choose up to %lld channels."
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "Choose which existing copy to prefer on %@, such as 4K or 1080p. This does not set a streaming bitrate. Playback may still need conversion for compatibility." : {
-
-    },
-    "Choose which kinds of channels are built automatically from your library. Your own channels are always kept." : {
-
-    },
-    "Choose your Jellyfin server" : {
-
+    "Choose upcoming airings and get a reminder when they start." : {},
+    "Choose which existing copy to prefer on %@, such as 4K or 1080p. This does not set a streaming bitrate. Playback may still need conversion for compatibility." : {},
+    "Choose which kinds of channels are built automatically from your library. Your own channels are always kept." : {},
+    "Choose which setup to use. A copy of this device’s current settings will be kept so you can restore it." : {},
+    "Choose your Jellyfin server" : {},
+    "Choosing audio and subtitles needs the RetroGuide Player. You can switch to it in Settings › Playback › Player." : {},
+    "Classic Cable" : {
+      "comment" : "Name of a color theme"
     },
     "Clear" : {
-
+      "comment" : "Button that deselects every choice in the list"
     },
-    "Close" : {
-
-    },
-    "Close guide" : {
-
-    },
-    "Connect" : {
-
-    },
-    "Connect Anyway" : {
-
-    },
-    "Connect Jellyfin" : {
-
-    },
-    "Connect Multiple Servers with Pro" : {
-
-    },
-    "Connect Plex" : {
-
-    },
-    "Connect without encryption?" : {
-
+    "Close" : {},
+    "Close guide" : {},
+    "Collections" : {},
+    "Commercial Breaks" : {},
+    "Commercial Libraries" : {},
+    "Commercial break" : {},
+    "Commercial breaks" : {},
+    "Commercial libraries" : {},
+    "Confirm PIN" : {},
+    "Connect" : {},
+    "Connect Anyway" : {},
+    "Connect Jellyfin" : {},
+    "Connect Multiple Servers with Pro" : {},
+    "Connect Plex" : {},
+    "Connect to Plex or Jellyfin on each device. Server passwords and access tokens stay on the device. Settings for unavailable libraries are retained until you connect them." : {},
+    "Connect without encryption?" : {},
+    "Connect your servers on each device. Parental restrictions and the parental lineup require review before they apply here." : {},
+    "Connected" : {},
+    "Connected at home · %@" : {},
+    "Connected at home · %@ · not encrypted" : {},
+    "Connected away from home · %@" : {},
+    "Connected away from home · %@ · not encrypted" : {},
+    "Connected through: %@ (%@)" : {
+      "comment" : "The first argument is how the server is reached, such as VPN; the second is its address",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Connected through: %1$@ (%2$@)"
+          }
+        }
+      }
     },
     "Connected through: %@ (%@)." : {
       "localizations" : {
@@ -245,42 +652,83 @@
         }
       }
     },
-    "Connecting to %@…" : {
-
+    "Connecting to %@…" : {},
+    "Connecting to your Plex account…" : {},
+    "Connecting…" : {},
+    "Connection" : {
+      "comment" : "How the app reaches a media server: its addresses and route"
     },
-    "Create Channel" : {
-
+    "Contacting the App Store…" : {},
+    "Content restrictions" : {},
+    "Continue" : {},
+    "Couldn't connect" : {},
+    "Couldn't reach it from here. It's saved and will be tried when needed." : {},
+    "Couldn't reach the App Store" : {},
+    "Couldn't reach the server with this setting." : {},
+    "Couldn't save %lld titles to Plex. Your choices are still saved on this device." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Couldn't save %lld title to Plex. Your choices are still saved on this device."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Couldn't save %lld titles to Plex. Your choices are still saved on this device."
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "Custom timer minutes" : {
-
-    },
-    "Decrease %@" : {
-
-    },
-    "Delete Channel" : {
-
-    },
-    "Delete this channel?" : {
-
-    },
-    "Dismiss" : {
-
-    },
-    "Done" : {
-
-    },
-    "Done entering minutes" : {
-
-    },
-    "Double-tap for controls. Swipe up or down to change channel." : {
-
+    "Couldn't save 1 title to Plex. Your choices are still saved on this device." : {},
+    "Couldn't save parental controls. Your previous settings are still in effect." : {},
+    "Couldn't set this reminder: %@" : {},
+    "Create Channel" : {},
+    "Create PIN" : {},
+    "Create a PIN first." : {},
+    "Create a channel" : {},
+    "Create another channel" : {},
+    "Currently unavailable" : {},
+    "Custom address" : {},
+    "Custom channel" : {},
+    "Custom lineup" : {},
+    "Custom timer minutes" : {},
+    "Customize widget channels" : {},
+    "Decades" : {},
+    "Decrease %@" : {},
+    "Delete Channel" : {},
+    "Delete channel" : {},
+    "Delete this channel?" : {},
+    "Device preferences" : {},
+    "Dismiss" : {},
+    "Done" : {},
+    "Done entering minutes" : {},
+    "Double-tap for controls. Swipe up or down to change channel." : {},
+    "Each channel's own" : {
+      "comment" : "Schedule order choice: every channel keeps its own order"
     },
     "Earlier" : {
-
+      "comment" : "Guide button: show earlier times\nMove subtitles earlier"
     },
-    "End of this program" : {
-
+    "Earlier by %@ seconds" : {
+      "comment" : "Move subtitles earlier by a fraction of a second"
     },
+    "Easiest: Tailscale on the server and this device. Use the server's Tailscale address." : {},
+    "Edit" : {
+      "comment" : "Settings row value: opens the channel for editing"
+    },
+    "Edit Channel" : {},
+    "Edit channel" : {},
+    "Enable commercial breaks" : {},
+    "Enable parental controls" : {},
+    "End of this program" : {},
     "Enter %lld–%lld minutes." : {
       "localizations" : {
         "en" : {
@@ -291,207 +739,257 @@
         }
       }
     },
-    "Enter Address" : {
-
+    "Enter Address" : {},
+    "Enter a valid HTTPS server address." : {},
+    "Enter an HTTPS address with a trusted certificate. Port 32400 is used unless you add one. A Tailscale IP uses the server’s secure plex.direct hostname when available. HTTP connections are not supported." : {},
+    "Enter your PIN first." : {},
+    "Enter your PIN to change settings. Content restrictions stay active while you make changes." : {},
+    "Enter your server's address" : {},
+    "Every Plex server on this account is already added." : {},
+    "Every episode of %@" : {},
+    "Every theme" : {},
+    "Everything in %@" : {
+      "comment" : "Track choice scope: a whole library, by name"
     },
-    "Enter an HTTPS address with a trusted certificate. Port 32400 is used unless you add one. A Tailscale IP uses the server’s secure plex.direct hostname when available. HTTP connections are not supported." : {
-
-    },
-    "Enter your PIN to change settings. Content restrictions stay active while you make changes." : {
-
-    },
-    "Enter your server's address" : {
-
-    },
-    "Extra buffering reads further ahead so playback rides out slow or uneven internet. Turn it on for servers outside your home." : {
-
-    },
-    "Favorites" : {
-
-    },
-    "Find a channel" : {
-
-    },
+    "Everything in this library" : {},
+    "Extra buffering" : {},
+    "Extra buffering reads further ahead so playback rides out slow or uneven internet. Turn it on for servers outside your home." : {},
     "FROM BEGINNING" : {
-
+      "comment" : "Channel banner badge: this program is being watched from its start, not live"
     },
+    "Favorite" : {
+      "comment" : "Settings row value: this channel is a favorite"
+    },
+    "Favorite channels" : {},
+    "Favorites" : {},
+    "Favorites, channels, scheduling, commercial settings, themes, audio and subtitle choices, library selections, and reminders." : {},
+    "Find a channel" : {},
+    "Found a server at %@ whose certificate this device doesn't trust. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt." : {},
+    "Found without encryption (no HTTPS). Choose one to connect anyway." : {},
+    "Four-digit PIN" : {},
+    "Genres" : {},
+    "Genres selected" : {},
     "Guide" : {
-
+      "comment" : "Remote hint: the select button opens the program guide"
     },
+    "Guide & channel surfing" : {},
+    "Hidden" : {},
     "Hide %@" : {
-
+      "comment" : "Button that hides the typed PIN; the argument is the field's name"
     },
-    "In Jellyfin on your phone or computer, open your profile, choose Quick Connect and enter this code:" : {
-
+    "Home Screen" : {},
+    "Home Screen widgets" : {},
+    "Home and VPN addresses only" : {},
+    "Home and away" : {
+      "comment" : "Server connection: both a home-network and an away-from-home address are set"
     },
-    "Increase %@" : {
-
+    "Home only" : {
+      "comment" : "Server connection: only a home-network address is set"
     },
-    "It stays on your other channels. You can put it back any time in Settings › Channels › Removed from channels." : {
-
+    "In Jellyfin on your phone or computer, open your profile, choose Quick Connect and enter this code:" : {},
+    "Included" : {
+      "comment" : "Heading above the list of features RetroGuide Pro adds"
     },
+    "Incorrect PIN." : {},
+    "Increase %@" : {},
+    "It stays on your other channels. You can put it back any time in Settings › Channels › Removed from channels." : {},
+    "Its address on your home network, like 192.168.1.20:8096." : {},
+    "Its certificate isn't trusted by this device. Use one from a trusted authority, such as Let's Encrypt." : {},
     "Last channel" : {
-
+      "comment" : "Remote hint: play/pause returns to the previous channel"
     },
+    "Last synced %@" : {},
     "Later" : {
-
+      "comment" : "Guide button: show later times\nMove subtitles later"
     },
-    "Left and Right move subtitles earlier or later. Select restores the original timing." : {
-
+    "Later by %@ seconds" : {
+      "comment" : "Move subtitles later by a fraction of a second"
     },
-    "Link your Plex account" : {
-
+    "Left and Right move subtitles earlier or later. Select restores the original timing." : {},
+    "Libraries" : {},
+    "Library" : {},
+    "Limit content and lock settings on this device." : {},
+    "Link your Plex account" : {},
+    "Live TV" : {},
+    "Loading allowed content…" : {},
+    "Loading commercials…" : {},
+    "Loading this program's tracks…" : {},
+    "Local Forecast" : {
+      "comment" : "Name of a color theme"
     },
-    "Live TV" : {
-
+    "Looking for servers on your network…" : {},
+    "Manage Servers and Libraries" : {},
+    "Manage channels" : {},
+    "Match TV Mode" : {},
+    "Match TV mode" : {},
+    "Matching copies of titles in these collections are included. Your library and rating limits still apply." : {},
+    "Midnight" : {
+      "comment" : "Name of a color theme"
     },
-    "Loading allowed content…" : {
-
+    "Minutes" : {},
+    "Mono" : {
+      "comment" : "Name of a color theme"
     },
-    "Loading commercials…" : {
-
-    },
-    "Looking for servers on your network…" : {
-
-    },
-    "minutes" : {
-
-    },
-    "Minutes" : {
-
-    },
-    "Move RetroGuide.TV to the top row of your Apple TV Home Screen to see what's on." : {
-
-    },
-    "Movies" : {
-
-    },
-    "Needs a Plex or Jellyfin server, yours or one shared with you. No videos are included." : {
-
-    },
-    "No allowed channels" : {
-
-    },
-    "No available channels match your parental controls. A parent can change the lineup or content restrictions in Settings." : {
-
-    },
-    "No channels are available yet." : {
-
-    },
-    "No channels in this view" : {
-
-    },
-    "No commercials available. Check your libraries and Parental Controls." : {
-
-    },
-    "No favorite channels are available. Add channels in Favorites below to show them on Top Shelf." : {
-
-    },
-    "No favorite channels are available. Choose Favorites below to add channels to your widget." : {
-
-    },
-    "No matching channels" : {
-
-    },
-    "NO SIGNAL" : {
-
-    },
-    "No upcoming reminders" : {
-
-    },
-    "Not encrypted" : {
-
-    },
-    "Not saved: fix the address above" : {
-
-    },
-    "Not selected" : {
-
-    },
-    "Nothing is removed from any channel. To remove a show from one, open Options while it's on and choose Remove this show from this channel." : {
-
-    },
-    "Nothing matches yet" : {
-
-    },
-    "Nothing on your channels matches “%@”." : {
-
-    },
+    "Move RetroGuide.TV to the top row of your Apple TV Home Screen to see what's on." : {},
+    "Move subtitles later if they appear before speech, or earlier if they appear after it. Applies to this subtitle track while watching this program." : {},
+    "Move subtitles later if they appear before speech, or earlier if they appear after it. The next episodes of this show start with the same timing." : {},
+    "Movie" : {},
+    "Movies" : {},
+    "Multiple servers" : {},
+    "NO SIGNAL" : {},
     "NOW" : {
-
+      "comment" : "Channel banner badge: the program on the air now"
     },
-    "OK" : {
-
+    "Name" : {},
+    "Needs a Plex or Jellyfin server, yours or one shared with you. No videos are included." : {},
+    "Needs attention" : {
+      "comment" : "iCloud Sync status"
     },
-    "On Apple TV, reminders appear while RetroGuide is open. Set reminders on your iPhone or iPad for notifications outside the app." : {
-
+    "Networks" : {},
+    "Never" : {
+      "comment" : "Library refresh status: the library has not been refreshed yet"
     },
-    "On this device or any other, go to" : {
-
+    "New Channel" : {},
+    "Next program at %@" : {},
+    "Next: %@ · %@" : {
+      "comment" : "When a search result airs next: “Next: Tomorrow 9:00 AM · Channel name”",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Next: %1$@ · %2$@"
+          }
+        }
+      }
     },
-    "On your phone or computer, go to" : {
-
+    "No Jellyfin server answered at that address. Check the address and port, and that the server uses HTTPS with a trusted certificate." : {},
+    "No Jellyfin servers answered on this network. Enter your server's address instead." : {},
+    "No ads" : {},
+    "No allowed channels" : {},
+    "No available channels match your parental controls. A parent can change the lineup or content restrictions in Settings." : {},
+    "No channels are available yet." : {},
+    "No channels in this view" : {},
+    "No commercials available. Check your libraries and Parental Controls." : {},
+    "No favorite channels are available. Add channels in Favorites below to show them on Top Shelf." : {},
+    "No favorite channels are available. Choose Favorites below to add channels to your widget." : {},
+    "No genres selected" : {},
+    "No matching channels" : {},
+    "No upcoming reminders" : {},
+    "None" : {
+      "comment" : "Settings row value: no shows or movies are blocked"
     },
-    "One purchase, no subscription. It unlocks Pro on your iPhone, iPad and Apple TV." : {
-
+    "None selected" : {
+      "comment" : "Nothing is chosen in this list"
     },
-    "Open %@" : {
-
+    "None selected. No content allowed." : {},
+    "Not encrypted" : {},
+    "Not in currently loaded libraries" : {},
+    "Not saved: fix the address above" : {},
+    "Not selected" : {},
+    "Not set" : {
+      "comment" : "Server connection: no address is set"
     },
-    "Options" : {
-
+    "Nothing is removed from any channel. To remove a show from one, open Options while it's on and choose Remove this show from this channel." : {},
+    "Nothing is scheduled on this channel." : {},
+    "Nothing matches yet" : {},
+    "Nothing on your channels matches “%@”." : {},
+    "Notifications are off. Enable them for RetroGuide.TV in iPhone or iPad Settings to receive reminders." : {},
+    "Now" : {
+      "comment" : "Guide button: return to the current time"
     },
-    "Parental Controls" : {
-
+    "Now / Next" : {
+      "comment" : "Remote hint: left and right switch between the current and next program"
     },
-    "Parental Controls also apply to commercials. Unrated clips are excluded when unrated content is blocked." : {
-
+    "OK" : {},
+    "Off" : {
+      "comment" : "Settings row value: the option is turned off\nSubtitles turned off\niCloud Sync status: turned off"
     },
-    "Password" : {
-
+    "Offline" : {
+      "comment" : "Server status"
     },
-    "Pin one channel to stop automatic rotation." : {
-
+    "Offline: %@" : {},
+    "On" : {
+      "comment" : "Settings row value: the option is turned on\niCloud Sync status: turned on and up to date"
     },
-    "Play clips from a separate commercial library between programs. Shows and movies play without interruptions." : {
-
+    "On %@ · not scheduled in the next two days" : {},
+    "On Apple TV, reminders appear while RetroGuide is open. Set reminders on your iPhone or iPad for notifications outside the app." : {},
+    "On now · %@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "On now · %1$@ · %2$@"
+          }
+        }
+      }
     },
-    "Playback options, audio and subtitles" : {
-
+    "On this device or any other, go to this address:" : {},
+    "On your phone or computer, go to this address:" : {},
+    "One purchase, no subscription. It unlocks Pro on your iPhone, iPad and Apple TV." : {},
+    "Online" : {
+      "comment" : "Server status"
     },
-    "Playback stops at %@" : {
-
+    "Only the channels you create here." : {},
+    "Only these libraries can supply content. Each library lists the server it belongs to." : {},
+    "Open %@" : {},
+    "Options" : {},
+    "Or publish the server with HTTPS and a domain name." : {},
+    "Other ratings" : {},
+    "Parental Controls" : {},
+    "Parental Controls also apply to commercials. Unrated clips are excluded when unrated content is blocked." : {},
+    "Parental Lock" : {},
+    "Parental controls could not be read. Try reopening the app after unlocking this device." : {},
+    "Parental restrictions and the curated parental lineup are available for review in Parental Controls. Save them there to apply them on this device. Sync never changes a PIN or turns the parental lock on or off." : {},
+    "Password" : {},
+    "Pay-Per-View" : {
+      "comment" : "Name of a color theme"
     },
-    "Program reminder" : {
-
+    "Per channel" : {
+      "comment" : "Settings row value: each channel has its own schedule order"
     },
-    "Programming your channels" : {
-
+    "Personal widgets" : {},
+    "Pick each channel's order and start programs on the hour and half hour." : {},
+    "Picture" : {},
+    "Pin one channel to stop automatic rotation." : {},
+    "Play clips from a separate commercial library between programs. Shows and movies play without interruptions." : {},
+    "Playback" : {},
+    "Playback / Options" : {
+      "comment" : "Remote hint: swipe down opens playback options"
     },
-    "QR code" : {
-
+    "Playback error" : {},
+    "Playback options, audio and subtitles" : {},
+    "Playback stops at %@" : {},
+    "Player" : {},
+    "Player, video quality, widget, Top Shelf, recent-channel, and current-playback preferences stay on each device." : {},
+    "Plays every file directly, with no server transcoding. Recommended." : {},
+    "Plex finds its own way. Jellyfin needs an away address." : {},
+    "Privacy choices" : {},
+    "Program Start Times" : {},
+    "Program reminder" : {},
+    "Program reminders" : {},
+    "Program start times" : {},
+    "Programming your channels" : {},
+    "Put back" : {},
+    "QR code" : {},
+    "Quick Connect isn't working right now (%@). Sign in with your password instead." : {},
+    "Rate %@" : {},
+    "Ratings" : {},
+    "Ratings come from your servers. Content without a U.S. rating, including other countries' ratings, is blocked unless you allow it here." : {},
+    "Ready" : {
+      "comment" : "A media server finished loading its libraries"
     },
-    "Ratings come from your servers. Content without a U.S. rating, including other countries' ratings, is blocked unless you allow it here." : {
-
-    },
-    "Real TV starts shows on the hour and half hour. Aligning to a grid adds a short \"We'll be right back\" break between programs so the guide lines up neatly." : {
-
-    },
-    "Refresh commercials" : {
-
-    },
-    "Remind me" : {
-
-    },
-    "Reminders" : {
-
-    },
-    "Remove" : {
-
-    },
-    "Remove %@" : {
-
-    },
+    "Real TV starts shows on the hour and half hour. Aligning to a grid adds a short \"We'll be right back\" break between programs so the guide lines up neatly." : {},
+    "Recent channels" : {},
+    "Recovery" : {},
+    "Refresh commercials" : {},
+    "Refresh library" : {},
+    "Refreshing…" : {},
+    "Regular lineup" : {},
+    "Remind me" : {},
+    "Reminders" : {},
+    "Reminders appear when the matching program is available. Notification permission is set separately on each device." : {},
+    "Remove" : {},
+    "Remove %@" : {},
     "Remove %@ (%@)? Its programs will leave every channel." : {
       "localizations" : {
         "en" : {
@@ -512,285 +1010,303 @@
         }
       }
     },
-    "Remove unavailable selections" : {
-
+    "Remove server" : {},
+    "Remove this movie from this channel" : {},
+    "Remove this show from this channel" : {},
+    "Remove unavailable selections" : {},
+    "Removed from channels" : {},
+    "Removed from this channel" : {},
+    "Removes the banner and full-screen ads on iPhone and iPad." : {},
+    "Removing a show from a channel is part of RetroGuide Pro (Settings › RetroGuide Pro)." : {},
+    "Replace the iCloud setup?" : {},
+    "Reset" : {},
+    "Restart from Beginning" : {},
+    "Restore Purchase" : {},
+    "Restore Setup" : {},
+    "Restore automatic-channel defaults. Keep custom-channel orders." : {},
+    "Restore the previous setup?" : {},
+    "Restore this device’s previous setup" : {},
+    "Restores this track's original timing." : {},
+    "Resume watching" : {},
+    "RetroGuide Player" : {
+      "comment" : "Video player choice: the app's own player (RetroGuide is the app's name)"
     },
-    "Replace the iCloud setup?" : {
-
+    "RetroGuide plays the original files from your server whenever it can, so your server doesn't have to convert video." : {},
+    "RetroGuide.TV turns your Plex or Jellyfin library into live TV channels with a program guide. Flip through channels, drop into whatever is on, and let the schedule do the choosing." : {},
+    "Retrying automatically…" : {},
+    "Return to Live" : {},
+    "Review synced changes" : {},
+    "Review synced restrictions and lineup" : {},
+    "Review the choices below, then Save to apply them here. Your PIN and whether parental controls are on stay unchanged." : {},
+    "Saturday Morning" : {
+      "comment" : "Name of a color theme"
     },
-    "Reset" : {
-
+    "Save" : {},
+    "Save Changes" : {},
+    "Save Libraries" : {},
+    "Save and Rebuild Channels" : {},
+    "Save on the Parental Controls screen to apply your changes. Cancel there discards them." : {},
+    "Saved" : {},
+    "Saving to Plex… %lld of %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Saving to Plex… %1$lld of %2$lld"
+          }
+        }
+      }
     },
-    "Restart from Beginning" : {
-
-    },
-    "Restore Purchase" : {
-
-    },
-    "Restore Setup" : {
-
-    },
-    "Restore the previous setup?" : {
-
-    },
-    "Restores this track's original timing." : {
-
-    },
-    "Resume watching" : {
-
-    },
-    "RetroGuide plays the original files from your server whenever it can, so your server doesn't have to convert video." : {
-
-    },
-    "RetroGuide.TV turns your Plex or Jellyfin library into live TV channels with a program guide. Flip through channels, drop into whatever is on, and let the schedule do the choosing." : {
-
-    },
-    "Retrying automatically…" : {
-
-    },
-    "Return to Live" : {
-
-    },
-    "Review synced restrictions and lineup" : {
-
-    },
-    "Review the choices below, then Save to apply them here. Your PIN and whether parental controls are on stay unchanged." : {
-
-    },
-    "Save" : {
-
-    },
-    "Save Changes" : {
-
-    },
-    "Save on the Parental Controls screen to apply your changes. Cancel there discards them." : {
-
-    },
-    "Saved" : {
-
-    },
-    "Saving…" : {
-
-    },
-    "Scan to open Plex link" : {
-
-    },
-    "Search" : {
-
-    },
-    "Search %@" : {
-
-    },
-    "Search Again" : {
-
-    },
-    "Search every show and movie on your channels." : {
-
-    },
-    "Selected" : {
-
-    },
-    "Server address" : {
-
-    },
-    "Set the program order for the current lineup. You can change individual channels in Manage channels. Choosing Each channel's own restores automatic-channel defaults and keeps custom-channel orders." : {
-
-    },
-    "Set timer" : {
-
-    },
-    "Settings" : {
-
-    },
-    "Shared with you" : {
-
-    },
+    "Saving…" : {},
+    "Scan to open Plex link" : {},
+    "Scanlines on menus" : {},
+    "Schedule Order" : {},
+    "Schedule controls" : {},
+    "Schedule order" : {},
+    "Search" : {},
+    "Search Again" : {},
+    "Search every show and movie on your channels." : {},
+    "Season %lld" : {},
+    "Security" : {},
+    "Selected" : {},
+    "Selected collections, shows and movies" : {},
+    "Selected genres" : {},
+    "Selected libraries" : {},
+    "Selected only" : {},
+    "Selecting a show includes its episodes. Matching copies on other servers are included, within your library and rating limits." : {},
+    "Server" : {},
+    "Server address" : {},
+    "Servers" : {},
+    "Set the program order for the current lineup. You can change individual channels in Manage channels. Choosing Each channel's own restores automatic-channel defaults and keeps custom-channel orders." : {},
+    "Set timer" : {},
+    "Settings" : {},
+    "Settings are waiting for setup or a library refresh to finish. If parental settings are locked, unlock them to apply changes." : {},
+    "Settings from iCloud" : {},
+    "Shared settings" : {},
+    "Shared with you" : {},
     "Show %@" : {
-
+      "comment" : "Button that reveals the typed PIN; the argument is the field's name"
     },
-    "Show all channels" : {
-
+    "Show all channels" : {},
+    "Show in guide" : {},
+    "Shown" : {},
+    "Shows" : {},
+    "Shows and Movies" : {},
+    "Shows and movies" : {},
+    "Sign In" : {},
+    "Sign In on This Device Instead" : {},
+    "Sign In with Plex" : {},
+    "Sign Out" : {},
+    "Sign in to %@" : {},
+    "Sign in to iCloud in this device’s Settings, then try again." : {},
+    "Sign in with the Plex account that has your server, or the one a friend shared their server with." : {},
+    "Sign out" : {},
+    "Sign out and remove all channels from this device?" : {},
+    "Sleep timer" : {},
+    "Sleep timer finished" : {},
+    "Some commercial libraries could not be loaded. Programs will continue on schedule." : {},
+    "Some libraries could not be loaded. Reopen this page to try again." : {},
+    "Some selected libraries are unavailable. Reconnect their servers or remove these selections." : {},
+    "Something went wrong" : {},
+    "Star channels below. Hidden and unavailable channels stay saved and return when available." : {},
+    "Star your channels and browse or surf just your Favorites." : {},
+    "Start this program at 0:00. You can return to the live channel at any time." : {},
+    "Starting now on %@" : {
+      "comment" : "Program reminder notification text, followed by the channel name"
     },
-    "Shows and movies" : {
-
+    "Status" : {},
+    "Stop after" : {
+      "comment" : "Sleep timer: stop playback after a number of minutes"
     },
-    "Sign In" : {
-
+    "Stops video, audio and Picture in Picture. Changing channels keeps the chosen stop time." : {},
+    "Subtitle timing" : {},
+    "Subtitles" : {},
+    "Subtitles for" : {
+      "comment" : "Menu: how widely the chosen subtitles apply (this episode, season, show…)"
     },
-    "Sign In on This Device Instead" : {
-
+    "Switches your TV into HDR for HDR programs, and optionally to each program's frame rate, like Apple's own player." : {},
+    "Sync could not save its local data. Free some device storage, then turn sync on again. Your app settings are unchanged." : {},
+    "Sync now" : {},
+    "Sync with iCloud" : {},
+    "Syncing settings…" : {},
+    "Syncing…" : {},
+    "Synthwave" : {
+      "comment" : "Name of a color theme"
     },
-    "Sign in to %@" : {
-
+    "TV Shows" : {},
+    "TV show" : {},
+    "Teletext" : {
+      "comment" : "Name of a color theme"
     },
-    "Sign In with Plex" : {
-
+    "That isn't a valid address." : {},
+    "That username and password didn't work." : {},
+    "That's a different server (%@)." : {},
+    "The PINs do not match." : {},
+    "The iCloud account changed. Sync is off and this device’s settings are unchanged. Turn it on to choose a setup for the new account." : {},
+    "The iCloud account changed. Sync is off and your settings are still on this device." : {},
+    "The iCloud copy was removed. Your settings are still on this device. Turn sync on to set it up again." : {},
+    "The iCloud settings changed outside this app. Sync has stopped to preserve this device’s setup." : {},
+    "The previous startup did not finish. You can change libraries or remove a server before trying again." : {},
+    "The purchase didn't go through: %@" : {},
+    "The saved sync journal could not be read. Your settings on this device are unchanged." : {},
+    "The scheduler also avoids airing the exact same episode or movie on multiple channels when alternatives are available." : {},
+    "The server at %@ doesn't use HTTPS." : {},
+    "The server for this channel isn't connected." : {},
+    "The stream could not be played." : {},
+    "The video couldn't be played (%@)." : {
+      "comment" : "The player's technical error message, in parentheses"
     },
-    "Sign Out" : {
-
+    "The video player could not be started." : {},
+    "Theme" : {},
+    "Then enter this code:" : {},
+    "These settings could not be synced safely. Update RetroGuide.TV on your other devices, then try again. Your local setup is unchanged." : {},
+    "This Plex account has no servers yet: none of its own and none shared with it. RetroGuide.TV plays the movies and shows on a Plex or Jellyfin server, either your own or one a friend has shared with you. If a server was shared with a different Plex account, sign in with that one." : {},
+    "This channel no longer has any programs." : {},
+    "This device’s shared settings will replace those in iCloud and update your other connected devices. Their parental restrictions still require review." : {},
+    "This episode" : {},
+    "This lineup takes over when parental controls are on. Turning them off restores your regular lineup. All content restrictions still apply." : {},
+    "This movie" : {},
+    "This program has already started." : {},
+    "This program is restricted by parental controls." : {},
+    "This program won't start. Its file may be damaged." : {},
+    "This program's audio and subtitle tracks aren't available." : {},
+    "This restores the shared settings saved before this device joined iCloud Sync. If sync is on, the restored choices will also sync to your other devices. Parental restrictions remain unchanged until reviewed." : {},
+    "This season" : {},
+    "This server can't be reached right now. Its programs are left out of the guide until it's back." : {},
+    "This setup is too large for this Apple TV’s settings storage. Your current setup has been kept." : {},
+    "Tomorrow %@" : {},
+    "Too many attempts. Try again in %lld seconds." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Too many attempts. Try again in %lld second."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Too many attempts. Try again in %lld seconds."
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "Sign out and remove all channels from this device?" : {
-
-    },
-    "Sleep timer finished" : {
-
-    },
-    "Some selected libraries are unavailable. Reconnect their servers or remove these selections." : {
-
-    },
-    "Something went wrong" : {
-
-    },
-    "Star channels below. Hidden and unavailable channels stay saved and return when available." : {
-
-    },
-    "Start this program at 0:00. You can return to the live channel at any time." : {
-
-    },
-    "Stops video, audio and Picture in Picture. Changing channels keeps the chosen stop time." : {
-
-    },
-    "Subtitle timing" : {
-
-    },
-    "Switches your TV into HDR for HDR programs, and optionally to each program's frame rate, like Apple's own player." : {
-
-    },
-    "Syncing settings…" : {
-
-    },
-    "The scheduler also avoids airing the exact same episode or movie on multiple channels when alternatives are available." : {
-
-    },
-    "The server at %@ doesn't use HTTPS." : {
-
-    },
-    "This channel no longer has any programs." : {
-
-    },
-    "This device’s shared settings will replace those in iCloud and update your other connected devices. Their parental restrictions still require review." : {
-
-    },
-    "This lineup takes over when parental controls are on. Turning them off restores your regular lineup. All content restrictions still apply." : {
-
-    },
-    "This restores the shared settings saved before this device joined iCloud Sync. If sync is on, the restored choices will also sync to your other devices. Parental restrictions remain unchanged until reviewed." : {
-
-    },
-    "This server can't be reached right now. Its programs are left out of the guide until it's back." : {
-
-    },
-    "Touch and hold your Home Screen, choose Edit › Add Widget, then search for RetroGuide.TV. Reopen the app to refresh the saved schedule; iOS decides when widgets update." : {
-
-    },
-    "Try again" : {
-
-    },
-    "Try Again" : {
-
-    },
-    "Turn on Match Content in the Apple TV's Settings → Video and Audio to allow this." : {
-
-    },
-    "TV Shows" : {
-
-    },
-    "Unlock Settings" : {
-
-    },
+    "Too many attempts. Try again in a minute." : {},
+    "Top Shelf channels" : {},
+    "Touch and hold your Home Screen, choose Edit › Add Widget, then search for RetroGuide.TV. Reopen the app to refresh the saved schedule; iOS decides when widgets update." : {},
+    "Try Again" : {},
+    "Try again" : {},
+    "Turn on Match Content in the Apple TV's Settings → Video and Audio to allow this." : {},
+    "U.S. ratings" : {},
     "UP NEXT" : {
-
+      "comment" : "Channel banner badge: the program after the current one"
     },
-    "Up next on %@" : {
-
+    "Undo: put %@ back" : {},
+    "Unlimited custom channels" : {},
+    "Unlock Settings" : {},
+    "Unlock Settings to change this channel." : {},
+    "Up next on %@" : {},
+    "Upcoming" : {},
+    "Updated %@" : {
+      "comment" : "Library refresh status; the argument is a relative time such as “5 minutes ago”"
     },
-    "Updating the schedule…" : {
-
+    "Updating the schedule…" : {},
+    "Upgrade for %@" : {},
+    "Upgrade to Pro" : {},
+    "Use Another Plex Account" : {},
+    "Use Favorites on Top Shelf" : {},
+    "Use Favorites, select channels or pin one channel in What's On." : {},
+    "Use Password Instead" : {},
+    "Use Quick Connect" : {},
+    "Use This Device’s Setup" : {},
+    "Use a Code Instead" : {},
+    "Use a four-digit PIN." : {},
+    "Use a separate library containing only commercials. Selected libraries are used only for commercials and are excluded from regular channels." : {},
+    "Use iCloud setup" : {},
+    "Use the same setup on devices signed into your Apple Account." : {},
+    "Use this PIN to change settings or turn off parental controls. Keep it somewhere safe." : {},
+    "Use this address" : {},
+    "Use this device’s setup" : {},
+    "Username" : {},
+    "Uses Apple's player. MKV and other formats are converted by your server." : {},
+    "VHS" : {
+      "comment" : "Name of a color theme"
     },
-    "Use a Code Instead" : {
-
+    "Video Quality" : {},
+    "Video quality" : {},
+    "Waiting for approval. Pro unlocks as soon as the purchase goes through." : {},
+    "Waiting for approval…" : {},
+    "Waiting for iCloud. Your changes are saved on this device and will retry automatically." : {},
+    "Waiting to sync" : {
+      "comment" : "iCloud Sync status"
     },
-    "Use a separate library containing only commercials. Selected libraries are used only for commercials and are excluded from regular channels." : {
-
+    "Waiting…" : {},
+    "Watch Live" : {},
+    "Watch channel %lld" : {},
+    "Watch from Beginning" : {},
+    "Watch full screen" : {},
+    "Watch now" : {},
+    "Watching away from home" : {},
+    "Watching from beginning" : {},
+    "Watching from beginning. Your channels are still following their normal schedule." : {},
+    "We'll be right back" : {},
+    "We're experiencing technical difficulties" : {},
+    "What's On channels" : {},
+    "What's on" : {},
+    "When Selected genres is enabled, each copy needs a matching server tag. Your rating, library and title restrictions also apply." : {},
+    "When offline" : {},
+    "Which libraries should be on TV?" : {},
+    "Who's watching?" : {},
+    "Why is this here?" : {},
+    "Wood Paneling" : {
+      "comment" : "Name of a color theme"
     },
-    "Use Another Plex Account" : {
-
+    "Works at home, and away over a VPN like Tailscale." : {},
+    "You can add HTTPS later. See retroguide.tv/support." : {},
+    "You can keep up to %lld upcoming reminders. Remove one first." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You can keep up to %lld upcoming reminder. Remove one first."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "You can keep up to %lld upcoming reminders. Remove one first."
+                }
+              }
+            }
+          }
+        }
+      }
     },
-    "Use Password Instead" : {
-
-    },
-    "Use Quick Connect" : {
-
-    },
-    "Use this address" : {
-
-    },
-    "Use This Device’s Setup" : {
-
-    },
-    "Use this PIN to change settings or turn off parental controls. Keep it somewhere safe." : {
-
-    },
-    "Username" : {
-
-    },
-    "Waiting for approval…" : {
-
-    },
-    "Watch channel %lld" : {
-
-    },
-    "Watch from Beginning" : {
-
-    },
-    "Watch full screen" : {
-
-    },
-    "Watch Live" : {
-
-    },
-    "Watch now" : {
-
-    },
-    "Watching from beginning" : {
-
-    },
-    "Watching from beginning. Your channels are still following their normal schedule." : {
-
-    },
-    "We'll be right back" : {
-
-    },
-    "We're experiencing technical difficulties" : {
-
-    },
-    "When Selected genres is enabled, each copy needs a matching server tag. Your rating, library and title restrictions also apply." : {
-
-    },
-    "Which libraries should be on TV?" : {
-
-    },
-    "Who's watching?" : {
-
-    },
-    "You can add HTTPS later. See retroguide.tv/support." : {
-
-    },
-    "You have RetroGuide Pro. Thank you for supporting the app!" : {
-
-    },
-    "Your genre, library and rating limits always apply. New episodes and additions to selected collections follow the same limits." : {
-
-    },
-    "Your library, on the air." : {
-
-    },
-    "Your server" : {
-
-    },
-    "Your servers" : {
-
-    }
+    "You have RetroGuide Pro. Thank you for supporting the app!" : {},
+    "Your Jellyfin password and video won't be encrypted on your home network or VPN. Internet addresses still need HTTPS." : {},
+    "Your channels" : {},
+    "Your configuration" : {},
+    "Your existing channels with parental restrictions applied." : {},
+    "Your genre, library and rating limits always apply. New episodes and additions to selected collections follow the same limits." : {},
+    "Your iCloud storage is full. Free some space, then try again." : {},
+    "Your library, on the air." : {},
+    "Your password and video aren't encrypted on that network." : {},
+    "Your server" : {},
+    "Your servers" : {},
+    "Your shared choices are stored in your private iCloud account. All devices need the same Apple Account and iCloud enabled." : {},
+    "iCloud Sync" : {},
+    "iCloud Sync could not finish. Your changes are saved on this device. Try again later." : {},
+    "iCloud is unavailable. Your changes are saved on this device." : {},
+    "minutes" : {}
   },
   "version" : "1.0"
 }

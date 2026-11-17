@@ -1,7 +1,45 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-
+    "Amber Terminal" : {
+      "comment" : "Name of a color theme"
+    },
+    "CRT Green" : {
+      "comment" : "Name of a color theme"
+    },
+    "Classic Cable" : {
+      "comment" : "Name of a color theme"
+    },
+    "Local Forecast" : {
+      "comment" : "Name of a color theme"
+    },
+    "Midnight" : {
+      "comment" : "Name of a color theme"
+    },
+    "Mono" : {
+      "comment" : "Name of a color theme"
+    },
+    "On now" : {
+      "comment" : "Top Shelf row title: programs on the air now"
+    },
+    "Pay-Per-View" : {
+      "comment" : "Name of a color theme"
+    },
+    "Saturday Morning" : {
+      "comment" : "Name of a color theme"
+    },
+    "Synthwave" : {
+      "comment" : "Name of a color theme"
+    },
+    "Teletext" : {
+      "comment" : "Name of a color theme"
+    },
+    "VHS" : {
+      "comment" : "Name of a color theme"
+    },
+    "Wood Paneling" : {
+      "comment" : "Name of a color theme"
+    }
   },
   "version" : "1.0"
 }

@@ -1,8 +1,8 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    ".TV" : {
-
+    "%@ left" : {
+      "comment" : "Time left in a program: “26m left”"
     },
     "%lld %@" : {
       "localizations" : {
@@ -14,11 +14,23 @@
         }
       }
     },
+    ".TV" : {
+
+    },
     "A larger RetroGuide icon. Choose What's On for live listings and channel controls." : {
 
     },
     "App Icon" : {
 
+    },
+    "Cartoons" : {
+      "comment" : "Sample channel name shown in the widget gallery"
+    },
+    "Classic Sitcom" : {
+      "comment" : "Sample show title shown in the widget gallery"
+    },
+    "Everything" : {
+      "comment" : "Sample channel name shown in the widget gallery"
     },
     "Flip Channel" : {
 
@@ -40,6 +52,15 @@
     },
     "RetroGuide" : {
 
+    },
+    "S1 E3 · Rocket Race" : {
+      "comment" : "Sample season, episode and episode title shown in the widget gallery"
+    },
+    "S2 E5 · The Big Day" : {
+      "comment" : "Sample season, episode and episode title shown in the widget gallery"
+    },
+    "Saturday Cartoons" : {
+      "comment" : "Sample show title shown in the widget gallery"
     },
     "Step" : {
 

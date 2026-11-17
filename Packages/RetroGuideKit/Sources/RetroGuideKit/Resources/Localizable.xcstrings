@@ -1,7 +1,314 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-
+    "%@ 24/7" : {
+      "comment" : "Name of a channel that airs one show around the clock; %@ is the show's title."
+    },
+    "%@ s earlier" : {
+      "comment" : "Subtitle advance; %@ is a number of seconds, such as 1.5."
+    },
+    "%@ s later" : {
+      "comment" : "Subtitle delay; %@ is a number of seconds, such as 1.5."
+    },
+    "%@s" : {
+      "comment" : "A decade, such as 1980s, or 80s in channel names; %@ is its first year, in full or as two digits."
+    },
+    "%@–%@ Movies" : {
+      "comment" : "Name of a channel of movies from a span of decades, such as 80s–90s Movies; each %@ is a decade, such as 80s or 2010s.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@–%2$@ Movies"
+          }
+        }
+      }
+    },
+    "%@–%@ TV" : {
+      "comment" : "Name of a channel of TV shows from a span of decades, such as 80s–90s TV; each %@ is a decade, such as 80s or 2010s.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@–%2$@ TV"
+          }
+        }
+      }
+    },
+    "%lld commercials" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld commercial"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld commercials"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "1 channel" : {},
+    "1 commercial" : {},
+    "15 minutes" : {},
+    "2 channels" : {},
+    "3 channels" : {},
+    "30 minutes" : {},
+    "5 minutes" : {},
+    "A secure HTTPS connection is required. Configure HTTPS with a trusted certificate on your server, then update its address." : {},
+    "Action" : {
+      "comment" : "Genre."
+    },
+    "Adventure" : {
+      "comment" : "Genre."
+    },
+    "Aim to show each series on no more than three automatic channels at a time, using different episodes." : {},
+    "Aim to show each series on no more than two automatic channels at a time, using different episodes." : {},
+    "Aim to show each series on one automatic channel at a time, for more variety." : {},
+    "Allow each series on any number of automatic channels at a time. Episode and movie overlap is still avoided when possible." : {},
+    "Also match each program's frame rate for the smoothest motion. The TV blanks briefly more often while you change channels." : {},
+    "Always the highest-quality copy. Best for servers in your home." : {},
+    "Always the smallest copy the server has." : {},
+    "Always tries the home address first. Good for Tailscale subnet routes and other VPNs." : {},
+    "Always use the Apple TV's usual output. HDR programs are converted to standard range." : {},
+    "Animation" : {
+      "comment" : "Genre."
+    },
+    "Anime" : {
+      "comment" : "Genre."
+    },
+    "Automatic" : {
+      "comment" : "Server connection preference."
+    },
+    "Back to back" : {
+      "comment" : "Schedule grid option: programs start right after each other, with no alignment."
+    },
+    "Biography" : {
+      "comment" : "Genre."
+    },
+    "Block Shuffle" : {
+      "comment" : "Schedule ordering: shows take turns in short blocks."
+    },
+    "Collections" : {},
+    "Comedy" : {
+      "comment" : "Genre."
+    },
+    "Couldn't reach %@. If it's your server, make sure it's running. If someone shared it with you, they may need to turn on Remote Access in Plex's settings." : {
+      "comment" : "%@ is the media server's name."
+    },
+    "Crime" : {
+      "comment" : "Genre."
+    },
+    "Custom" : {
+      "comment" : "Short value for a custom server address."
+    },
+    "Custom address" : {},
+    "Decades" : {},
+    "Documentary" : {
+      "comment" : "Genre."
+    },
+    "Drama" : {
+      "comment" : "Genre."
+    },
+    "Every episode of a show in order, then the next show." : {},
+    "Family" : {},
+    "Fantasy" : {
+      "comment" : "Genre."
+    },
+    "Favorites" : {},
+    "Featured" : {
+      "comment" : "Channel category: hand-picked themed channels."
+    },
+    "Finishing up…" : {},
+    "Food" : {
+      "comment" : "Genre."
+    },
+    "Game Show" : {
+      "comment" : "Genre."
+    },
+    "HDR" : {
+      "comment" : "Match content setting: match dynamic range only."
+    },
+    "HDR and frame rate" : {},
+    "History" : {
+      "comment" : "Genre."
+    },
+    "Home first" : {
+      "comment" : "Short value for the server connection preference."
+    },
+    "Home network" : {},
+    "Horror" : {
+      "comment" : "Genre."
+    },
+    "Indexed %lld episodes from %lld shows" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Indexed %1$lld episodes from %2$lld shows"
+          }
+        }
+      }
+    },
+    "Indexed %lld movies" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Indexed %lld movie"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Indexed %lld movies"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Internet" : {
+      "comment" : "How a server address is reached: over the internet."
+    },
+    "Kids" : {},
+    "Last watched & nearby" : {
+      "comment" : "Widget channel source: the last watched channel and the ones next to it."
+    },
+    "Libraries" : {},
+    "Marathon" : {
+      "comment" : "Schedule ordering: every episode of a show in order, then the next show."
+    },
+    "Marathons" : {
+      "comment" : "Channel category: 24/7 channels of a single show."
+    },
+    "Martial Arts" : {
+      "comment" : "Genre."
+    },
+    "Mature" : {},
+    "Movies" : {},
+    "Music" : {
+      "comment" : "Genre."
+    },
+    "Musical" : {
+      "comment" : "Genre."
+    },
+    "My Channels" : {},
+    "Mystery" : {
+      "comment" : "Genre."
+    },
+    "Networks" : {
+      "comment" : "Channel category: channels for TV networks such as NBC."
+    },
+    "News" : {
+      "comment" : "Genre."
+    },
+    "No limit" : {},
+    "Off" : {
+      "comment" : "Match content setting: off."
+    },
+    "Oldest first, by the release dates on your server, then it starts over." : {},
+    "One episode from each show in turn, in order." : {},
+    "One pinned channel" : {},
+    "Original" : {
+      "comment" : "Playback quality: always the original, highest-quality copy."
+    },
+    "Original timing" : {
+      "comment" : "Subtitle timing with no delay."
+    },
+    "Prefer home or VPN address" : {},
+    "Prefers 720p or smaller copies. For slow connections." : {},
+    "Reading %@ movies…" : {
+      "comment" : "Library loading progress; %@ is a library name."
+    },
+    "Reading %@…" : {
+      "comment" : "Library loading progress; %@ is a library name."
+    },
+    "Reading collections…" : {},
+    "Reading episodes in %@…" : {
+      "comment" : "Library loading progress; %@ is a library name."
+    },
+    "Reading genres and networks in %@…" : {
+      "comment" : "Library loading progress; %@ is a library name."
+    },
+    "Reality" : {
+      "comment" : "Genre."
+    },
+    "Release Order" : {},
+    "Romance" : {
+      "comment" : "Genre."
+    },
+    "Science Fiction" : {
+      "comment" : "Genre."
+    },
+    "Selected channels" : {},
+    "Show Rotation" : {
+      "comment" : "Schedule ordering: one episode from each show in turn."
+    },
+    "Shows in random order; each show's episodes stay in order." : {},
+    "Shows take turns in short blocks, episodes stay in order." : {},
+    "Shuffle" : {
+      "comment" : "Schedule ordering: shows in random order."
+    },
+    "Skips 4K copies when a 1080p or smaller copy exists. Good for most remote servers." : {},
+    "Smallest available" : {
+      "comment" : "Playback quality: the smallest copy available."
+    },
+    "Soap" : {
+      "comment" : "Genre: soap opera."
+    },
+    "Sport" : {
+      "comment" : "Genre."
+    },
+    "Switch the TV to HDR for HDR programs. Recommended: switches only happen when the dynamic range changes." : {},
+    "TV Episodes" : {},
+    "Talk Show" : {
+      "comment" : "Genre."
+    },
+    "Teen" : {},
+    "The server address is not valid." : {},
+    "The server can't play this title. Its files may have been moved or deleted." : {},
+    "The server isn't responding." : {},
+    "The server rejected the sign-in. Please sign in again." : {},
+    "The server responded with error %lld." : {
+      "comment" : "%lld is an HTTP status code, such as 404."
+    },
+    "The server sent an unexpected response." : {},
+    "The server's response could not be read (%@)." : {
+      "comment" : "%@ is a technical decoding error, shown untranslated."
+    },
+    "Thriller" : {
+      "comment" : "Genre."
+    },
+    "Too many requests. Please wait a moment before trying again." : {},
+    "Travel" : {
+      "comment" : "Genre."
+    },
+    "Tries the address you enter first, such as the server's Tailscale IP." : {},
+    "Unrated" : {},
+    "Up to 1080p" : {},
+    "Up to 720p" : {},
+    "Uses the home address at home or over a VPN, and the internet address elsewhere." : {},
+    "VPN" : {},
+    "War" : {
+      "comment" : "Genre."
+    },
+    "Western" : {
+      "comment" : "Genre."
+    }
   },
   "version" : "1.0"
 }

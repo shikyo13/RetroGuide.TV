@@ -101,7 +101,7 @@ struct WatchView: View {
             }
             Button("Dismiss", role: .cancel) { app.reminders.due = nil }
         } message: { reminder in
-            Text("\(reminder.title) is starting on \(reminder.channelName).")
+            Text("\(reminder.title) is starting on \(app.channelLabel(for: reminder)).")
         }
         .alert("Reminders", isPresented: Binding(get: { app.reminders.message != nil }, set: { if !$0 { app.reminders.message = nil } })) {
             Button("OK", role: .cancel) { app.reminders.message = nil }

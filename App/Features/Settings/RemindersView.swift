@@ -23,7 +23,7 @@ struct RemindersView: View {
                                 Text(reminder.title).font(Typography.settingsBodyEmphasis)
                                 Text(reminder.start.formatted(date: .abbreviated, time: .shortened))
                                     .font(Typography.settingsCaption).secondaryText()
-                                Text(reminder.channelName).font(Typography.settingsCaption).secondaryText()
+                                Text(app.channelLabel(for: reminder)).font(Typography.settingsCaption).secondaryText()
                             }
                             .fixedSize(horizontal: false, vertical: true)
                             Spacer(minLength: DesignTokens.Spacing.sm)
@@ -31,7 +31,7 @@ struct RemindersView: View {
                         }
                     }
                     .accessibilityLabel("Cancel reminder for \(reminder.title)")
-                    .accessibilityValue("\(reminder.start.formatted(date: .abbreviated, time: .shortened)), \(reminder.channelName)")
+                    .accessibilityValue("\(reminder.start.formatted(date: .abbreviated, time: .shortened)), \(app.channelLabel(for: reminder))")
                     .accessibilityIdentifier("cancel-reminder-\(reminder.id)")
                 }
             } }

@@ -140,6 +140,7 @@
 		866A0EB73AB28544D2DCBDB3 /* RatingPrompter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130CC237A5F2FDD66A49DBC5 /* RatingPrompter.swift */; };
 		86CF56BC970F2BABE026FD0E /* LibraryPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106458C76CA02AA261456C9F /* LibraryPickerView.swift */; };
 		8A413E7449B3CC2E98DE43C9 /* ContentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F5E971E895D60A32B2D7E /* ContentProvider.swift */; };
+		8A6E3CE18658F2D62FF47E04 /* AppModel+Reminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8784AADABFF11CD6827C5F0C /* AppModel+Reminders.swift */; };
 		8ABC3DEFA77E0F7A23FD7F6A /* RetroRowButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 640A1EE370DC839D29A43C74 /* RetroRowButtonStyle.swift */; };
 		8B5CE523D5B7BA7DA1292AF0 /* ChannelEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0AE37025797A6FA461DDEB /* ChannelEditorView.swift */; };
 		8BE594286CAE810DA1E67E62 /* ServerRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14EBB550D625B329BE602117 /* ServerRegistry.swift */; };
@@ -435,6 +436,7 @@
 		837678E87635D37172F0F4C4 /* WatchLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLayout.swift; sourceTree = "<group>"; };
 		855F827BA06EBED4981BBEBB /* HomeScreenTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeScreenTheme.swift; sourceTree = "<group>"; };
 		860DC61A99571D86C2C8FBFD /* RetroGuideKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RetroGuideKit; path = Packages/RetroGuideKit; sourceTree = SOURCE_ROOT; };
+		8784AADABFF11CD6827C5F0C /* AppModel+Reminders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppModel+Reminders.swift"; sourceTree = "<group>"; };
 		882F8CA7ECA178E614F9241E /* WatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchView.swift; sourceTree = "<group>"; };
 		891C8FCB689DEBC577C6DD61 /* SleepTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepTimer.swift; sourceTree = "<group>"; };
 		8A5891962ED332144D11376D /* LGPL-3.0.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LGPL-3.0.txt"; sourceTree = "<group>"; };
@@ -1048,6 +1050,7 @@
 				A0C8EE30FAC3D7258B89BF03 /* Demo */,
 				DEBCBC697963B90B6FE85490 /* AppIdentity.swift */,
 				4256AEAB82EABD170AA2AEE3 /* AppModel.swift */,
+				8784AADABFF11CD6827C5F0C /* AppModel+Reminders.swift */,
 				5D0C847C9E7A0879CC1B1751 /* AppModel+SettingsSync.swift */,
 				963B3F2FED7B7B2C1B9A70AA /* AppModel+Usage.swift */,
 				A321569C746FBE10FFB02BA4 /* CommercialLibrary.swift */,
@@ -1367,6 +1370,7 @@
 				60703CE336C8D9EBC245A5B4 /* AdsController.swift in Sources */,
 				410FA5737C282A1FD83D314B /* AllChannelsOrderView.swift in Sources */,
 				7A97EC4C2488630574448B8A /* AppIdentity.swift in Sources */,
+				8A6E3CE18658F2D62FF47E04 /* AppModel+Reminders.swift in Sources */,
 				33CD91A4777B38BBEF07571A /* AppModel+SettingsSync.swift in Sources */,
 				1704EAFFCD1380089B72BE51 /* AppModel+Usage.swift in Sources */,
 				63BD91C1071983CC0EF685C4 /* AppModel.swift in Sources */,
