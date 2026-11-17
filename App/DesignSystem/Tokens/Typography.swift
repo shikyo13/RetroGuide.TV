@@ -16,6 +16,9 @@ enum Typography {
 
     /// How far text may shrink to fit before truncating.
     static let minimumScaleFactor: CGFloat = 0.75
+    /// Navigation-bar titles (iPhone and iPad) may shrink further: long
+    /// translated page names otherwise end in "…".
+    static let navigationTitleMinimumScaleFactor: CGFloat = 0.6
 
     static let display = Font.system(size: Size.display, weight: .heavy, design: .rounded)
     static let title = Font.system(size: Size.title, weight: .bold, design: .rounded)

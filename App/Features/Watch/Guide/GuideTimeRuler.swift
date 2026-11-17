@@ -33,6 +33,9 @@ struct GuideTimeRuler<Leading: View>: View {
         return Text(ScheduleFormatting.time(start))
             .font(Typography.clock)
             .foregroundStyle(theme.textPrimary)
+            // Some locales' times are wider ("오후 8:00"): shrink rather than cut off.
+            .lineLimit(1)
+            .minimumScaleFactor(Typography.minimumScaleFactor)
             .padding(fitsAfter ? .leading : .trailing, DesignTokens.Spacing.xs)
             .frame(width: width, alignment: fitsAfter ? .leading : .trailing)
             .overlay(alignment: fitsAfter ? .leading : .trailing) {

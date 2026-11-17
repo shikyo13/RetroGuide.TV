@@ -78,6 +78,7 @@
 		459009C3FD10B3FB413B3BA3 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54B3620D1BDA643D8841A03F /* Color+Hex.swift */; };
 		45D22ED9DFDC553FDE6FD3D6 /* NetworkChangeMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95843027416E7A2D02D29C52 /* NetworkChangeMonitor.swift */; };
 		45DD5C01F371A34E6C891B3A /* ReminderButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01C241652FB5708A41DB4D /* ReminderButton.swift */; };
+		45E7F5F5455C7BE059C214EB /* NavigationTitleFit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983187B0604149F94F303387 /* NavigationTitleFit.swift */; };
 		464EE390DEC6F198E796B8E0 /* ParentalControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2A57740E6CC4A1CC636644 /* ParentalControls.swift */; };
 		46EFEAF8BBFAD2F5FE3EAE39 /* PlaybackReporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F1D42864977210441816A9E /* PlaybackReporting.swift */; };
 		49FD9D86BD76811388D62CF6 /* KeepsScreenAwake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A571995B69258A623DBF644 /* KeepsScreenAwake.swift */; };
@@ -452,6 +453,7 @@
 		96B10C9626D0DCA643B8DC05 /* PictureInPictureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureInPictureUITests.swift; sourceTree = "<group>"; };
 		96EB049DC12D2F608C879BFE /* DisplayModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayModeController.swift; sourceTree = "<group>"; };
 		9789481B699253A7417B58A5 /* ThemePalettes+Terminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThemePalettes+Terminal.swift"; sourceTree = "<group>"; };
+		983187B0604149F94F303387 /* NavigationTitleFit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTitleFit.swift; sourceTree = "<group>"; };
 		9ACC72B3AD12BDB45141FB2F /* SignalOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalOverlay.swift; sourceTree = "<group>"; };
 		9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoStack.swift; sourceTree = "<group>"; };
@@ -822,6 +824,7 @@
 				922045A46943D0123F6F2AC5 /* ColumnWidth.swift */,
 				0F3C239C0108B6C983C2CA9B /* InvisibleButtonStyle.swift */,
 				5BC6B7BA73B48F700F7F3282 /* LandscapeTopClearance.swift */,
+				983187B0604149F94F303387 /* NavigationTitleFit.swift */,
 				D1C2D322C2CAAB67F93D5C0C /* NumberControl.swift */,
 				7DCAC7B46690CFA2F832866A /* ProgressTrack.swift */,
 				56CFCF3C393427EE3A94F97A /* QRCodeView.swift */,
@@ -1301,7 +1304,31 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
+				bn,
+				cs,
+				de,
 				en,
+				es,
+				fr,
+				gu,
+				hi,
+				it,
+				ja,
+				kn,
+				ko,
+				ml,
+				mr,
+				nl,
+				or,
+				pa,
+				pl,
+				"pt-BR",
+				ru,
+				sv,
+				ta,
+				te,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 660F0277A0A2DC674EA712A7;
 			minimizedProjectReferenceProxies = 1;
@@ -1455,6 +1482,7 @@
 				B320FC43F4B0A7A00F3941AA /* MPVPlaybackEngine.swift in Sources */,
 				C556E4646D07A253F94E3258 /* MPVTrackSelector.swift in Sources */,
 				C7B14A870865E72A2F960EC3 /* MPVVideoFormat.swift in Sources */,
+				45E7F5F5455C7BE059C214EB /* NavigationTitleFit.swift in Sources */,
 				45D22ED9DFDC553FDE6FD3D6 /* NetworkChangeMonitor.swift in Sources */,
 				E286AAA7E6C9A07DFF641E7E /* NoSignalCard.swift in Sources */,
 				394408F1C1EF09054C97D6E8 /* NowPlayingPublisher.swift in Sources */,

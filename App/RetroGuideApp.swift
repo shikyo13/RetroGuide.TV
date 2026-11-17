@@ -16,6 +16,9 @@ struct RetroGuideApp: App {
         #else
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .moviePlayback)
         #endif
+        #if os(iOS)
+        NavigationTitleFit.install()
+        #endif
         #if DEBUG && os(iOS)
         DebugSnapshot.install()
         #endif
