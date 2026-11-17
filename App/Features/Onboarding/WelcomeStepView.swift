@@ -86,14 +86,15 @@ struct ServerKindStepView: View {
 }
 
 struct ConnectingStepView: View {
-    let serverName: String
+    /// `nil` for the saved Plex account.
+    let serverName: String?
 
     @Environment(\.theme) private var theme
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
             ProgressView()
-            Text("Connecting to \(serverName)…")
+            Text(serverName.map { String(localized: "Connecting to \($0)…") } ?? String(localized: "Connecting to your Plex account…"))
                 .font(Typography.headline)
                 .foregroundStyle(theme.textPrimary)
         }

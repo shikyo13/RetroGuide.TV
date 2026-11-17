@@ -3,8 +3,8 @@ import SwiftUI
 
 struct ServerPickerStepView: View {
     private enum Copy {
-        static let noServers = "This Plex account has no servers yet: none of its own and none shared with it. RetroGuide.TV plays the movies and shows on a Plex or Jellyfin server, either your own or one a friend has shared with you. If a server was shared with a different Plex account, sign in with that one."
-        static let allAdded = "Every Plex server on this account is already added."
+        static let noServers = String(localized: "This Plex account has no servers yet: none of its own and none shared with it. RetroGuide.TV plays the movies and shows on a Plex or Jellyfin server, either your own or one a friend has shared with you. If a server was shared with a different Plex account, sign in with that one.")
+        static let allAdded = String(localized: "Every Plex server on this account is already added.")
     }
 
     private enum Layout {

@@ -451,9 +451,9 @@ final class ServerLibrary {
 @MainActor
 private final class ProgressAggregator {
     private enum Status {
-        static let waiting = "Waiting…"
-        static let ready = "Ready"
-        static let failed = "Couldn't connect"
+        static let waiting = String(localized: "Waiting…")
+        static let ready = String(localized: "Ready", comment: "A media server finished loading its libraries")
+        static let failed = String(localized: "Couldn't connect")
     }
 
     private let servers: [ServerAccount]
@@ -480,7 +480,9 @@ private final class ProgressAggregator {
 
     private func publish() {
         let overall = fractions.values.reduce(.zero, +) / Double(max(servers.count, 1))
-        let lines = servers.map { "\($0.name): \(messages[$0.id] ?? Status.waiting)" }
+        let lines = servers.map {
+            String(localized: "\($0.name): \(messages[$0.id] ?? Status.waiting)", comment: "Loading status line: server name, then its status")
+        }
         report(LibraryLoadProgress(fraction: overall, message: lines.joined(separator: "\n")))
     }
 }

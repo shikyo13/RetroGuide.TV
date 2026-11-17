@@ -86,13 +86,13 @@ private struct GuideTimeControls: View {
 
     var body: some View {
         HStack(spacing: .zero) {
-            control("Earlier", systemImage: "chevron.left", isEnabled: !model.isShowingNow) {
+            control(String(localized: "Earlier", comment: "Guide button: show earlier times"), systemImage: "chevron.left", isEnabled: !model.isShowingNow) {
                 model.shiftWindow(bySlots: -1)
             }
-            control("Now", systemImage: "clock.arrow.circlepath", isEnabled: !model.isShowingNow) {
+            control(String(localized: "Now", comment: "Guide button: return to the current time"), systemImage: "clock.arrow.circlepath", isEnabled: !model.isShowingNow) {
                 model.jumpToNow()
             }
-            control("Later", systemImage: "chevron.right", isEnabled: true) {
+            control(String(localized: "Later", comment: "Guide button: show later times"), systemImage: "chevron.right", isEnabled: true) {
                 model.shiftWindow(bySlots: 1)
             }
         }

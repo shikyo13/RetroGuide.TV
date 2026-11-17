@@ -47,7 +47,7 @@ struct JellyfinPlainHTTPStepView: View {
             .fixedSize()
     }
 
-    private func fact(_ systemImage: String, _ text: String) -> some View {
+    private func fact(_ systemImage: String, _ text: LocalizedStringKey) -> some View {
         Label {
             Text(text)
                 .fixedSize(horizontal: false, vertical: true)

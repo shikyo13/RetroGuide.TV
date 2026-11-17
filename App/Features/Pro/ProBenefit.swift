@@ -8,38 +8,38 @@ struct ProBenefit: Identifiable {
     let detail: String
 
     static let all: [ProBenefit] = [
-        ProBenefit(id: "favorites", systemImage: "star", title: "Favorite channels", detail: "Star your channels and browse or surf just your Favorites."),
-        ProBenefit(id: "reminders", systemImage: "bell", title: "Program reminders", detail: "Choose upcoming airings and get a reminder when they start."),
-        ProBenefit(id: "widgets", systemImage: "square.grid.2x2", title: "Personal widgets", detail: "Use Favorites, select channels or pin one channel in What's On."),
+        ProBenefit(id: "favorites", systemImage: "star", title: String(localized: "Favorite channels"), detail: String(localized: "Star your channels and browse or surf just your Favorites.")),
+        ProBenefit(id: "reminders", systemImage: "bell", title: String(localized: "Program reminders"), detail: String(localized: "Choose upcoming airings and get a reminder when they start.")),
+        ProBenefit(id: "widgets", systemImage: "square.grid.2x2", title: String(localized: "Personal widgets"), detail: String(localized: "Use Favorites, select channels or pin one channel in What's On.")),
         ProBenefit(
             id: "ads",
             systemImage: "nosign",
-            title: "No ads",
-            detail: "Removes the banner and full-screen ads on iPhone and iPad."
+            title: String(localized: "No ads"),
+            detail: String(localized: "Removes the banner and full-screen ads on iPhone and iPad.")
         ),
         ProBenefit(
             id: "servers",
             systemImage: "server.rack",
-            title: "Multiple servers",
-            detail: "Blend your server and ones shared with you into one lineup."
+            title: String(localized: "Multiple servers"),
+            detail: String(localized: "Blend your server and ones shared with you into one lineup.")
         ),
         ProBenefit(
             id: "channels",
             systemImage: "plus.rectangle.on.rectangle",
-            title: "Unlimited custom channels",
-            detail: "Build as many of your own channels as you like."
+            title: String(localized: "Unlimited custom channels"),
+            detail: String(localized: "Build as many of your own channels as you like.")
         ),
         ProBenefit(
             id: "themes",
             systemImage: "paintpalette",
-            title: "Every theme",
-            detail: "\(ThemeID.allCases.count) looks, from Local Forecast to Teletext."
+            title: String(localized: "Every theme"),
+            detail: String(localized: "\(ThemeID.allCases.count) looks, from Local Forecast to Teletext.")
         ),
         ProBenefit(
             id: "scheduling",
             systemImage: "calendar.badge.clock",
-            title: "Schedule controls",
-            detail: "Pick each channel's order and start programs on the hour and half hour."
+            title: String(localized: "Schedule controls"),
+            detail: String(localized: "Pick each channel's order and start programs on the hour and half hour.")
         ),
     ]
 }

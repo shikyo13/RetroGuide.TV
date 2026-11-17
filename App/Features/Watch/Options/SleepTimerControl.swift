@@ -18,14 +18,14 @@ struct SleepTimerControl: View {
     }
 
     var body: some View {
-        SettingsSection("Sleep timer") {
+        SettingsSection(String(localized: "Sleep timer")) {
             if let deadline = app.sleepTimer.deadline {
                 Text("Playback stops at \(deadline.formatted(date: .omitted, time: .shortened))")
                     .font(Typography.settingsBody).foregroundStyle(theme.accent)
                 Button("Cancel sleep timer", systemImage: "moon.zzz") { app.sleepTimer.cancel() }
             }
-            OptionMenu(title: "Stop after", systemImage: "moon", choices: SleepDeadline.presets.map {
-                .init(id: String($0), title: "\($0) minutes")
+            OptionMenu(title: String(localized: "Stop after", comment: "Sleep timer: stop playback after a number of minutes"), systemImage: "moon", choices: SleepDeadline.presets.map {
+                .init(id: String($0), title: String(localized: "\($0) minutes"))
             }, selection: Binding(get: { "" }, set: { value in
                 if let minutes = Int(value) { app.sleepTimer.start(until: SleepDeadline.duration(minutes: minutes)) }
             }))
@@ -48,7 +48,7 @@ struct SleepTimerControl: View {
                     .accessibilityLabel("Custom timer minutes")
                 Text("minutes").font(Typography.settingsBody)
                 #else
-                NumberControl(title: "\(minutes) minutes", value: $minutes, range: SleepDeadline.customRange)
+                NumberControl(title: String(localized: "\(minutes) minutes"), value: $minutes, range: SleepDeadline.customRange)
                 #endif
                 Button("Set timer") {
                     guard let minutes = customMinutes, SleepDeadline.customRange.contains(minutes) else { return }

@@ -397,8 +397,8 @@ final class MPVCore: @unchecked Sendable {
             case MPV_END_FILE_REASON_EOF:
                 return .ended
             case MPV_END_FILE_REASON_ERROR:
-                let message = mpv_error_string(data.error).map { String(cString: $0) } ?? "Playback error"
-                return .failed("The video couldn't be played (\(message)).")
+                let message = mpv_error_string(data.error).map { String(cString: $0) } ?? String(localized: "Playback error")
+                return .failed(String(localized: "The video couldn't be played (\(message)).", comment: "The player's technical error message, in parentheses"))
             default:
                 return nil
             }

@@ -1,3 +1,4 @@
+import Foundation
 import RetroGuideKit
 
 /// "Why is this here?" in words: what the channel takes, and which of that
@@ -7,49 +8,64 @@ enum PlacementText {
         let rule = channel.definition.rule
         switch channel.definition.source {
         case .series:
-            return "\(channel.name) airs \(title) around the clock."
+            return String(localized: "\(channel.name) airs \(title) around the clock.")
         case .custom:
-            return "\(title) matches the rules you set for \(channel.name)."
+            return String(localized: "\(title) matches the rules you set for \(channel.name).")
         case .library:
-            return "\(channel.name) carries everything in one of your libraries, including \(title)."
+            return String(localized: "\(channel.name) carries everything in one of your libraries, including \(title).")
         default:
             break
         }
         if rule.isCatchAll {
-            return "\(channel.name) carries every \(rule.kinds == [.movie] ? "movie" : rule.kinds == [.episode] ? "show" : "show and movie") in your library."
+            return catchAll(rule.kinds, on: channel)
         }
         guard let placement else {
-            return "\(title) matches what \(channel.name) is about."
+            return String(localized: "\(title) matches what \(channel.name) is about.")
         }
         if let network = placement.matchedNetworks.first {
-            return "\(title) aired on \(network)."
+            return String(localized: "\(title) aired on \(network).", comment: "A show and the TV network it aired on")
         }
         if let collection = placement.matchedCollections.first {
-            return "\(title) is in your \(collection) collection."
+            return String(localized: "\(title) is in your \(collection) collection.")
         }
         var sentences: [String] = []
         if let decade = placement.matchedDecade {
-            sentences.append("\(title) is from the \(Decade.label(for: decade)).")
+            sentences.append(String(localized: "\(title) is from the \(Decade.label(for: decade)).", comment: "A show or movie and its decade: “Cheers is from the 1980s.”"))
         }
         if !placement.matchedCategories.isEmpty {
             let genres = list(placement.matchedCategories.map(\.displayName).sorted())
-            sentences.append("\(channel.name) is for \(list(rule.categories.map(\.displayName).sorted())), and \(title) is \(genres), going by \(source(placement.source)).")
+            let channelGenres = list(rule.categories.map(\.displayName).sorted())
+            sentences.append(categoryMatch(channel: channel.name, channelGenres: channelGenres, title: title, genres: genres, source: placement.source))
         } else if !rule.keywords.isEmpty {
-            sentences.append("\(title)'s title matches \(channel.name)'s theme.")
+            sentences.append(String(localized: "\(title)'s title matches \(channel.name)'s theme."))
         }
-        return sentences.isEmpty ? "\(title) matches what \(channel.name) is about." : sentences.joined(separator: " ")
+        return sentences.isEmpty ? String(localized: "\(title) matches what \(channel.name) is about.") : sentences.joined(separator: " ")
     }
 
-    private static func source(_ source: CategorySource) -> String {
+    private static func catchAll(_ kinds: Set<MediaKind>, on channel: Channel) -> String {
+        if kinds == [.movie] {
+            return String(localized: "\(channel.name) carries every movie in your library.")
+        }
+        if kinds == [.episode] {
+            return String(localized: "\(channel.name) carries every show in your library.")
+        }
+        return String(localized: "\(channel.name) carries every show and movie in your library.")
+    }
+
+    /// Which genres the channel takes, which of them the title has, and where that came from.
+    private static func categoryMatch(channel: String, channelGenres: String, title: String, genres: String, source: CategorySource) -> String {
         switch source {
-        case .classification: "RetroGuide's title data, checked against your server's genre tags"
-        case .server: "your server's genre tags"
+        case .classification:
+            String(localized: "\(channel) is for \(channelGenres), and \(title) is \(genres), going by RetroGuide's title data, checked against your server's genre tags.", comment: "Channel name, the genres it carries, a show or movie title, and the genres it has")
+        case .server:
+            String(localized: "\(channel) is for \(channelGenres), and \(title) is \(genres), going by your server's genre tags.", comment: "Channel name, the genres it carries, a show or movie title, and the genres it has")
         }
     }
 
     /// "A", "A or B", "A, B or C".
     private static func list(_ items: [String]) -> String {
         guard items.count > 1, let last = items.last else { return items.first ?? "" }
-        return items.dropLast().joined(separator: ", ") + " or " + last
+        let leading = items.dropLast().joined(separator: String(localized: ", ", comment: "Separator between items of a list of genres"))
+        return String(localized: "\(leading) or \(last)", comment: "The end of a list of genres: “Comedy, Drama or Western”")
     }
 }

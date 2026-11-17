@@ -40,7 +40,7 @@ final class Tuner {
     }
 
     private enum Message {
-        static let didNotStart = "This program won't start. Its file may be damaged."
+        static let didNotStart = String(localized: "This program won't start. Its file may be damaged.")
     }
 
     private struct IndependentPlayback {
@@ -548,12 +548,12 @@ final class Tuner {
 
     private func startPlayback() async {
         guard let program = independentPlayback?.program ?? channel?.timeline.program(at: .now) else {
-            signal = .noSignal("Nothing is scheduled on this channel.")
+            signal = .noSignal(String(localized: "Nothing is scheduled on this channel."))
             return
         }
         guard playbackAllowed(program.item) else {
             self.program = nil
-            signal = .noSignal("This program is restricted by parental controls.")
+            signal = .noSignal(String(localized: "This program is restricted by parental controls."))
             return
         }
         self.program = program
@@ -567,7 +567,7 @@ final class Tuner {
             return
         }
         guard let client = clientProvider(program.item.serverID) else {
-            signal = .noSignal("The server for this channel isn't connected.")
+            signal = .noSignal(String(localized: "The server for this channel isn't connected."))
             return
         }
         // Every (re)start shows the tuning state until frames actually play.
@@ -623,7 +623,7 @@ final class Tuner {
             guard playbackAllowed(program.item) else {
                 endActiveStream()
                 self.program = nil
-                signal = .noSignal("This program is restricted by parental controls.")
+                signal = .noSignal(String(localized: "This program is restricted by parental controls."))
                 return
             }
             let selection = tracks.map { resolvedSelection(for: program, tracks: $0) }

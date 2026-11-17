@@ -6,7 +6,7 @@ extension ThemePalettes {
     /// A 70s console set in the den: walnut, harvest gold and rust.
     static let woodPanel = Theme(
         id: .woodPanel,
-        name: "Wood Paneling",
+        name: String(localized: "Wood Paneling", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#4A2C17"), Color(hex: "#22130A")],
         surface: Color(hex: "#5E3A1F"),
         surfaceRaised: Color(hex: "#704627"),
@@ -27,7 +27,7 @@ extension ThemePalettes {
     /// Late-night tape: near-black with tracking-error red and cyan.
     static let vhs = Theme(
         id: .vhs,
-        name: "VHS",
+        name: String(localized: "VHS", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#15131F"), Color(hex: "#07060B")],
         surface: Color(hex: "#221F31"),
         surfaceRaised: Color(hex: "#2D2941"),
@@ -44,7 +44,7 @@ extension ThemePalettes {
 
     static let synthwave = Theme(
         id: .synthwave,
-        name: "Synthwave",
+        name: String(localized: "Synthwave", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#2B0A4A"), Color(hex: "#12021F")],
         surface: Color(hex: "#3A1363"),
         surfaceRaised: Color(hex: "#4A1B7D"),
@@ -61,7 +61,7 @@ extension ThemePalettes {
 
     static let midnight = Theme(
         id: .midnight,
-        name: "Midnight",
+        name: String(localized: "Midnight", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#10141F"), Color(hex: "#05070C")],
         surface: Color(hex: "#1B2130"),
         surfaceRaised: Color(hex: "#242C3F"),

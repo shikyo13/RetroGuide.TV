@@ -11,7 +11,7 @@ struct ProUpgradeView: View {
             Text(pro.isPro ? "You have RetroGuide Pro. Thank you for supporting the app!" : "One purchase, no subscription. It unlocks Pro on your iPhone, iPad and Apple TV.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
-            SettingsSection("Included") {
+            SettingsSection(String(localized: "Included", comment: "Heading above the list of features RetroGuide Pro adds")) {
                 ForEach(ProBenefit.all) { benefit in
                     ProBenefitRow(benefit: benefit)
                 }
@@ -63,17 +63,17 @@ struct ProUpgradeView: View {
 
     private func buyTitle(_ pro: ProStore) -> String {
         guard let product = pro.product else {
-            return pro.isLoadingProduct ? "Contacting the App Store…" : "Couldn't reach the App Store"
+            return pro.isLoadingProduct ? String(localized: "Contacting the App Store…") : String(localized: "Couldn't reach the App Store")
         }
-        return "Upgrade for \(product.displayPrice)"
+        return String(localized: "Upgrade for \(product.displayPrice)")
     }
 
     private func statusMessage(_ pro: ProStore) -> String? {
         switch pro.purchaseState {
         case .idle: nil
-        case .purchasing: "Contacting the App Store…"
-        case .pending: "Waiting for approval. Pro unlocks as soon as the purchase goes through."
-        case .failed(let message): "The purchase didn't go through: \(message)"
+        case .purchasing: String(localized: "Contacting the App Store…")
+        case .pending: String(localized: "Waiting for approval. Pro unlocks as soon as the purchase goes through.")
+        case .failed(let message): String(localized: "The purchase didn't go through: \(message)")
         }
     }
 }

@@ -79,7 +79,7 @@ struct ChannelBanner: View {
     private func details(_ program: ScheduledProgram, now: Date) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
             HStack(spacing: DesignTokens.Spacing.sm) {
-                Text(isIndependent ? "FROM BEGINNING" : (isShowingNext ? "UP NEXT" : "NOW"))
+                Text(badge)
                     .font(Typography.captionEmphasis)
                     .foregroundStyle(theme.textOnFocus)
                     .padding(.horizontal, DesignTokens.Spacing.xs)
@@ -90,7 +90,7 @@ struct ChannelBanner: View {
                     .lineLimit(1)
                 if !isCommercial { RatingChip(rating: program.item.contentRating, audience: program.item.audience) }
             }
-            Text(isCommercial ? "Commercial break" : program.item.headline)
+            Text(isCommercial ? String(localized: "Commercial break") : program.item.headline)
                 .font(Typography.headline)
                 .foregroundStyle(theme.textPrimary)
                 .lineLimit(1)
@@ -108,13 +108,13 @@ struct ChannelBanner: View {
             }
             if !isIndependent {
             HStack(spacing: DesignTokens.Spacing.md) {
-                Text(isCommercial ? "Next program at \(ScheduleFormatting.time(program.slotEnd))" : ScheduleFormatting.range(program))
+                Text(isCommercial ? String(localized: "Next program at \(ScheduleFormatting.time(program.slotEnd))") : ScheduleFormatting.range(program))
                     .font(Typography.clock)
                     .foregroundStyle(theme.textPrimary)
                     .fixedSize()
                 if !isShowingNext {
                     ProgressTrack(progress: isCommercial ? breakProgress(program, at: now) : program.progress(at: now), height: Layout.progressHeight)
-                    Text(isCommercial ? "\(Int(ceil(max(program.slotEnd.timeIntervalSince(now), .zero))))s left" : ScheduleFormatting.remaining(in: program, at: now))
+                    Text(isCommercial ? breakRemaining(program, at: now) : ScheduleFormatting.remaining(in: program, at: now))
                         .font(Typography.caption)
                         .foregroundStyle(theme.textSecondary)
                         .fixedSize()
@@ -125,6 +125,22 @@ struct ChannelBanner: View {
             RemoteHints(offersOptions: offersOptions)
             #endif
         }
+    }
+
+    /// The program badge: what's showing, or how it's being watched.
+    private var badge: String {
+        if isIndependent {
+            return String(localized: "FROM BEGINNING", comment: "Channel banner badge: this program is being watched from its start, not live")
+        }
+        return isShowingNext
+            ? String(localized: "UP NEXT", comment: "Channel banner badge: the program after the current one")
+            : String(localized: "NOW", comment: "Channel banner badge: the program on the air now")
+    }
+
+    /// Seconds left in a commercial break: "12s left".
+    private func breakRemaining(_ program: ScheduledProgram, at date: Date) -> String {
+        let seconds = Int(ceil(max(program.slotEnd.timeIntervalSince(date), .zero)))
+        return String(localized: "\(seconds)s left", comment: "Seconds left in a commercial break, abbreviated")
     }
 
     private func breakProgress(_ program: ScheduledProgram, at date: Date) -> Double {
@@ -154,12 +170,12 @@ struct RemoteHints: View {
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.lg) {
-            hint("chevron.up.chevron.down", "Channel")
-            hint("chevron.left.chevron.right", "Now / Next")
-            hint("circle.circle", "Guide")
-            hint("playpause", "Last channel")
+            hint("chevron.up.chevron.down", String(localized: "Channel", comment: "Remote hint: up and down change the channel"))
+            hint("chevron.left.chevron.right", String(localized: "Now / Next", comment: "Remote hint: left and right switch between the current and next program"))
+            hint("circle.circle", String(localized: "Guide", comment: "Remote hint: the select button opens the program guide"))
+            hint("playpause", String(localized: "Last channel", comment: "Remote hint: play/pause returns to the previous channel"))
             if offersOptions {
-                hint("chevron.down", "Playback / Options")
+                hint("chevron.down", String(localized: "Playback / Options", comment: "Remote hint: swipe down opens playback options"))
             }
         }
         .font(Typography.micro)

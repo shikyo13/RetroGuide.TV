@@ -62,7 +62,7 @@ struct OnboardingFlowView: View {
         if reviewingServers {
             serverSummary
         } else if let model {
-            ServerSetupStepsView(model: model, onCancel: cancelServerSetup, libraryConfirmTitle: "Continue") { pending, selected in
+            ServerSetupStepsView(model: model, onCancel: cancelServerSetup, libraryConfirmTitle: String(localized: "Continue")) { pending, selected in
                 var account = pending.account
                 account.selectedLibraryIDs = selected
                 selectedServers.append(OnboardingModel.PendingServer(
@@ -90,7 +90,7 @@ struct OnboardingFlowView: View {
                     Text(selection.account.name)
                         .font(Typography.headline)
                         .foregroundStyle(theme.textPrimary)
-                    Text(selection.libraries.filter { selection.account.selectedLibraryIDs.contains($0.id) }.map(\.title).joined(separator: ", "))
+                    Text(selection.libraries.filter { selection.account.selectedLibraryIDs.contains($0.id) }.map(\.title).formatted(.list(type: .and, width: .narrow)))
                         .font(Typography.callout)
                         .foregroundStyle(theme.textSecondary)
                     Button("Remove \(selection.account.name)") {

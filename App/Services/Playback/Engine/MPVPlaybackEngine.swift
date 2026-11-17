@@ -43,7 +43,7 @@ final class MPVPlaybackEngine: PlaybackEngine {
             return
         }
         guard let core else {
-            onEvent?(.failed("The video player could not be started."))
+            onEvent?(.failed(String(localized: "The video player could not be started.")))
             return
         }
         generation += 1

@@ -115,8 +115,11 @@ struct GuideHeader: View {
     private var backHint: some View {
         // Anywhere but the grid (including Options on the picture) is the top row.
         let isOnButtons = focus.wrappedValue != .grid
-        let topRowAction = actions.leavesAppOnBack ? "Back: Home" : "Back: close guide"
-        return Label(isOnButtons ? topRowAction : "Back: menus", systemImage: "chevron.backward.circle")
+        let topRowAction = actions.leavesAppOnBack
+            ? String(localized: "Back: Home", comment: "Remote hint: the Back button returns to the Apple TV Home Screen")
+            : String(localized: "Back: close guide", comment: "Remote hint: the Back button closes the guide")
+        let gridAction = String(localized: "Back: menus", comment: "Remote hint: the Back button moves focus up to the guide's menu buttons")
+        return Label(isOnButtons ? topRowAction : gridAction, systemImage: "chevron.backward.circle")
             .font(Typography.micro)
             .foregroundStyle(theme.textSecondary)
             .lineLimit(1)

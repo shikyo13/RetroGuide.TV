@@ -5,7 +5,7 @@ import SwiftUI
 extension ThemePalettes {
     static let crtGreen = Theme(
         id: .crtGreen,
-        name: "CRT Green",
+        name: String(localized: "CRT Green", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#031A08"), Color(hex: "#000A02")],
         surface: Color(hex: "#062B10"),
         surfaceRaised: Color(hex: "#0A3A17"),
@@ -25,7 +25,7 @@ extension ThemePalettes {
 
     static let amber = Theme(
         id: .amber,
-        name: "Amber Terminal",
+        name: String(localized: "Amber Terminal", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#1A0F00"), Color(hex: "#0A0600")],
         surface: Color(hex: "#2B1A02"),
         surfaceRaised: Color(hex: "#3A2405"),
@@ -46,7 +46,7 @@ extension ThemePalettes {
     /// Broadcast text pages: pure black with primary-color blocks.
     static let teletext = Theme(
         id: .teletext,
-        name: "Teletext",
+        name: String(localized: "Teletext", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#050505"), Color(hex: "#000000")],
         surface: Color(hex: "#0018A8"),
         surfaceRaised: Color(hex: "#0022CC"),
@@ -66,7 +66,7 @@ extension ThemePalettes {
 
     static let mono = Theme(
         id: .mono,
-        name: "Mono",
+        name: String(localized: "Mono", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#1C1C1E"), Color(hex: "#000000")],
         surface: Color(hex: "#2C2C2E"),
         surfaceRaised: Color(hex: "#3A3A3C"),

@@ -43,11 +43,11 @@ struct SearchResultRow: View {
             return result.title.kind.displayName
         }
         guard let airing = result.airing else {
-            return "On \(channel.name) · not scheduled in the next two days"
+            return String(localized: "On \(channel.name) · not scheduled in the next two days")
         }
         if airing.contains(now) {
-            return "On now · \(channel.name) · \(ScheduleFormatting.remaining(in: airing, at: now))"
+            return String(localized: "On now · \(channel.name) · \(ScheduleFormatting.remaining(in: airing, at: now))")
         }
-        return "Next: \(ScheduleFormatting.dayAndTime(airing.start)) · \(channel.name)"
+        return String(localized: "Next: \(ScheduleFormatting.dayAndTime(airing.start)) · \(channel.name)", comment: "When a search result airs next: “Next: Tomorrow 9:00 AM · Channel name”")
     }
 }

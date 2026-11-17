@@ -21,12 +21,14 @@ final class CloudSettingsSync {
     var settingsRevision = 0
     var summary: String {
         _ = settingsRevision
-        if !isEnabled { return "Off" }
-        if needsInitialChoice { return "Choose setup" }
-        if hasPendingApplication { return "Changes waiting" }
-        if message != nil { return "Needs attention" }
-        if isBusy { return "Syncing…" }
-        return state.replica.pending.isEmpty ? "On" : "Waiting to sync"
+        if !isEnabled { return String(localized: "Off", comment: "iCloud Sync status: turned off") }
+        if needsInitialChoice { return String(localized: "Choose setup", comment: "iCloud Sync status: waiting for the viewer to choose which setup to keep") }
+        if hasPendingApplication { return String(localized: "Changes waiting", comment: "iCloud Sync status") }
+        if message != nil { return String(localized: "Needs attention", comment: "iCloud Sync status") }
+        if isBusy { return String(localized: "Syncing…") }
+        return state.replica.pending.isEmpty
+            ? String(localized: "On", comment: "iCloud Sync status: turned on and up to date")
+            : String(localized: "Waiting to sync", comment: "iCloud Sync status")
     }
     var hasBackup: Bool { _ = settingsRevision; return state.backup != nil }
     var hasMigratedTrackRules: Bool { defaults.bool(forKey: Storage.migrated) }
@@ -61,7 +63,7 @@ final class CloudSettingsSync {
             state = CloudSettingsState()
             corruptState = true
             isEnabled = false
-            message = "The saved sync journal could not be read. Your settings on this device are unchanged."
+            message = String(localized: "The saved sync journal could not be read. Your settings on this device are unchanged.")
         }
         lastSync = state.lastSync
     }
@@ -123,7 +125,7 @@ final class CloudSettingsSync {
             do {
                 let container = CKContainer(identifier: CloudSettingsRecords.container)
                 guard try await container.accountStatus() == .available else {
-                    message = "Sign in to iCloud in this device’s Settings, then try again."
+                    message = String(localized: "Sign in to iCloud in this device’s Settings, then try again.")
                     return
                 }
                 let account = try await container.userRecordID().recordName
@@ -152,7 +154,7 @@ final class CloudSettingsSync {
     func acceptAccount(_ account: String) throws -> Bool {
         if let previous = state.account, previous != account {
             disable()
-            message = "The iCloud account changed. Sync is off and this device’s settings are unchanged. Turn it on to choose a setup for the new account."
+            message = String(localized: "The iCloud account changed. Sync is off and this device’s settings are unchanged. Turn it on to choose a setup for the new account.")
             // Keep the old journal as a local recovery copy, never enqueue it
             // against the new account.
             try storage.save(state, name: "previous-account")
@@ -258,23 +260,23 @@ final class CloudSettingsSync {
         Logger(subsystem: "com.adamhunt.retroguide", category: "SettingsSync")
             .error("Sync failed: \(failure.domain, privacy: .public) \(failure.code, privacy: .public)")
         if case SettingsReplica.Failure.deviceStorageLimit = error {
-            message = "This setup is too large for this Apple TV’s settings storage. Your current setup has been kept."
+            message = String(localized: "This setup is too large for this Apple TV’s settings storage. Your current setup has been kept.")
             return
         }
         switch (error as? CKError)?.code {
         case .notAuthenticated, .accountTemporarilyUnavailable:
-            message = "iCloud is unavailable. Your changes are saved on this device."
+            message = String(localized: "iCloud is unavailable. Your changes are saved on this device.")
         case .quotaExceeded:
-            message = "Your iCloud storage is full. Free some space, then try again."
+            message = String(localized: "Your iCloud storage is full. Free some space, then try again.")
         case .networkFailure, .networkUnavailable, .serviceUnavailable, .requestRateLimited, .zoneBusy:
-            message = "Waiting for iCloud. Your changes are saved on this device and will retry automatically."
+            message = String(localized: "Waiting for iCloud. Your changes are saved on this device and will retry automatically.")
         default:
             if error is CocoaError || error is CloudSettingsStorage.Failure {
-                message = "Sync could not save its local data. Free some device storage, then turn sync on again. Your app settings are unchanged."
+                message = String(localized: "Sync could not save its local data. Free some device storage, then turn sync on again. Your app settings are unchanged.")
             } else if error is SettingsReplica.Failure {
-                message = "These settings could not be synced safely. Update RetroGuide.TV on your other devices, then try again. Your local setup is unchanged."
+                message = String(localized: "These settings could not be synced safely. Update RetroGuide.TV on your other devices, then try again. Your local setup is unchanged.")
             } else {
-                message = "iCloud Sync could not finish. Your changes are saved on this device. Try again later."
+                message = String(localized: "iCloud Sync could not finish. Your changes are saved on this device. Try again later.")
             }
         }
     }

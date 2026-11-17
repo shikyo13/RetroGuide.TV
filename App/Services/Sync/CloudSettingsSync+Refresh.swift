@@ -20,7 +20,7 @@ extension CloudSettingsSync {
                 try Task.checkCancellation()
                 guard page.deletions.isEmpty else {
                     disable()
-                    message = "The iCloud settings changed outside this app. Sync has stopped to preserve this device’s setup."
+                    message = String(localized: "The iCloud settings changed outside this app. Sync has stopped to preserve this device’s setup.")
                     return
                 }
                 let records = try page.modificationResultsByID.values.map { try $0.get().record }

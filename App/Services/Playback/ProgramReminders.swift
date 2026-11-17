@@ -34,9 +34,9 @@ final class ProgramReminders: NSObject {
 
     func add(_ reminder: ProgramReminder, isPro: Bool) async {
         guard isPro, !adding, !contains(reminder) else { return }
-        guard reminder.start > .now else { message = "This program has already started."; return }
+        guard reminder.start > .now else { message = String(localized: "This program has already started."); return }
         guard pending.count < ProgramReminder.Limits.pending else {
-            message = "You can keep up to \(ProgramReminder.Limits.pending) upcoming reminders. Remove one first."
+            message = String(localized: "You can keep up to \(ProgramReminder.Limits.pending) upcoming reminders. Remove one first.")
             return
         }
         let generation = generation
@@ -46,19 +46,19 @@ final class ProgramReminders: NSObject {
         do {
             let center = UNUserNotificationCenter.current()
             guard try await center.requestAuthorization(options: [.alert, .sound]) else {
-                message = "Notifications are off. Enable them for RetroGuide.TV in iPhone or iPad Settings to receive reminders."
+                message = String(localized: "Notifications are off. Enable them for RetroGuide.TV in iPhone or iPad Settings to receive reminders.")
                 return
             }
             guard generation == self.generation else { return }
-            guard reminder.start > .now else { message = "This program has already started."; return }
+            guard reminder.start > .now else { message = String(localized: "This program has already started."); return }
             let content = UNMutableNotificationContent()
             content.title = reminder.title
-            content.body = "Starting now on \(reminder.channelName)"
+            content.body = String(localized: "Starting now on \(reminder.channelName)", comment: "Program reminder notification text, followed by the channel name")
             content.sound = .default
             content.userInfo = ["channelID": reminder.channelID]
             let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, reminder.start.timeIntervalSinceNow), repeats: false)
             try await center.add(UNNotificationRequest(identifier: reminder.id, content: content, trigger: trigger))
-        } catch { message = "Couldn't set this reminder: \(error.localizedDescription)"; return }
+        } catch { message = String(localized: "Couldn't set this reminder: \(error.localizedDescription)"); return }
         #endif
         guard generation == self.generation else {
             #if os(iOS)
@@ -118,7 +118,7 @@ final class ProgramReminders: NSObject {
             return program.item.id != reminder.itemID || program.start != reminder.start
         }
         for reminder in invalid { remove(reminder, userInitiated: false) }
-        if !invalid.isEmpty { message = "\(invalid.count) reminder(s) were removed because their scheduled programs changed." }
+        if !invalid.isEmpty { message = String(localized: "\(invalid.count) reminder(s) were removed because their scheduled programs changed.") }
     }
 
     func check(now: Date = .now) {
@@ -160,7 +160,7 @@ final class ProgramReminders: NSObject {
                 guard self.generation == generation, reminder.start > .now else { return }
                 let content = UNMutableNotificationContent()
                 content.title = reminder.title
-                content.body = "Starting now on \(reminder.channelName)"
+                content.body = String(localized: "Starting now on \(reminder.channelName)", comment: "Program reminder notification text, followed by the channel name")
                 content.sound = .default
                 content.userInfo = ["channelID": reminder.channelID]
                 let trigger = UNTimeIntervalNotificationTrigger(timeInterval: max(1, reminder.start.timeIntervalSinceNow), repeats: false)

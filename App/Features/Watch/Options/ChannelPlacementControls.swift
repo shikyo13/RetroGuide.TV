@@ -26,7 +26,7 @@ struct ChannelPlacementControls: View {
         Button {
             isExplaining.toggle()
         } label: {
-            SettingsRowLabel(title: "Why is this here?", systemImage: "questionmark.circle", value: nil, accessory: isExplaining ? "chevron.up" : "chevron.down")
+            SettingsRowLabel(title: String(localized: "Why is this here?"), systemImage: "questionmark.circle", value: nil, accessory: isExplaining ? "chevron.up" : "chevron.down")
         }
         .buttonStyle(.retroRow)
         if isExplaining {
@@ -37,18 +37,18 @@ struct ChannelPlacementControls: View {
             ))
         }
         if let removed {
-            note("\(removed.name) is removed from \(channel.name). Settings › Channels › Removed from channels lists everything you've removed.")
+            note(String(localized: "\(removed.name) is removed from \(channel.name). Settings › Channels › Removed from channels lists everything you've removed."))
             Button {
                 app.restoreTitle(showID: removed.showID, toChannel: channel.id)
                 self.removed = nil
             } label: {
-                SettingsRowLabel(title: "Undo: put \(removed.name) back", systemImage: "arrow.uturn.backward", value: nil, accessory: nil)
+                SettingsRowLabel(title: String(localized: "Undo: put \(removed.name) back"), systemImage: "arrow.uturn.backward", value: nil, accessory: nil)
             }
             .buttonStyle(.retroRow)
         }
         if channel.definition.source != .series {
             if app.parentalControls.needsAuthorization {
-                note("Unlock Settings to change this channel.")
+                note(String(localized: "Unlock Settings to change this channel."))
             } else if app.pro.access.canRemoveFromChannels {
                 Button {
                     isConfirmingRemoval = true
@@ -66,14 +66,16 @@ struct ChannelPlacementControls: View {
                     Text("It stays on your other channels. You can put it back any time in Settings › Channels › Removed from channels.")
                 }
             } else {
-                note("Removing a show from a channel is part of RetroGuide Pro (Settings › RetroGuide Pro).")
+                note(String(localized: "Removing a show from a channel is part of RetroGuide Pro (Settings › RetroGuide Pro)."))
             }
         }
     }
 
     /// "Remove this show from this channel", or "…movie…" for a movie.
     private var removeTitle: String {
-        "Remove this \(item.series == nil ? "movie" : "show") from this channel"
+        item.series == nil
+            ? String(localized: "Remove this movie from this channel")
+            : String(localized: "Remove this show from this channel")
     }
 
     private func note(_ text: String) -> some View {

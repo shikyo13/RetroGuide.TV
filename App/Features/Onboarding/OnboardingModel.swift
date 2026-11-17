@@ -22,7 +22,8 @@ final class OnboardingModel {
         /// before connecting without encryption.
         case offeringPlainHTTP(URL)
         case jellyfinSignIn(JellyfinSignIn)
-        case connecting(serverName: String)
+        /// `nil` while signing in to the saved Plex account, before a server is chosen.
+        case connecting(serverName: String?)
         case choosingLibraries(PendingServer)
         case failed(String)
     }
@@ -130,7 +131,7 @@ final class OnboardingModel {
         flow = .plex
         task?.cancel()
         if let accountToken {
-            step = .connecting(serverName: "your Plex account")
+            step = .connecting(serverName: nil)
             task = Task { [weak self] in
                 await self?.showServers(accountToken: accountToken)
             }

@@ -6,7 +6,7 @@ struct RootView: View {
 
     @State private var showsStartupSettings = false
 
-    private var startupActionTitle: String {
+    private var startupActionTitle: LocalizedStringKey {
         switch model.phase {
         case .launching, .indexing: "Cancel Channel Loading"
         default: "Manage Servers and Libraries"

@@ -25,6 +25,14 @@ enum ScheduleFormatting {
         return formatter
     }()
 
+    /// Whole hours spelled out: "1 hour", "12 hours".
+    private static let wholeHours: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour]
+        formatter.unitsStyle = .full
+        return formatter
+    }()
+
     private static let relative: RelativeDateTimeFormatter = {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
@@ -43,8 +51,8 @@ enum ScheduleFormatting {
     static func dayAndTime(_ date: Date) -> String {
         let calendar = Calendar.current
         if calendar.isDateInToday(date) { return time(date) }
-        if calendar.isDateInTomorrow(date) { return "Tomorrow \(time(date))" }
-        return "\(dayAndDate.string(from: date)) \(time(date))"
+        if calendar.isDateInTomorrow(date) { return String(localized: "Tomorrow \(time(date))") }
+        return String(localized: "\(dayAndDate.string(from: date)) \(time(date))", comment: "A day and date, then a time: “Sat, Sep 27 9:00 AM”")
     }
 
     static func day(_ date: Date) -> String {
@@ -56,7 +64,7 @@ enum ScheduleFormatting {
     }
 
     static func remaining(in program: ScheduledProgram, at date: Date) -> String {
-        "\(duration(program.contentEnd.timeIntervalSince(date))) left"
+        String(localized: "\(duration(program.contentEnd.timeIntervalSince(date))) left", comment: "Time left in a program: “25m left”")
     }
 
     static func relativeDate(_ date: Date) -> String {
@@ -64,7 +72,7 @@ enum ScheduleFormatting {
     }
 
     static func hours(_ interval: TimeInterval) -> String {
-        let hours = Int(interval / ScheduleConstants.secondsPerHour)
-        return hours == 1 ? "1 hour" : "\(hours) hours"
+        let hours = (interval / ScheduleConstants.secondsPerHour).rounded(.towardZero)
+        return wholeHours.string(from: hours * ScheduleConstants.secondsPerHour) ?? ""
     }
 }

@@ -12,10 +12,9 @@ struct SubtitleTimingControl: View {
     private var delay: TimeInterval { tuner.subtitleDelay }
 
     private var caption: String {
-        let how = "Move subtitles later if they appear before speech, or earlier if they appear after it."
-        return tuner.program?.item.series == nil
-            ? "\(how) Applies to this subtitle track while watching this program."
-            : "\(how) The next episodes of this show start with the same timing."
+        tuner.program?.item.series == nil
+            ? String(localized: "Move subtitles later if they appear before speech, or earlier if they appear after it. Applies to this subtitle track while watching this program.")
+            : String(localized: "Move subtitles later if they appear before speech, or earlier if they appear after it. The next episodes of this show start with the same timing.")
     }
 
     var body: some View {
@@ -24,7 +23,7 @@ struct SubtitleTimingControl: View {
             RemoteAdjuster(tuner: tuner)
             #else
             SettingsRowLabel(
-                title: "Subtitle timing",
+                title: String(localized: "Subtitle timing"),
                 systemImage: "clock.arrow.2.circlepath",
                 value: SubtitleTiming.description(of: delay),
                 accessory: nil
@@ -71,9 +70,19 @@ struct SubtitleTimingControl: View {
 
     @ViewBuilder
     private var adjustmentButtons: some View {
-        stepButton(systemImage: "minus", label: "Earlier", by: -SubtitleTiming.fineStep)
+        stepButton(
+            systemImage: "minus",
+            label: String(localized: "Earlier", comment: "Move subtitles earlier"),
+            accessibilityLabel: String(localized: "Earlier by \(SubtitleTiming.fineStep.formatted()) seconds", comment: "Move subtitles earlier by a fraction of a second"),
+            by: -SubtitleTiming.fineStep
+        )
             .disabled(delay <= SubtitleTiming.range.lowerBound)
-        stepButton(systemImage: "plus", label: "Later", by: SubtitleTiming.fineStep)
+        stepButton(
+            systemImage: "plus",
+            label: String(localized: "Later", comment: "Move subtitles later"),
+            accessibilityLabel: String(localized: "Later by \(SubtitleTiming.fineStep.formatted()) seconds", comment: "Move subtitles later by a fraction of a second"),
+            by: SubtitleTiming.fineStep
+        )
             .disabled(delay >= SubtitleTiming.range.upperBound)
         Button("Reset") { tuner.setSubtitleDelay(.zero) }
             .buttonStyle(.retro)
@@ -81,14 +90,14 @@ struct SubtitleTimingControl: View {
             .accessibilityHint("Restores this track's original timing.")
     }
 
-    private func stepButton(systemImage: String, label: String, by step: TimeInterval) -> some View {
+    private func stepButton(systemImage: String, label: String, accessibilityLabel: String, by step: TimeInterval) -> some View {
         Button {
             tuner.setSubtitleDelay(delay + step)
         } label: {
             Label(label, systemImage: systemImage)
         }
         .buttonStyle(.retro)
-        .accessibilityLabel("\(label) by \(SubtitleTiming.fineStep.formatted()) seconds")
+        .accessibilityLabel(accessibilityLabel)
     }
     #endif
 }
@@ -113,7 +122,7 @@ private struct RemoteAdjuster: View {
             tuner.setSubtitleDelay(.zero)
         } label: {
             SettingsRowLabel(
-                title: "Subtitle timing",
+                title: String(localized: "Subtitle timing"),
                 systemImage: "clock.arrow.2.circlepath",
                 value: isFocused
                     ? "◀ \(SubtitleTiming.description(of: tuner.subtitleDelay)) ▶"

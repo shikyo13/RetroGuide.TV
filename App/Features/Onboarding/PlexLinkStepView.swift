@@ -13,7 +13,7 @@ struct PlexLinkStepView: View {
     }
 
     private enum Copy {
-        static let signInExplanation = "Sign in with the Plex account that has your server, or the one a friend shared their server with."
+        static let signInExplanation = String(localized: "Sign in with the Plex account that has your server, or the one a friend shared their server with.")
     }
 
     let code: PlexLinkCode?

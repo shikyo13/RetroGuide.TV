@@ -67,7 +67,7 @@ extension OnboardingModel {
                 return
             }
             guard !excludedServerIDs.contains(server.id) else {
-                setStep(.enteringJellyfinAddress(message: "\(server.name) is already added."))
+                setStep(.enteringJellyfinAddress(message: String(localized: "\(server.name) is already added.")))
                 return
             }
             chooseJellyfin(server)
@@ -108,7 +108,7 @@ extension OnboardingModel {
                 return
             }
             guard !excludedServerIDs.contains(server.id) else {
-                setStep(.enteringJellyfinAddress(message: "\(server.name) is already added."))
+                setStep(.enteringJellyfinAddress(message: String(localized: "\(server.name) is already added.")))
                 return
             }
             chooseJellyfin(server)
@@ -171,7 +171,7 @@ extension OnboardingModel {
             } catch {
                 signIn.isSigningIn = false
                 signIn.message = (error as? HTTPError) == .unauthorized
-                    ? "That username and password didn't work."
+                    ? String(localized: "That username and password didn't work.")
                     : error.localizedDescription
                 setStep(.jellyfinSignIn(signIn))
             }
@@ -207,7 +207,7 @@ extension OnboardingModel {
             var signIn = JellyfinSignIn(server: server)
             signIn.users = users
             signIn.usesPassword = true
-            signIn.message = "Quick Connect isn't working right now (\(error.localizedDescription)). Sign in with your password instead."
+            signIn.message = String(localized: "Quick Connect isn't working right now (\(error.localizedDescription)). Sign in with your password instead.")
             setStep(.jellyfinSignIn(signIn))
         }
     }
@@ -238,7 +238,7 @@ extension OnboardingModel {
         do {
             let libraries = try await client.fetchLibraries().filter(\.isSchedulable)
             if libraries.isEmpty {
-                fail("\(server.name) has no movie or TV show libraries this account can see.", reason: .noLibraries)
+                fail(String(localized: "\(server.name) has no movie or TV show libraries this account can see."), reason: .noLibraries)
             } else {
                 setStep(.choosingLibraries(PendingServer(account: account, token: session.accessToken, accountToken: nil, libraries: libraries)))
             }
@@ -250,9 +250,9 @@ extension OnboardingModel {
 
 /// What Jellyfin setup says when a server can't be used, and why.
 enum JellyfinSetupText {
-    static let notSecureOnInternet = "A server answered, but only without encryption (plain HTTP). Over the internet, RetroGuide.TV needs HTTPS with a trusted certificate. At home or over a VPN like Tailscale, use the server's home or VPN address instead."
-    static let untrusted = "A server answered, but this device doesn't trust its certificate. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt."
-    static let noAnswer = "No Jellyfin server answered at that address. Check the address and port, and that the server uses HTTPS with a trusted certificate."
+    static let notSecureOnInternet = String(localized: "A server answered, but only without encryption (plain HTTP). Over the internet, RetroGuide.TV needs HTTPS with a trusted certificate. At home or over a VPN like Tailscale, use the server's home or VPN address instead.")
+    static let untrusted = String(localized: "A server answered, but this device doesn't trust its certificate. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt.")
+    static let noAnswer = String(localized: "No Jellyfin server answered at that address. Check the address and port, and that the server uses HTTPS with a trusted certificate.")
 }
 
 /// Jellyfin addresses as people type them.

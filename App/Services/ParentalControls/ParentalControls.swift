@@ -50,11 +50,12 @@ final class ParentalControls {
 
     func authorize(_ pin: String, now: Date = .now) -> Bool {
         guard var saved = record, !isUnavailable else {
-            message = "Parental controls could not be read. Try reopening the app after unlocking this device."
+            message = String(localized: "Parental controls could not be read. Try reopening the app after unlocking this device.")
             return false
         }
         if let retry = saved.retryAfter, retry > now {
-            message = "Too many attempts. Try again in \(Int(ceil(retry.timeIntervalSince(now)))) seconds."
+            let seconds = Int(ceil(retry.timeIntervalSince(now)))
+            message = String(localized: "Too many attempts. Try again in \(seconds) seconds.")
             return false
         }
         guard ParentalPIN.isValid(pin), Self.verifier(pin, salt: saved.salt) == saved.verifier else {
@@ -64,7 +65,7 @@ final class ParentalControls {
                 saved.retryAfter = now.addingTimeInterval(Limits.cooldown)
             }
             guard persist(saved) else { return false }
-            message = saved.retryAfter.map { $0 > now } == true ? "Too many attempts. Try again in a minute." : "Incorrect PIN."
+            message = saved.retryAfter.map { $0 > now } == true ? String(localized: "Too many attempts. Try again in a minute.") : String(localized: "Incorrect PIN.")
             return false
         }
         saved.failedAttempts = 0
@@ -76,16 +77,16 @@ final class ParentalControls {
     }
 
     func save(_ policy: ParentalPolicy, newPIN: String? = nil) -> Bool {
-        guard !needsAuthorization else { message = "Enter your PIN first."; return false }
+        guard !needsAuthorization else { message = String(localized: "Enter your PIN first."); return false }
         if let newPIN {
             guard ParentalPIN.isValid(newPIN) else {
-                message = "Use a four-digit PIN."
+                message = String(localized: "Use a four-digit PIN.")
                 return false
             }
             let salt = UUID().uuidString
             guard persist(Record(policy: policy, salt: salt, verifier: Self.verifier(newPIN, salt: salt))) else { return false }
         } else {
-            guard var saved = record else { message = "Create a PIN first."; return false }
+            guard var saved = record else { message = String(localized: "Create a PIN first."); return false }
             saved.policy = policy
             guard persist(saved) else { return false }
         }
@@ -108,7 +109,7 @@ final class ParentalControls {
     private func persist(_ record: Record) -> Bool {
         guard let data = try? JSONEncoder().encode(record), let text = String(data: data, encoding: .utf8),
               keychain.setToken(text, for: Storage.account) else {
-            message = "Couldn't save parental controls. Your previous settings are still in effect."
+            message = String(localized: "Couldn't save parental controls. Your previous settings are still in effect.")
             return false
         }
         self.record = record

@@ -6,7 +6,7 @@ extension ThemePalettes {
     /// Late-90s cable preview channel: deep blue grid, golden text.
     static let classicCable = Theme(
         id: .classicCable,
-        name: "Classic Cable",
+        name: String(localized: "Classic Cable", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#0A1A5C"), Color(hex: "#050D33")],
         surface: Color(hex: "#15287A"),
         surfaceRaised: Color(hex: "#1D3494"),
@@ -24,7 +24,7 @@ extension ThemePalettes {
     /// Early-90s weather channel: teal panels, orange highlights.
     static let localForecast = Theme(
         id: .localForecast,
-        name: "Local Forecast",
+        name: String(localized: "Local Forecast", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#0B4F6C"), Color(hex: "#042536")],
         surface: Color(hex: "#106887"),
         surfaceRaised: Color(hex: "#1580A3"),
@@ -42,7 +42,7 @@ extension ThemePalettes {
     /// Cartoon-block purple with sunny yellow and orange.
     static let saturdayMorning = Theme(
         id: .saturdayMorning,
-        name: "Saturday Morning",
+        name: String(localized: "Saturday Morning", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#4B1FA8"), Color(hex: "#22094F")],
         surface: Color(hex: "#5E2BC4"),
         surfaceRaised: Color(hex: "#7038D6"),
@@ -60,7 +60,7 @@ extension ThemePalettes {
     /// Hotel-room movie menu: velvet maroon and gold.
     static let payPerView = Theme(
         id: .payPerView,
-        name: "Pay-Per-View",
+        name: String(localized: "Pay-Per-View", comment: "Name of a color theme"),
         backgroundColors: [Color(hex: "#4A0E24"), Color(hex: "#1E0510")],
         surface: Color(hex: "#62142F"),
         surfaceRaised: Color(hex: "#781B3B"),

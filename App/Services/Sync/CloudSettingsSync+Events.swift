@@ -44,7 +44,7 @@ extension CloudSettingsSync: CKSyncEngineDelegate {
                 case .signIn: break
                 case .signOut, .switchAccounts:
                     disable()
-                    message = "The iCloud account changed. Sync is off and your settings are still on this device."
+                    message = String(localized: "The iCloud account changed. Sync is off and your settings are still on this device.")
                 @unknown default: disable()
                 }
             case .fetchedDatabaseChanges(let fetched):
@@ -56,14 +56,14 @@ extension CloudSettingsSync: CKSyncEngineDelegate {
                     state.replica = SettingsReplica()
                     state.systemFields = [:]
                     try persist()
-                    message = "The iCloud copy was removed. Your settings are still on this device. Turn sync on to set it up again."
+                    message = String(localized: "The iCloud copy was removed. Your settings are still on this device. Turn sync on to set it up again.")
                 }
             case .fetchedRecordZoneChanges(let fetched):
                 // App deletions use tombstones. Unexpected server deletions need
                 // a new initial choice rather than silently rebuilding erased data.
                 guard !fetched.deletions.contains(where: { $0.recordID.zoneID == zoneID }) else {
                     disable()
-                    message = "The iCloud settings changed outside this app. Sync has stopped to preserve this device’s setup."
+                    message = String(localized: "The iCloud settings changed outside this app. Sync has stopped to preserve this device’s setup.")
                     return
                 }
                 var replica = state.replica

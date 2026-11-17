@@ -88,7 +88,7 @@ final class AVPlaybackEngine: PlaybackEngine {
                 guard !Task.isCancelled else { return }
                 self.relay?.stop()
                 self.relay = nil
-                self.onEvent?(.failed("A secure connection to this stream could not be established."))
+                self.onEvent?(.failed(String(localized: "A secure connection to this stream could not be established.")))
             }
         }
     }
@@ -124,7 +124,7 @@ final class AVPlaybackEngine: PlaybackEngine {
             .sink { [weak self, weak item] status in
                 MainActor.assumeIsolated {
                     guard status == .failed else { return }
-                    self?.onEvent?(.failed(item?.error?.localizedDescription ?? "The stream could not be played."))
+                    self?.onEvent?(.failed(item?.error?.localizedDescription ?? String(localized: "The stream could not be played.")))
                 }
             }
             .store(in: &itemCancellables)

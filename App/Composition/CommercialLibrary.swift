@@ -49,7 +49,7 @@ final class CommercialLibrary {
                 loaded.append(LibrarySnapshot(serverID: account.id, serverName: account.name, libraries: libraries, items: clips))
             } catch {
                 guard token == generation, !Task.isCancelled else { return }
-                errorMessage = "Some commercial libraries could not be loaded. Programs will continue on schedule."
+                errorMessage = String(localized: "Some commercial libraries could not be loaded. Programs will continue on schedule.")
             }
         }
         guard token == generation, !Task.isCancelled else { return }

@@ -5,10 +5,10 @@ import SwiftUI
 /// instead. Servers that can't be used are named with the reason.
 struct JellyfinFindStepView: View {
     private enum Copy {
-        static let none = "No Jellyfin servers answered on this network. Enter your server's address instead."
-        static let notSecure = "Found without encryption (no HTTPS). Choose one to connect anyway."
+        static let none = String(localized: "No Jellyfin servers answered on this network. Enter your server's address instead.")
+        static let notSecure = String(localized: "Found without encryption (no HTTPS). Choose one to connect anyway.")
         static func untrusted(_ hosts: [String]) -> String {
-            "Found a server at \(list(hosts)) whose certificate this device doesn't trust. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt."
+            String(localized: "Found a server at \(list(hosts)) whose certificate this device doesn't trust. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt.")
         }
         private static func list(_ hosts: [String]) -> String {
             hosts.formatted(.list(type: .or))

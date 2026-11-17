@@ -28,7 +28,7 @@ struct WatchOptionsPanel: View {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                 header
                 if let program = tuner.program, let channel = tuner.channel {
-                    SettingsSection("Playback") {
+                    SettingsSection(String(localized: "Playback")) {
                         if tuner.isWatchingFromBeginning {
                             Text("Watching from beginning. Your channels are still following their normal schedule.")
                                 .font(Typography.callout)
@@ -56,12 +56,12 @@ struct WatchOptionsPanel: View {
                         }
                     }
                 }
-                SettingsSection("Audio & Subtitles") {
+                SettingsSection(String(localized: "Audio & Subtitles")) {
                     content
                 }
                 SleepTimerControl()
                 if let channel = tuner.channel {
-                    SettingsSection("Channel \(channel.number) · \(channel.name)") {
+                    SettingsSection(String(localized: "Channel \(channel.number) · \(channel.name)")) {
                         FavoriteChannelButton(channel: channel)
                         if !app.parentalControls.needsAuthorization { scheduleOrder(for: channel) }
                         if let item = tuner.program?.item {
@@ -111,13 +111,13 @@ struct WatchOptionsPanel: View {
     @ViewBuilder
     private var content: some View {
         if !tuner.engine.switchesTracksLive {
-            note("Choosing audio and subtitles needs the RetroGuide Player. You can switch to it in Settings › Playback › Player.")
+            note(String(localized: "Choosing audio and subtitles needs the RetroGuide Player. You can switch to it in Settings › Playback › Player."))
         } else if let tracks = tuner.currentTracks, let selection = tuner.currentSelection {
             choices(tracks: tracks, selection: selection)
         } else if tuner.signal == .tuning {
-            note("Loading this program's tracks…")
+            note(String(localized: "Loading this program's tracks…"))
         } else {
-            note("This program's audio and subtitle tracks aren't available.")
+            note(String(localized: "This program's audio and subtitle tracks aren't available."))
         }
     }
 
@@ -127,7 +127,7 @@ struct WatchOptionsPanel: View {
         let subtitle = tracks.subtitleOption(for: selection)
         VStack(spacing: DesignTokens.Spacing.sm) {
             OptionMenu(
-                title: "Audio",
+                title: String(localized: "Audio", comment: "Menu of a program's audio tracks"),
                 systemImage: "speaker.wave.2",
                 choices: tracks.audio.map { OptionMenu.Choice(id: $0.id, title: $0.title) },
                 selection: Binding(
@@ -140,7 +140,7 @@ struct WatchOptionsPanel: View {
             )
             .disabled(tracks.audio.count < 2)
             if tracks.audio.count > 1 {
-                scopeMenu(title: "Audio for", scope: tuner.audioScope) { scope in
+                scopeMenu(title: String(localized: "Audio for", comment: "Menu: how widely the chosen audio track applies (this episode, season, show…)"), scope: tuner.audioScope) { scope in
                     if let scope, let audio {
                         tuner.chooseAudio(audio, scope: scope)
                     } else {
@@ -149,9 +149,9 @@ struct WatchOptionsPanel: View {
                 }
             }
             OptionMenu(
-                title: "Subtitles",
+                title: String(localized: "Subtitles"),
                 systemImage: "captions.bubble",
-                choices: [OptionMenu.Choice(id: ChoiceID.subtitlesOff, title: "Off")]
+                choices: [OptionMenu.Choice(id: ChoiceID.subtitlesOff, title: String(localized: "Off", comment: "Subtitles turned off"))]
                     + tracks.subtitles.map { OptionMenu.Choice(id: $0.id, title: $0.title) },
                 selection: Binding(
                     get: { subtitle?.id ?? ChoiceID.subtitlesOff },
@@ -161,7 +161,7 @@ struct WatchOptionsPanel: View {
                 )
             )
             .focused($isSubtitlesFocused)
-            scopeMenu(title: "Subtitles for", scope: tuner.subtitleScope) { scope in
+            scopeMenu(title: String(localized: "Subtitles for", comment: "Menu: how widely the chosen subtitles apply (this episode, season, show…)"), scope: tuner.subtitleScope) { scope in
                 if let scope {
                     tuner.chooseSubtitles(subtitle, scope: scope)
                 } else {
@@ -173,9 +173,9 @@ struct WatchOptionsPanel: View {
             }
         }
         if let progress = app.trackSync.progress {
-            note("Saving to Plex… \(progress.done) of \(progress.total)")
+            note(String(localized: "Saving to Plex… \(progress.done) of \(progress.total)"))
         } else if app.trackSync.failedCount > .zero {
-            note("Couldn't save \(app.trackSync.failedCount) \(app.trackSync.failedCount == 1 ? "title" : "titles") to Plex. Your choices are still saved on this device.")
+            note(failedSaveMessage(count: app.trackSync.failedCount))
             Button("Try again", systemImage: "arrow.clockwise") {
                 app.trackSync.retryFailed()
             }
@@ -189,7 +189,7 @@ struct WatchOptionsPanel: View {
         OptionMenu(
             title: title,
             systemImage: "square.stack",
-            choices: [OptionMenu.Choice(id: ChoiceID.automatic, title: "Automatic")] + availableScopes.map {
+            choices: [OptionMenu.Choice(id: ChoiceID.automatic, title: String(localized: "Automatic", comment: "Track choice left to the server and account defaults"))] + availableScopes.map {
                 OptionMenu.Choice(id: $0.rawValue, title: scopeTitle($0))
             },
             selection: Binding(
@@ -215,22 +215,31 @@ struct WatchOptionsPanel: View {
     private func scopeTitle(_ scope: TrackScope) -> String {
         guard let item = tuner.program?.item else { return scope.rawValue }
         switch scope {
-        case .episode: return "This episode"
-        case .season: return item.series?.seasonNumber.map { "Season \($0)" } ?? "This season"
-        case .show: return item.series.map { "Every episode of \($0.title)" } ?? "This movie"
-        case .library: return "Everything in \(libraryName(for: item))"
+        case .episode: return String(localized: "This episode")
+        case .season: return item.series?.seasonNumber.map { String(localized: "Season \($0)") } ?? String(localized: "This season")
+        case .show: return item.series.map { String(localized: "Every episode of \($0.title)") } ?? String(localized: "This movie")
+        case .library:
+            guard let name = libraryName(for: item) else { return String(localized: "Everything in this library") }
+            return String(localized: "Everything in \(name)", comment: "Track choice scope: a whole library, by name")
         }
     }
 
-    private func libraryName(for item: MediaItem) -> String {
-        app.libraryIndex.facets.libraries.first { $0.id == item.libraryID }?.name ?? "this library"
+    private func libraryName(for item: MediaItem) -> String? {
+        app.libraryIndex.facets.libraries.first { $0.id == item.libraryID }?.name
+    }
+
+    /// Track choices that couldn't be saved to Plex.
+    private func failedSaveMessage(count: Int) -> String {
+        count == 1
+            ? String(localized: "Couldn't save 1 title to Plex. Your choices are still saved on this device.")
+            : String(localized: "Couldn't save \(count) titles to Plex. Your choices are still saved on this device.")
     }
 
     @ViewBuilder
     private func scheduleOrder(for channel: Channel) -> some View {
         let current = pendingOrdering ?? channel.definition.ordering
         OptionMenu(
-            title: "Schedule order",
+            title: String(localized: "Schedule order"),
             systemImage: "shuffle",
             choices: ScheduleOrdering.allCases.map { OptionMenu.Choice(id: $0.rawValue, title: $0.displayName) },
             selection: Binding(
@@ -252,7 +261,7 @@ struct WatchOptionsPanel: View {
             note(current.explanation)
             ScheduleUpdatingNote(isVisible: pendingOrdering != nil && app.isRebuildingLineup)
         } else {
-            note("Changing a channel's schedule order is part of RetroGuide Pro (Settings › RetroGuide Pro).")
+            note(String(localized: "Changing a channel's schedule order is part of RetroGuide Pro (Settings › RetroGuide Pro)."))
         }
     }
 

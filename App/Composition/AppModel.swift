@@ -334,7 +334,7 @@ final class AppModel {
             // stopped in the background during a long first load: try once more
             // by itself. Twice in a row may be a crash, so then ask.
             guard !store.startupRetried else {
-                failLoading("The previous startup did not finish. You can change libraries or remove a server before trying again.", reason: .interrupted)
+                failLoading(String(localized: "The previous startup did not finish. You can change libraries or remove a server before trying again."), reason: .interrupted)
                 return
             }
             store.startupRetried = true
@@ -483,7 +483,7 @@ final class AppModel {
         healthTask?.cancel()
         networkMonitor.stop()
         isSessionStarted = false
-        failLoading("Channel loading was cancelled. Your saved servers and library selections have not changed.", reason: .cancelled)
+        failLoading(String(localized: "Channel loading was cancelled. Your saved servers and library selections have not changed."), reason: .cancelled)
     }
 
     func manageStartup() {
@@ -658,7 +658,7 @@ final class AppModel {
         let showsProgress = lineup.isEmpty
         if showsProgress {
             store.startupIncomplete = true
-            phase = .indexing(LibraryLoadProgress(fraction: .zero, message: "Connecting…"))
+            phase = .indexing(LibraryLoadProgress(fraction: .zero, message: String(localized: "Connecting…")))
         }
         do {
             let hadFailures = try await servers.refreshAll(
@@ -693,7 +693,7 @@ final class AppModel {
 
     private var offlineServersMessage: String? {
         let offline = servers.accounts.filter { servers.status[$0.id] == .offline }.map(\.name)
-        return offline.isEmpty ? nil : "Offline: \(offline.joined(separator: ", "))"
+        return offline.isEmpty ? nil : String(localized: "Offline: \(offline.formatted(.list(type: .and, width: .narrow)))")
     }
 
     // MARK: - Reachability

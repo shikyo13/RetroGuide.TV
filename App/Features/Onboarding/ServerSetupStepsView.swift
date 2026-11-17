@@ -6,7 +6,7 @@ import SwiftUI
 struct ServerSetupStepsView: View {
     let model: OnboardingModel
     let onCancel: () -> Void
-    var libraryConfirmTitle = "Build My Channels"
+    var libraryConfirmTitle = String(localized: "Build My Channels")
     let onComplete: (OnboardingModel.PendingServer, Set<String>) -> Void
 
     var body: some View {

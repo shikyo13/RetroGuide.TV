@@ -24,15 +24,15 @@ enum PlaybackEngineKind: String, Codable, CaseIterable, Identifiable, Sendable {
 
     var displayName: String {
         switch self {
-        case .universal: "RetroGuide Player"
-        case .appleNative: "Apple Player"
+        case .universal: String(localized: "RetroGuide Player", comment: "Video player choice: the app's own player (RetroGuide is the app's name)")
+        case .appleNative: String(localized: "Apple Player", comment: "Video player choice: the system's built-in player")
         }
     }
 
     var explanation: String {
         switch self {
-        case .universal: "Plays every file directly, with no server transcoding. Recommended."
-        case .appleNative: "Uses Apple's player. MKV and other formats are converted by your server."
+        case .universal: String(localized: "Plays every file directly, with no server transcoding. Recommended.")
+        case .appleNative: String(localized: "Uses Apple's player. MKV and other formats are converted by your server.")
         }
     }
 }
