@@ -7,7 +7,7 @@ struct ScheduleGridPickerView: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        SettingsPage(title: "Program Start Times") {
+        SettingsPage(title: String(localized: "Program Start Times")) {
             Text("Real TV starts shows on the hour and half hour. Aligning to a grid adds a short \"We'll be right back\" break between programs so the guide lines up neatly.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)

@@ -8,20 +8,20 @@ struct ParentalChannelsView: View {
     @State private var previewIndex: LibraryIndex?
 
     var body: some View {
-        SettingsPage(title: "Channels") {
-            CheckmarkRow(title: "Regular lineup", detail: "Your existing channels with parental restrictions applied.",
+        SettingsPage(title: String(localized: "Channels")) {
+            CheckmarkRow(title: String(localized: "Regular lineup"), detail: String(localized: "Your existing channels with parental restrictions applied."),
                 isSelected: !draft.usesCustomLineup) { draft.usesCustomLineup = false }
-            CheckmarkRow(title: "Custom lineup", detail: "Only the channels you create here.",
+            CheckmarkRow(title: String(localized: "Custom lineup"), detail: String(localized: "Only the channels you create here."),
                 isSelected: draft.usesCustomLineup) { draft.usesCustomLineup = true }
             if draft.usesCustomLineup {
-                SettingsSection("Your channels") {
+                SettingsSection(String(localized: "Your channels")) {
                     if let previewIndex {
                         ForEach(draft.channelCustomization.customChannels) { channel in
                             NavigationLink {
                                 ChannelEditorView(existing: channel, index: previewIndex, onSave: save,
                                     onDelete: { draft.channelCustomization.customChannels.removeAll { $0.id == channel.id } })
                             } label: {
-                                SettingsRowLabel(title: channel.name, systemImage: "tv", value: "Edit")
+                                SettingsRowLabel(title: channel.name, systemImage: "tv", value: String(localized: "Edit", comment: "Settings row value: opens the channel for editing"))
                             }
                         }
                         if app.pro.access.canCreateCustomChannel(existingCount: draft.channelCustomization.customChannels.count) {
@@ -29,10 +29,10 @@ struct ParentalChannelsView: View {
                                 ChannelEditorView(existing: nil, index: previewIndex,
                                     nextNumber: draft.channelCustomization.nextCustomChannelNumber, onSave: save)
                             } label: {
-                                SettingsRowLabel(title: "Add Channel", systemImage: "plus", value: nil)
+                                SettingsRowLabel(title: String(localized: "Add Channel"), systemImage: "plus", value: nil)
                             }
                         } else {
-                            ProLockedRow(title: "Add another channel", systemImage: "plus")
+                            ProLockedRow(title: String(localized: "Add another channel"), systemImage: "plus")
                         }
                         if draft.channelCustomization.customChannels.isEmpty {
                             Text("Add your first channel. An empty custom lineup shows no channels.")

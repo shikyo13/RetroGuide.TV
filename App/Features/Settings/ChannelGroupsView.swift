@@ -10,7 +10,7 @@ struct ChannelGroupsView: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        SettingsPage(title: "Channel Groups") {
+        SettingsPage(title: String(localized: "Channel Groups")) {
             Text("Choose which kinds of channels are built automatically from your library. Your own channels are always kept.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
@@ -27,6 +27,6 @@ struct ChannelGroupsView: View {
 
     private func detail(for source: ChannelSource) -> String {
         let count = app.lineup.filter { $0.definition.source == source }.count
-        return count == 1 ? "1 channel" : "\(count) channels"
+        return count == 1 ? String(localized: "1 channel") : String(localized: "\(count) channels")
     }
 }

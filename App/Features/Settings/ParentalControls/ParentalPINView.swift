@@ -9,10 +9,10 @@ struct ParentalPINView: View {
     @FocusState private var focusedField: ParentalPINField.Field?
 
     var body: some View {
-        SettingsPage(title: "Parental Lock") {
+        SettingsPage(title: String(localized: "Parental Lock")) {
             Text("Enter your PIN to change settings. Content restrictions stay active while you make changes.")
                 .font(Typography.settingsBody)
-            ParentalPINField(title: "Four-digit PIN", identifier: "parentalPIN", pin: $pin,
+            ParentalPINField(title: String(localized: "Four-digit PIN"), identifier: "parentalPIN", pin: $pin,
                 field: .unlock, focus: $focusedField)
                 .onSubmit(unlock)
             Button("Unlock Settings", action: unlock)

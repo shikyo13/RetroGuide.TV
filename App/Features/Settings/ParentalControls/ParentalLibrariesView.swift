@@ -6,16 +6,16 @@ struct ParentalLibrariesView: View {
     let libraries: [FacetOption]
 
     var body: some View {
-        SettingsPage(title: "Libraries") {
-            CheckmarkRow(title: "All connected libraries", isSelected: draft.allLibraries) { draft.allLibraries = true }
-            CheckmarkRow(title: "Selected libraries", isSelected: !draft.allLibraries) { draft.allLibraries = false }
+        SettingsPage(title: String(localized: "Libraries")) {
+            CheckmarkRow(title: String(localized: "All connected libraries"), isSelected: draft.allLibraries) { draft.allLibraries = true }
+            CheckmarkRow(title: String(localized: "Selected libraries"), isSelected: !draft.allLibraries) { draft.allLibraries = false }
             if !draft.allLibraries {
                 NavigationLink {
-                    FacetPickerView(title: "Choose Libraries", emptySelectionTitle: "None selected",
-                        helpText: "Only these libraries can supply content. Each library lists the server it belongs to.",
+                    FacetPickerView(title: String(localized: "Choose Libraries"), emptySelectionTitle: String(localized: "None selected", comment: "Nothing is chosen in this list"),
+                        helpText: String(localized: "Only these libraries can supply content. Each library lists the server it belongs to."),
                         options: libraries, selection: $draft.libraryIDs)
                 } label: {
-                    SettingsRowLabel(title: "Choose Libraries", systemImage: "books.vertical", value: "\(draft.libraryIDs.count) selected")
+                    SettingsRowLabel(title: String(localized: "Choose Libraries"), systemImage: "books.vertical", value: String(localized: "\(draft.libraryIDs.count) selected"))
                 }
                 .buttonStyle(.retroRow)
             }

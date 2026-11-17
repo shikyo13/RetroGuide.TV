@@ -15,12 +15,12 @@ struct FavoritesView: View {
     }
 
     var body: some View {
-        SettingsPage(title: "Favorites") {
+        SettingsPage(title: String(localized: "Favorites")) {
             if app.pro.isPro {
-                SettingsSection("Browsing") {
+                SettingsSection(String(localized: "Browsing")) {
                     Button { app.viewing.favoritesOnly.toggle() } label: {
-                        SettingsRowLabel(title: "Guide & channel surfing", systemImage: "star.fill",
-                                         value: app.viewing.favoritesOnly ? "Favorites" : "All channels", accessory: nil)
+                        SettingsRowLabel(title: String(localized: "Guide & channel surfing"), systemImage: "star.fill",
+                                         value: app.viewing.favoritesOnly ? String(localized: "Favorites") : String(localized: "All channels"), accessory: nil)
                     }
                 }
                 Text("Star channels below. Hidden and unavailable channels stay saved and return when available.")
@@ -30,7 +30,7 @@ struct FavoritesView: View {
                     .padding(.horizontal, DesignTokens.Spacing.md)
                     .frame(minHeight: DesignTokens.Control.minimumHeight)
                     .background(theme.surface, in: RoundedRectangle(cornerRadius: DesignTokens.Radius.medium))
-                SettingsSection("Channels") {
+                SettingsSection(String(localized: "Channels")) {
                     if matchingChannels.isEmpty {
                         Text(query.isEmpty ? "No channels are available yet." : "No matching channels")
                             .font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
@@ -58,8 +58,14 @@ struct FavoriteChannelButton: View {
         } label: {
             SettingsRowLabel(title: "\(channel.number) · \(channel.name)",
                              systemImage: app.viewing.isFavorite(channel) ? "star.fill" : "star",
-                             value: app.pro.isPro ? (app.viewing.isFavorite(channel) ? "Favorite" : "Add favorite") : "Pro", accessory: nil)
+                             value: app.pro.isPro ? favoriteValue : "Pro", accessory: nil)
         }
         .sheet(isPresented: $showsUpgrade) { ProUpgradeView() }
+    }
+
+    private var favoriteValue: String {
+        app.viewing.isFavorite(channel)
+            ? String(localized: "Favorite", comment: "Settings row value: this channel is a favorite")
+            : String(localized: "Add favorite")
     }
 }

@@ -13,7 +13,7 @@ struct ThemePickerView: View {
     @Environment(AppModel.self) private var app
 
     var body: some View {
-        SettingsPage(title: "Theme") {
+        SettingsPage(title: String(localized: "Theme")) {
             LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.lg) {
                 ForEach(ThemeCatalog.all) { theme in
                     if theme.id.isIncludedFree || app.pro.isPro {

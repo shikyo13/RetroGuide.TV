@@ -8,7 +8,7 @@ struct DisplayMatchingPickerView: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        SettingsPage(title: "Match TV Mode") {
+        SettingsPage(title: String(localized: "Match TV Mode")) {
             Text("Switches your TV into HDR for HDR programs, and optionally to each program's frame rate, like Apple's own player.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)

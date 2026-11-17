@@ -6,17 +6,27 @@ import SwiftUI
 /// (a VPN such as Tailscale, or an HTTPS internet address).
 struct JellyfinConnectionView: View {
     private enum Copy {
-        static let home = "Its address on your home network, like 192.168.1.20:8096."
-        static let away = "A Tailscale or other VPN address, or an HTTPS internet address. Used when home doesn't answer."
-        static let allowTitle = "Allow without encryption"
-        static let allowDetail = "Home and VPN addresses only"
-        static let confirm = "Your Jellyfin password and video won't be encrypted on your home network or VPN. Internet addresses still need HTTPS."
-        static let helpTitle = "Watching away from home"
-        static let help = [
-            ("bolt.horizontal", "Plex finds its own way. Jellyfin needs an away address."),
-            ("network.badge.shield.half.filled", "Easiest: Tailscale on the server and this device. Use the server's Tailscale address."),
-            ("globe", "Or publish the server with HTTPS and a domain name."),
-        ]
+        static let homePlaceholder = "192.168.1.20:8096"
+        static var awayPlaceholder: String {
+            String(localized: "100.x.x.x or https://jellyfin.example.com", comment: "Example server addresses; keep the addresses as they are")
+        }
+        static var home: String { String(localized: "Its address on your home network, like 192.168.1.20:8096.") }
+        static var away: String {
+            String(localized: "A Tailscale or other VPN address, or an HTTPS internet address. Used when home doesn't answer.")
+        }
+        static var allowTitle: String { String(localized: "Allow without encryption") }
+        static var allowDetail: String { String(localized: "Home and VPN addresses only") }
+        static var confirm: String {
+            String(localized: "Your Jellyfin password and video won't be encrypted on your home network or VPN. Internet addresses still need HTTPS.")
+        }
+        static var helpTitle: String { String(localized: "Watching away from home") }
+        static var help: [(String, String)] {
+            [
+                ("bolt.horizontal", String(localized: "Plex finds its own way. Jellyfin needs an away address.")),
+                ("network.badge.shield.half.filled", String(localized: "Easiest: Tailscale on the server and this device. Use the server's Tailscale address.")),
+                ("globe", String(localized: "Or publish the server with HTTPS and a domain name.")),
+            ]
+        }
     }
 
     let serverID: String
@@ -33,19 +43,19 @@ struct JellyfinConnectionView: View {
 
     var body: some View {
         if let account = app.servers.accounts.first(where: { $0.id == serverID }) {
-            SettingsPage(title: "Connection") {
+            SettingsPage(title: ServerConnectionTitle.text) {
                 Text(status(account)).secondaryText()
                     .fixedSize(horizontal: false, vertical: true)
-                addressSection("At home", text: $homeText, placeholder: "192.168.1.20:8096", note: note(result?.home) ?? Copy.home)
-                addressSection("Away from home", text: $awayText, placeholder: "100.x.x.x or https://jellyfin.example.com", note: note(result?.away) ?? Copy.away)
-                SettingsSection("Security") {
+                addressSection(String(localized: "At home"), text: $homeText, placeholder: Copy.homePlaceholder, note: note(result?.home) ?? Copy.home)
+                addressSection(String(localized: "Away from home"), text: $awayText, placeholder: Copy.awayPlaceholder, note: note(result?.away) ?? Copy.away)
+                SettingsSection(String(localized: "Security")) {
                     Button {
                         if allowsUnencrypted { allowsUnencrypted = false } else { isConfirmingUnencrypted = true }
                     } label: {
                         SettingsRowLabel(
                             title: Copy.allowTitle,
                             systemImage: allowsUnencrypted ? "lock.open" : "lock",
-                            value: allowsUnencrypted ? "On" : "Off",
+                            value: SettingsValueText.onOff(allowsUnencrypted),
                             accessory: nil
                         )
                     }
@@ -121,15 +131,21 @@ struct JellyfinConnectionView: View {
     }
 
     private func status(_ account: ServerAccount) -> String {
-        if isSaving { return "Checking…" }
+        if isSaving { return String(localized: "Checking…") }
         if app.servers.status[serverID] == .offline {
             return account.connection.awayAddress == nil
-                ? "Can't reach \(account.name) from here. To watch away from home, add an away address."
-                : "Can't reach \(account.name) at either address right now."
+                ? String(localized: "Can't reach \(account.name) from here. To watch away from home, add an away address.")
+                : String(localized: "Can't reach \(account.name) at either address right now.")
         }
-        let place = account.baseURL == account.connection.homeAddress ? "at home" : "away from home"
-        let unencrypted = account.baseURL.scheme?.lowercased() == "http" ? " · not encrypted" : ""
-        return "Connected \(place) · \(JellyfinConnectionText.short(account.baseURL))\(unencrypted)"
+        let address = JellyfinConnectionText.short(account.baseURL)
+        let isHome = account.baseURL == account.connection.homeAddress
+        let isUnencrypted = account.baseURL.scheme?.lowercased() == "http"
+        switch (isHome, isUnencrypted) {
+        case (true, false): return String(localized: "Connected at home · \(address)")
+        case (true, true): return String(localized: "Connected at home · \(address) · not encrypted")
+        case (false, false): return String(localized: "Connected away from home · \(address)")
+        case (false, true): return String(localized: "Connected away from home · \(address) · not encrypted")
+        }
     }
 
     /// What a check found, in a few words; `nil` shows the field's explanation.
@@ -138,12 +154,13 @@ struct JellyfinConnectionView: View {
         case .none, .reachable: nil
         case let .notSecure(plainAddress):
             plainAddress != nil && !allowsUnencrypted
-                ? "Answers only without encryption. Turn on “\(Copy.allowTitle)” to use it."
-                : "Answers only without encryption. Over the internet, use HTTPS or a VPN address."
-        case .untrusted: "Its certificate isn't trusted by this device. Use one from a trusted authority, such as Let's Encrypt."
-        case .noAnswer: "Couldn't reach it from here. It's saved and will be tried when needed."
-        case let .differentServer(name): "That's a different server (\(name))."
-        case .invalid: "That isn't a valid address."
+                ? String(localized: "Answers only without encryption. Turn on “\(Copy.allowTitle)” to use it.",
+                         comment: "The argument is the name of the setting that allows unencrypted connections")
+                : String(localized: "Answers only without encryption. Over the internet, use HTTPS or a VPN address.")
+        case .untrusted: String(localized: "Its certificate isn't trusted by this device. Use one from a trusted authority, such as Let's Encrypt.")
+        case .noAnswer: String(localized: "Couldn't reach it from here. It's saved and will be tried when needed.")
+        case let .differentServer(name): String(localized: "That's a different server (\(name)).")
+        case .invalid: String(localized: "That isn't a valid address.")
         }
     }
 
@@ -164,10 +181,10 @@ struct JellyfinConnectionView: View {
     /// "Home and away", "Home", "Away", for the server page's row.
     static func summary(_ connection: ServerConnectionSettings) -> String {
         switch (connection.homeAddress, connection.awayAddress) {
-        case (.some, .some): "Home and away"
-        case (.some, .none): "Home only"
-        case (.none, .some): "Away only"
-        case (.none, .none): "Not set"
+        case (.some, .some): String(localized: "Home and away", comment: "Server connection: both a home-network and an away-from-home address are set")
+        case (.some, .none): String(localized: "Home only", comment: "Server connection: only a home-network address is set")
+        case (.none, .some): String(localized: "Away only", comment: "Server connection: only an away-from-home address is set")
+        case (.none, .none): String(localized: "Not set", comment: "Server connection: no address is set")
         }
     }
 }

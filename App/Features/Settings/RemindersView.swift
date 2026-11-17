@@ -4,18 +4,18 @@ struct RemindersView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     var body: some View {
-        SettingsPage(title: "Program reminders") {
+        SettingsPage(title: String(localized: "Program reminders")) {
             Text("Browse ahead in the guide, select a program, then choose Remind me. Reminders never change channels automatically.")
                 .font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
             #if os(tvOS)
             Text("On Apple TV, reminders appear while RetroGuide is open. Set reminders on your iPhone or iPad for notifications outside the app.")
                 .font(Typography.settingsCaption).foregroundStyle(theme.textSecondary)
             #endif
-            if !app.pro.isPro { ProLockedRow(title: "Program reminders", systemImage: "bell") }
+            if !app.pro.isPro { ProLockedRow(title: String(localized: "Program reminders"), systemImage: "bell") }
             if app.reminders.pending.isEmpty {
                 Text("No upcoming reminders").font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
             }
-            if !app.reminders.pending.isEmpty { SettingsSection("Upcoming") {
+            if !app.reminders.pending.isEmpty { SettingsSection(String(localized: "Upcoming")) {
                 ForEach(app.reminders.pending) { reminder in
                     Button { app.reminders.remove(reminder) } label: {
                         HStack(spacing: DesignTokens.Spacing.md) {

@@ -10,7 +10,7 @@ struct SimulcastLimitPickerView: View {
 
     var body: some View {
         let current = pending ?? app.customization.simulcastLimit
-        SettingsPage(title: "Channels per Show") {
+        SettingsPage(title: String(localized: "Channels per Show")) {
             Text(current.explanation)
                 .font(Typography.body).foregroundStyle(theme.textSecondary)
             Text("Applies to automatic channels. 24/7 and custom channels are excluded from this limit. If no other show can fill a slot, the limit may be exceeded.")

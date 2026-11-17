@@ -13,7 +13,7 @@ struct ServerConnectionView: View {
 
     var body: some View {
         if let account = app.servers.accounts.first(where: { $0.id == serverID }) {
-            SettingsPage(title: "Connection") {
+            SettingsPage(title: ServerConnectionTitle.text) {
                 ServerConnectionStatus(account: account, isOffline: app.servers.status[serverID] == .offline, isApplying: isApplying)
                 VStack(spacing: DesignTokens.Spacing.sm) {
                     ForEach(ConnectionPreference.allCases, id: \.self) { preference in
@@ -40,7 +40,7 @@ struct ServerConnectionView: View {
     }
 
     private func customAddressSection(_ account: ServerAccount) -> some View {
-        SettingsSection("Custom address") {
+        SettingsSection(String(localized: "Custom address")) {
             TextField("100.x.x.x or hostname", text: $addressText)
                 #if os(iOS)
                 .keyboardType(.URL)
@@ -69,7 +69,7 @@ struct ServerConnectionView: View {
 
     private func useCustomAddress(_ account: ServerAccount) {
         guard let url = PlexCustomAddress.url(from: addressText, serverURL: account.baseURL) else {
-            message = "Enter a valid HTTPS server address."
+            message = String(localized: "Enter a valid HTTPS server address.")
             return
         }
         apply(ServerConnectionSettings(preference: .custom, customAddress: url))
@@ -82,7 +82,7 @@ struct ServerConnectionView: View {
             await app.updateConnection(connection, serverID: serverID)
             isApplying = false
             if app.servers.status[serverID] == .offline {
-                message = "Couldn't reach the server with this setting."
+                message = String(localized: "Couldn't reach the server with this setting.")
             }
         }
     }
@@ -108,10 +108,18 @@ private struct ServerConnectionStatus: View {
     }
 
     private var text: String {
-        if isApplying { return "Connecting…" }
-        if isOffline { return "Can't reach \(account.name) right now." }
+        if isApplying { return String(localized: "Connecting…") }
+        if isOffline { return String(localized: "Can't reach \(account.name) right now.") }
         let route = ConnectionRoute(account.baseURL)
-        return "Connected through: \(route.displayName) (\(ServerAddressText.short(account.baseURL)))"
+        return String(localized: "Connected through: \(route.displayName) (\(ServerAddressText.short(account.baseURL)))",
+                      comment: "The first argument is how the server is reached, such as VPN; the second is its address")
+    }
+}
+
+/// The "Connection" title on a server's page and on its own page.
+enum ServerConnectionTitle {
+    static var text: String {
+        String(localized: "Connection", comment: "How the app reaches a media server: its addresses and route")
     }
 }
 

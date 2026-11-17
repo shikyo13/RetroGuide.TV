@@ -73,7 +73,7 @@ struct SettingsSection<Content: View>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text(title.uppercased())
+            Text(title.localizedUppercase)
                 .font(Typography.captionEmphasis)
                 .foregroundStyle(theme.accentSecondary)
             VStack(spacing: DesignTokens.Spacing.sm) {
@@ -159,4 +159,12 @@ struct CheckmarkRow: View {
         Text(title)
             .lineLimit(1)
     }
+}
+
+/// Short values repeated across settings rows, with one translation each.
+enum SettingsValueText {
+    static var on: String { String(localized: "On", comment: "Settings row value: the option is turned on") }
+    static var off: String { String(localized: "Off", comment: "Settings row value: the option is turned off") }
+
+    static func onOff(_ isOn: Bool) -> String { isOn ? on : off }
 }

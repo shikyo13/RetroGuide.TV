@@ -12,13 +12,13 @@ struct ParentalControlsView: View {
     @State private var isSaving = false
 
     var body: some View {
-        SettingsPage(title: "Parental Controls") {
-            CheckmarkRow(title: "Enable parental controls", detail: "Limit content and lock settings on this device.", isSelected: draft.isEnabled) {
+        SettingsPage(title: String(localized: "Parental Controls")) {
+            CheckmarkRow(title: String(localized: "Enable parental controls"), detail: String(localized: "Limit content and lock settings on this device."), isSelected: draft.isEnabled) {
                 draft.isEnabled.toggle()
             }
             if let choices {
                 if let remote = app.parentalSettingsFromCloud {
-                    SettingsSection("Settings from iCloud") {
+                    SettingsSection(String(localized: "Settings from iCloud")) {
                         Button("Review synced restrictions and lineup") {
                             let enabled = draft.isEnabled
                             draft = remote
@@ -28,23 +28,25 @@ struct ParentalControlsView: View {
                             .font(Typography.settingsBody)
                     }
                 }
-                SettingsSection("Content restrictions") {
+                SettingsSection(String(localized: "Content restrictions")) {
                     NavigationLink { ParentalChannelsView(draft: $draft) } label: {
-                        SettingsRowLabel(title: "Channels", systemImage: "list.number", value: channelSummary)
+                        SettingsRowLabel(title: String(localized: "Channels"), systemImage: "list.number", value: channelSummary)
                     }
                     NavigationLink { ParentalRatingsView(draft: $draft) } label: {
-                        SettingsRowLabel(title: "Ratings", systemImage: "checkmark.shield", value: "\(draft.maximumMovieRating.rawValue) · \(draft.maximumTVRating.rawValue)")
+                        SettingsRowLabel(title: String(localized: "Ratings"), systemImage: "checkmark.shield", value: "\(draft.maximumMovieRating.rawValue) · \(draft.maximumTVRating.rawValue)")
                     }
                     NavigationLink { ParentalLibrariesView(draft: $draft, libraries: choices.libraries) } label: {
-                        SettingsRowLabel(title: "Libraries", systemImage: "books.vertical", value: draft.allLibraries ? "All" : "\(draft.libraryIDs.count) selected")
+                        SettingsRowLabel(title: String(localized: "Libraries"), systemImage: "books.vertical", value: draft.allLibraries ? ParentalValueText.all : String(localized: "\(draft.libraryIDs.count) selected"))
                     }
                     NavigationLink { ParentalAllowedContentView(draft: $draft, choices: choices) } label: {
-                        SettingsRowLabel(title: "Allowed Content", systemImage: "checklist", value: draft.selectedContentOnly ? "Selected only" : (draft.allGenres ? "All within limits" : (draft.genreNames.isEmpty ? "No genres selected" : "Genres selected")))
+                        SettingsRowLabel(title: String(localized: "Allowed Content"), systemImage: "checklist", value: allowedContentSummary)
                     }
                     NavigationLink {
-                        ParentalTitlePicker(title: "Blocked Shows and Movies", catalog: choices.catalog, selections: $draft.blockedTitles, blocking: true)
+                        ParentalTitlePicker(title: String(localized: "Blocked Shows and Movies"), catalog: choices.catalog, selections: $draft.blockedTitles, blocking: true)
                     } label: {
-                        SettingsRowLabel(title: "Blocked Shows and Movies", systemImage: "hand.raised", value: draft.blockedTitles.isEmpty ? "None" : "\(draft.blockedTitles.count) selected")
+                        SettingsRowLabel(title: String(localized: "Blocked Shows and Movies"), systemImage: "hand.raised", value: draft.blockedTitles.isEmpty
+                            ? String(localized: "None", comment: "Settings row value: no shows or movies are blocked")
+                            : String(localized: "\(draft.blockedTitles.count) selected"))
                     }
                 }
             }
@@ -75,15 +77,21 @@ struct ParentalControlsView: View {
     }
 
     private var channelSummary: String {
-        guard draft.usesCustomLineup else { return "Regular lineup" }
+        guard draft.usesCustomLineup else { return String(localized: "Regular lineup") }
         let count = draft.channelCustomization.customChannels.count
-        return count == 1 ? "1 custom channel" : "\(count) custom channels"
+        return count == 1 ? String(localized: "1 custom channel") : String(localized: "\(count) custom channels")
+    }
+
+    private var allowedContentSummary: String {
+        if draft.selectedContentOnly { return String(localized: "Selected only") }
+        if draft.allGenres { return String(localized: "All within limits") }
+        return draft.genreNames.isEmpty ? String(localized: "No genres selected") : String(localized: "Genres selected")
     }
 
     private func save() {
         if !app.parentalControls.hasPIN {
             guard draft != ParentalPolicy() else { dismiss(); return }
-            guard pin == confirmation else { message = "The PINs do not match."; return }
+            guard pin == confirmation else { message = String(localized: "The PINs do not match."); return }
         }
         isSaving = true
         Task {
@@ -101,14 +109,21 @@ private struct ParentalPINSetup: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        SettingsSection("Create PIN") {
-            ParentalPINField(title: "Four-digit PIN", identifier: "newParentalPIN", pin: $pin,
+        SettingsSection(String(localized: "Create PIN")) {
+            ParentalPINField(title: String(localized: "Four-digit PIN"), identifier: "newParentalPIN", pin: $pin,
                 field: .create, focus: $focusedField) { focusedField = .confirm }
-            ParentalPINField(title: "Confirm PIN", identifier: "confirmParentalPIN", pin: $confirmation,
+            ParentalPINField(title: String(localized: "Confirm PIN"), identifier: "confirmParentalPIN", pin: $confirmation,
                 field: .confirm, focus: $focusedField)
             Text("Use this PIN to change settings or turn off parental controls. Keep it somewhere safe.")
                 .font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
         }
         .onDisappear { pin = ""; confirmation = "" }
+    }
+}
+
+/// Short values shared by the parental settings rows.
+enum ParentalValueText {
+    static var all: String {
+        String(localized: "All", comment: "Settings row value: every library or genre is allowed")
     }
 }

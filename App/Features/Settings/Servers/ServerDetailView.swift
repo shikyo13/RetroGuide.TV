@@ -18,11 +18,11 @@ struct ServerDetailView: View {
                     : "Connected through: \(ConnectionRoute(account.baseURL).displayName) (\(ServerAddressText.short(account.baseURL))).")
                     .font(Typography.body)
                     .foregroundStyle(theme.textSecondary)
-                SettingsSection("Playback") {
+                SettingsSection(String(localized: "Playback")) {
                     NavigationLink {
                         VideoQualityPickerView(serverID: serverID)
                     } label: {
-                        SettingsRowLabel(title: "Video quality", systemImage: "sparkles.tv", value: account.playback.quality.displayName)
+                        SettingsRowLabel(title: String(localized: "Video quality"), systemImage: "sparkles.tv", value: account.playback.quality.displayName)
                     }
                     Button {
                         var playback = account.playback
@@ -30,9 +30,9 @@ struct ServerDetailView: View {
                         Task { await app.updatePlayback(playback, serverID: serverID) }
                     } label: {
                         SettingsRowLabel(
-                            title: "Extra buffering",
+                            title: String(localized: "Extra buffering"),
                             systemImage: "gauge.with.dots.needle.33percent",
-                            value: account.playback.extraBuffering ? "On" : "Off",
+                            value: SettingsValueText.onOff(account.playback.extraBuffering),
                             accessory: nil
                         )
                     }
@@ -40,30 +40,30 @@ struct ServerDetailView: View {
                         .font(Typography.caption)
                         .foregroundStyle(theme.textSecondary)
                 }
-                SettingsSection("Server") {
+                SettingsSection(String(localized: "Server")) {
                     switch account.kind {
                     case .plex:
                         NavigationLink {
                             ServerConnectionView(serverID: serverID)
                         } label: {
-                            SettingsRowLabel(title: "Connection", systemImage: "network", value: account.connection.preference.shortName)
+                            SettingsRowLabel(title: ServerConnectionTitle.text, systemImage: "network", value: account.connection.preference.shortName)
                         }
                     case .jellyfin:
                         NavigationLink {
                             JellyfinConnectionView(serverID: serverID)
                         } label: {
-                            SettingsRowLabel(title: "Connection", systemImage: "network", value: JellyfinConnectionView.summary(account.connection))
+                            SettingsRowLabel(title: ServerConnectionTitle.text, systemImage: "network", value: JellyfinConnectionView.summary(account.connection))
                         }
                     }
                     NavigationLink {
                         LibrarySettingsView(account: account)
                     } label: {
-                        SettingsRowLabel(title: "Libraries", systemImage: "books.vertical", value: nil)
+                        SettingsRowLabel(title: String(localized: "Libraries"), systemImage: "books.vertical", value: nil)
                     }
                     Button {
                         isConfirmingRemoval = true
                     } label: {
-                        SettingsRowLabel(title: "Remove server", systemImage: "trash", value: nil, accessory: nil)
+                        SettingsRowLabel(title: String(localized: "Remove server"), systemImage: "trash", value: nil, accessory: nil)
                     }
                 }
             }

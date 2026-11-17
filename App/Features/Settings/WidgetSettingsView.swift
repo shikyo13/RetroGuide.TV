@@ -6,13 +6,13 @@ struct WidgetSettingsView: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        SettingsPage(title: "Home Screen") {
+        SettingsPage(title: String(localized: "Home Screen")) {
             Text("Add What's On for artwork, current programs and channel controls, or App Icon for a larger icon. Both follow your app theme.")
                 .font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
             Text("Touch and hold your Home Screen, choose Edit › Add Widget, then search for RetroGuide.TV. Reopen the app to refresh the saved schedule; iOS decides when widgets update.")
                 .font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
             if app.pro.isPro {
-                SettingsSection("What's On channels") {
+                SettingsSection(String(localized: "What's On channels")) {
                     ForEach(ViewingPreferences.WidgetSource.allCases, id: \.self) { source in
                         Button { app.viewing.widgetSource = source } label: {
                             SettingsRowLabel(title: source.title, systemImage: app.viewing.widgetSource == source ? "checkmark.circle.fill" : "circle", value: nil, accessory: nil)
@@ -26,7 +26,7 @@ struct WidgetSettingsView: View {
                             .font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
                     }
                     NavigationLink { FavoritesView() } label: {
-                        SettingsRowLabel(title: "Choose Favorites", systemImage: "star", value: nil)
+                        SettingsRowLabel(title: String(localized: "Choose Favorites"), systemImage: "star", value: nil)
                     }
                     .buttonStyle(.retroRow)
                 }
@@ -37,7 +37,7 @@ struct WidgetSettingsView: View {
                         Text("Choose a channel below to show programs in your widget.")
                             .font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
                     }
-                    SettingsSection("Channels") {
+                    SettingsSection(String(localized: "Channels")) {
                         ForEach(app.visibleChannels) { channel in
                             Button { select(channel.id) } label: {
                                 SettingsRowLabel(title: "\(channel.number) · \(channel.name)", systemImage: selected(channel.id) ? "checkmark.circle.fill" : "circle", value: nil, accessory: nil)
@@ -48,7 +48,7 @@ struct WidgetSettingsView: View {
                     }
                 }
             } else {
-                ProLockedRow(title: "Customize widget channels", systemImage: "slider.horizontal.3")
+                ProLockedRow(title: String(localized: "Customize widget channels"), systemImage: "slider.horizontal.3")
             }
         }
     }

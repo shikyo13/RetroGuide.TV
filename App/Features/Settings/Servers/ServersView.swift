@@ -7,11 +7,11 @@ struct ServersView: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        SettingsPage(title: "Servers") {
+        SettingsPage(title: String(localized: "Servers")) {
             Text("Channels combine content from your selected libraries. For matching copies, servers higher in this list are preferred. Availability, parental restrictions and playable versions can affect which copy is used.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
-            SettingsSection("Connected") {
+            SettingsSection(String(localized: "Connected")) {
                 ForEach(app.servers.accounts) { account in
                     NavigationLink {
                         ServerDetailView(serverID: account.id)
@@ -27,17 +27,19 @@ struct ServersView: View {
                     NavigationLink {
                         AddServerView()
                     } label: {
-                        SettingsRowLabel(title: "Add a server", systemImage: "plus.circle", value: nil)
+                        SettingsRowLabel(title: String(localized: "Add a server"), systemImage: "plus.circle", value: nil)
                     }
                 } else {
-                    ProLockedRow(title: "Add another server", systemImage: "plus.circle")
+                    ProLockedRow(title: String(localized: "Add another server"), systemImage: "plus.circle")
                 }
             }
         }
     }
 
     private func statusText(for account: ServerAccount) -> String {
-        app.servers.status[account.id] == .offline ? "Offline" : "Online"
+        app.servers.status[account.id] == .offline
+            ? String(localized: "Offline", comment: "Server status")
+            : String(localized: "Online", comment: "Server status")
     }
 
     private func statusSymbol(for account: ServerAccount) -> String {

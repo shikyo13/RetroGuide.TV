@@ -9,15 +9,15 @@ struct RemovedTitlesSection: View {
 
     var body: some View {
         let removed = (app.customization.removedTitles[channel.id] ?? [])
-            .map { (showID: $0, name: app.titleName(showID: $0) ?? "A show no longer in your library") }
+            .map { (showID: $0, name: app.titleName(showID: $0) ?? String(localized: "A show no longer in your library")) }
             .sorted { $0.name < $1.name }
         if !removed.isEmpty {
-            SettingsSection("Removed from this channel") {
+            SettingsSection(String(localized: "Removed from this channel")) {
                 ForEach(removed, id: \.showID) { title in
                     Button {
                         app.restoreTitle(showID: title.showID, toChannel: channel.id)
                     } label: {
-                        SettingsRowLabel(title: title.name, systemImage: "arrow.uturn.backward", value: "Put back", accessory: nil)
+                        SettingsRowLabel(title: title.name, systemImage: "arrow.uturn.backward", value: String(localized: "Put back"), accessory: nil)
                     }
                 }
             }

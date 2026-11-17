@@ -17,6 +17,13 @@ struct ParentalPINField: View {
         Binding(get: { pin }, set: { pin = ParentalPIN.sanitized($0) })
     }
 
+    /// Reveals or hides the typed PIN; "Show" is a verb here, not a TV show.
+    private var visibilityLabel: String {
+        isVisible
+            ? String(localized: "Hide \(title)", comment: "Button that hides the typed PIN; the argument is the field's name")
+            : String(localized: "Show \(title)", comment: "Button that reveals the typed PIN; the argument is the field's name")
+    }
+
     private var layout: AnyLayout {
         #if os(tvOS)
         AnyLayout(VStackLayout(alignment: .leading, spacing: DesignTokens.Spacing.sm))
@@ -48,14 +55,14 @@ struct ParentalPINField: View {
                 focus.wrappedValue = field
                 #endif
             } label: {
-                Label(isVisible ? "Hide \(title)" : "Show \(title)", systemImage: isVisible ? "eye.slash" : "eye")
+                Label(visibilityLabel, systemImage: isVisible ? "eye.slash" : "eye")
             }
             #if os(tvOS)
             .buttonStyle(.retro)
             #else
             .buttonStyle(.retroIcon)
             #endif
-            .accessibilityLabel(isVisible ? "Hide \(title)" : "Show \(title)")
+            .accessibilityLabel(visibilityLabel)
             .accessibilityIdentifier(identifier + "Visibility")
         }
         .onChange(of: pin) { old, new in

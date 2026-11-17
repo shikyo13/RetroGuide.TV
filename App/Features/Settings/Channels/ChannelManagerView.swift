@@ -6,7 +6,7 @@ struct ChannelManagerView: View {
     @Environment(AppModel.self) private var app
 
     var body: some View {
-        SettingsPage(title: "Channels") {
+        SettingsPage(title: String(localized: "Channels")) {
             ForEach(ChannelSource.allCases, id: \.self) { source in
                 let channels = app.lineup.filter { $0.definition.source == source }
                 if !channels.isEmpty {

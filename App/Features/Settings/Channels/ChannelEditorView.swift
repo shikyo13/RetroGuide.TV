@@ -37,23 +37,23 @@ struct ChannelEditorView: View {
     }
 
     var body: some View {
-        SettingsPage(title: isNew ? "New Channel" : "Edit Channel") {
-            SettingsSection("Name") {
+        SettingsPage(title: isNew ? String(localized: "New Channel") : String(localized: "Edit Channel")) {
+            SettingsSection(String(localized: "Name")) {
                 TextField("Channel name", text: $draft.name)
             }
-            SettingsSection("What's on") {
+            SettingsSection(String(localized: "What's on")) {
                 ForEach(MediaKind.allCases, id: \.self) { kind in
                     CheckmarkRow(title: kind.displayName, isSelected: draft.rule.kinds.contains(kind)) {
                         draft.rule.kinds.formSymmetricDifference([kind])
                     }
                 }
-                filterLink("Genres", systemImage: "theatermasks", options: facets.categories.map(FacetOption.init), selection: categorySelection)
-                filterLink("Shows", systemImage: "tv", options: facets.series.map(FacetOption.init), selection: $draft.rule.seriesIDs)
-                filterLink("Networks", systemImage: "antenna.radiowaves.left.and.right", options: facets.networks.map(FacetOption.init), selection: $draft.rule.networks)
-                filterLink("Collections", systemImage: "square.stack", options: facets.collections.map(FacetOption.init), selection: $draft.rule.collections)
-                filterLink("Decades", systemImage: "calendar", options: facets.decades.map(FacetOption.init), selection: decadeSelection)
-                filterLink("Audience", systemImage: "person.2", options: audienceOptions, selection: audienceSelection)
-                filterLink("Libraries", systemImage: "books.vertical", options: facets.libraries.map(FacetOption.init), selection: $draft.rule.libraryIDs)
+                filterLink(String(localized: "Genres"), systemImage: "theatermasks", options: facets.categories.map(FacetOption.init), selection: categorySelection)
+                filterLink(String(localized: "Shows"), systemImage: "tv", options: facets.series.map(FacetOption.init), selection: $draft.rule.seriesIDs)
+                filterLink(String(localized: "Networks"), systemImage: "antenna.radiowaves.left.and.right", options: facets.networks.map(FacetOption.init), selection: $draft.rule.networks)
+                filterLink(String(localized: "Collections"), systemImage: "square.stack", options: facets.collections.map(FacetOption.init), selection: $draft.rule.collections)
+                filterLink(String(localized: "Decades"), systemImage: "calendar", options: facets.decades.map(FacetOption.init), selection: decadeSelection)
+                filterLink(String(localized: "Audience"), systemImage: "person.2", options: audienceOptions, selection: audienceSelection)
+                filterLink(String(localized: "Libraries"), systemImage: "books.vertical", options: facets.libraries.map(FacetOption.init), selection: $draft.rule.libraryIDs)
             }
             ScheduleOrderSection(selection: draft.ordering) { draft.ordering = $0 }
             previewSummary
@@ -125,9 +125,9 @@ struct ChannelEditorView: View {
     // MARK: - Selection adapters
 
     private func summary(of selection: Set<String>, in options: [FacetOption]) -> String {
-        guard !selection.isEmpty else { return "Any" }
+        guard !selection.isEmpty else { return FacetPickerView.anyTitle }
         let names = options.filter { selection.contains($0.id) }.map(\.title)
-        return names.count == 1 ? names[0] : "\(names.count) selected"
+        return names.count == 1 ? names[0] : String(localized: "\(names.count) selected")
     }
 
     private var audienceOptions: [FacetOption] {

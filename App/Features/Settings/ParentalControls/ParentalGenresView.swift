@@ -7,16 +7,16 @@ struct ParentalGenresView: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        SettingsPage(title: "Allowed Genres") {
-            CheckmarkRow(title: "All genres", isSelected: draft.allGenres) { draft.allGenres = true }
-            CheckmarkRow(title: "Selected genres", isSelected: !draft.allGenres) { draft.allGenres = false }
+        SettingsPage(title: String(localized: "Allowed Genres")) {
+            CheckmarkRow(title: String(localized: "All genres"), isSelected: draft.allGenres) { draft.allGenres = true }
+            CheckmarkRow(title: String(localized: "Selected genres"), isSelected: !draft.allGenres) { draft.allGenres = false }
             if !draft.allGenres {
                 NavigationLink {
-                    FacetPickerView(title: "Genres", emptySelectionTitle: "None selected. No content allowed.",
-                        helpText: "A title needs at least one selected genre. Titles without a matching tag are excluded.",
+                    FacetPickerView(title: String(localized: "Genres"), emptySelectionTitle: String(localized: "None selected. No content allowed."),
+                        helpText: String(localized: "A title needs at least one selected genre. Titles without a matching tag are excluded."),
                         options: availableGenres, selection: $draft.genreNames)
                 } label: {
-                    SettingsRowLabel(title: "Choose Genres", systemImage: "tag", value: "\(draft.genreNames.count) selected")
+                    SettingsRowLabel(title: String(localized: "Choose Genres"), systemImage: "tag", value: String(localized: "\(draft.genreNames.count) selected"))
                 }
                 .buttonStyle(.retroRow)
             }
@@ -30,7 +30,7 @@ struct ParentalGenresView: View {
     private var availableGenres: [FacetOption] {
         let known = Set(genres.map(\.id))
         let unavailable = draft.genreNames.subtracting(known).sorted().map {
-            FacetOption(id: $0, title: $0, detail: "Not in currently loaded libraries")
+            FacetOption(id: $0, title: $0, detail: String(localized: "Not in currently loaded libraries"))
         }
         return genres + unavailable
     }

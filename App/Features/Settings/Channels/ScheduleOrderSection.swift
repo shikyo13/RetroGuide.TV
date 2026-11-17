@@ -12,7 +12,7 @@ struct ScheduleOrderSection: View {
     @State private var pending: ScheduleOrdering?
 
     var body: some View {
-        SettingsSection("Schedule order") {
+        SettingsSection(String(localized: "Schedule order")) {
             if app.pro.access.canChangeScheduling {
                 ForEach(ScheduleOrdering.allCases, id: \.self) { ordering in
                     CheckmarkRow(title: ordering.displayName, detail: ordering.explanation, isSelected: (pending ?? selection) == ordering) {
@@ -23,7 +23,7 @@ struct ScheduleOrderSection: View {
                 ScheduleUpdatingNote(isVisible: pending != nil && app.isRebuildingLineup)
             } else {
                 CheckmarkRow(title: selection.displayName, detail: selection.explanation, isSelected: true) {}
-                ProLockedRow(title: "Change schedule order", systemImage: "shuffle")
+                ProLockedRow(title: String(localized: "Change schedule order"), systemImage: "shuffle")
             }
         }
         .onChange(of: selection) { _, newValue in

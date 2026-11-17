@@ -22,8 +22,13 @@ struct FacetPickerView: View {
         static let searchThreshold = 15
     }
 
+    /// Nothing chosen: the filter allows everything.
+    static var anyTitle: String {
+        String(localized: "Any", comment: "Filter value when nothing is chosen: every item matches")
+    }
+
     let title: String
-    var emptySelectionTitle = "Any"
+    var emptySelectionTitle = FacetPickerView.anyTitle
     var helpText: String? = nil
     let options: [FacetOption]
     @Binding var selection: Set<String>
@@ -37,12 +42,12 @@ struct FacetPickerView: View {
                 Text(helpText).font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
             }
             HStack(spacing: DesignTokens.Spacing.md) {
-                Text(selection.isEmpty ? emptySelectionTitle : "\(selection.count) selected")
+                Text(selection.isEmpty ? emptySelectionTitle : String(localized: "\(selection.count) selected"))
                     .font(Typography.callout)
                     .foregroundStyle(theme.textSecondary)
                 Spacer()
                 if !selection.isEmpty {
-                    Button("Clear") { selection.removeAll() }
+                    Button(String(localized: "Clear", comment: "Button that deselects every choice in the list")) { selection.removeAll() }
                         .buttonStyle(.retro)
                 }
             }

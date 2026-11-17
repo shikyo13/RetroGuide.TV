@@ -19,15 +19,15 @@ struct ChannelDetailView: View {
                 Text(summary(of: channel))
                     .font(Typography.body)
                     .foregroundStyle(theme.textSecondary)
-                SettingsSection("Guide") {
+                SettingsSection(String(localized: "Guide")) {
                     FavoriteChannelButton(channel: channel)
                     Button {
                         app.setHidden(!channel.isHidden, channelID: channel.id)
                     } label: {
                         SettingsRowLabel(
-                            title: "Show in guide",
+                            title: String(localized: "Show in guide"),
                             systemImage: channel.isHidden ? "eye.slash" : "eye",
-                            value: channel.isHidden ? "Hidden" : "Shown",
+                            value: channel.isHidden ? String(localized: "Hidden") : String(localized: "Shown"),
                             accessory: nil
                         )
                     }
@@ -37,23 +37,23 @@ struct ChannelDetailView: View {
                 }
                 RemovedTitlesSection(channel: channel)
                 if channel.definition.source == .custom {
-                    SettingsSection("Custom channel") {
+                    SettingsSection(String(localized: "Custom channel")) {
                         NavigationLink {
                             ChannelEditorView(existing: channel.definition)
                         } label: {
-                            SettingsRowLabel(title: "Edit channel", systemImage: "slider.horizontal.3", value: nil)
+                            SettingsRowLabel(title: String(localized: "Edit channel"), systemImage: "slider.horizontal.3", value: nil)
                         }
                         Button {
                             dismiss()
                             app.deleteCustomChannel(id: channel.id)
                         } label: {
-                            SettingsRowLabel(title: "Delete channel", systemImage: "trash", value: nil, accessory: nil)
+                            SettingsRowLabel(title: String(localized: "Delete channel"), systemImage: "trash", value: nil, accessory: nil)
                         }
                     }
                 }
             }
         } else {
-            SettingsPage(title: "Channel") {
+            SettingsPage(title: String(localized: "Channel")) {
                 Text("This channel no longer has any programs.")
                     .font(Typography.body)
                     .foregroundStyle(theme.textSecondary)
@@ -63,7 +63,8 @@ struct ChannelDetailView: View {
 
     private func summary(of channel: Channel) -> String {
         let shows = Array(Set(channel.items.map(\.headline))).sorted().prefix(Layout.sampleShowCount)
-        let stats = "\(channel.items.count) programs · \(ScheduleFormatting.hours(channel.totalRuntime))"
-        return "\(stats)\nFeaturing \(shows.joined(separator: ", "))"
+        let hours = ScheduleFormatting.hours(channel.totalRuntime)
+        return String(localized: "\(channel.items.count) programs · \(hours)\nFeaturing \(shows.joined(separator: ", "))",
+                      comment: "Channel summary; the last argument lists show names")
     }
 }

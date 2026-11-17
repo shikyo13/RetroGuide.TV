@@ -5,6 +5,8 @@ struct AcknowledgementsView: View {
     private enum Resource {
         static let licenseName = "LGPL-3.0"
         static let licenseExtension = "txt"
+        /// The license's official name, kept in English like its text.
+        static let licenseTitle = "GNU Lesser General Public License v3.0"
     }
 
     private struct Component: Identifiable {
@@ -26,19 +28,19 @@ struct AcknowledgementsView: View {
     @State private var licenseParagraphs: [String] = []
 
     var body: some View {
-        SettingsPage(title: "Acknowledgements") {
+        SettingsPage(title: String(localized: "Acknowledgements")) {
             Text("\(AppIdentity.productName) is open-source software under the MIT License. Video playback uses the following libraries. You can rebuild the app with modified versions of them from the public source code.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
             // Rows are focusable (no-op buttons) so the Siri Remote can scroll the page.
-            SettingsSection("Libraries") {
+            SettingsSection(String(localized: "Libraries")) {
                 ForEach(Self.components) { component in
                     Button {} label: {
                         SettingsRowLabel(title: component.name, systemImage: "shippingbox", value: "\(component.license) · \(component.source)", accessory: nil)
                     }
                 }
             }
-            SettingsSection("GNU Lesser General Public License v3.0") {
+            SettingsSection(Resource.licenseTitle) {
                 ForEach(licenseParagraphs.indices, id: \.self) { index in
                     Button {} label: {
                         Text(licenseParagraphs[index])

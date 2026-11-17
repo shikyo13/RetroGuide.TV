@@ -5,21 +5,23 @@ struct CommercialBreaksView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
     var body: some View {
-        SettingsPage(title: "Commercial Breaks") {
+        SettingsPage(title: String(localized: "Commercial Breaks")) {
             Text("Play clips from a separate commercial library between programs. Shows and movies play without interruptions.")
                 .font(Typography.body).foregroundStyle(theme.textSecondary)
-            CheckmarkRow(title: "Enable commercial breaks", isSelected: app.preferences.commercials.isEnabled) {
+            CheckmarkRow(title: String(localized: "Enable commercial breaks"), isSelected: app.preferences.commercials.isEnabled) {
                 app.preferences.commercials.isEnabled.toggle()
             }.disabled(app.preferences.commercials.libraryIDs.isEmpty)
             NavigationLink { CommercialLibraryPickerView() } label: {
-                SettingsRowLabel(title: "Commercial libraries", systemImage: "folder",
-                    value: app.preferences.commercials.libraryIDs.isEmpty ? "Choose libraries" : "\(app.preferences.commercials.libraryIDs.count) selected")
+                SettingsRowLabel(title: String(localized: "Commercial libraries"), systemImage: "folder",
+                    value: app.preferences.commercials.libraryIDs.isEmpty
+                        ? String(localized: "Choose libraries")
+                        : String(localized: "\(app.preferences.commercials.libraryIDs.count) selected"))
             }
             if app.preferences.commercials.libraryIDs.isEmpty {
                 Text("Choose a library containing only commercials to enable breaks.")
                     .font(Typography.caption).foregroundStyle(theme.textSecondary)
             }
-            SettingsSection("Between programs") {
+            SettingsSection(String(localized: "Between programs")) {
                 ForEach(CommercialBreakSettings.Count.allCases, id: \.self) { count in
                     CheckmarkRow(title: count.displayName, isSelected: app.preferences.commercials.count == count) {
                         app.preferences.commercials.count = count

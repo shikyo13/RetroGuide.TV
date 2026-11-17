@@ -10,7 +10,7 @@ struct AllChannelsOrderView: View {
 
     var body: some View {
         let current = pending ?? app.customization.defaultOrdering
-        SettingsPage(title: "Schedule Order") {
+        SettingsPage(title: String(localized: "Schedule Order")) {
             Text("Set the program order for the current lineup. You can change individual channels in Manage channels. Choosing Each channel's own restores automatic-channel defaults and keeps custom-channel orders.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
@@ -44,11 +44,15 @@ struct AllChannelsOrderView: View {
 }
 
 enum AllChannelsOrdering {
-    static let eachChannelTitle = "Each channel's own"
-    static let eachChannelDetail = "Restore automatic-channel defaults. Keep custom-channel orders."
+    static var eachChannelTitle: String {
+        String(localized: "Each channel's own", comment: "Schedule order choice: every channel keeps its own order")
+    }
+    static var eachChannelDetail: String {
+        String(localized: "Restore automatic-channel defaults. Keep custom-channel orders.")
+    }
 
     /// For the Settings row's value.
     static func summary(_ ordering: ScheduleOrdering?) -> String {
-        ordering?.displayName ?? "Per channel"
+        ordering?.displayName ?? String(localized: "Per channel", comment: "Settings row value: each channel has its own schedule order")
     }
 }

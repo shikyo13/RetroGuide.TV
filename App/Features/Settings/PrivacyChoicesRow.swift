@@ -11,7 +11,7 @@ struct PrivacyChoicesRow: View {
             Button {
                 Task { await ads.presentPrivacyChoices() }
             } label: {
-                SettingsRowLabel(title: "Privacy choices", systemImage: "hand.raised", value: nil, accessory: nil)
+                SettingsRowLabel(title: String(localized: "Privacy choices"), systemImage: "hand.raised", value: nil, accessory: nil)
             }
         }
     }

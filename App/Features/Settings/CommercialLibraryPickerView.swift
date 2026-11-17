@@ -11,8 +11,8 @@ struct CommercialLibraryPickerView: View {
         app.preferences.commercials.libraryIDs.subtracting(sources.flatMap { $0.libraries.map(\.id) })
     }
     var body: some View {
-        SettingsPage(title: "Commercial Libraries") {
-            SettingsSection("Commercial libraries") {
+        SettingsPage(title: String(localized: "Commercial Libraries")) {
+            SettingsSection(String(localized: "Commercial libraries")) {
                 Text("Use a separate library containing only commercials. Selected libraries are used only for commercials and are excluded from regular channels.")
                     .font(Typography.caption).foregroundStyle(theme.textSecondary)
                 if isLoading { ProgressView() }
@@ -49,7 +49,7 @@ struct CommercialLibraryPickerView: View {
             errorMessage = nil
             for account in app.servers.accounts {
                 do { sources.append((account, try await app.servers.libraries(forServer: account.id))) }
-                catch { errorMessage = "Some libraries could not be loaded. Reopen this page to try again." }
+                catch { errorMessage = String(localized: "Some libraries could not be loaded. Reopen this page to try again.") }
             }
             isLoading = false
         }

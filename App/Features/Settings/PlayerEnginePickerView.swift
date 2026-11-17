@@ -6,7 +6,7 @@ struct PlayerEnginePickerView: View {
     @Environment(\.theme) private var theme
 
     var body: some View {
-        SettingsPage(title: "Player") {
+        SettingsPage(title: String(localized: "Player")) {
             Text("RetroGuide plays the original files from your server whenever it can, so your server doesn't have to convert video.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)

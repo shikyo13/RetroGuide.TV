@@ -11,7 +11,7 @@ struct RateAppRow: View {
             RatingPrompter.choseToRate()
             openURL(AppIdentity.writeReviewURL)
         } label: {
-            SettingsRowLabel(title: "Rate \(AppIdentity.productName)", systemImage: "star.bubble", value: nil, accessory: nil)
+            SettingsRowLabel(title: String(localized: "Rate \(AppIdentity.productName)"), systemImage: "star.bubble", value: nil, accessory: nil)
         }
     }
 }
