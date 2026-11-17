@@ -1347,13 +1347,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lldଟି ବିଜ୍ଞାପନ"
+                  "value" : "%lld ଟି ବିଜ୍ଞାପନ"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lldଟି ବିଜ୍ଞାପନ"
+                  "value" : "%lld ଟି ବିଜ୍ଞାପନ"
                 }
               }
             }
@@ -8636,7 +8636,7 @@
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%2$lldଟି ଶୋ'ରୁ %1$lldଟି ଏପିସୋଡ୍ ଇଣ୍ଡେକ୍ସ ହେଲା"
+            "value" : "%2$lld ଟି ଶୋ'ରୁ %1$lld ଟି ଏପିସୋଡ୍ ଇଣ୍ଡେକ୍ସ ହେଲା"
           }
         }
       }
@@ -9045,13 +9045,13 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lldଟି ସିନେମା ଇଣ୍ଡେକ୍ସ ହେଲା"
+                  "value" : "%lld ଟି ସିନେମା ଇଣ୍ଡେକ୍ସ ହେଲା"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lldଟି ସିନେମା ଇଣ୍ଡେକ୍ସ ହେଲା"
+                  "value" : "%lld ଟି ସିନେମା ଇଣ୍ଡେକ୍ସ ହେଲା"
                 }
               }
             }
@@ -12768,7 +12768,7 @@
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ରୁ ସିନେମା ପଢ଼ାଯାଉଛି…"
+            "value" : "%@ ରୁ ସିନେମା ପଢ଼ାଯାଉଛି…"
           }
         }
       }
@@ -13214,7 +13214,7 @@
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ରେ ଏପିସୋଡ୍ ପଢ଼ାଯାଉଛି…"
+            "value" : "%@ ରେ ଏପିସୋଡ୍ ପଢ଼ାଯାଉଛି…"
           }
         }
       }
@@ -13363,7 +13363,7 @@
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ରେ ଶୈଳୀ ଓ ନେଟୱର୍କ ପଢ଼ାଯାଉଛି…"
+            "value" : "%@ ରେ ଶୈଳୀ ଓ ନେଟୱର୍କ ପଢ଼ାଯାଉଛି…"
           }
         }
       }

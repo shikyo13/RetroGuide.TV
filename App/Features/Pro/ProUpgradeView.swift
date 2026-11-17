@@ -11,14 +11,23 @@ struct ProUpgradeView: View {
             Text(pro.isPro ? "You have RetroGuide Pro. Thank you for supporting the app!" : "One purchase, no subscription. It unlocks Pro on your iPhone, iPad and Apple TV.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
+            #if os(tvOS)
+            // Focus starts on Upgrade: above the list, the page doesn't scroll
+            // its title away to reach it.
+            if !pro.isPro {
+                purchaseControls(pro)
+            }
+            #endif
             SettingsSection(String(localized: "Included", comment: "Heading above the list of features RetroGuide Pro adds")) {
                 ForEach(ProBenefit.all) { benefit in
                     ProBenefitRow(benefit: benefit)
                 }
             }
+            #if !os(tvOS)
             if !pro.isPro {
                 purchaseControls(pro)
             }
+            #endif
         }
         .task { await pro.loadProductIfNeeded() }
         .onAppear {
@@ -32,7 +41,7 @@ struct ProUpgradeView: View {
             Button {
                 Task { await pro.purchase() }
             } label: {
-                Label(buyTitle(pro), systemImage: "star.fill")
+                Label { buyTitle(pro) } icon: { Image(systemName: "star.fill") }
             }
             .buttonStyle(.retroPrimary)
             .disabled(pro.product == nil || pro.purchaseState == .purchasing)
@@ -61,11 +70,13 @@ struct ProUpgradeView: View {
         }
     }
 
-    private func buyTitle(_ pro: ProStore) -> String {
-        guard let product = pro.product else {
-            return pro.isLoadingProduct ? String(localized: "Contacting the App Store…") : String(localized: "Couldn't reach the App Store")
+    @ViewBuilder
+    private func buyTitle(_ pro: ProStore) -> some View {
+        if let product = pro.product {
+            PriceText(price: product.displayPrice) { String(localized: "Upgrade for \($0)") }
+        } else {
+            Text(pro.isLoadingProduct ? String(localized: "Contacting the App Store…") : String(localized: "Couldn't reach the App Store"))
         }
-        return String(localized: "Upgrade for \(product.displayPrice)")
     }
 
     private func statusMessage(_ pro: ProStore) -> String? {

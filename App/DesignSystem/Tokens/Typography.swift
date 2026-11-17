@@ -14,6 +14,13 @@ enum Typography {
         static let osd = PlatformMetric.value(tv: CGFloat(96), touch: 56)
     }
 
+    /// A Latin font for numbers that must read unambiguously (prices) in app
+    /// languages whose system font restyles Latin digits.
+    enum LatinDigits {
+        static let languages: Set<String> = ["or"]
+        static let fontName = "HelveticaNeue-Medium"
+    }
+
     /// How far text may shrink to fit before truncating.
     static let minimumScaleFactor: CGFloat = 0.75
     /// Navigation-bar titles (iPhone and iPad) may shrink further: long

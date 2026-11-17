@@ -138,6 +138,7 @@
 		8375310E6576F07734D95B3E /* ChannelBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38E2FADE8D0D4FF56F141FCB /* ChannelBadge.swift */; };
 		83B88E3EDCDB87872742AB45 /* ThemeCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B23A277D13DDAB3F7138C0D /* ThemeCatalog.swift */; };
 		85739C5D64E3381CA036A78F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = A7AECD051DADEF83FBA81A36 /* Localizable.xcstrings */; };
+		8638AFB42501A57A7ED26DDB /* PriceText.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6A22F091D411EA55F735F38 /* PriceText.swift */; };
 		866A0EB73AB28544D2DCBDB3 /* RatingPrompter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 130CC237A5F2FDD66A49DBC5 /* RatingPrompter.swift */; };
 		86CF56BC970F2BABE026FD0E /* LibraryPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 106458C76CA02AA261456C9F /* LibraryPickerView.swift */; };
 		8A413E7449B3CC2E98DE43C9 /* ContentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3F5E971E895D60A32B2D7E /* ContentProvider.swift */; };
@@ -509,6 +510,7 @@
 		D4866448AD788DB8689A527F /* BrandMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrandMark.swift; sourceTree = "<group>"; };
 		D4DC96C9B8E47BE7AA7954AB /* AdUnits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdUnits.swift; sourceTree = "<group>"; };
 		D63AA8E86BF9C02B61AE1DCF /* ServerPickerStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerPickerStepView.swift; sourceTree = "<group>"; };
+		D6A22F091D411EA55F735F38 /* PriceText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceText.swift; sourceTree = "<group>"; };
 		D8481B109A8DCD793BC1591A /* ThemePalettes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePalettes.swift; sourceTree = "<group>"; };
 		D9306874686ECBC895ABC543 /* PlaybackEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackEngine.swift; sourceTree = "<group>"; };
 		DB111A23A6974B21B2FFDB72 /* ParentalEmptyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentalEmptyView.swift; sourceTree = "<group>"; };
@@ -826,6 +828,7 @@
 				5BC6B7BA73B48F700F7F3282 /* LandscapeTopClearance.swift */,
 				983187B0604149F94F303387 /* NavigationTitleFit.swift */,
 				D1C2D322C2CAAB67F93D5C0C /* NumberControl.swift */,
+				D6A22F091D411EA55F735F38 /* PriceText.swift */,
 				7DCAC7B46690CFA2F832866A /* ProgressTrack.swift */,
 				56CFCF3C393427EE3A94F97A /* QRCodeView.swift */,
 				2760837DFDCC008C26DB6AD8 /* RatingChip.swift */,
@@ -1517,6 +1520,7 @@
 				D20FE9048E82E640501243AF /* PlexSignInSheet.swift in Sources */,
 				EFD83E959D6D885EE2791FF4 /* PreferencesStore.swift in Sources */,
 				3D8929C0A4F7F1BD7B745C12 /* PresentingViewController.swift in Sources */,
+				8638AFB42501A57A7ED26DDB /* PriceText.swift in Sources */,
 				DA0C1C0E6B8087F61A515128 /* PrivacyChoicesRow.swift in Sources */,
 				4D1779D0C89EC62F0E6CE1DD /* ProBenefit.swift in Sources */,
 				7111305601B451A9EF33D735 /* ProLockedRow.swift in Sources */,

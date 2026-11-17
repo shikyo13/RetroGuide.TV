@@ -9,6 +9,20 @@ struct RetroGuideApp: App {
     #endif
     @Environment(\.scenePhase) private var scenePhase
 
+    /// The localization the app is shown in (e.g. "ja", "pt-BR"), for typesetting.
+    private static let appLanguage: Locale.Language = {
+        let shown = Bundle.main.preferredLocalizations.first ?? "en"
+        return Locale.Language(identifier: TypesettingOverride.languages[shown] ?? shown)
+    }()
+
+    private enum TypesettingOverride {
+        /// Odia's system font draws Latin digits with Odia-looking shapes, so
+        /// "$9.99" reads like "$2.22". Typeset as English: Odia letters keep
+        /// the Odia font, digits get the standard one. Odia separates words with
+        /// spaces, so line breaking is unaffected.
+        static let languages = ["or": "en"]
+    }
+
     init() {
         #if os(iOS)
         // Follow the output other video apps use (AirPlay, HomePod) when the system routes there.
@@ -35,6 +49,10 @@ struct RetroGuideApp: App {
                 .environment(ads)
                 #endif
                 .environment(\.theme, model.theme)
+                // Typeset in the language the app is showing, not the device's:
+                // Japanese and Chinese then break lines between words, and each
+                // script gets its own fonts.
+                .typesettingLanguage(Self.appLanguage)
                 .environment(\.artworkResolver, model.artworkResolver)
                 .environment(\.showsScanlines, model.preferences.showsScanlines)
                 .tint(model.theme.accent)
