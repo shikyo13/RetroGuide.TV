@@ -45,21 +45,33 @@ struct ServerKindButtons: View {
     @FocusState private var focused: ServerKind?
 
     var body: some View {
-        HStack(spacing: DesignTokens.Spacing.lg) {
-            Button(action: onPlex) {
-                Label("Connect Plex", systemImage: "link")
-            }
-            .buttonStyle(.retroPrimary)
-            .focused($focused, equals: .plex)
-            .accessibilityIdentifier("connect-plex")
-            Button(action: onJellyfin) {
-                Label("Connect Jellyfin", systemImage: "link")
-            }
-            .buttonStyle(.retroPrimary)
-            .focused($focused, equals: .jellyfin)
-            .accessibilityIdentifier("connect-jellyfin")
+        // Side by side when both names fit on one line; stacked otherwise
+        // (longer translations would be cut off).
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: DesignTokens.Spacing.lg) { buttons(singleLine: true) }
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) { buttons(singleLine: false) }
         }
         .onAppear { focused = .plex }
+    }
+
+    @ViewBuilder
+    private func buttons(singleLine: Bool) -> some View {
+        Button(action: onPlex) {
+            Label("Connect Plex", systemImage: "link")
+                .lineLimit(singleLine ? 1 : nil)
+                .fixedSize(horizontal: singleLine, vertical: true)
+        }
+        .buttonStyle(.retroPrimary)
+        .focused($focused, equals: .plex)
+        .accessibilityIdentifier("connect-plex")
+        Button(action: onJellyfin) {
+            Label("Connect Jellyfin", systemImage: "link")
+                .lineLimit(singleLine ? 1 : nil)
+                .fixedSize(horizontal: singleLine, vertical: true)
+        }
+        .buttonStyle(.retroPrimary)
+        .focused($focused, equals: .jellyfin)
+        .accessibilityIdentifier("connect-jellyfin")
     }
 }
 
