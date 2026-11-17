@@ -51,11 +51,13 @@ struct ServerKindButtons: View {
             }
             .buttonStyle(.retroPrimary)
             .focused($focused, equals: .plex)
+            .accessibilityIdentifier("connect-plex")
             Button(action: onJellyfin) {
                 Label("Connect Jellyfin", systemImage: "link")
             }
             .buttonStyle(.retroPrimary)
             .focused($focused, equals: .jellyfin)
+            .accessibilityIdentifier("connect-jellyfin")
         }
         .onAppear { focused = .plex }
     }
