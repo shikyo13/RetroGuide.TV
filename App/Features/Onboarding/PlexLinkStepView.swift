@@ -65,13 +65,14 @@ struct PlexLinkStepView: View {
     private var codeInstructions: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
             title
-            Text(PlatformMetric.value(tv: "On your phone or computer, go to", touch: "On this device or any other, go to"))
+            Text(PlatformMetric.value(tv: String(localized: "On your phone or computer, go to this address:"),
+                                      touch: String(localized: "On this device or any other, go to this address:")))
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
             Text(linkPageDisplay)
                 .font(Typography.headline)
                 .foregroundStyle(theme.accentSecondary)
-            Text("and enter this code:")
+            Text("Then enter this code:")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
             Group {
