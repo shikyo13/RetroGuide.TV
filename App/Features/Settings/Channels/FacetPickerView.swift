@@ -52,7 +52,7 @@ struct FacetPickerView: View {
                 }
             }
             if options.count > Layout.searchThreshold {
-                TextField("Search \(title.lowercased())", text: $query)
+                TextField("Search", text: $query)
             }
             LazyVStack(spacing: DesignTokens.Spacing.sm) {
                 ForEach(filteredOptions) { option in
