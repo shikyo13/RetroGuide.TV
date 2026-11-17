@@ -499,13 +499,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Większa ikona RetroGuide. Wybierz „Co leci”, aby widzieć bieżący program i przełączać kanały."
+            "value" : "Większa ikona RetroGuide. Wybierz „Co leci”, aby widzieć bieżący program i przełączać kanały."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Větší ikona RetroGuide. Pro aktuální program a ovládání kanálů vyber Co běží."
+            "value" : "Větší ikona RetroGuide. Pro aktuální program a ovládání kanálů vyber Co běží."
           }
         },
         "ru" : {
@@ -1692,7 +1692,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Otevři RetroGuide a obnov kanály"
+            "value" : "Otevři RetroGuide a obnov kanály"
           }
         },
         "ru" : {

@@ -24,9 +24,10 @@ struct SearchResultRow: View {
                 Text(result.title.title)
                     .font(Typography.bodyEmphasis)
                     .lineLimit(1)
+                // Two lines: translated "Next: Tomorrow 07:10 · channel" runs long.
                 Text(airingText)
                     .secondaryText()
-                    .lineLimit(1)
+                    .lineLimit(2)
             }
             Spacer(minLength: DesignTokens.Spacing.md)
             if let channel = result.channel {

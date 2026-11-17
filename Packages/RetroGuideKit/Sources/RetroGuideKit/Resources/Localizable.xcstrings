@@ -204,7 +204,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "o %@ s dříve"
+            "value" : "o %@ s dříve"
           }
         },
         "ru" : {
@@ -353,7 +353,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "o %@ s později"
+            "value" : "o %@ s později"
           }
         },
         "ru" : {
@@ -651,7 +651,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Filmy z lat %1$@.–%2$@."
+            "value" : "Filmy z lat %1$@.–%2$@."
           }
         },
         "cs" : {
@@ -806,7 +806,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "TV z lat %1$@.–%2$@."
+            "value" : "TV z lat %1$@.–%2$@."
           }
         },
         "cs" : {
@@ -2444,13 +2444,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wymagane jest bezpieczne połączenie HTTPS. Skonfiguruj na serwerze HTTPS z zaufanym certyfikatem, a następnie zaktualizuj jego adres."
+            "value" : "Wymagane jest bezpieczne połączenie HTTPS. Skonfiguruj na serwerze HTTPS z zaufanym certyfikatem, a następnie zaktualizuj jego adres."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je vyžadováno zabezpečené připojení HTTPS. Nastav na serveru HTTPS s důvěryhodným certifikátem a pak aktualizuj jeho adresu."
+            "value" : "Je vyžadováno zabezpečené připojení HTTPS. Nastav na serveru HTTPS s důvěryhodným certifikátem a pak aktualizuj jeho adresu."
           }
         },
         "ru" : {
@@ -2890,13 +2890,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W miarę możliwości każdy serial leci naraz na najwyżej trzech kanałach automatycznych, z różnymi odcinkami."
+            "value" : "W miarę możliwości każdy serial leci naraz na najwyżej trzech kanałach automatycznych, z różnymi odcinkami."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Každý seriál se má vysílat nejvýš na třech automatických kanálech současně, s různými díly."
+            "value" : "Každý seriál se má vysílat nejvýš na třech automatických kanálech současně, s různými díly."
           }
         },
         "ru" : {
@@ -3038,13 +3038,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W miarę możliwości każdy serial leci naraz na najwyżej dwóch kanałach automatycznych, z różnymi odcinkami."
+            "value" : "W miarę możliwości każdy serial leci naraz na najwyżej dwóch kanałach automatycznych, z różnymi odcinkami."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Každý seriál se má vysílat nejvýš na dvou automatických kanálech současně, s různými díly."
+            "value" : "Každý seriál se má vysílat nejvýš na dvou automatických kanálech současně, s různými díly."
           }
         },
         "ru" : {
@@ -3186,7 +3186,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W miarę możliwości każdy serial leci naraz tylko na jednym kanale automatycznym, dla większej różnorodności."
+            "value" : "W miarę możliwości każdy serial leci naraz tylko na jednym kanale automatycznym, dla większej różnorodności."
           }
         },
         "cs" : {
@@ -3334,13 +3334,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Każdy serial może lecieć naraz na dowolnej liczbie kanałów automatycznych. Powtórzeń tych samych odcinków i filmów nadal unika się w miarę możliwości."
+            "value" : "Każdy serial może lecieć naraz na dowolnej liczbie kanałów automatycznych. Powtórzeń tych samych odcinków i filmów nadal unika się w miarę możliwości."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Každý seriál smí běžet na libovolném počtu automatických kanálů současně. Stejným dílům a filmům se i tak podle možností vyhýbá."
+            "value" : "Každý seriál smí běžet na libovolném počtu automatických kanálů současně. Stejným dílům a filmům se i tak podle možností vyhýbá."
           }
         },
         "ru" : {
@@ -3488,7 +3488,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přizpůsobí i snímkovou frekvenci každého pořadu pro nejplynulejší pohyb. Při přepínání kanálů televize častěji krátce zčerná."
+            "value" : "Přizpůsobí i snímkovou frekvenci každého pořadu pro nejplynulejší pohyb. Při přepínání kanálů televize častěji krátce zčerná."
           }
         },
         "ru" : {
@@ -3630,13 +3630,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zawsze kopia najwyższej jakości. Najlepsze dla serwerów w domu."
+            "value" : "Zawsze kopia najwyższej jakości. Najlepsze dla serwerów w domu."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vždy kopie v nejvyšší kvalitě. Nejlepší pro servery u tebe doma."
+            "value" : "Vždy kopie v nejvyšší kvalitě. Nejlepší pro servery u tebe doma."
           }
         },
         "ru" : {
@@ -3926,13 +3926,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zawsze najpierw próbuje adresu domowego. Dobre dla tras podsieci Tailscale i innych VPN."
+            "value" : "Zawsze najpierw próbuje adresu domowego. Dobre dla tras podsieci Tailscale i innych VPN."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vždy nejdřív zkusí domácí adresu. Vhodné pro směrování podsítí v Tailscale a jiné VPN."
+            "value" : "Vždy nejdřív zkusí domácí adresu. Vhodné pro směrování podsítí v Tailscale a jiné VPN."
           }
         },
         "ru" : {
@@ -3980,7 +3980,7 @@
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "नेहमी आधी घरचा पत्ता वापरून पाहते. Tailscale subnet routes आणि इतर VPN साठी चांगले."
+            "value" : "नेहमी आधी घरचा पत्ता वापरून पाहते. Tailscale सबनेट राउट्स आणि इतर VPN साठी चांगले."
           }
         },
         "ta" : {
@@ -4080,7 +4080,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vždy použije běžný výstup Apple TV. Pořady v HDR se převedou na standardní rozsah."
+            "value" : "Vždy použije běžný výstup Apple TV. Pořady v HDR se převedou na standardní rozsah."
           }
         },
         "ru" : {
@@ -5414,13 +5414,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można połączyć się z %@. Jeśli to twój serwer, upewnij się, że działa. Jeśli ktoś ci go udostępnił, może musieć włączyć Dostęp zdalny w ustawieniach Plex."
+            "value" : "Nie można połączyć się z %@. Jeśli to twój serwer, upewnij się, że działa. Jeśli ktoś ci go udostępnił, może musieć włączyć Dostęp zdalny w ustawieniach Plex."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server %@ není dostupný. Pokud je tvůj, zkontroluj, že běží. Pokud ti ho někdo sdílí, možná musí v nastavení Plexu zapnout vzdálený přístup."
+            "value" : "Server %@ není dostupný. Pokud je tvůj, zkontroluj, že běží. Pokud ti ho někdo sdílí, možná musí v nastavení Plexu zapnout vzdálený přístup."
           }
         },
         "ru" : {
@@ -7791,13 +7791,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HDR i liczba klatek"
+            "value" : "HDR i liczba klatek"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "HDR a snímková frekvence"
+            "value" : "HDR a snímková frekvence"
           }
         },
         "ru" : {
@@ -9404,13 +9404,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ostatni kanał i sąsiednie"
+            "value" : "Ostatni kanał i sąsiednie"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Naposledy sledovaný a okolní"
+            "value" : "Naposledy sledovaný a okolní"
           }
         },
         "ru" : {
@@ -11633,7 +11633,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Od najstarszych, według dat premiery na serwerze, a potem od nowa."
+            "value" : "Od najstarszych, według dat premiery na serwerze, a potem od nowa."
           }
         },
         "cs" : {
@@ -11781,13 +11781,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Po jednym odcinku z każdego serialu na zmianę, po kolei."
+            "value" : "Po jednym odcinku z każdego serialu na zmianę, po kolei."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Postupně jeden díl z každého pořadu, popořadě."
+            "value" : "Postupně jeden díl z každého pořadu, popořadě."
           }
         },
         "ru" : {
@@ -12529,7 +12529,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Upřednostňuje kopie v 720p nebo menší. Pro pomalá připojení."
+            "value" : "Upřednostňuje kopie v 720p nebo menší. Pro pomalá připojení."
           }
         },
         "ru" : {
@@ -12678,7 +12678,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Načítání filmů v knihovně %@…"
+            "value" : "Načítání filmů v knihovně %@…"
           }
         },
         "ru" : {
@@ -13124,7 +13124,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Načítání dílů v knihovně %@…"
+            "value" : "Načítání dílů v knihovně %@…"
           }
         },
         "ru" : {
@@ -13267,13 +13267,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wczytywanie gatunków i stacji: %@…"
+            "value" : "Wczytywanie gatunków i stacji: %@…"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Načítání žánrů a stanic v knihovně %@…"
+            "value" : "Načítání žánrů a stanic v knihovně %@…"
           }
         },
         "ru" : {
@@ -14307,13 +14307,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seriale w losowej kolejności; odcinki każdego serialu po kolei."
+            "value" : "Seriale w losowej kolejności; odcinki każdego serialu po kolei."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pořady v náhodném pořadí; díly každého pořadu jdou popořadě."
+            "value" : "Pořady v náhodném pořadí; díly každého pořadu jdou popořadě."
           }
         },
         "ru" : {
@@ -14455,13 +14455,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seriale na zmianę w krótkich blokach, odcinki po kolei."
+            "value" : "Seriale na zmianę w krótkich blokach, odcinki po kolei."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pořady se střídají v krátkých blocích, díly jdou popořadě."
+            "value" : "Pořady se střídají v krátkých blocích, díly jdou popořadě."
           }
         },
         "ru" : {
@@ -14758,7 +14758,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přeskočí kopie ve 4K, pokud existuje kopie v 1080p nebo menší. Vhodné pro většinu vzdálených serverů."
+            "value" : "Přeskočí kopie ve 4K, pokud existuje kopie v 1080p nebo menší. Vhodné pro většinu vzdálených serverů."
           }
         },
         "ru" : {
@@ -15347,13 +15347,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przełącza telewizor w tryb HDR dla programów HDR. Zalecane: przełączenie następuje tylko przy zmianie zakresu dynamiki."
+            "value" : "Przełącza telewizor w tryb HDR dla programów HDR. Zalecane: przełączenie następuje tylko przy zmianie zakresu dynamiki."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "U pořadů v HDR přepne televizi do HDR. Doporučeno: přepíná jen při změně dynamického rozsahu."
+            "value" : "U pořadů v HDR přepne televizi do HDR. Doporučeno: přepíná jen při změně dynamického rozsahu."
           }
         },
         "ru" : {
@@ -17127,13 +17127,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zbyt wiele żądań. Odczekaj chwilę i spróbuj ponownie."
+            "value" : "Zbyt wiele żądań. Odczekaj chwilę i spróbuj ponownie."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Příliš mnoho požadavků. Chvíli počkej a zkus to znovu."
+            "value" : "Příliš mnoho požadavků. Chvíli počkej a zkus to znovu."
           }
         },
         "ru" : {
@@ -17424,13 +17424,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Najpierw próbuje wpisanego adresu, np. adresu IP serwera w Tailscale."
+            "value" : "Najpierw próbuje wpisanego adresu, np. adresu IP serwera w Tailscale."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nejdřív zkusí zadanou adresu, třeba IP serveru v Tailscale."
+            "value" : "Nejdřív zkusí zadanou adresu, třeba IP serveru v Tailscale."
           }
         },
         "ru" : {
@@ -18016,7 +18016,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W domu lub przez VPN używa adresu domowego, a gdzie indziej adresu internetowego."
+            "value" : "W domu lub przez VPN używa adresu domowego, a gdzie indziej adresu internetowego."
           }
         },
         "cs" : {

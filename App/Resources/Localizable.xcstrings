@@ -666,13 +666,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ nadaje wszystkie filmy z twojej biblioteki."
+            "value" : "%@ nadaje wszystkie filmy z twojej biblioteki."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanál %@ vysílá všechny filmy z tvé knihovny."
+            "value" : "Kanál %@ vysílá všechny filmy z tvé knihovny."
           }
         },
         "ru" : {
@@ -814,13 +814,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ nadaje wszystkie seriale i filmy z twojej biblioteki."
+            "value" : "%@ nadaje wszystkie seriale i filmy z twojej biblioteki."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanál %@ vysílá všechny pořady a filmy z tvé knihovny."
+            "value" : "Kanál %@ vysílá všechny pořady a filmy z tvé knihovny."
           }
         },
         "ru" : {
@@ -962,13 +962,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ nadaje wszystkie seriale z twojej biblioteki."
+            "value" : "%@ nadaje wszystkie seriale z twojej biblioteki."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanál %@ vysílá všechny pořady z tvé knihovny."
+            "value" : "Kanál %@ vysílá všechny pořady z tvé knihovny."
           }
         },
         "ru" : {
@@ -1116,13 +1116,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ nadaje całą zawartość jednej z twoich bibliotek, w tym %2$@."
+            "value" : "%1$@ nadaje całą zawartość jednej z twoich bibliotek, w tym %2$@."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanál %1$@ vysílá vše z jedné z tvých knihoven, včetně titulu %2$@."
+            "value" : "Kanál %1$@ vysílá vše z jedné z tvých knihoven, včetně titulu %2$@."
           }
         },
         "ru" : {
@@ -1567,13 +1567,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ nadaje gatunki: %2$@, a %3$@ to: %4$@ – według danych tytułów RetroGuide, sprawdzonych z tagami gatunków na twoim serwerze."
+            "value" : "%1$@ nadaje gatunki: %2$@, a %3$@ to: %4$@ – według danych tytułów RetroGuide, sprawdzonych z tagami gatunków na twoim serwerze."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanál %1$@ je pro žánry %2$@ a titul %3$@ má žánry %4$@ podle údajů RetroGuide o titulech, ověřených podle žánrových štítků tvého serveru."
+            "value" : "Kanál %1$@ je pro žánry %2$@ a titul %3$@ má žánry %4$@ podle údajů RetroGuide o titulech, ověřených podle žánrových štítků tvého serveru."
           }
         },
         "ru" : {
@@ -1722,13 +1722,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ nadaje gatunki: %2$@, a %3$@ to: %4$@ – według tagów gatunków na twoim serwerze."
+            "value" : "%1$@ nadaje gatunki: %2$@, a %3$@ to: %4$@ – według tagów gatunków na twoim serwerze."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanál %1$@ je pro žánry %2$@ a titul %3$@ má žánry %4$@ podle žánrových štítků tvého serveru."
+            "value" : "Kanál %1$@ je pro žánry %2$@ a titul %3$@ má žánry %4$@ podle žánrových štítků tvého serveru."
           }
         },
         "ru" : {
@@ -1877,7 +1877,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ pochodzi z lat %2$@"
+            "value" : "%1$@ pochodzi z lat %2$@"
           }
         },
         "cs" : {
@@ -2031,7 +2031,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ jest w twojej kolekcji „%2$@”."
+            "value" : "%1$@ jest w twojej kolekcji „%2$@”."
           }
         },
         "cs" : {
@@ -2179,13 +2179,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ to oprogramowanie open source na licencji MIT. Odtwarzanie wideo korzysta z poniższych bibliotek. Możesz zbudować aplikację z ich zmodyfikowanymi wersjami na podstawie publicznego kodu źródłowego."
+            "value" : "%@ to oprogramowanie open source na licencji MIT. Odtwarzanie wideo korzysta z poniższych bibliotek. Możesz zbudować aplikację z ich zmodyfikowanymi wersjami na podstawie publicznego kodu źródłowego."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ je open-source software pod licencí MIT. Přehrávání videa používá následující knihovny. Aplikaci můžeš z veřejného zdrojového kódu sestavit s jejich upravenými verzemi."
+            "value" : "%@ je open-source software pod licencí MIT. Přehrávání videa používá následující knihovny. Aplikaci můžeš z veřejného zdrojového kódu sestavit s jejich upravenými verzemi."
           }
         },
         "ru" : {
@@ -2333,13 +2333,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usunięto %1$@ z kanału %2$@. Wszystko, co usunięto, znajdziesz w Ustawienia › Kanały › Usunięte z kanałów."
+            "value" : "Usunięto %1$@ z kanału %2$@. Wszystko, co usunięto, znajdziesz w Ustawienia › Kanały › Usunięte z kanałów."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titul %1$@ byl odebrán z kanálu %2$@. Vše odebrané najdeš v Nastavení › Kanály › Odebráno z kanálů."
+            "value" : "Titul %1$@ byl odebrán z kanálu %2$@. Vše odebrané najdeš v Nastavení › Kanály › Odebráno z kanálů."
           }
         },
         "ru" : {
@@ -4773,25 +4773,25 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "K dispozici je %lld reklama"
+                  "value" : "K dispozici je %lld reklama"
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "K dispozici jsou %lld reklamy"
+                  "value" : "K dispozici jsou %lld reklamy"
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "K dispozici je %lld reklamy"
+                  "value" : "K dispozici je %lld reklamy"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "K dispozici je %lld reklam"
+                  "value" : "K dispozici je %lld reklam"
                 }
               }
             }
@@ -6792,25 +6792,25 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld program · %@\nW programie: %@"
+                  "value" : "%lld program · %@\nW programie: %@"
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld programy · %@\nW programie: %@"
+                  "value" : "%lld programy · %@\nW programie: %@"
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld programów · %@\nW programie: %@"
+                  "value" : "%lld programów · %@\nW programie: %@"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld programu · %@\nW programie: %@"
+                  "value" : "%lld programu · %@\nW programie: %@"
                 }
               }
             }
@@ -9380,7 +9380,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Adresa v Tailscale nebo jiné VPN, případně internetová adresa HTTPS. Použije se, když domácí adresa neodpovídá."
+            "value" : "Adresa v Tailscale nebo jiné VPN, případně internetová adresa HTTPS. Použije se, když domácí adresa neodpovídá."
           }
         },
         "ru" : {
@@ -9522,13 +9522,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanał, którego nie ma już w zestawie"
+            "value" : "Kanał, którego nie ma już w zestawie"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanál, který už v nabídce není"
+            "value" : "Kanál, který už v nabídce není"
           }
         },
         "ru" : {
@@ -9670,13 +9670,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można nawiązać bezpiecznego połączenia z tym strumieniem."
+            "value" : "Nie można nawiązać bezpiecznego połączenia z tym strumieniem."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "K tomuto streamu nelze navázat zabezpečené připojení."
+            "value" : "K tomuto streamu nelze navázat zabezpečené připojení."
           }
         },
         "ru" : {
@@ -9818,13 +9818,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Serwer odpowiedział, ale tylko bez szyfrowania (zwykłe HTTP). Przez internet RetroGuide.TV wymaga HTTPS z zaufanym certyfikatem. W domu lub przez VPN, np. Tailscale, użyj zamiast tego adresu domowego lub adresu VPN serwera."
+            "value" : "Serwer odpowiedział, ale tylko bez szyfrowania (zwykłe HTTP). Przez internet RetroGuide.TV wymaga HTTPS z zaufanym certyfikatem. W domu lub przez VPN, np. Tailscale, użyj zamiast tego adresu domowego lub adresu VPN serwera."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server odpověděl, ale jen bez šifrování (prosté HTTP). Přes internet potřebuje RetroGuide.TV HTTPS s důvěryhodným certifikátem. Doma nebo přes VPN, jako je Tailscale, použij raději domácí adresu nebo adresu VPN."
+            "value" : "Server odpověděl, ale jen bez šifrování (prosté HTTP). Přes internet potřebuje RetroGuide.TV HTTPS s důvěryhodným certifikátem. Doma nebo přes VPN, jako je Tailscale, použij raději domácí adresu nebo adresu VPN."
           }
         },
         "ru" : {
@@ -9966,13 +9966,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Serwer odpowiedział, ale to urządzenie nie ufa jego certyfikatowi. Certyfikat z podpisem własnym nie zadziała: użyj certyfikatu od zaufanego wystawcy, np. Let's Encrypt."
+            "value" : "Serwer odpowiedział, ale to urządzenie nie ufa jego certyfikatowi. Certyfikat z podpisem własnym nie zadziała: użyj certyfikatu od zaufanego wystawcy, np. Let's Encrypt."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server odpověděl, ale toto zařízení nedůvěřuje jeho certifikátu. Certifikát podepsaný sám sebou nebude fungovat: použij certifikát od důvěryhodné autority, třeba Let's Encrypt."
+            "value" : "Server odpověděl, ale toto zařízení nedůvěřuje jeho certifikátu. Certifikát podepsaný sám sebou nebude fungovat: použij certifikát od důvěryhodné autority, třeba Let's Encrypt."
           }
         },
         "ru" : {
@@ -10114,7 +10114,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W iCloud jest już konfiguracja"
+            "value" : "W iCloud jest już konfiguracja"
           }
         },
         "cs" : {
@@ -10262,13 +10262,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Serial, którego nie ma już w bibliotece"
+            "value" : "Serial, którego nie ma już w bibliotece"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pořad, který už v knihovně není"
+            "value" : "Pořad, který už v knihovně není"
           }
         },
         "ru" : {
@@ -10564,7 +10564,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O aplikaci"
+            "value" : "O aplikaci"
           }
         },
         "ru" : {
@@ -10706,13 +10706,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O synchronizacji iCloud"
+            "value" : "O synchronizacji iCloud"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O synchronizaci přes iCloud"
+            "value" : "O synchronizaci přes iCloud"
           }
         },
         "ru" : {
@@ -10854,13 +10854,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Konto i bezpieczeństwo"
+            "value" : "Konto i bezpieczeństwo"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Účet a zabezpečení"
+            "value" : "Účet a zabezpečení"
           }
         },
         "ru" : {
@@ -11595,13 +11595,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dodaj widżet „Co leci” z grafikami, bieżącymi programami i przełączaniem kanałów albo „Ikona aplikacji” z większą ikoną. Oba korzystają z motywu aplikacji."
+            "value" : "Dodaj widżet „Co leci” z grafikami, bieżącymi programami i przełączaniem kanałów albo „Ikona aplikacji” z większą ikoną. Oba korzystają z motywu aplikacji."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přidej Co běží pro obrázky, aktuální pořady a ovládání kanálů, nebo Ikonu aplikace pro větší ikonu. Oba se řídí motivem aplikace."
+            "value" : "Přidej Co běží pro obrázky, aktuální pořady a ovládání kanálů, nebo Ikonu aplikace pro větší ikonu. Oba se řídí motivem aplikace."
           }
         },
         "ru" : {
@@ -12335,13 +12335,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dodaj wybrane serwery, a potem zbuduj kanały. Programy ze wszystkich wybranych serwerów pojawią się w jednym przewodniku."
+            "value" : "Dodaj wybrane serwery, a potem zbuduj kanały. Programy ze wszystkich wybranych serwerów pojawią się w jednym przewodniku."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přidej požadované servery a pak sestav kanály. Pořady ze všech vybraných serverů se zobrazí v jednom TV programu."
+            "value" : "Přidej požadované servery a pak sestav kanály. Pořady ze všech vybraných serverů se zobrazí v jednom TV programu."
           }
         },
         "ru" : {
@@ -13224,13 +13224,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wszystkie seriale i filmy w limitach"
+            "value" : "Wszystkie seriale i filmy w limitach"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Všechny pořady a filmy v rámci limitů"
+            "value" : "Všechny pořady a filmy v rámci limitů"
           }
         },
         "ru" : {
@@ -13372,13 +13372,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wszystko w limitach"
+            "value" : "Wszystko w limitach"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vše v rámci limitů"
+            "value" : "Vše v rámci limitů"
           }
         },
         "ru" : {
@@ -13674,7 +13674,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Povolit obsah bez hodnocení nebo s neznámým hodnocením"
+            "value" : "Povolit obsah bez hodnocení nebo s neznámým hodnocením"
           }
         },
         "ru" : {
@@ -14409,13 +14409,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Animacja i Dokumentalny nie oznaczają automatycznie treści dla dzieci ani edukacyjnych. Aby mieć konkretny zestaw edukacyjny, wybierz wyselekcjonowaną kolekcję w Dozwolonych treściach."
+            "value" : "Animacja i Dokumentalny nie oznaczają automatycznie treści dla dzieci ani edukacyjnych. Aby mieć konkretny zestaw edukacyjny, wybierz wyselekcjonowaną kolekcję w Dozwolonych treściach."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Animované a dokumentární neznamená nutně vhodné pro děti nebo vzdělávací. Pro konkrétní vzdělávací nabídku vyber pečlivě sestavenou kolekci v Povoleném obsahu."
+            "value" : "Animované a dokumentární neznamená nutně vhodné pro děti nebo vzdělávací. Pro konkrétní vzdělávací nabídku vyber pečlivě sestavenou kolekci v Povoleném obsahu."
           }
         },
         "ru" : {
@@ -15152,13 +15152,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dotyczy kanałów automatycznych. Kanały 24/7 i własne nie podlegają temu limitowi. Jeśli żaden inny serial nie może wypełnić pasma, limit może zostać przekroczony."
+            "value" : "Dotyczy kanałów automatycznych. Kanały 24/7 i własne nie podlegają temu limitowi. Jeśli żaden inny serial nie może wypełnić pasma, limit może zostać przekroczony."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Platí pro automatické kanály. Kanály 24/7 a vlastní kanály se do tohoto limitu nepočítají. Pokud slot nemůže zaplnit jiný pořad, limit se může překročit."
+            "value" : "Platí pro automatické kanály. Kanály 24/7 a vlastní kanály se do tohoto limitu nepočítají. Pokud slot nemůže zaplnit jiný pořad, limit se může překročit."
           }
         },
         "ru" : {
@@ -15448,7 +15448,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W domu"
+            "value" : "W domu"
           }
         },
         "cs" : {
@@ -15596,7 +15596,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W domu, np. 192.168.1.20:8096. Przez internet adres HTTPS, np. https://jellyfin.example.com."
+            "value" : "W domu, np. 192.168.1.20:8096. Przez internet adres HTTPS, np. https://jellyfin.example.com."
           }
         },
         "cs" : {
@@ -16041,13 +16041,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dźwięk i napisy"
+            "value" : "Dźwięk i napisy"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zvuk a titulky"
+            "value" : "Zvuk a titulky"
           }
         },
         "ru" : {
@@ -17675,13 +17675,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Połącz swój serwer i serwery udostępnione ci w jeden zestaw kanałów."
+            "value" : "Połącz swój serwer i serwery udostępnione ci w jeden zestaw kanałów."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spoj svůj server a servery sdílené s tebou do jedné nabídky."
+            "value" : "Spoj svůj server a servery sdílené s tebou do jedné nabídky."
           }
         },
         "ru" : {
@@ -17823,13 +17823,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zablokowane seriale i filmy"
+            "value" : "Zablokowane seriale i filmy"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Blokované pořady a filmy"
+            "value" : "Blokované pořady a filmy"
           }
         },
         "ru" : {
@@ -17971,13 +17971,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zablokowane seriale i filmy są ukryte na wszystkich kanałach, łącznie z pasującymi kopiami na innych serwerach."
+            "value" : "Zablokowane seriale i filmy są ukryte na wszystkich kanałach, łącznie z pasującymi kopiami na innych serwerach."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Blokované pořady a filmy se skryjí na všech kanálech, včetně stejných kopií na jiných serverech."
+            "value" : "Blokované pořady a filmy se skryjí na všech kanálech, včetně stejných kopií na jiných serverech."
           }
         },
         "ru" : {
@@ -18119,13 +18119,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przerwa trwa tyle, ile łącznie wybrane klipy, a ten czas jest uwzględniony w przewodniku. Jeśli klipów jest mniej, każdy leci raz. Wyrównywanie godzin rozpoczęcia może dodać pauzę przed kolejnym programem."
+            "value" : "Przerwa trwa tyle, ile łącznie wybrane klipy, a ten czas jest uwzględniony w przewodniku. Jeśli klipów jest mniej, każdy leci raz. Wyrównywanie godzin rozpoczęcia może dodać pauzę przed kolejnym programem."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přestávky trvají tak dlouho jako vybrané klipy dohromady a tato doba je zahrnutá v TV programu. Pokud je klipů méně, každý se přehraje jednou. Zarovnání začátků pořadů může před dalším pořadem přidat pauzu."
+            "value" : "Přestávky trvají tak dlouho jako vybrané klipy dohromady a tato doba je zahrnutá v TV programu. Pokud je klipů méně, každý se přehraje jednou. Zarovnání začátků pořadů může před dalším pořadem přidat pauzu."
           }
         },
         "ru" : {
@@ -18267,13 +18267,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przejrzyj przewodnik do przodu, wybierz program, a potem Przypomnij mi. Przypomnienia nigdy nie zmieniają kanału automatycznie."
+            "value" : "Przejrzyj przewodnik do przodu, wybierz program, a potem Przypomnij mi. Przypomnienia nigdy nie zmieniają kanału automatycznie."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prolistuj TV program dopředu, vyber pořad a zvol Připomenout. Připomínky nikdy samy nepřepínají kanál."
+            "value" : "Prolistuj TV program dopředu, vyber pořad a zvol Připomenout. Připomínky nikdy samy nepřepínají kanál."
           }
         },
         "ru" : {
@@ -19008,13 +19008,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można teraz połączyć się z %@ pod żadnym z adresów."
+            "value" : "Nie można teraz połączyć się z %@ pod żadnym z adresów."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server %@ teď není dostupný na žádné z adres."
+            "value" : "Server %@ teď není dostupný na žádné z adres."
           }
         },
         "ru" : {
@@ -19156,7 +19156,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można stąd połączyć się z %@. Aby oglądać poza domem, dodaj adres poza domem."
+            "value" : "Nie można stąd połączyć się z %@. Aby oglądać poza domem, dodaj adres poza domem."
           }
         },
         "cs" : {
@@ -19304,7 +19304,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można teraz połączyć się z %@."
+            "value" : "Nie można teraz połączyć się z %@."
           }
         },
         "cs" : {
@@ -20340,13 +20340,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zmiany są zapisywane lokalnie i synchronizowane, gdy iCloud jest dostępny. Wyłączenie synchronizacji zachowuje obecną konfigurację i pozostawia kopię w iCloud."
+            "value" : "Zmiany są zapisywane lokalnie i synchronizowane, gdy iCloud jest dostępny. Wyłączenie synchronizacji zachowuje obecną konfigurację i pozostawia kopię w iCloud."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Změny se ukládají místně a synchronizují se, když je iCloud dostupný. Vypnutí synchronizace zachová aktuální nastavení i kopii na iCloudu."
+            "value" : "Změny se ukládají místně a synchronizují se, když je iCloud dostupný. Vypnutí synchronizace zachová aktuální nastavení i kopii na iCloudu."
           }
         },
         "ru" : {
@@ -21390,7 +21390,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanał w dół"
+            "value" : "Kanał w dół"
           }
         },
         "cs" : {
@@ -21834,13 +21834,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wczytywanie kanałów zostało anulowane. Zapisane serwery i wybór bibliotek nie zmieniły się."
+            "value" : "Wczytywanie kanałów zostało anulowane. Zapisane serwery i wybór bibliotek nie zmieniły się."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Načítání kanálů bylo zrušeno. Uložené servery a výběr knihoven se nezměnily."
+            "value" : "Načítání kanálů bylo zrušeno. Uložené servery a výběr knihoven se nezměnily."
           }
         },
         "ru" : {
@@ -22130,13 +22130,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ustawienia kanałów obejmują własne kanały, ukryte kanały, usunięte seriale i filmy oraz kolejność emisji. Pliki multimedialne i wygenerowane przewodniki nie są wysyłane."
+            "value" : "Ustawienia kanałów obejmują własne kanały, ukryte kanały, usunięte seriale i filmy oraz kolejność emisji. Pliki multimedialne i wygenerowane przewodniki nie są wysyłane."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nastavení kanálů zahrnuje vlastní kanály, skryté kanály, odebrané pořady a filmy a pořadí vysílání. Mediální soubory a vygenerovaný TV program se nenahrávají."
+            "value" : "Nastavení kanálů zahrnuje vlastní kanály, skryté kanály, odebrané pořady a filmy a pořadí vysílání. Mediální soubory a vygenerovaný TV program se nenahrávají."
           }
         },
         "ru" : {
@@ -22278,7 +22278,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanał w górę"
+            "value" : "Kanał w górę"
           }
         },
         "cs" : {
@@ -22722,13 +22722,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanały łączą treści z wybranych bibliotek. Przy pasujących kopiach preferowane są serwery wyżej na tej liście. Dostępność, ograniczenia rodzicielskie i odtwarzalne wersje mogą wpłynąć na to, która kopia zostanie użyta."
+            "value" : "Kanały łączą treści z wybranych bibliotek. Przy pasujących kopiach preferowane są serwery wyżej na tej liście. Dostępność, ograniczenia rodzicielskie i odtwarzalne wersje mogą wpłynąć na to, która kopia zostanie użyta."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanály kombinují obsah z vybraných knihoven. U stejných kopií mají přednost servery výš v tomto seznamu. To, která kopie se použije, může ovlivnit dostupnost, rodičovská omezení a přehratelné verze."
+            "value" : "Kanály kombinují obsah z vybraných knihoven. U stejných kopií mají přednost servery výš v tomto seznamu. To, která kopie se použije, může ovlivnit dostupnost, rodičovská omezení a přehratelné verze."
           }
         },
         "ru" : {
@@ -23462,13 +23462,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybierz ulubione w Ustawieniach lub wróć do wszystkich kanałów."
+            "value" : "Wybierz ulubione w Ustawieniach lub wróć do wszystkich kanałów."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vyber oblíbené v Nastavení, nebo se přepni zpět na Všechny kanály."
+            "value" : "Vyber oblíbené v Nastavení, nebo se přepni zpět na Všechny kanály."
           }
         },
         "ru" : {
@@ -23906,7 +23906,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybierz kanał poniżej, aby pokazać jego programy w widżecie."
+            "value" : "Wybierz kanał poniżej, aby pokazać jego programy w widżecie."
           }
         },
         "cs" : {
@@ -25397,13 +25397,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybieraj nadchodzące emisje i otrzymuj przypomnienie, gdy się zaczną."
+            "value" : "Wybieraj nadchodzące emisje i otrzymuj przypomnienie, gdy się zaczną."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vyber nadcházející vysílání a dostaneš připomínku, když začne."
+            "value" : "Vyber nadcházející vysílání a dostaneš připomínku, když začne."
           }
         },
         "ru" : {
@@ -25545,13 +25545,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybierz, którą z istniejących kopii preferować na serwerze %@, np. 4K lub 1080p. Nie ustawia to przepływności strumienia. Odtwarzanie może nadal wymagać konwersji dla zgodności."
+            "value" : "Wybierz, którą z istniejących kopii preferować na serwerze %@, np. 4K lub 1080p. Nie ustawia to przepływności strumienia. Odtwarzanie może nadal wymagać konwersji dla zgodności."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vyber, kterou existující kopii na serveru %@ upřednostnit, třeba 4K nebo 1080p. Nenastavuje to datový tok streamu. Kvůli kompatibilitě může být i tak nutný převod."
+            "value" : "Vyber, kterou existující kopii na serveru %@ upřednostnit, třeba 4K nebo 1080p. Nenastavuje to datový tok streamu. Kvůli kompatibilitě může být i tak nutný převod."
           }
         },
         "ru" : {
@@ -25693,13 +25693,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybierz, jakie rodzaje kanałów mają powstawać automatycznie z twojej biblioteki. Twoje własne kanały są zawsze zachowywane."
+            "value" : "Wybierz, jakie rodzaje kanałów mają powstawać automatycznie z twojej biblioteki. Twoje własne kanały są zawsze zachowywane."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vyber, jaké druhy kanálů se z knihovny sestaví automaticky. Vlastní kanály zůstanou vždy zachovány."
+            "value" : "Vyber, jaké druhy kanálů se z knihovny sestaví automaticky. Vlastní kanály zůstanou vždy zachovány."
           }
         },
         "ru" : {
@@ -26137,13 +26137,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybór dźwięku i napisów wymaga Odtwarzacza RetroGuide. Możesz go włączyć w Ustawienia › Odtwarzanie › Odtwarzacz."
+            "value" : "Wybór dźwięku i napisów wymaga Odtwarzacza RetroGuide. Możesz go włączyć w Ustawienia › Odtwarzanie › Odtwarzacz."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Výběr zvuku a titulků vyžaduje přehrávač RetroGuide. Přepnout na něj můžeš v Nastavení › Přehrávání › Přehrávač."
+            "value" : "Výběr zvuku a titulků vyžaduje přehrávač RetroGuide. Přepnout na něj můžeš v Nastavení › Přehrávání › Přehrávač."
           }
         },
         "ru" : {
@@ -28359,13 +28359,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Łącz wiele serwerów z Pro"
+            "value" : "Łącz wiele serwerów z Pro"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Více serverů s Pro"
+            "value" : "Více serverů s Pro"
           }
         },
         "ru" : {
@@ -28655,13 +28655,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Połącz się z Plex lub Jellyfin na każdym urządzeniu. Hasła do serwerów i tokeny dostępu pozostają na urządzeniu. Ustawienia niedostępnych bibliotek są zachowywane, dopóki ich nie połączysz."
+            "value" : "Połącz się z Plex lub Jellyfin na każdym urządzeniu. Hasła do serwerów i tokeny dostępu pozostają na urządzeniu. Ustawienia niedostępnych bibliotek są zachowywane, dopóki ich nie połączysz."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na každém zařízení se připoj k Plexu nebo Jellyfinu. Hesla k serverům a přístupové tokeny zůstávají v zařízení. Nastavení nedostupných knihoven se uchovají, dokud je nepřipojíš."
+            "value" : "Na každém zařízení se připoj k Plexu nebo Jellyfinu. Hesla k serverům a přístupové tokeny zůstávají v zařízení. Nastavení nedostupných knihoven se uchovají, dokud je nepřipojíš."
           }
         },
         "ru" : {
@@ -28951,13 +28951,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Połącz serwery na każdym urządzeniu. Ograniczenia rodzicielskie i zestaw rodzicielski trzeba przejrzeć, zanim zaczną tu obowiązywać."
+            "value" : "Połącz serwery na każdym urządzeniu. Ograniczenia rodzicielskie i zestaw rodzicielski trzeba przejrzeć, zanim zaczną tu obowiązywać."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Připoj servery na každém zařízení. Rodičovská omezení a rodičovskou nabídku je třeba zkontrolovat, než se tu použijí."
+            "value" : "Připoj servery na každém zařízení. Rodičovská omezení a rodičovskou nabídku je třeba zkontrolovat, než se tu použijí."
           }
         },
         "ru" : {
@@ -29247,7 +29247,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Połączono w domu · %@"
+            "value" : "Połączono w domu · %@"
           }
         },
         "cs" : {
@@ -29395,7 +29395,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Połączono w domu · %@ · bez szyfrowania"
+            "value" : "Połączono w domu · %@ · bez szyfrowania"
           }
         },
         "cs" : {
@@ -30148,13 +30148,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Łączenie z %@…"
+            "value" : "Łączenie z %@…"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Připojování k %@…"
+            "value" : "Připojování k %@…"
           }
         },
         "ru" : {
@@ -30296,13 +30296,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Łączenie z kontem Plex…"
+            "value" : "Łączenie z kontem Plex…"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Připojování k účtu Plex…"
+            "value" : "Připojování k účtu Plex…"
           }
         },
         "ru" : {
@@ -30741,13 +30741,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Łączenie z App Store…"
+            "value" : "Łączenie z App Store…"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spojení s App Storem…"
+            "value" : "Spojení s App Storem…"
           }
         },
         "ru" : {
@@ -31333,13 +31333,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można połączyć się z tego miejsca. Adres jest zapisany i zostanie użyty w razie potrzeby."
+            "value" : "Nie można połączyć się z tego miejsca. Adres jest zapisany i zostanie użyty w razie potrzeby."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odsud není dostupná. Je uložená a v případě potřeby se zkusí."
+            "value" : "Odsud není dostupná. Je uložená a v případě potřeby se zkusí."
           }
         },
         "ru" : {
@@ -31481,7 +31481,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brak połączenia z App Store"
+            "value" : "Brak połączenia z App Store"
           }
         },
         "cs" : {
@@ -31629,13 +31629,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można połączyć się z serwerem przy tym ustawieniu."
+            "value" : "Nie można połączyć się z serwerem przy tym ustawieniu."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "S tímto nastavením server není dostupný."
+            "value" : "S tímto nastavením server není dostupný."
           }
         },
         "ru" : {
@@ -31894,25 +31894,25 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Nie można zapisać %lld tytułu w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
+                  "value" : "Nie można zapisać %lld tytułu w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Nie można zapisać %lld tytułów w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
+                  "value" : "Nie można zapisać %lld tytułów w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Nie można zapisać %lld tytułów w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
+                  "value" : "Nie można zapisać %lld tytułów w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Nie można zapisać %lld tytułu w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
+                  "value" : "Nie można zapisać %lld tytułu w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
                 }
               }
             }
@@ -31924,25 +31924,25 @@
               "one" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld titul nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
+                  "value" : "%lld titul nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
                 }
               },
               "few" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld tituly nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
+                  "value" : "%lld tituly nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
                 }
               },
               "many" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld titulu nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
+                  "value" : "%lld titulu nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "%lld titulů nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
+                  "value" : "%lld titulů nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
                 }
               }
             }
@@ -32231,13 +32231,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można zapisać 1 tytułu w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
+            "value" : "Nie można zapisać 1 tytułu w Plex. Twoje wybory są nadal zapisane na tym urządzeniu."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1 titul nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
+            "value" : "1 titul nelze uložit do Plexu. Tvoje volby jsou dál uložené v tomto zařízení."
           }
         },
         "ru" : {
@@ -34007,7 +34007,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Własny czas w minutach"
+            "value" : "Własny czas w minutach"
           }
         },
         "cs" : {
@@ -35635,7 +35635,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Stuknij dwukrotnie, aby pokazać sterowanie. Przesuń w górę lub w dół, aby zmienić kanał."
+            "value" : "Stuknij dwukrotnie, aby pokazać sterowanie. Przesuń w górę lub w dół, aby zmienić kanał."
           }
         },
         "cs" : {
@@ -35790,7 +35790,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vlastní u každého kanálu"
+            "value" : "Vlastní u každého kanálu"
           }
         },
         "ru" : {
@@ -36082,13 +36082,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wcześniej o %@ s"
+            "value" : "Wcześniej o %@ s"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O %@ s dříve"
+            "value" : "O %@ s dříve"
           }
         },
         "ru" : {
@@ -36230,13 +36230,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Najprościej: Tailscale na serwerze i na tym urządzeniu. Użyj adresu Tailscale serwera."
+            "value" : "Najprościej: Tailscale na serwerze i na tym urządzeniu. Użyj adresu Tailscale serwera."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nejjednodušší: Tailscale na serveru i v tomto zařízení. Použij adresu serveru v Tailscale."
+            "value" : "Nejjednodušší: Tailscale na serveru i v tomto zařízení. Použij adresu serveru v Tailscale."
           }
         },
         "ru" : {
@@ -37717,13 +37717,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wpisz adres HTTPS z zaufanym certyfikatem. Jeśli nie podasz portu, używany jest port 32400. Adres IP Tailscale korzysta z bezpiecznej nazwy hosta plex.direct serwera, gdy jest dostępna. Połączenia HTTP nie są obsługiwane."
+            "value" : "Wpisz adres HTTPS z zaufanym certyfikatem. Jeśli nie podasz portu, używany jest port 32400. Adres IP Tailscale korzysta z bezpiecznej nazwy hosta plex.direct serwera, gdy jest dostępna. Połączenia HTTP nie są obsługiwane."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zadej adresu HTTPS s důvěryhodným certifikátem. Pokud port neuvedeš, použije se 32400. U IP v Tailscale se použije zabezpečený název hostitele plex.direct, pokud je k dispozici. Připojení přes HTTP není podporováno."
+            "value" : "Zadej adresu HTTPS s důvěryhodným certifikátem. Pokud port neuvedeš, použije se 32400. U IP v Tailscale se použije zabezpečený název hostitele plex.direct, pokud je k dispozici. Připojení přes HTTP není podporováno."
           }
         },
         "ru" : {
@@ -38760,7 +38760,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vše v knihovně %@"
+            "value" : "Vše v knihovně %@"
           }
         },
         "ru" : {
@@ -38902,13 +38902,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wszystko w tej bibliotece"
+            "value" : "Wszystko w tej bibliotece"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vše v této knihovně"
+            "value" : "Vše v této knihovně"
           }
         },
         "ru" : {
@@ -39198,7 +39198,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dodatkowe buforowanie wczytuje więcej z wyprzedzeniem, dzięki czemu odtwarzanie lepiej znosi wolny lub nierówny internet. Włącz je dla serwerów poza domem."
+            "value" : "Dodatkowe buforowanie wczytuje więcej z wyprzedzeniem, dzięki czemu odtwarzanie lepiej znosi wolny lub nierówny internet. Włącz je dla serwerów poza domem."
           }
         },
         "cs" : {
@@ -39940,13 +39940,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ulubione, kanały, harmonogram, ustawienia reklam, motywy, wybór dźwięku i napisów, wybór bibliotek oraz przypomnienia."
+            "value" : "Ulubione, kanały, harmonogram, ustawienia reklam, motywy, wybór dźwięku i napisów, wybór bibliotek oraz przypomnienia."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oblíbené, kanály, plánování, nastavení reklam, motivy, volby zvuku a titulků, výběr knihoven a připomínky."
+            "value" : "Oblíbené, kanály, plánování, nastavení reklam, motivy, volby zvuku a titulků, výběr knihoven a připomínky."
           }
         },
         "ru" : {
@@ -40236,13 +40236,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Znaleziono serwer pod adresem %@, ale to urządzenie nie ufa jego certyfikatowi. Certyfikat z podpisem własnym nie zadziała: użyj certyfikatu od zaufanego wystawcy, np. Let's Encrypt."
+            "value" : "Znaleziono serwer pod adresem %@, ale to urządzenie nie ufa jego certyfikatowi. Certyfikat z podpisem własnym nie zadziała: użyj certyfikatu od zaufanego wystawcy, np. Let's Encrypt."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na adrese %@ byl nalezen server, jehož certifikátu toto zařízení nedůvěřuje. Certifikát podepsaný sám sebou nebude fungovat: použij certifikát od důvěryhodné autority, třeba Let's Encrypt."
+            "value" : "Na adrese %@ byl nalezen server, jehož certifikátu toto zařízení nedůvěřuje. Certifikát podepsaný sám sebou nebude fungovat: použij certifikát od důvěryhodné autority, třeba Let's Encrypt."
           }
         },
         "ru" : {
@@ -40390,7 +40390,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nalezeno bez šifrování (bez HTTPS). Vyber jeden a přesto se připoj."
+            "value" : "Nalezeno bez šifrování (bez HTTPS). Vyber jeden a přesto se připoj."
           }
         },
         "ru" : {
@@ -41125,13 +41125,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przewodnik i zapping"
+            "value" : "Przewodnik i zapping"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "TV program a přepínání"
+            "value" : "TV program a přepínání"
           }
         },
         "ru" : {
@@ -41866,13 +41866,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tylko adresy domowe i VPN"
+            "value" : "Tylko adresy domowe i VPN"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jen domácí adresy a adresy VPN"
+            "value" : "Jen domácí adresy a adresy VPN"
           }
         },
         "ru" : {
@@ -42015,13 +42015,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W domu i poza nim"
+            "value" : "W domu i poza nim"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Doma i mimo domov"
+            "value" : "Doma i mimo domov"
           }
         },
         "ru" : {
@@ -42164,7 +42164,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tylko w domu"
+            "value" : "Tylko w domu"
           }
         },
         "cs" : {
@@ -42312,13 +42312,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W Jellyfin na telefonie lub komputerze otwórz swój profil, wybierz Quick Connect i wpisz ten kod:"
+            "value" : "W Jellyfin na telefonie lub komputerze otwórz swój profil, wybierz Quick Connect i wpisz ten kod:"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "V Jellyfinu na telefonu nebo počítači otevři svůj profil, zvol Quick Connect a zadej tento kód:"
+            "value" : "V Jellyfinu na telefonu nebo počítači otevři svůj profil, zvol Quick Connect a zadej tento kód:"
           }
         },
         "ru" : {
@@ -42905,13 +42905,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pozostaje na innych kanałach. Możesz go przywrócić w dowolnej chwili w Ustawienia › Kanały › Usunięte z kanałów."
+            "value" : "Pozostaje na innych kanałach. Możesz go przywrócić w dowolnej chwili w Ustawienia › Kanały › Usunięte z kanałów."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na ostatních kanálech zůstane. Vrátit ho můžeš kdykoli v Nastavení › Kanály › Odebráno z kanálů."
+            "value" : "Na ostatních kanálech zůstane. Vrátit ho můžeš kdykoli v Nastavení › Kanály › Odebráno z kanálů."
           }
         },
         "ru" : {
@@ -43053,13 +43053,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jego adres w sieci domowej, np. 192.168.1.20:8096."
+            "value" : "Jego adres w sieci domowej, np. 192.168.1.20:8096."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeho adresa v domácí síti, třeba 192.168.1.20:8096."
+            "value" : "Jeho adresa v domácí síti, třeba 192.168.1.20:8096."
           }
         },
         "ru" : {
@@ -43207,7 +43207,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toto zařízení nedůvěřuje jeho certifikátu. Použij certifikát od důvěryhodné autority, třeba Let's Encrypt."
+            "value" : "Toto zařízení nedůvěřuje jeho certifikátu. Použij certifikát od důvěryhodné autority, třeba Let's Encrypt."
           }
         },
         "ru" : {
@@ -43796,13 +43796,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Później o %@ s"
+            "value" : "Później o %@ s"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "O %@ s později"
+            "value" : "O %@ s později"
           }
         },
         "ru" : {
@@ -43944,13 +43944,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W lewo i w prawo przesuwasz napisy wcześniej lub później. Kliknięcie przywraca oryginalny czas."
+            "value" : "W lewo i w prawo przesuwasz napisy wcześniej lub później. Kliknięcie przywraca oryginalny czas."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vlevo a vpravo posouvá titulky dříve nebo později. Výběr obnoví původní časování."
+            "value" : "Vlevo a vpravo posouvá titulky dříve nebo později. Výběr obnoví původní časování."
           }
         },
         "ru" : {
@@ -44388,13 +44388,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ogranicz treści i zablokuj ustawienia na tym urządzeniu."
+            "value" : "Ogranicz treści i zablokuj ustawienia na tym urządzeniu."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Omez obsah a zamkni nastavení v tomto zařízení."
+            "value" : "Omez obsah a zamkni nastavení v tomto zařízení."
           }
         },
         "ru" : {
@@ -45425,13 +45425,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Szukanie serwerów w sieci…"
+            "value" : "Szukanie serwerów w sieci…"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hledání serverů v síti…"
+            "value" : "Hledání serverů v síti…"
           }
         },
         "ru" : {
@@ -45573,13 +45573,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zarządzaj serwerami i bibliotekami"
+            "value" : "Zarządzaj serwerami i bibliotekami"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spravovat servery a knihovny"
+            "value" : "Spravovat servery a knihovny"
           }
         },
         "ru" : {
@@ -46165,13 +46165,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pasujące kopie tytułów z tych kolekcji są uwzględniane. Limity bibliotek i kategorii wiekowych nadal obowiązują."
+            "value" : "Pasujące kopie tytułów z tych kolekcji są uwzględniane. Limity bibliotek i kategorii wiekowych nadal obowiązują."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zahrnou se odpovídající kopie titulů z těchto kolekcí. Limity knihoven a hodnocení dál platí."
+            "value" : "Zahrnou se odpovídající kopie titulů z těchto kolekcí. Limity knihoven a hodnocení dál platí."
           }
         },
         "ru" : {
@@ -46765,7 +46765,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přesuň RetroGuide.TV do horní řady na ploše Apple TV a uvidíš, co běží."
+            "value" : "Přesuň RetroGuide.TV do horní řady na ploše Apple TV a uvidíš, co běží."
           }
         },
         "ru" : {
@@ -47055,7 +47055,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przesuń napisy później, jeśli pojawiają się przed mową, lub wcześniej, jeśli po niej. Kolejne odcinki tego serialu zaczną się z tym samym przesunięciem."
+            "value" : "Przesuń napisy później, jeśli pojawiają się przed mową, lub wcześniej, jeśli po niej. Kolejne odcinki tego serialu zaczną się z tym samym przesunięciem."
           }
         },
         "cs" : {
@@ -48098,7 +48098,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vyžaduje server Plex nebo Jellyfin, vlastní nebo sdílený s tebou. Neobsahuje žádná videa."
+            "value" : "Vyžaduje server Plex nebo Jellyfin, vlastní nebo sdílený s tebou. Neobsahuje žádná videa."
           }
         },
         "ru" : {
@@ -48834,13 +48834,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Następny program o %@"
+            "value" : "Następny program o %@"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Další pořad v %@"
+            "value" : "Další pořad v %@"
           }
         },
         "ru" : {
@@ -49137,13 +49137,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Żaden serwer Jellyfin nie odpowiedział pod tym adresem. Sprawdź adres i port oraz to, czy serwer używa HTTPS z zaufanym certyfikatem."
+            "value" : "Żaden serwer Jellyfin nie odpowiedział pod tym adresem. Sprawdź adres i port oraz to, czy serwer używa HTTPS z zaufanym certyfikatem."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na této adrese neodpověděl žádný server Jellyfin. Zkontroluj adresu a port a že server používá HTTPS s důvěryhodným certifikátem."
+            "value" : "Na této adrese neodpověděl žádný server Jellyfin. Zkontroluj adresu a port a že server používá HTTPS s důvěryhodným certifikátem."
           }
         },
         "ru" : {
@@ -49285,13 +49285,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "W tej sieci nie odpowiedział żaden serwer Jellyfin. Zamiast tego wpisz adres serwera."
+            "value" : "W tej sieci nie odpowiedział żaden serwer Jellyfin. Zamiast tego wpisz adres serwera."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "V této síti neodpověděl žádný server Jellyfin. Zadej místo toho adresu serveru."
+            "value" : "V této síti neodpověděl žádný server Jellyfin. Zadej místo toho adresu serveru."
           }
         },
         "ru" : {
@@ -49729,13 +49729,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Żaden dostępny kanał nie spełnia ustawień kontroli rodzicielskiej. Rodzic może zmienić zestaw kanałów lub ograniczenia treści w Ustawieniach."
+            "value" : "Żaden dostępny kanał nie spełnia ustawień kontroli rodzicielskiej. Rodzic może zmienić zestaw kanałów lub ograniczenia treści w Ustawieniach."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rodičovské kontrole neodpovídá žádný dostupný kanál. Rodič může nabídku nebo omezení obsahu změnit v Nastavení."
+            "value" : "Rodičovské kontrole neodpovídá žádný dostupný kanál. Rodič může nabídku nebo omezení obsahu změnit v Nastavení."
           }
         },
         "ru" : {
@@ -49883,7 +49883,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zatím nejsou k dispozici žádné kanály."
+            "value" : "Zatím nejsou k dispozici žádné kanály."
           }
         },
         "ru" : {
@@ -50025,7 +50025,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brak kanałów w tym widoku"
+            "value" : "Brak kanałów w tym widoku"
           }
         },
         "cs" : {
@@ -50173,13 +50173,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brak dostępnych reklam. Sprawdź biblioteki i Kontrolę rodzicielską."
+            "value" : "Brak dostępnych reklam. Sprawdź biblioteki i Kontrolę rodzicielską."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nejsou k dispozici žádné reklamy. Zkontroluj knihovny a rodičovskou kontrolu."
+            "value" : "Nejsou k dispozici žádné reklamy. Zkontroluj knihovny a rodičovskou kontrolu."
           }
         },
         "ru" : {
@@ -50321,13 +50321,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Brak dostępnych ulubionych kanałów. Dodaj kanały w sekcji Ulubione poniżej, aby pokazać je na Górnej półce."
+            "value" : "Brak dostępnych ulubionych kanałów. Dodaj kanały w sekcji Ulubione poniżej, aby pokazać je na Górnej półce."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nejsou k dispozici žádné oblíbené kanály. Přidej kanály do oblíbených níže a zobrazí se v Top Shelf."
+            "value" : "Nejsou k dispozici žádné oblíbené kanály. Přidej kanály do oblíbených níže a zobrazí se v Top Shelf."
           }
         },
         "ru" : {
@@ -50475,7 +50475,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nejsou k dispozici žádné oblíbené kanály. Níže vyber oblíbené a přidej kanály do widgetu."
+            "value" : "Nejsou k dispozici žádné oblíbené kanály. Níže vyber oblíbené a přidej kanály do widgetu."
           }
         },
         "ru" : {
@@ -51661,7 +51661,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Není v aktuálně načtených knihovnách"
+            "value" : "Není v aktuálně načtených knihovnách"
           }
         },
         "ru" : {
@@ -52248,13 +52248,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nic nie zostało usunięte z żadnego kanału. Aby usunąć serial z kanału, otwórz Opcje, gdy jest emitowany, i wybierz Usuń ten serial z tego kanału."
+            "value" : "Nic nie zostało usunięte z żadnego kanału. Aby usunąć serial z kanału, otwórz Opcje, gdy jest emitowany, i wybierz Usuń ten serial z tego kanału."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Z žádného kanálu není nic odebráno. Chceš-li pořad z kanálu odebrat, otevři během jeho vysílání Volby a zvol Odebrat tento pořad z tohoto kanálu."
+            "value" : "Z žádného kanálu není nic odebráno. Chceš-li pořad z kanálu odebrat, otevři během jeho vysílání Volby a zvol Odebrat tento pořad z tohoto kanálu."
           }
         },
         "ru" : {
@@ -52840,13 +52840,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Powiadomienia są wyłączone. Włącz je dla RetroGuide.TV w Ustawieniach iPhone’a lub iPada, aby otrzymywać przypomnienia."
+            "value" : "Powiadomienia są wyłączone. Włącz je dla RetroGuide.TV w Ustawieniach iPhone’a lub iPada, aby otrzymywać przypomnienia."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oznámení jsou vypnutá. Chceš-li dostávat připomínky, zapni je pro RetroGuide.TV v Nastavení iPhonu nebo iPadu."
+            "value" : "Oznámení jsou vypnutá. Chceš-li dostávat připomínky, zapni je pro RetroGuide.TV v Nastavení iPhonu nebo iPadu."
           }
         },
         "ru" : {
@@ -54029,13 +54029,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na kanale %@ · brak emisji w ciągu najbliższych dwóch dni"
+            "value" : "Na kanale %@ · brak emisji w ciągu najbliższych dwóch dni"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na %@ · v příštích dvou dnech se nevysílá"
+            "value" : "Na %@ · v příštích dvou dnech se nevysílá"
           }
         },
         "ru" : {
@@ -54183,7 +54183,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na Apple TV se připomínky zobrazují, když je RetroGuide otevřená. Chceš-li oznámení i mimo aplikaci, nastav připomínky na iPhonu nebo iPadu."
+            "value" : "Na Apple TV se připomínky zobrazují, když je RetroGuide otevřená. Chceš-li oznámení i mimo aplikaci, nastav připomínky na iPhonu nebo iPadu."
           }
         },
         "ru" : {
@@ -54485,7 +54485,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "V tomto nebo jiném zařízení přejdi na tuto adresu:"
+            "value" : "V tomto nebo jiném zařízení přejdi na tuto adresu:"
           }
         },
         "ru" : {
@@ -54775,13 +54775,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeden zakup, bez subskrypcji. Odblokowuje Pro na iPhonie, iPadzie i Apple TV."
+            "value" : "Jeden zakup, bez subskrypcji. Odblokowuje Pro na iPhonie, iPadzie i Apple TV."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jeden nákup, žádné předplatné. Odemkne Pro na iPhonu, iPadu i Apple TV."
+            "value" : "Jeden nákup, žádné předplatné. Odemkne Pro na iPhonu, iPadu i Apple TV."
           }
         },
         "ru" : {
@@ -55220,13 +55220,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Treści mogą pochodzić tylko z tych bibliotek. Przy każdej bibliotece podano jej serwer."
+            "value" : "Treści mogą pochodzić tylko z tych bibliotek. Przy każdej bibliotece podano jej serwer."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Obsah mohou poskytovat jen tyto knihovny. U každé knihovny je uvedený server, ke kterému patří."
+            "value" : "Obsah mohou poskytovat jen tyto knihovny. U každé knihovny je uvedený server, ke kterému patří."
           }
         },
         "ru" : {
@@ -55664,13 +55664,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Możesz też udostępnić serwer przez HTTPS z nazwą domeny."
+            "value" : "Możesz też udostępnić serwer przez HTTPS z nazwą domeny."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nebo server zveřejni přes HTTPS s názvem domény."
+            "value" : "Nebo server zveřejni přes HTTPS s názvem domény."
           }
         },
         "ru" : {
@@ -56114,7 +56114,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rodičovská kontrola platí i pro reklamy. Když je obsah bez hodnocení blokovaný, klipy bez hodnocení se vynechají."
+            "value" : "Rodičovská kontrola platí i pro reklamy. Když je obsah bez hodnocení blokovaný, klipy bez hodnocení se vynechají."
           }
         },
         "ru" : {
@@ -56410,7 +56410,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rodičovskou kontrolu nelze načíst. Odemkni zařízení a zkus aplikaci otevřít znovu."
+            "value" : "Rodičovskou kontrolu nelze načíst. Odemkni zařízení a zkus aplikaci otevřít znovu."
           }
         },
         "ru" : {
@@ -56552,13 +56552,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ograniczenia rodzicielskie i wyselekcjonowany zestaw rodzicielski możesz przejrzeć w Kontroli rodzicielskiej. Zapisz je tam, aby obowiązywały na tym urządzeniu. Synchronizacja nigdy nie zmienia PIN-u ani nie włącza czy wyłącza blokady rodzicielskiej."
+            "value" : "Ograniczenia rodzicielskie i wyselekcjonowany zestaw rodzicielski możesz przejrzeć w Kontroli rodzicielskiej. Zapisz je tam, aby obowiązywały na tym urządzeniu. Synchronizacja nigdy nie zmienia PIN-u ani nie włącza czy wyłącza blokady rodzicielskiej."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rodičovská omezení a sestavenou rodičovskou nabídku můžeš zkontrolovat v Rodičovské kontrole. Uložením tam je použiješ v tomto zařízení. Synchronizace nikdy nemění PIN ani nezapíná či nevypíná rodičovský zámek."
+            "value" : "Rodičovská omezení a sestavenou rodičovskou nabídku můžeš zkontrolovat v Rodičovské kontrole. Uložením tam je použiješ v tomto zařízení. Synchronizace nikdy nemění PIN ani nezapíná či nevypíná rodičovský zámek."
           }
         },
         "ru" : {
@@ -57294,13 +57294,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybieraj kolejność dla każdego kanału i zaczynaj programy o pełnej godzinie i wpół do."
+            "value" : "Wybieraj kolejność dla każdego kanału i zaczynaj programy o pełnej godzinie i wpół do."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zvol pořadí každého kanálu a začínej pořady v celou a v půl."
+            "value" : "Zvol pořadí každého kanálu a začínej pořady v celou a v půl."
           }
         },
         "ru" : {
@@ -57596,7 +57596,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Připni jeden kanál a automatické střídání se zastaví."
+            "value" : "Připni jeden kanál a automatické střídání se zastaví."
           }
         },
         "ru" : {
@@ -57738,13 +57738,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odtwarzaj klipy z osobnej biblioteki reklam między programami. Seriale i filmy lecą bez przerw."
+            "value" : "Odtwarzaj klipy z osobnej biblioteki reklam między programami. Seriale i filmy lecą bez przerw."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mezi pořady přehrávej klipy ze samostatné knihovny reklam. Pořady a filmy běží bez přerušení."
+            "value" : "Mezi pořady přehrávej klipy ze samostatné knihovny reklam. Pořady a filmy běží bez přerušení."
           }
         },
         "ru" : {
@@ -58331,13 +58331,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Opcje odtwarzania, dźwięk i napisy"
+            "value" : "Opcje odtwarzania, dźwięk i napisy"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Volby přehrávání, zvuk a titulky"
+            "value" : "Volby přehrávání, zvuk a titulky"
           }
         },
         "ru" : {
@@ -58479,13 +58479,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odtwarzanie zatrzyma się o %@"
+            "value" : "Odtwarzanie zatrzyma się o %@"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přehrávání se zastaví v %@"
+            "value" : "Přehrávání se zastaví v %@"
           }
         },
         "ru" : {
@@ -58775,13 +58775,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Preferencje odtwarzacza, jakości wideo, widżetu, Górnej półki, ostatnich kanałów i bieżącego odtwarzania pozostają na każdym urządzeniu."
+            "value" : "Preferencje odtwarzacza, jakości wideo, widżetu, Górnej półki, ostatnich kanałów i bieżącego odtwarzania pozostają na każdym urządzeniu."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Předvolby přehrávače, kvality videa, widgetu, Top Shelf, posledních kanálů a aktuálního přehrávání zůstávají v každém zařízení."
+            "value" : "Předvolby přehrávače, kvality videa, widgetu, Top Shelf, posledních kanálů a aktuálního přehrávání zůstávají v každém zařízení."
           }
         },
         "ru" : {
@@ -59515,7 +59515,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przypomnienie o programie"
+            "value" : "Przypomnienie o programie"
           }
         },
         "cs" : {
@@ -59663,7 +59663,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przypomnienia o programach"
+            "value" : "Przypomnienia o programach"
           }
         },
         "cs" : {
@@ -60847,13 +60847,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kategorie wiekowe pochodzą z twoich serwerów. Treści bez amerykańskiej kategorii, w tym z kategoriami innych krajów, są blokowane, chyba że na nie tu zezwolisz."
+            "value" : "Kategorie wiekowe pochodzą z twoich serwerów. Treści bez amerykańskiej kategorii, w tym z kategoriami innych krajów, są blokowane, chyba że na nie tu zezwolisz."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hodnocení pochází z tvých serverů. Obsah bez amerického hodnocení, včetně hodnocení jiných zemí, se blokuje, pokud ho tady nepovolíš."
+            "value" : "Hodnocení pochází z tvých serverů. Obsah bez amerického hodnocení, včetně hodnocení jiných zemí, se blokuje, pokud ho tady nepovolíš."
           }
         },
         "ru" : {
@@ -61144,13 +61144,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prawdziwa telewizja zaczyna programy o pełnej godzinie i wpół do. Wyrównanie do siatki dodaje między programami krótką przerwę „Zaraz wracamy”, by przewodnik był równo ułożony."
+            "value" : "Prawdziwa telewizja zaczyna programy o pełnej godzinie i wpół do. Wyrównanie do siatki dodaje między programami krótką przerwę „Zaraz wracamy”, by przewodnik był równo ułożony."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Skutečná televize začíná pořady v celou a v půl. Zarovnání do mřížky přidá mezi pořady krátkou přestávku „Hned jsme zpátky“, aby TV program úhledně lícoval."
+            "value" : "Skutečná televize začíná pořady v celou a v půl. Zarovnání do mřížky přidá mezi pořady krátkou přestávku „Hned jsme zpátky“, aby TV program úhledně lícoval."
           }
         },
         "ru" : {
@@ -62482,7 +62482,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Připomínky se zobrazí, když je odpovídající pořad k dispozici. Povolení oznámení se nastavuje zvlášť v každém zařízení."
+            "value" : "Připomínky se zobrazí, když je odpovídající pořad k dispozici. Povolení oznámení se nastavuje zvlášť v každém zařízení."
           }
         },
         "ru" : {
@@ -63080,13 +63080,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usunąć %1$@ z kanału %2$@?"
+            "value" : "Usunąć %1$@ z kanału %2$@?"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebrat %1$@ z kanálu %2$@?"
+            "value" : "Odebrat %1$@ z kanálu %2$@?"
           }
         },
         "ru" : {
@@ -63376,13 +63376,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usuń ten film z tego kanału"
+            "value" : "Usuń ten film z tego kanału"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebrat tento film z tohoto kanálu"
+            "value" : "Odebrat tento film z tohoto kanálu"
           }
         },
         "ru" : {
@@ -63524,13 +63524,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usuń ten serial z tego kanału"
+            "value" : "Usuń ten serial z tego kanału"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebrat tento pořad z tohoto kanálu"
+            "value" : "Odebrat tento pořad z tohoto kanálu"
           }
         },
         "ru" : {
@@ -63820,13 +63820,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usunięte z kanałów"
+            "value" : "Usunięte z kanałów"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebráno z kanálů"
+            "value" : "Odebráno z kanálů"
           }
         },
         "ru" : {
@@ -63968,13 +63968,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usunięte z tego kanału"
+            "value" : "Usunięte z tego kanału"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebráno z tohoto kanálu"
+            "value" : "Odebráno z tohoto kanálu"
           }
         },
         "ru" : {
@@ -64116,13 +64116,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usuwa banery i reklamy pełnoekranowe na iPhonie i iPadzie."
+            "value" : "Usuwa banery i reklamy pełnoekranowe na iPhonie i iPadzie."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odstraní bannerové a celoobrazovkové reklamy na iPhonu a iPadu."
+            "value" : "Odstraní bannerové a celoobrazovkové reklamy na iPhonu a iPadu."
           }
         },
         "ru" : {
@@ -64264,13 +64264,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usuwanie serialu z kanału jest częścią RetroGuide Pro (Ustawienia › RetroGuide Pro)."
+            "value" : "Usuwanie serialu z kanału jest częścią RetroGuide Pro (Ustawienia › RetroGuide Pro)."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odebrání pořadu z kanálu je součástí RetroGuide Pro (Nastavení › RetroGuide Pro)."
+            "value" : "Odebrání pořadu z kanálu je součástí RetroGuide Pro (Nastavení › RetroGuide Pro)."
           }
         },
         "ru" : {
@@ -64412,7 +64412,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zastąpić konfigurację w iCloud?"
+            "value" : "Zastąpić konfigurację w iCloud?"
           }
         },
         "cs" : {
@@ -66041,7 +66041,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RetroGuide odtwarza oryginalne pliki z serwera, gdy tylko może, więc serwer nie musi konwertować wideo."
+            "value" : "RetroGuide odtwarza oryginalne pliki z serwera, gdy tylko może, więc serwer nie musi konwertować wideo."
           }
         },
         "cs" : {
@@ -66189,13 +66189,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RetroGuide.TV zamienia twoją bibliotekę Plex lub Jellyfin w kanały telewizyjne na żywo z przewodnikiem po programach. Przełączaj kanały, włączaj to, co akurat leci, i pozwól, by ramówka wybierała za ciebie."
+            "value" : "RetroGuide.TV zamienia twoją bibliotekę Plex lub Jellyfin w kanały telewizyjne na żywo z przewodnikiem po programach. Przełączaj kanały, włączaj to, co akurat leci, i pozwól, by ramówka wybierała za ciebie."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RetroGuide.TV promění tvou knihovnu Plex nebo Jellyfin v živé TV kanály s TV programem. Přepínej kanály, naskoč do čehokoli, co právě běží, a nech výběr na programu."
+            "value" : "RetroGuide.TV promění tvou knihovnu Plex nebo Jellyfin v živé TV kanály s TV programem. Přepínej kanály, naskoč do čehokoli, co právě běží, a nech výběr na programu."
           }
         },
         "ru" : {
@@ -66781,13 +66781,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przejrzyj zsynchronizowane ograniczenia i zestaw"
+            "value" : "Przejrzyj zsynchronizowane ograniczenia i zestaw"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zkontrolovat synchronizovaná omezení a nabídku"
+            "value" : "Zkontrolovat synchronizovaná omezení a nabídku"
           }
         },
         "ru" : {
@@ -66929,13 +66929,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przejrzyj poniższe ustawienia, a potem wybierz Zapisz, aby zastosować je tutaj. Twój PIN i to, czy kontrola rodzicielska jest włączona, nie zmienią się."
+            "value" : "Przejrzyj poniższe ustawienia, a potem wybierz Zapisz, aby zastosować je tutaj. Twój PIN i to, czy kontrola rodzicielska jest włączona, nie zmienią się."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zkontroluj volby níže a klepnutím na Uložit je tu použij. PIN a zapnutí rodičovské kontroly se nezmění."
+            "value" : "Zkontroluj volby níže a klepnutím na Uložit je tu použij. PIN a zapnutí rodičovské kontroly se nezmění."
           }
         },
         "ru" : {
@@ -67670,13 +67670,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapisz i odbuduj kanały"
+            "value" : "Zapisz i odbuduj kanały"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uložit a přestavět kanály"
+            "value" : "Uložit a přestavět kanály"
           }
         },
         "ru" : {
@@ -68120,13 +68120,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zapisywanie w Plex… %1$lld z %2$lld"
+            "value" : "Zapisywanie w Plex… %1$lld z %2$lld"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ukládání do Plexu… %1$lld z %2$lld"
+            "value" : "Ukládání do Plexu… %1$lld z %2$lld"
           }
         },
         "ru" : {
@@ -68422,7 +68422,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Naskenuj a otevři odkaz Plex"
+            "value" : "Naskenuj a otevři odkaz Plex"
           }
         },
         "ru" : {
@@ -68564,13 +68564,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Linie CRT w menu"
+            "value" : "Linie CRT w menu"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Řádkování v nabídkách"
+            "value" : "Řádkování v nabídkách"
           }
         },
         "ru" : {
@@ -69452,13 +69452,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przeszukuj wszystkie seriale i filmy na swoich kanałach."
+            "value" : "Przeszukuj wszystkie seriale i filmy na swoich kanałach."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hledej ve všech pořadech a filmech na svých kanálech."
+            "value" : "Hledej ve všech pořadech a filmech na svých kanálech."
           }
         },
         "ru" : {
@@ -70068,13 +70068,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybrane kolekcje, seriale i filmy"
+            "value" : "Wybrane kolekcje, seriale i filmy"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vybrané kolekce, pořady a filmy"
+            "value" : "Vybrané kolekce, pořady a filmy"
           }
         },
         "ru" : {
@@ -70660,13 +70660,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybranie serialu obejmuje jego odcinki. Uwzględniane są też pasujące kopie na innych serwerach, w ramach limitów bibliotek i kategorii wiekowych."
+            "value" : "Wybranie serialu obejmuje jego odcinki. Uwzględniane są też pasujące kopie na innych serwerach, w ramach limitów bibliotek i kategorii wiekowych."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Výběrem pořadu zahrneš i jeho díly. Zahrnou se i odpovídající kopie na jiných serverech, v rámci limitů knihoven a hodnocení."
+            "value" : "Výběrem pořadu zahrneš i jeho díly. Zahrnou se i odpovídající kopie na jiných serverech, v rámci limitů knihoven a hodnocení."
           }
         },
         "ru" : {
@@ -71252,13 +71252,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ustaw kolejność programów dla obecnego zestawu. Poszczególne kanały możesz zmienić w sekcji Zarządzaj kanałami. Wybranie opcji „Każdy kanał osobno” przywraca domyślne ustawienia kanałów automatycznych i zachowuje kolejność kanałów własnych."
+            "value" : "Ustaw kolejność programów dla obecnego zestawu. Poszczególne kanały możesz zmienić w sekcji Zarządzaj kanałami. Wybranie opcji „Każdy kanał osobno” przywraca domyślne ustawienia kanałów automatycznych i zachowuje kolejność kanałów własnych."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nastav pořadí pořadů pro aktuální nabídku. Jednotlivé kanály můžeš změnit ve Spravovat kanály. Volba Vlastní u každého kanálu obnoví výchozí hodnoty automatických kanálů a zachová pořadí vlastních kanálů."
+            "value" : "Nastav pořadí pořadů pro aktuální nabídku. Jednotlivé kanály můžeš změnit ve Spravovat kanály. Volba Vlastní u každého kanálu obnoví výchozí hodnoty automatických kanálů a zachová pořadí vlastních kanálů."
           }
         },
         "ru" : {
@@ -71844,13 +71844,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ustawienia z iCloud"
+            "value" : "Ustawienia z iCloud"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nastavení z iCloudu"
+            "value" : "Nastavení z iCloudu"
           }
         },
         "ru" : {
@@ -72146,7 +72146,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sdíleno s tebou"
+            "value" : "Sdíleno s tebou"
           }
         },
         "ru" : {
@@ -72585,13 +72585,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pokaż w przewodniku"
+            "value" : "Pokaż w przewodniku"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zobrazit v programu"
+            "value" : "Zobrazit v programu"
           }
         },
         "ru" : {
@@ -73029,13 +73029,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seriale i filmy"
+            "value" : "Seriale i filmy"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pořady a filmy"
+            "value" : "Pořady a filmy"
           }
         },
         "ru" : {
@@ -73177,13 +73177,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seriale i filmy"
+            "value" : "Seriale i filmy"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pořady a filmy"
+            "value" : "Pořady a filmy"
           }
         },
         "ru" : {
@@ -73479,7 +73479,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přihlásit se raději v tomto zařízení"
+            "value" : "Přihlásit se raději v tomto zařízení"
           }
         },
         "ru" : {
@@ -73923,7 +73923,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přihlásit se k %@"
+            "value" : "Přihlásit se k %@"
           }
         },
         "ru" : {
@@ -74065,13 +74065,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zaloguj się do iCloud w Ustawieniach tego urządzenia i spróbuj ponownie."
+            "value" : "Zaloguj się do iCloud w Ustawieniach tego urządzenia i spróbuj ponownie."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Přihlas se k iCloudu v Nastavení tohoto zařízení a zkus to znovu."
+            "value" : "Přihlas se k iCloudu v Nastavení tohoto zařízení a zkus to znovu."
           }
         },
         "ru" : {
@@ -74509,13 +74509,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wylogować się i usunąć wszystkie kanały z tego urządzenia?"
+            "value" : "Wylogować się i usunąć wszystkie kanały z tego urządzenia?"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Odhlásit se a odebrat z tohoto zařízení všechny kanály?"
+            "value" : "Odhlásit se a odebrat z tohoto zařízení všechny kanály?"
           }
         },
         "ru" : {
@@ -74953,7 +74953,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie udało się wczytać niektórych bibliotek reklam. Programy będą emitowane zgodnie z ramówką."
+            "value" : "Nie udało się wczytać niektórych bibliotek reklam. Programy będą emitowane zgodnie z ramówką."
           }
         },
         "cs" : {
@@ -75545,13 +75545,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oznacz kanały gwiazdką poniżej. Ukryte i niedostępne kanały pozostają zapisane i wrócą, gdy będą dostępne."
+            "value" : "Oznacz kanały gwiazdką poniżej. Ukryte i niedostępne kanały pozostają zapisane i wrócą, gdy będą dostępne."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Níže označ kanály hvězdičkou. Skryté a nedostupné kanály zůstanou uložené a vrátí se, až budou dostupné."
+            "value" : "Níže označ kanály hvězdičkou. Skryté a nedostupné kanály zůstanou uložené a vrátí se, až budou dostupné."
           }
         },
         "ru" : {
@@ -75693,13 +75693,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oznaczaj kanały gwiazdką i przeglądaj lub przełączaj tylko ulubione."
+            "value" : "Oznaczaj kanały gwiazdką i przeglądaj lub przełączaj tylko ulubione."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Označ kanály hvězdičkou a procházej nebo přepínej jen oblíbené."
+            "value" : "Označ kanály hvězdičkou a procházej nebo přepínej jen oblíbené."
           }
         },
         "ru" : {
@@ -75841,13 +75841,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zacznij ten program od 0:00. W każdej chwili możesz wrócić do kanału na żywo."
+            "value" : "Zacznij ten program od 0:00. W każdej chwili możesz wrócić do kanału na żywo."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Spustí tento pořad od 0:00. K živému vysílání se můžeš kdykoli vrátit."
+            "value" : "Spustí tento pořad od 0:00. K živému vysílání se můžeš kdykoli vrátit."
           }
         },
         "ru" : {
@@ -76435,13 +76435,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zatrzymuje wideo, dźwięk i Obraz w obrazie. Zmiana kanału nie zmienia wybranej godziny zatrzymania."
+            "value" : "Zatrzymuje wideo, dźwięk i Obraz w obrazie. Zmiana kanału nie zmienia wybranej godziny zatrzymania."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zastaví video, zvuk i Obraz v obraze. Přepnutím kanálu se zvolený čas zastavení nezmění."
+            "value" : "Zastaví video, zvuk i Obraz v obraze. Přepnutím kanálu se zvolený čas zastavení nezmění."
           }
         },
         "ru" : {
@@ -77028,13 +77028,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Przełącza telewizor w tryb HDR dla programów HDR i opcjonalnie na liczbę klatek każdego programu, tak jak odtwarzacz Apple."
+            "value" : "Przełącza telewizor w tryb HDR dla programów HDR i opcjonalnie na liczbę klatek każdego programu, tak jak odtwarzacz Apple."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "U pořadů v HDR přepne televizi do HDR a volitelně i na snímkovou frekvenci pořadu, stejně jako přehrávač Apple."
+            "value" : "U pořadů v HDR přepne televizi do HDR a volitelně i na snímkovou frekvenci pořadu, stejně jako přehrávač Apple."
           }
         },
         "ru" : {
@@ -77176,13 +77176,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizacja nie mogła zapisać danych lokalnych. Zwolnij trochę miejsca na urządzeniu, a potem ponownie włącz synchronizację. Ustawienia aplikacji się nie zmieniły."
+            "value" : "Synchronizacja nie mogła zapisać danych lokalnych. Zwolnij trochę miejsca na urządzeniu, a potem ponownie włącz synchronizację. Ustawienia aplikacji się nie zmieniły."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizace nemohla uložit místní data. Uvolni místo v zařízení a synchronizaci znovu zapni. Nastavení aplikace se nezměnilo."
+            "value" : "Synchronizace nemohla uložit místní data. Uvolni místo v zařízení a synchronizaci znovu zapni. Nastavení aplikace se nezměnilo."
           }
         },
         "ru" : {
@@ -77472,13 +77472,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizuj z iCloud"
+            "value" : "Synchronizuj z iCloud"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizovat s iCloudem"
+            "value" : "Synchronizovat s iCloudem"
           }
         },
         "ru" : {
@@ -78658,13 +78658,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ta nazwa użytkownika i hasło nie działają."
+            "value" : "Ta nazwa użytkownika i hasło nie działają."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Toto jméno a heslo nefungují."
+            "value" : "Toto jméno a heslo nefungují."
           }
         },
         "ru" : {
@@ -79102,13 +79102,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Konto iCloud zmieniło się. Synchronizacja jest wyłączona, a ustawienia tego urządzenia się nie zmieniły. Włącz ją, aby wybrać konfigurację dla nowego konta."
+            "value" : "Konto iCloud zmieniło się. Synchronizacja jest wyłączona, a ustawienia tego urządzenia się nie zmieniły. Włącz ją, aby wybrać konfigurację dla nowego konta."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Účet iCloud se změnil. Synchronizace je vypnutá a nastavení tohoto zařízení se nezměnilo. Zapni ji a vyber nastavení pro nový účet."
+            "value" : "Účet iCloud se změnil. Synchronizace je vypnutá a nastavení tohoto zařízení se nezměnilo. Zapni ji a vyber nastavení pro nový účet."
           }
         },
         "ru" : {
@@ -79250,13 +79250,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Konto iCloud zmieniło się. Synchronizacja jest wyłączona, a twoje ustawienia nadal są na tym urządzeniu."
+            "value" : "Konto iCloud zmieniło się. Synchronizacja jest wyłączona, a twoje ustawienia nadal są na tym urządzeniu."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Účet iCloud se změnil. Synchronizace je vypnutá a tvoje nastavení zůstává v tomto zařízení."
+            "value" : "Účet iCloud se změnil. Synchronizace je vypnutá a tvoje nastavení zůstává v tomto zařízení."
           }
         },
         "ru" : {
@@ -79398,13 +79398,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kopia w iCloud została usunięta. Twoje ustawienia nadal są na tym urządzeniu. Włącz synchronizację, aby skonfigurować ją od nowa."
+            "value" : "Kopia w iCloud została usunięta. Twoje ustawienia nadal są na tym urządzeniu. Włącz synchronizację, aby skonfigurować ją od nowa."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kopie na iCloudu byla odstraněna. Tvoje nastavení zůstává v tomto zařízení. Chceš-li ji znovu vytvořit, zapni synchronizaci."
+            "value" : "Kopie na iCloudu byla odstraněna. Tvoje nastavení zůstává v tomto zařízení. Chceš-li ji znovu vytvořit, zapni synchronizaci."
           }
         },
         "ru" : {
@@ -79546,7 +79546,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ustawienia w iCloud zmieniły się poza tą aplikacją. Synchronizacja została zatrzymana, aby zachować konfigurację tego urządzenia."
+            "value" : "Ustawienia w iCloud zmieniły się poza tą aplikacją. Synchronizacja została zatrzymana, aby zachować konfigurację tego urządzenia."
           }
         },
         "cs" : {
@@ -79996,7 +79996,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uložený deník synchronizace nelze přečíst. Nastavení v tomto zařízení se nezměnilo."
+            "value" : "Uložený deník synchronizace nelze přečíst. Nastavení v tomto zařízení se nezměnilo."
           }
         },
         "ru" : {
@@ -80144,7 +80144,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plánovač se také vyhýbá vysílání stejného dílu nebo filmu na více kanálech, pokud jsou k dispozici alternativy."
+            "value" : "Plánovač se také vyhýbá vysílání stejného dílu nebo filmu na více kanálech, pokud jsou k dispozici alternativy."
           }
         },
         "ru" : {
@@ -81323,13 +81323,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można bezpiecznie zsynchronizować tych ustawień. Zaktualizuj RetroGuide.TV na innych urządzeniach i spróbuj ponownie. Lokalna konfiguracja się nie zmieniła."
+            "value" : "Nie można bezpiecznie zsynchronizować tych ustawień. Zaktualizuj RetroGuide.TV na innych urządzeniach i spróbuj ponownie. Lokalna konfiguracja się nie zmieniła."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tato nastavení nelze bezpečně synchronizovat. Aktualizuj RetroGuide.TV na ostatních zařízeních a zkus to znovu. Místní nastavení se nezměnilo."
+            "value" : "Tato nastavení nelze bezpečně synchronizovat. Aktualizuj RetroGuide.TV na ostatních zařízeních a zkus to znovu. Místní nastavení se nezměnilo."
           }
         },
         "ru" : {
@@ -81471,13 +81471,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "To konto Plex nie ma jeszcze serwerów: ani własnych, ani udostępnionych. RetroGuide.TV odtwarza filmy i seriale z serwera Plex lub Jellyfin – twojego własnego albo udostępnionego ci przez znajomego. Jeśli serwer udostępniono innemu kontu Plex, zaloguj się na nie."
+            "value" : "To konto Plex nie ma jeszcze serwerów: ani własnych, ani udostępnionych. RetroGuide.TV odtwarza filmy i seriale z serwera Plex lub Jellyfin – twojego własnego albo udostępnionego ci przez znajomego. Jeśli serwer udostępniono innemu kontu Plex, zaloguj się na nie."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tento účet Plex zatím nemá žádné servery: vlastní ani sdílené. RetroGuide.TV přehrává filmy a pořady ze serveru Plex nebo Jellyfin, vlastního nebo takového, který s tebou sdílí kamarád. Pokud byl server sdílen s jiným účtem Plex, přihlas se tím."
+            "value" : "Tento účet Plex zatím nemá žádné servery: vlastní ani sdílené. RetroGuide.TV přehrává filmy a pořady ze serveru Plex nebo Jellyfin, vlastního nebo takového, který s tebou sdílí kamarád. Pokud byl server sdílen s jiným účtem Plex, přihlas se tím."
           }
         },
         "ru" : {
@@ -81767,13 +81767,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wspólne ustawienia tego urządzenia zastąpią te w iCloud i zaktualizują inne połączone urządzenia. Ich ograniczenia rodzicielskie nadal trzeba będzie przejrzeć."
+            "value" : "Wspólne ustawienia tego urządzenia zastąpią te w iCloud i zaktualizują inne połączone urządzenia. Ich ograniczenia rodzicielskie nadal trzeba będzie przejrzeć."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sdílená nastavení tohoto zařízení nahradí ta na iCloudu a aktualizují ostatní připojená zařízení. Jejich rodičovská omezení bude i tak třeba zkontrolovat."
+            "value" : "Sdílená nastavení tohoto zařízení nahradí ta na iCloudu a aktualizují ostatní připojená zařízení. Jejich rodičovská omezení bude i tak třeba zkontrolovat."
           }
         },
         "ru" : {
@@ -82803,13 +82803,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ścieżki dźwięku i napisów tego programu są niedostępne."
+            "value" : "Ścieżki dźwięku i napisów tego programu są niedostępne."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zvukové stopy a titulky tohoto pořadu nejsou k dispozici."
+            "value" : "Zvukové stopy a titulky tohoto pořadu nejsou k dispozici."
           }
         },
         "ru" : {
@@ -82957,7 +82957,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Obnoví se sdílená nastavení uložená předtím, než se toto zařízení zapojilo do synchronizace přes iCloud. Pokud je synchronizace zapnutá, obnovené volby se synchronizují i do ostatních zařízení. Rodičovská omezení se nezmění, dokud je nezkontroluješ."
+            "value" : "Obnoví se sdílená nastavení uložená předtím, než se toto zařízení zapojilo do synchronizace přes iCloud. Pokud je synchronizace zapnutá, obnovené volby se synchronizují i do ostatních zařízení. Rodičovská omezení se nezmění, dokud je nezkontroluješ."
           }
         },
         "ru" : {
@@ -83247,13 +83247,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nie można teraz połączyć się z tym serwerem. Jego programy są pomijane w przewodniku, dopóki nie wróci."
+            "value" : "Nie można teraz połączyć się z tym serwerem. Jego programy są pomijane w przewodniku, dopóki nie wróci."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tento server teď není dostupný. Jeho pořady se v TV programu nezobrazí, dokud nebude zpět."
+            "value" : "Tento server teď není dostupný. Jeho pořady se v TV programu nezobrazí, dokud nebude zpět."
           }
         },
         "ru" : {
@@ -84299,7 +84299,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanály v Top Shelf"
+            "value" : "Kanály v Top Shelf"
           }
         },
         "ru" : {
@@ -84441,13 +84441,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dotknij i przytrzymaj ekran początkowy, wybierz Edycja › Dodaj widżet, a następnie wyszukaj RetroGuide.TV. Otwórz ponownie aplikację, aby odświeżyć zapisaną ramówkę; iOS sam decyduje, kiedy widżety się aktualizują."
+            "value" : "Dotknij i przytrzymaj ekran początkowy, wybierz Edycja › Dodaj widżet, a następnie wyszukaj RetroGuide.TV. Otwórz ponownie aplikację, aby odświeżyć zapisaną ramówkę; iOS sam decyduje, kiedy widżety się aktualizują."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Podrž prst na ploše, zvol Upravit › Přidat widget a vyhledej RetroGuide.TV. Uložený program obnovíš opětovným otevřením aplikace; kdy se widgety aktualizují, rozhoduje iOS."
+            "value" : "Podrž prst na ploše, zvol Upravit › Přidat widget a vyhledej RetroGuide.TV. Uložený program obnovíš opětovným otevřením aplikace; kdy se widgety aktualizují, rozhoduje iOS."
           }
         },
         "ru" : {
@@ -84885,13 +84885,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aby na to pozwolić, włącz Dopasuj zawartość w Ustawieniach Apple TV → Wideo i audio."
+            "value" : "Aby na to pozwolić, włącz Dopasuj zawartość w Ustawieniach Apple TV → Wideo i audio."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Chceš-li to povolit, zapni Přizpůsobit obsah v Nastavení Apple TV → Video a audio."
+            "value" : "Chceš-li to povolit, zapni Přizpůsobit obsah v Nastavení Apple TV → Video a audio."
           }
         },
         "ru" : {
@@ -86965,7 +86965,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oblíbené v Top Shelf"
+            "value" : "Oblíbené v Top Shelf"
           }
         },
         "ru" : {
@@ -87107,13 +87107,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Używaj ulubionych, wybieraj kanały lub przypnij jeden kanał w „Co leci”."
+            "value" : "Używaj ulubionych, wybieraj kanały lub przypnij jeden kanał w „Co leci”."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "V Co běží použij oblíbené, vybrané kanály nebo jeden připnutý kanál."
+            "value" : "V Co běží použij oblíbené, vybrané kanály nebo jeden připnutý kanál."
           }
         },
         "ru" : {
@@ -87995,13 +87995,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Użyj osobnej biblioteki zawierającej tylko reklamy. Wybrane biblioteki służą tylko do reklam i są wykluczone ze zwykłych kanałów."
+            "value" : "Użyj osobnej biblioteki zawierającej tylko reklamy. Wybrane biblioteki służą tylko do reklam i są wykluczone ze zwykłych kanałów."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Použij samostatnou knihovnu, která obsahuje jen reklamy. Vybrané knihovny se použijí jen pro reklamy a z běžných kanálů se vynechají."
+            "value" : "Použij samostatnou knihovnu, která obsahuje jen reklamy. Vybrané knihovny se použijí jen pro reklamy a z běžných kanálů se vynechají."
           }
         },
         "ru" : {
@@ -88143,13 +88143,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Użyj konfiguracji z iCloud"
+            "value" : "Użyj konfiguracji z iCloud"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Použít nastavení z iCloudu"
+            "value" : "Použít nastavení z iCloudu"
           }
         },
         "ru" : {
@@ -88297,7 +88297,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Používej stejné nastavení v zařízeních přihlášených k tvému Účtu Apple."
+            "value" : "Používej stejné nastavení v zařízeních přihlášených k tvému Účtu Apple."
           }
         },
         "ru" : {
@@ -88439,7 +88439,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ten PIN służy do zmiany ustawień i wyłączania kontroli rodzicielskiej. Przechowuj go w bezpiecznym miejscu."
+            "value" : "Ten PIN służy do zmiany ustawień i wyłączania kontroli rodzicielskiej. Przechowuj go w bezpiecznym miejscu."
           }
         },
         "cs" : {
@@ -89031,13 +89031,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Używa odtwarzacza Apple. MKV i inne formaty są konwertowane przez serwer."
+            "value" : "Używa odtwarzacza Apple. MKV i inne formaty są konwertowane przez serwer."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Používá přehrávač Apple. MKV a další formáty převádí tvůj server."
+            "value" : "Používá přehrávač Apple. MKV a další formáty převádí tvůj server."
           }
         },
         "ru" : {
@@ -89920,13 +89920,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oczekiwanie na iCloud. Zmiany są zapisane na tym urządzeniu i zostaną wysłane automatycznie."
+            "value" : "Oczekiwanie na iCloud. Zmiany są zapisane na tym urządzeniu i zostaną wysłane automatycznie."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Čeká se na iCloud. Změny jsou uložené v tomto zařízení a synchronizace se automaticky zopakuje."
+            "value" : "Čeká se na iCloud. Změny jsou uložené v tomto zařízení a synchronizace se automaticky zopakuje."
           }
         },
         "ru" : {
@@ -91869,13 +91869,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanały w „Co leci”"
+            "value" : "Kanały w „Co leci”"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kanály v Co běží"
+            "value" : "Kanály v Co běží"
           }
         },
         "ru" : {
@@ -92165,13 +92165,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gdy włączone są Wybrane gatunki, każda kopia musi mieć pasujący tag na serwerze. Obowiązują też ograniczenia kategorii wiekowych, bibliotek i tytułów."
+            "value" : "Gdy włączone są Wybrane gatunki, każda kopia musi mieć pasujący tag na serwerze. Obowiązują też ograniczenia kategorii wiekowych, bibliotek i tytułów."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Když jsou zapnuté Vybrané žánry, každá kopie musí mít odpovídající štítek serveru. Platí i omezení hodnocení, knihoven a titulů."
+            "value" : "Když jsou zapnuté Vybrané žánry, každá kopie musí mít odpovídající štítek serveru. Platí i omezení hodnocení, knihoven a titulů."
           }
         },
         "ru" : {
@@ -92461,13 +92461,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Które biblioteki mają lecieć w TV?"
+            "value" : "Które biblioteki mają lecieć w TV?"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Které knihovny mají být v televizi?"
+            "value" : "Které knihovny mají být v televizi?"
           }
         },
         "ru" : {
@@ -93054,13 +93054,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Działa w domu, a poza domem przez VPN, np. Tailscale."
+            "value" : "Działa w domu, a poza domem przez VPN, np. Tailscale."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Funguje doma a mimo domov přes VPN, jako je Tailscale."
+            "value" : "Funguje doma a mimo domov přes VPN, jako je Tailscale."
           }
         },
         "ru" : {
@@ -93952,13 +93952,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hasło do Jellyfin i wideo nie będą szyfrowane w sieci domowej ani w VPN. Adresy internetowe nadal wymagają HTTPS."
+            "value" : "Hasło do Jellyfin i wideo nie będą szyfrowane w sieci domowej ani w VPN. Adresy internetowe nadal wymagają HTTPS."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heslo k Jellyfinu a video nebudou v domácí síti ani ve VPN šifrované. Internetové adresy i tak vyžadují HTTPS."
+            "value" : "Heslo k Jellyfinu a video nebudou v domácí síti ani ve VPN šifrované. Internetové adresy i tak vyžadují HTTPS."
           }
         },
         "ru" : {
@@ -94396,13 +94396,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Twoje obecne kanały z zastosowanymi ograniczeniami rodzicielskimi."
+            "value" : "Twoje obecne kanały z zastosowanymi ograniczeniami rodzicielskimi."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tvoje stávající kanály s použitými rodičovskými omezeními."
+            "value" : "Tvoje stávající kanály s použitými rodičovskými omezeními."
           }
         },
         "ru" : {
@@ -94544,13 +94544,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limity gatunków, bibliotek i kategorii wiekowych obowiązują zawsze. Nowe odcinki i nowe pozycje w wybranych kolekcjach podlegają tym samym limitom."
+            "value" : "Limity gatunków, bibliotek i kategorii wiekowych obowiązują zawsze. Nowe odcinki i nowe pozycje w wybranych kolekcjach podlegają tym samym limitom."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Limity žánrů, knihoven a hodnocení platí vždy. Nové díly a přírůstky ve vybraných kolekcích se řídí stejnými limity."
+            "value" : "Limity žánrů, knihoven a hodnocení platí vždy. Nové díly a přírůstky ve vybraných kolekcích se řídí stejnými limity."
           }
         },
         "ru" : {
@@ -94692,13 +94692,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pamięć iCloud jest pełna. Zwolnij trochę miejsca i spróbuj ponownie."
+            "value" : "Pamięć iCloud jest pełna. Zwolnij trochę miejsca i spróbuj ponownie."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Úložiště iCloud je plné. Uvolni místo a zkus to znovu."
+            "value" : "Úložiště iCloud je plné. Uvolni místo a zkus to znovu."
           }
         },
         "ru" : {
@@ -94988,13 +94988,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hasło i wideo nie są szyfrowane w tej sieci."
+            "value" : "Hasło i wideo nie są szyfrowane w tej sieci."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heslo a video nejsou v této síti šifrované."
+            "value" : "Heslo a video nejsou v této síti šifrované."
           }
         },
         "ru" : {
@@ -95432,13 +95432,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Twoje wspólne ustawienia są przechowywane na prywatnym koncie iCloud. Wszystkie urządzenia muszą używać tego samego konta Apple i mieć włączony iCloud."
+            "value" : "Twoje wspólne ustawienia są przechowywane na prywatnym koncie iCloud. Wszystkie urządzenia muszą używać tego samego konta Apple i mieć włączony iCloud."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sdílené volby se ukládají do tvého soukromého účtu iCloud. Všechna zařízení potřebují stejný Účet Apple a zapnutý iCloud."
+            "value" : "Sdílené volby se ukládají do tvého soukromého účtu iCloud. Všechna zařízení potřebují stejný Účet Apple a zapnutý iCloud."
           }
         },
         "ru" : {
@@ -95734,7 +95734,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Synchronizaci přes iCloud nelze dokončit. Změny jsou uložené v tomto zařízení. Zkus to později."
+            "value" : "Synchronizaci přes iCloud nelze dokončit. Změny jsou uložené v tomto zařízení. Zkus to později."
           }
         },
         "ru" : {
@@ -95882,7 +95882,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iCloud není dostupný. Změny jsou uložené v tomto zařízení."
+            "value" : "iCloud není dostupný. Změny jsou uložené v tomto zařízení."
           }
         },
         "ru" : {

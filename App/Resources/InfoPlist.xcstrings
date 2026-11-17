@@ -56,13 +56,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RetroGuide.TV łączy się z twoim serwerem multimediów w sieci lokalnej."
+            "value" : "RetroGuide.TV łączy się z twoim serwerem multimediów w sieci lokalnej."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "RetroGuide.TV se připojuje k tvému mediálnímu serveru v místní síti."
+            "value" : "RetroGuide.TV se připojuje k tvému mediálnímu serveru v místní síti."
           }
         },
         "ru" : {

@@ -155,9 +155,13 @@ struct CheckmarkRow: View {
         .buttonStyle(.retroRow)
     }
 
+    /// The option's name gets room before its description, and a second line
+    /// when a translation needs it, so it's never cut off.
     private var titleText: some View {
         Text(title)
-            .lineLimit(1)
+            .lineLimit(2)
+            .fixedSize(horizontal: false, vertical: true)
+            .layoutPriority(1)
     }
 }
 

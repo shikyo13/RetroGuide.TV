@@ -2240,7 +2240,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wieczór z dramatem"
+            "value" : "Wieczór z dramatem"
           }
         },
         "cs" : {
@@ -3338,7 +3338,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "U plotny"
+            "value" : "U plotny"
           }
         },
         "ru" : {
@@ -4118,7 +4118,7 @@
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Křik v kině"
+            "value" : "Křik v kině"
           }
         },
         "ru" : {
@@ -4736,7 +4736,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Filmy z lat 2000."
+            "value" : "Filmy z lat 2000."
           }
         },
         "cs" : {
@@ -4892,7 +4892,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Filmy z lat 2010."
+            "value" : "Filmy z lat 2010."
           }
         },
         "cs" : {
@@ -5048,13 +5048,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Teraz w kinach"
+            "value" : "Teraz w kinach"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Teď v kinech"
+            "value" : "Teď v kinech"
           }
         },
         "ru" : {
@@ -5204,7 +5204,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Filmy z lat 80."
+            "value" : "Filmy z lat 80."
           }
         },
         "cs" : {
@@ -5360,7 +5360,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Filmy z lat 90."
+            "value" : "Filmy z lat 90."
           }
         },
         "cs" : {
@@ -5828,7 +5828,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Prosto z życia"
+            "value" : "Prosto z życia"
           }
         },
         "cs" : {
@@ -6764,7 +6764,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Śmiech z puszki"
+            "value" : "Śmiech z puszki"
           }
         },
         "cs" : {
@@ -7388,7 +7388,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Z dreszczykiem"
+            "value" : "Z dreszczykiem"
           }
         },
         "cs" : {
@@ -8168,7 +8168,7 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "TV z lat 2010."
+            "value" : "TV z lat 2010."
           }
         },
         "cs" : {
@@ -8324,13 +8324,13 @@
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Teraz w TV"
+            "value" : "Teraz w TV"
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Teď v televizi"
+            "value" : "Teď v televizi"
           }
         },
         "ru" : {
