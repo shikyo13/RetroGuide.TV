@@ -57,6 +57,22 @@ public enum JellyfinAddress {
         return url
     }
 
+    /// Like ``plainHTTP(from:)``, and also for a name that the network's DNS
+    /// points at a home or VPN address (`jellyfin.example.com` set up to mean
+    /// `192.168.1.20` at home): then that address, so plain HTTP never
+    /// depends on the name keeping that meaning.
+    public static func resolvedPlainHTTP(from text: String) async -> URL? {
+        if let plain = plainHTTP(from: text) { return plain }
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let withoutScheme = trimmed.range(of: schemeSeparator).map { String(trimmed[$0.upperBound...]) } ?? trimmed
+        guard var components = URLComponents(string: "http" + schemeSeparator + withoutScheme),
+              let host = components.host, !host.isEmpty,
+              let address = await HostResolver.firstIPv4(of: host),
+              NetworkLocation.isPrivateOrVPN(ipv4: address) else { return nil }
+        components.host = address
+        return components.url.flatMap { plainHTTP(from: $0.absoluteString) }
+    }
+
     private static func withPort(_ url: URL, _ port: Int) -> URL? {
         var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         components?.port = port

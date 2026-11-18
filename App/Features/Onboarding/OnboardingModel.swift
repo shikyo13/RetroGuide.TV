@@ -17,6 +17,9 @@ final class OnboardingModel {
         /// neither its own nor shared with it.
         case choosingServer([PlexServerCandidate], accountHasServers: Bool)
         case findingJellyfin(JellyfinScan, isSearching: Bool)
+        /// Finding a Jellyfin server waits for local network access: the
+        /// system is asking (iPhone and iPad), or it's off in Settings.
+        case waitingForLocalNetwork
         case enteringJellyfinAddress(message: String?)
         /// A home or VPN Jellyfin server that only offers plain HTTP: ask
         /// before connecting without encryption.
@@ -273,7 +276,7 @@ extension OnboardingModel.Step {
     var usageStep: UsageEvent.SetupStep? {
         switch self {
         case .welcome: .welcome
-        case .choosingKind, .connecting: nil
+        case .choosingKind, .connecting, .waitingForLocalNetwork: nil
         case .linking: .plexLink
         case .choosingServer: .plexServers
         case .findingJellyfin: .jellyfinFind

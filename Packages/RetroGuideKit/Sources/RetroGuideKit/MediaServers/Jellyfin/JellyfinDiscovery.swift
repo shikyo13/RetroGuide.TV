@@ -1,4 +1,3 @@
-import Darwin
 import Foundation
 
 /// What a search of the local network found.
@@ -38,8 +37,9 @@ public struct JellyfinDiscovery: Sendable {
         /// Only the device's own /24 is searched, even on larger networks.
         static let hostsPerSubnet: UInt32 = 254
         static let subnetMask: UInt32 = 0xFFFF_FF00
-        /// Jellyfin's plain port (HTTPS behind it is rare but tells us a server is
-        /// there when it isn't) and its own HTTPS port.
+        /// Jellyfin's plain port first (where nearly every server is, and HTTPS
+        /// behind it is rare but tells us a server is there when it isn't),
+        /// then its own HTTPS port.
         static let ports = [JellyfinAPI.defaultPort, JellyfinAPI.defaultSecurePort]
     }
 
@@ -49,70 +49,85 @@ public struct JellyfinDiscovery: Sendable {
         self.service = service
     }
 
-    /// Every server that answered. Takes a few seconds.
-    public func scan() async -> JellyfinScan {
-        let targets = Self.localSubnetHosts().flatMap { host in Tuning.ports.map { (host, $0) } }
-        let answers = (try? await targets.concurrentMap(limit: Tuning.concurrentProbes) { host, port -> (String, JellyfinProbe) in
-            guard let url = URL(string: "\(JellyfinAPI.secureScheme)://\(host):\(port)") else { return (host, .noAnswer) }
-            return (host, await service.probe(url, timeout: Tuning.probeTimeout))
-        }) ?? []
-        var scan = JellyfinScan()
-        var seen = Set<String>()
-        for (host, answer) in answers {
-            switch answer {
-            case let .server(info) where seen.insert(info.id.lowercased()).inserted:
-                scan.servers.append(info)
-            case .notSecure where !scan.notSecure.contains(host):
-                scan.notSecure.append(host)
-            case .untrustedCertificate where !scan.untrusted.contains(host):
-                scan.untrusted.append(host)
-            default:
-                break
+    /// Everything found so far, each time something more answers, ending
+    /// with the complete search. Takes a few seconds; cancel to stop early.
+    public func scans() -> AsyncStream<JellyfinScan> {
+        let targets = Tuning.ports.flatMap { port in Self.localSubnetHosts().map { ($0, port) } }
+        let service = service
+        return AsyncStream { continuation in
+            let task = Task {
+                var scan = JellyfinScan()
+                var seen = Set<String>()
+                await withTaskGroup(of: (String, JellyfinProbe).self) { group in
+                    var next = targets.makeIterator()
+                    func enqueue() {
+                        guard let (host, port) = next.next() else { return }
+                        group.addTask {
+                            guard let url = URL(string: "\(JellyfinAPI.secureScheme)://\(host):\(port)") else { return (host, .noAnswer) }
+                            return (host, await service.probe(url, timeout: Tuning.probeTimeout))
+                        }
+                    }
+                    for _ in 0..<Tuning.concurrentProbes { enqueue() }
+                    for await (host, answer) in group {
+                        if scan.add(answer, from: host, seen: &seen) {
+                            continuation.yield(scan.tidied())
+                        }
+                        enqueue()
+                    }
+                }
+                continuation.yield(scan.tidied())
+                continuation.finish()
             }
+            continuation.onTermination = { _ in task.cancel() }
         }
-        scan.servers.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
-        // A host with a working server isn't also reported as a problem.
-        let working = Set(scan.servers.compactMap { $0.baseURL.host() })
-        scan.notSecure.removeAll(where: working.contains)
-        scan.untrusted.removeAll(where: working.contains)
-        return scan
     }
 
-    /// The other addresses in the /24 of each private IPv4 address this device has.
+    /// The complete search.
+    public func scan() async -> JellyfinScan {
+        var last = JellyfinScan()
+        for await scan in scans() { last = scan }
+        return last
+    }
+
+    /// The other addresses in the /24 of each private IPv4 address this device
+    /// has on a local network (Wi-Fi or Ethernet, not cellular or VPN).
     static func localSubnetHosts() -> [String] {
         var hosts: [String] = []
         var seenSubnets = Set<UInt32>()
-        for address in privateIPv4Addresses() {
+        for address in LocalInterfaces.privateIPv4Addresses() {
             let subnet = address & Tuning.subnetMask
             guard seenSubnets.insert(subnet).inserted else { continue }
             for offset in 1...Tuning.hostsPerSubnet where subnet + offset != address {
-                hosts.append(dotted(subnet + offset))
+                hosts.append(LocalInterfaces.dotted(subnet + offset))
             }
         }
         return hosts
     }
+}
 
-    /// Private (RFC 1918) IPv4 addresses of active interfaces, host byte order.
-    private static func privateIPv4Addresses() -> [UInt32] {
-        var list: UnsafeMutablePointer<ifaddrs>?
-        guard getifaddrs(&list) == 0, let first = list else { return [] }
-        defer { freeifaddrs(list) }
-        var addresses: [UInt32] = []
-        for pointer in sequence(first: first, next: { $0.pointee.ifa_next }) {
-            let interface = pointer.pointee
-            let flags = Int32(interface.ifa_flags)
-            guard flags & IFF_UP != 0, flags & IFF_LOOPBACK == 0,
-                  let raw = interface.ifa_addr, raw.pointee.sa_family == UInt8(AF_INET)
-            else { continue }
-            let address = raw.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { UInt32(bigEndian: $0.pointee.sin_addr.s_addr) }
-            if NetworkLocation.isPrivateIPv4(address) {
-                addresses.append(address)
-            }
+private extension JellyfinScan {
+    /// Adds what answered at `host`; `true` if that changed the scan.
+    mutating func add(_ answer: JellyfinProbe, from host: String, seen: inout Set<String>) -> Bool {
+        switch answer {
+        case let .server(info) where seen.insert(info.id.lowercased()).inserted:
+            servers.append(info)
+        case .notSecure where !notSecure.contains(host):
+            notSecure.append(host)
+        case .untrustedCertificate where !untrusted.contains(host):
+            untrusted.append(host)
+        default:
+            return false
         }
-        return addresses
+        return true
     }
 
-    private static func dotted(_ address: UInt32) -> String {
-        [24, 16, 8, 0].map { String((address >> $0) & 0xFF) }.joined(separator: ".")
+    /// Servers by name; a host with a working server isn't also a problem.
+    func tidied() -> JellyfinScan {
+        var scan = self
+        scan.servers.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        let working = Set(scan.servers.compactMap { $0.baseURL.host() })
+        scan.notSecure.removeAll(where: working.contains)
+        scan.untrusted.removeAll(where: working.contains)
+        return scan
     }
 }

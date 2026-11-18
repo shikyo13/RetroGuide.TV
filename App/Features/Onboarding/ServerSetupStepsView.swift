@@ -42,6 +42,8 @@ struct ServerSetupStepsView: View {
                     onEnterAddress: model.enterJellyfinAddress,
                     onCancel: onCancel
                 )
+            case .waitingForLocalNetwork:
+                LocalNetworkStepView(onEnterAddress: model.enterJellyfinAddress, onCancel: onCancel)
             case let .offeringPlainHTTP(address):
                 JellyfinPlainHTTPStepView(
                     address: address,

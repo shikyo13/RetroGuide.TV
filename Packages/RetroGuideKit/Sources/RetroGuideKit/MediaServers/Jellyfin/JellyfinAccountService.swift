@@ -161,7 +161,7 @@ public struct JellyfinAccountService: Sendable {
         case let .server(info):
             return Self.same(info, serverID) ? .reachable(info) : .differentServer(info.name)
         case .notSecure:
-            guard let plain else { return .notSecure(plainAddress: nil) }
+            guard let plain = await JellyfinAddress.resolvedPlainHTTP(from: text) else { return .notSecure(plainAddress: nil) }
             guard allowsUnencrypted else { return .notSecure(plainAddress: plain) }
             PlainHTTPOrigins.allowPending(plain)
             guard case let .server(info) = await probe(plain) else { return .noAnswer(candidates.first ?? plain) }

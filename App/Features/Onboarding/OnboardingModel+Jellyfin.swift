@@ -4,25 +4,56 @@ import RetroGuideKit
 /// The Jellyfin steps of server setup: find the server (on the network or by
 /// address), sign in with Quick Connect or a password, then pick libraries.
 extension OnboardingModel {
-    /// Searches the local network; servers already added are left out.
+    /// Searches the local network, showing servers as they answer; servers
+    /// already added are left out. Waits for local network access first.
     func findJellyfinServers() {
         task?.cancel()
+        lastJellyfinScan = nil
         setStep(.findingJellyfin(JellyfinScan(), isSearching: true))
         let discovery = JellyfinDiscovery(service: jellyfinService)
         let excluded = excludedServerIDs
         task = Task { [weak self] in
-            var scan = await discovery.scan()
-            guard !Task.isCancelled, let self else { return }
-            if let problem = scan.problem { record(problem) }
-            scan.servers.removeAll { excluded.contains($0.id) }
+            guard await self?.waitForLocalNetwork() == true, let self else { return }
+            setStep(.findingJellyfin(JellyfinScan(), isSearching: true))
+            var found = JellyfinScan()
+            var scan = JellyfinScan()
+            for await partial in discovery.scans() {
+                guard !Task.isCancelled else { return }
+                found = partial
+                scan = partial
+                scan.servers.removeAll { excluded.contains($0.id) }
+                setStep(.findingJellyfin(scan, isSearching: true))
+            }
+            guard !Task.isCancelled else { return }
+            if let problem = found.problem { record(problem) }
             lastJellyfinScan = scan
-            // One server and nothing else to choose: straight to signing in.
+            // One server and nothing else to choose: straight to signing in,
+            // or to connecting without encryption.
             if scan.servers.count == 1, scan.notSecure.isEmpty, scan.untrusted.isEmpty, let only = scan.servers.first {
                 chooseJellyfin(only)
                 return
             }
+            if scan.servers.isEmpty, scan.untrusted.isEmpty, scan.notSecure.count == 1,
+               let only = scan.notSecure.first, let plain = JellyfinAddress.plainHTTP(from: only) {
+                setStep(.offeringPlainHTTP(plain))
+                return
+            }
             setStep(.findingJellyfin(scan, isSearching: false))
         }
+    }
+
+    /// Waits until the local network can be reached, showing why while it
+    /// can't. `false` if setup moved on meanwhile.
+    private func waitForLocalNetwork() async -> Bool {
+        await LocalNetworkAccess.waitUntilAllowed { [weak self] in
+            await self?.showLocalNetworkBlocked()
+        } && !Task.isCancelled
+    }
+
+    private func showLocalNetworkBlocked() {
+        guard !Task.isCancelled else { return }
+        record(.jellyfinLocalNetworkBlocked)
+        setStep(.waitingForLocalNetwork)
     }
 
     func enterJellyfinAddress() {
@@ -41,7 +72,13 @@ extension OnboardingModel {
             return
         }
         setStep(.connecting(serverName: address.trimmingCharacters(in: .whitespaces)))
+        let isOnLocalNetwork = JellyfinAddress.candidates(from: JellyfinAddress.upgradingInsecureScheme(address))
+            .contains(where: NetworkLocation.isLikelyLocal)
         task = Task { [weak self] in
+            if isOnLocalNetwork {
+                guard await self?.waitForLocalNetwork() == true else { return }
+                self?.setStep(.connecting(serverName: address.trimmingCharacters(in: .whitespaces)))
+            }
             guard let self else { return }
             let answer = await jellyfinService.lookUp(address)
             guard !Task.isCancelled else { return }
@@ -51,9 +88,12 @@ extension OnboardingModel {
                 server = found
             case .notSecure:
                 record(.jellyfinNotSecure)
-                if let plain = JellyfinAddress.plainHTTP(from: address) {
+                let plain = await JellyfinAddress.resolvedPlainHTTP(from: address)
+                guard !Task.isCancelled else { return }
+                if let plain {
                     setStep(.offeringPlainHTTP(plain))
                 } else {
+                    record(.jellyfinNotSecureInternet)
                     setStep(.enteringJellyfinAddress(message: JellyfinSetupText.notSecureOnInternet))
                 }
                 return
@@ -88,6 +128,8 @@ extension OnboardingModel {
     /// A server the search found that only offers plain HTTP.
     func offerPlainHTTP(host: String) {
         guard let plain = JellyfinAddress.plainHTTP(from: host) else { return }
+        // Chosen mid-search: Back returns to what was found so far.
+        if case let .findingJellyfin(scan, _) = step { lastJellyfinScan = scan }
         task?.cancel()
         setStep(.offeringPlainHTTP(plain))
     }
@@ -252,7 +294,7 @@ extension OnboardingModel {
 enum JellyfinSetupText {
     static let notSecureOnInternet = String(localized: "A server answered, but only without encryption (plain HTTP). Over the internet, RetroGuide.TV needs HTTPS with a trusted certificate. At home or over a VPN like Tailscale, use the server's home or VPN address instead.")
     static let untrusted = String(localized: "A server answered, but this device doesn't trust its certificate. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt.")
-    static let noAnswer = String(localized: "No Jellyfin server answered at that address. Check the address and port, and that the server uses HTTPS with a trusted certificate.")
+    static let noAnswer = String(localized: "No Jellyfin server answered at that address. Check the address and port (Jellyfin usually uses 8096).")
 }
 
 /// Jellyfin addresses as people type them.

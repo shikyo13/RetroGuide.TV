@@ -4,6 +4,14 @@ import Foundation
 public enum NetworkLocation {
     private enum Pattern {
         static let localDomainSuffix = ".local"
+        /// Names only a home network's own DNS answers for: never on the
+        /// public internet (`.home.arpa` and `.internal` are reserved for this;
+        /// `.lan` and `.home` are what routers use).
+        static let homeNetworkSuffixes = [".lan", ".home", ".home.arpa", ".internal", ".localdomain"]
+        /// IPv6 unique local (fc00::/7) and link-local (fe80::/10) prefixes.
+        static let privateIPv6Prefixes = ["fc", "fd", "fe8", "fe9", "fea", "feb"]
+        static let ipv6Separator: Character = ":"
+        static let labelSeparator: Character = "."
         /// Plex's secure addresses embed the IP: `192-168-1-20.<hash>.plex.direct`.
         static let plexDirectSuffix = ".plex.direct"
         static let plexDirectSeparator: Character = "-"
@@ -16,14 +24,26 @@ public enum NetworkLocation {
     }
 
     public static func isLikelyLocal(_ url: URL) -> Bool {
-        guard let host = url.host()?.lowercased() else { return false }
-        if host == "localhost" || host.hasSuffix(Pattern.localDomainSuffix) {
+        guard let host = url.host()?.lowercased(), !host.isEmpty else { return false }
+        if host.contains(Pattern.ipv6Separator) {
+            return host == "::1" || Pattern.privateIPv6Prefixes.contains { host.hasPrefix($0) }
+        }
+        if host == "localhost" || host.hasSuffix(Pattern.localDomainSuffix)
+            || Pattern.homeNetworkSuffixes.contains(where: host.hasSuffix) {
             return true
         }
         if let ip = ipv4Octets(from: host) {
             return isPrivate(ip)
         }
-        return false
+        // A bare name like "nas" or "jellyfin" is looked up on the local network.
+        return !host.contains(Pattern.labelSeparator)
+    }
+
+    /// Whether `address` (an IPv4 address in dotted form) is on a private
+    /// network or a VPN like Tailscale.
+    public static func isPrivateOrVPN(ipv4 address: String) -> Bool {
+        guard let ip = ipv4Octets(from: address) else { return false }
+        return isPrivate(ip) || isSharedAddress(ip)
     }
 
     /// Addresses reached through a VPN such as Tailscale (its 100.64.0.0/10
@@ -34,7 +54,11 @@ public enum NetworkLocation {
             return true
         }
         guard let ip = ipv4Octets(from: host) else { return false }
-        return ip[0] == Pattern.sharedAddressFirstOctet && Pattern.sharedAddressSecondOctets.contains(ip[1])
+        return isSharedAddress(ip)
+    }
+
+    private static func isSharedAddress(_ ip: [Int]) -> Bool {
+        ip[0] == Pattern.sharedAddressFirstOctet && Pattern.sharedAddressSecondOctets.contains(ip[1])
     }
 
     /// Whether an IPv4 address (host byte order) is in a private range.

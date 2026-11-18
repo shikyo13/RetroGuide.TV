@@ -19,6 +19,8 @@ struct JellyfinFindStepView: View {
         static let listWidth = PlatformMetric.value(tv: CGFloat(1_000), touch: 600)
         /// A home network rarely has more; others can still be typed.
         static let maxServersShown = 6
+        /// Room for a server or two and their note, kept while searching.
+        static let resultsMinHeight = PlatformMetric.value(tv: CGFloat(300), touch: 170)
     }
 
     let scan: JellyfinScan
@@ -40,16 +42,12 @@ struct JellyfinFindStepView: View {
             Text("Choose your Jellyfin server")
                 .font(Typography.title)
                 .foregroundStyle(theme.textPrimary)
-            if isSearching {
-                HStack(spacing: DesignTokens.Spacing.sm) {
-                    ProgressView()
-                    Text("Looking for servers on your network…")
-                        .secondaryText()
-                }
-            } else {
-                if servers.isEmpty && scan.notSecure.isEmpty && scan.untrusted.isEmpty {
-                    Text(Copy.none)
-                        .secondaryText()
+            status
+            // Servers show as they answer, in room kept for them, so the
+            // buttons below don't move under a finger mid-search.
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
+                if !servers.isEmpty {
+                    serverRows
                 }
                 if !scan.notSecure.isEmpty {
                     Text(Copy.notSecure)
@@ -63,9 +61,7 @@ struct JellyfinFindStepView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            if !servers.isEmpty {
-                serverRows
-            }
+            .frame(minHeight: Layout.resultsMinHeight, alignment: .top)
             // In a row where they fit, otherwise stacked (a narrow iPhone).
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: DesignTokens.Spacing.md) { actions }
@@ -76,6 +72,25 @@ struct JellyfinFindStepView: View {
         .defaultFocus($focusedServer, servers.first?.id ?? scan.notSecure.first)
         .onChange(of: scan) {
             focusedServer = servers.first?.id ?? scan.notSecure.first
+        }
+    }
+
+    /// The search in progress, or that it found nothing. Its line stays
+    /// when the search ends with servers, so nothing shifts.
+    @ViewBuilder
+    private var status: some View {
+        if !isSearching, servers.isEmpty, scan.notSecure.isEmpty, scan.untrusted.isEmpty {
+            Text(Copy.none)
+                .secondaryText()
+                .fixedSize(horizontal: false, vertical: true)
+        } else {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                ProgressView()
+                Text("Looking for servers on your network…")
+                    .secondaryText()
+            }
+            .opacity(isSearching ? 1 : 0)
+            .accessibilityHidden(!isSearching)
         }
     }
 

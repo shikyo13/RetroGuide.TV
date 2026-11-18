@@ -51,6 +51,12 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         case jellyfinFoundUntrusted
         /// A typed Jellyfin address answered, but not over HTTPS.
         case jellyfinNotSecure
+        /// ...and it's an internet address, so connecting anyway wasn't
+        /// offered (the viewer was told to use the home or VPN address).
+        case jellyfinNotSecureInternet
+        /// Finding a Jellyfin server waited on local network access: the
+        /// system was asking, or it's turned off in Settings.
+        case jellyfinLocalNetworkBlocked
         /// A typed Jellyfin address has a certificate this device doesn't trust.
         case jellyfinUntrusted
         /// Nothing answered at a typed Jellyfin address.

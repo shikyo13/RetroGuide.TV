@@ -13473,6 +13473,154 @@
         }
       }
     },
+    "Allow Local Network Access" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir acceso a la red local"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permitir acesso à rede local"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser l'accès au réseau local"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Consenti l'accesso alla rete locale"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff auf lokales Netzwerk erlauben"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toegang tot lokaal netwerk toestaan"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tillåt åtkomst till lokalt nätverk"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zezwól na dostęp do sieci lokalnej"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Povolit přístup k místní síti"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Разрешите доступ к локальной сети"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ローカルネットワークへのアクセスを許可"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로컬 네트워크 접근 허용"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允许访问本地网络"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "允許取用區域網路"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "लोकल नेटवर्क ऐक्सेस की अनुमति दें"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "লোকাল নেটওয়ার্ক অ্যাক্সেসের অনুমতি দিন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "लोकल नेटवर्क ॲक्सेसला परवानगी द्या"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "லோக்கல் நெட்வொர்க் அணுகலை அனுமதிக்கவும்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "లోకల్ నెట్‌వర్క్ యాక్సెస్‌ను అనుమతించండి"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "લોકલ નેટવર્ક ઍક્સેસની મંજૂરી આપો"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಲೋಕಲ್ ನೆಟ್‌ವರ್ಕ್ ಆ್ಯಕ್ಸೆಸ್ ಅನುಮತಿಸಿ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ലോക്കൽ നെറ്റ്‌വർക്ക് ആക്‌സസ് അനുവദിക്കുക"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਲੋਕਲ ਨੈੱਟਵਰਕ ਐਕਸੈਸ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଲୋକାଲ ନେଟୱର୍କ ଆକ୍ସେସ୍‌ର ଅନୁମତି ଦିଅନ୍ତୁ"
+          }
+        }
+      }
+    },
     "Allow Without Encryption" : {
       "localizations" : {
         "es" : {
@@ -49090,150 +49238,150 @@
         }
       }
     },
-    "No Jellyfin server answered at that address. Check the address and port, and that the server uses HTTPS with a trusted certificate." : {
+    "No Jellyfin server answered at that address. Check the address and port (Jellyfin usually uses 8096)." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ningún servidor Jellyfin respondió en esa dirección. Comprueba la dirección y el puerto, y que el servidor use HTTPS con un certificado de confianza."
+            "value" : "Ningún servidor Jellyfin respondió en esa dirección. Comprueba la dirección y el puerto (Jellyfin suele usar el 8096)."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nenhum servidor Jellyfin respondeu nesse endereço. Verifique o endereço e a porta, e se o servidor usa HTTPS com um certificado confiável."
+            "value" : "Nenhum servidor Jellyfin respondeu nesse endereço. Verifique o endereço e a porta (o Jellyfin costuma usar a 8096)."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun serveur Jellyfin n'a répondu à cette adresse. Vérifiez l'adresse et le port, et que le serveur utilise HTTPS avec un certificat de confiance."
+            "value" : "Aucun serveur Jellyfin n'a répondu à cette adresse. Vérifiez l'adresse et le port (Jellyfin utilise généralement le 8096)."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nessun server Jellyfin ha risposto a questo indirizzo. Controlla indirizzo e porta, e che il server usi HTTPS con un certificato attendibile."
+            "value" : "Nessun server Jellyfin ha risposto a questo indirizzo. Controlla indirizzo e porta (di solito Jellyfin usa la 8096)."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unter dieser Adresse hat kein Jellyfin-Server geantwortet. Prüfe Adresse und Port und ob der Server HTTPS mit einem vertrauenswürdigen Zertifikat nutzt."
+            "value" : "Unter dieser Adresse hat kein Jellyfin-Server geantwortet. Prüfe Adresse und Port (Jellyfin nutzt meist 8096)."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Er reageerde geen Jellyfin-server op dat adres. Controleer het adres en de poort, en of de server HTTPS met een vertrouwd certificaat gebruikt."
+            "value" : "Er reageerde geen Jellyfin-server op dat adres. Controleer het adres en de poort (Jellyfin gebruikt meestal 8096)."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ingen Jellyfin-server svarade på den adressen. Kontrollera adressen och porten och att servern använder HTTPS med ett betrott certifikat."
+            "value" : "Ingen Jellyfin-server svarade på den adressen. Kontrollera adressen och porten (Jellyfin använder oftast 8096)."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Żaden serwer Jellyfin nie odpowiedział pod tym adresem. Sprawdź adres i port oraz to, czy serwer używa HTTPS z zaufanym certyfikatem."
+            "value" : "Żaden serwer Jellyfin nie odpowiedział pod tym adresem. Sprawdź adres i port (Jellyfin zwykle używa 8096)."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na této adrese neodpověděl žádný server Jellyfin. Zkontroluj adresu a port a že server používá HTTPS s důvěryhodným certifikátem."
+            "value" : "Na této adrese neodpověděl žádný server Jellyfin. Zkontroluj adresu a port (Jellyfin obvykle používá 8096)."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "По этому адресу не ответил ни один сервер Jellyfin. Проверьте адрес и порт, а также что сервер использует HTTPS с доверенным сертификатом."
+            "value" : "По этому адресу не ответил ни один сервер Jellyfin. Проверьте адрес и порт (обычно Jellyfin использует 8096)."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "そのアドレスで応答したJellyfinサーバはありません。アドレスとポートを確認し、サーバが信頼できる証明書を使ったHTTPSを使用しているか確認してください。"
+            "value" : "そのアドレスで応答したJellyfinサーバはありません。アドレスとポートを確認してください（Jellyfinは通常8096を使います）。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "해당 주소에서 응답한 Jellyfin 서버가 없습니다. 주소와 포트를 확인하고, 서버가 신뢰할 수 있는 인증서로 HTTPS를 사용하는지 확인하십시오."
+            "value" : "해당 주소에서 응답한 Jellyfin 서버가 없습니다. 주소와 포트를 확인하십시오(Jellyfin은 보통 8096을 사용합니다)."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "该地址没有 Jellyfin 服务器响应。请检查地址和端口，并确保服务器使用带受信任证书的 HTTPS。"
+            "value" : "该地址没有 Jellyfin 服务器响应。请检查地址和端口（Jellyfin 通常使用 8096）。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "該位址沒有 Jellyfin 伺服器回應。請檢查位址和連接埠，並確認伺服器使用具受信任憑證的 HTTPS。"
+            "value" : "該位址沒有 Jellyfin 伺服器回應。請檢查位址和連接埠（Jellyfin 通常使用 8096）。"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "उस पते पर किसी Jellyfin सर्वर ने जवाब नहीं दिया। पता और पोर्ट जाँचें, और यह भी कि सर्वर भरोसेमंद सर्टिफ़िकेट के साथ HTTPS इस्तेमाल करता है।"
+            "value" : "उस पते पर किसी Jellyfin सर्वर ने जवाब नहीं दिया। पता और पोर्ट जाँचें (Jellyfin आम तौर पर 8096 इस्तेमाल करता है)।"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ওই ঠিকানায় কোনো Jellyfin সার্ভার সাড়া দেয়নি। ঠিকানা ও পোর্ট যাচাই করুন, এবং দেখুন সার্ভারটি বিশ্বস্ত সার্টিফিকেটসহ HTTPS ব্যবহার করছে কি না।"
+            "value" : "ওই ঠিকানায় কোনো Jellyfin সার্ভার সাড়া দেয়নি। ঠিকানা ও পোর্ট যাচাই করুন (Jellyfin সাধারণত 8096 ব্যবহার করে)।"
           }
         },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "त्या पत्त्यावर कोणत्याही Jellyfin सर्व्हरने प्रतिसाद दिला नाही. पत्ता आणि पोर्ट तपासा, आणि सर्व्हर विश्वसनीय प्रमाणपत्रासह HTTPS वापरतो याची खात्री करा."
+            "value" : "त्या पत्त्यावर कोणत्याही Jellyfin सर्व्हरने प्रतिसाद दिला नाही. पत्ता आणि पोर्ट तपासा (Jellyfin सहसा 8096 वापरतो)."
           }
         },
         "ta" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "அந்த முகவரியில் எந்த Jellyfin சர்வரும் பதிலளிக்கவில்லை. முகவரி, போர்ட்டைச் சரிபார்த்து, சர்வர் நம்பகமான சான்றிதழுடன் HTTPS-ஐப் பயன்படுத்துகிறதா எனப் பார்க்கவும்."
+            "value" : "அந்த முகவரியில் எந்த Jellyfin சர்வரும் பதிலளிக்கவில்லை. முகவரி, போர்ட்டைச் சரிபார்க்கவும் (Jellyfin பொதுவாக 8096-ஐப் பயன்படுத்தும்)."
           }
         },
         "te" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ఆ అడ్రస్‌లో ఏ Jellyfin సర్వర్ స్పందించలేదు. అడ్రస్, పోర్ట్‌ను, సర్వర్ నమ్మదగిన సర్టిఫికెట్‌తో HTTPS ఉపయోగిస్తోందో లేదో తనిఖీ చేయండి."
+            "value" : "ఆ అడ్రస్‌లో ఏ Jellyfin సర్వర్ స్పందించలేదు. అడ్రస్, పోర్ట్‌ను తనిఖీ చేయండి (Jellyfin సాధారణంగా 8096 ఉపయోగిస్తుంది)."
           }
         },
         "gu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "તે સરનામે કોઈ Jellyfin સર્વરે જવાબ ન આપ્યો. સરનામું અને પોર્ટ તપાસો, અને ખાતરી કરો કે સર્વર વિશ્વસનીય સર્ટિફિકેટ સાથે HTTPS વાપરે છે."
+            "value" : "તે સરનામે કોઈ Jellyfin સર્વરે જવાબ ન આપ્યો. સરનામું અને પોર્ટ તપાસો (Jellyfin સામાન્ય રીતે 8096 વાપરે છે)."
           }
         },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ಆ ವಿಳಾಸದಲ್ಲಿ ಯಾವುದೇ Jellyfin ಸರ್ವರ್ ಪ್ರತಿಕ್ರಿಯಿಸಲಿಲ್ಲ. ವಿಳಾಸ ಮತ್ತು ಪೋರ್ಟ್ ಪರಿಶೀಲಿಸಿ, ಹಾಗೂ ಸರ್ವರ್ ವಿಶ್ವಾಸಾರ್ಹ ಪ್ರಮಾಣಪತ್ರವಿರುವ HTTPS ಬಳಸುತ್ತಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ."
+            "value" : "ಆ ವಿಳಾಸದಲ್ಲಿ ಯಾವುದೇ Jellyfin ಸರ್ವರ್ ಪ್ರತಿಕ್ರಿಯಿಸಲಿಲ್ಲ. ವಿಳಾಸ ಮತ್ತು ಪೋರ್ಟ್ ಪರಿಶೀಲಿಸಿ (Jellyfin ಸಾಮಾನ್ಯವಾಗಿ 8096 ಬಳಸುತ್ತದೆ)."
           }
         },
         "ml" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ആ വിലാസത്തിൽ Jellyfin സെർവറൊന്നും പ്രതികരിച്ചില്ല. വിലാസവും പോർട്ടും പരിശോധിക്കുക, സെർവർ വിശ്വസനീയ സർട്ടിഫിക്കറ്റുള്ള HTTPS ഉപയോഗിക്കുന്നുണ്ടെന്നും ഉറപ്പാക്കുക."
+            "value" : "ആ വിലാസത്തിൽ Jellyfin സെർവറൊന്നും പ്രതികരിച്ചില്ല. വിലാസവും പോർട്ടും പരിശോധിക്കുക (Jellyfin സാധാരണ 8096 ആണ് ഉപയോഗിക്കുന്നത്)."
           }
         },
         "pa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ਉਸ ਪਤੇ 'ਤੇ ਕਿਸੇ Jellyfin ਸਰਵਰ ਨੇ ਜਵਾਬ ਨਹੀਂ ਦਿੱਤਾ। ਪਤਾ ਅਤੇ ਪੋਰਟ ਜਾਂਚੋ, ਅਤੇ ਇਹ ਵੀ ਕਿ ਸਰਵਰ ਭਰੋਸੇਯੋਗ ਸਰਟੀਫ਼ਿਕੇਟ ਵਾਲਾ HTTPS ਵਰਤਦਾ ਹੈ।"
+            "value" : "ਉਸ ਪਤੇ 'ਤੇ ਕਿਸੇ Jellyfin ਸਰਵਰ ਨੇ ਜਵਾਬ ਨਹੀਂ ਦਿੱਤਾ। ਪਤਾ ਅਤੇ ਪੋਰਟ ਜਾਂਚੋ (Jellyfin ਆਮ ਤੌਰ 'ਤੇ 8096 ਵਰਤਦਾ ਹੈ)।"
           }
         },
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ସେହି ଠିକଣାରେ କୌଣସି Jellyfin ସର୍ଭର ଉତ୍ତର ଦେଲା ନାହିଁ। ଠିକଣା ଓ ପୋର୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ, ଏବଂ ସର୍ଭର ବିଶ୍ୱସ୍ତ ସର୍ଟିଫିକେଟ୍ ସହ HTTPS ବ୍ୟବହାର କରୁଛି କି ନାହିଁ ଦେଖନ୍ତୁ।"
+            "value" : "ସେହି ଠିକଣାରେ କୌଣସି Jellyfin ସର୍ଭର ଉତ୍ତର ଦେଲା ନାହିଁ। ଠିକଣା ଓ ପୋର୍ଟ ଯାଞ୍ଚ କରନ୍ତୁ (Jellyfin ସାଧାରଣତଃ 8096 ବ୍ୟବହାର କରେ)।"
           }
         }
       }
@@ -55465,6 +55613,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ ଖୋଲନ୍ତୁ"
+          }
+        }
+      }
+    },
+    "Open Settings" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Configuración"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Ajustes"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir Réglages"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apri Impostazioni"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen öffnen"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Instellingen"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öppna Inställningar"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otwórz Ustawienia"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otevřít Nastavení"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Открыть Настройки"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を開く"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "설정 열기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打開設定"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सेटिंग्ज़ खोलें"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সেটিংস খুলুন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सेटिंग्ज उघडा"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "அமைப்புகளைத் திற"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "సెట్టింగ్‌లను తెరవండి"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "સેટિંગ્સ ખોલો"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ക്രമീകരണം തുറക്കുക"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସେଟିଂସ୍ ଖୋଲନ୍ତୁ"
           }
         }
       }
@@ -83496,6 +83792,154 @@
         }
       }
     },
+    "To find your Jellyfin server at home, RetroGuide.TV needs to reach devices on your network. Choose Allow when asked." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para encontrar tu servidor Jellyfin en casa, RetroGuide.TV necesita acceder a los dispositivos de tu red. Elige Permitir cuando se te pregunte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para encontrar seu servidor Jellyfin em casa, o RetroGuide.TV precisa acessar os dispositivos da sua rede. Escolha Permitir quando for perguntado."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour trouver votre serveur Jellyfin à la maison, RetroGuide.TV doit accéder aux appareils de votre réseau. Choisissez Autoriser quand la question s'affiche."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per trovare il tuo server Jellyfin a casa, RetroGuide.TV deve raggiungere i dispositivi della tua rete. Scegli Consenti quando ti viene chiesto."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um deinen Jellyfin-Server zu Hause zu finden, muss RetroGuide.TV Geräte in deinem Netzwerk erreichen. Wähle „Erlauben“, wenn du gefragt wirst."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om je Jellyfin-server thuis te vinden, moet RetroGuide.TV apparaten op je netwerk kunnen bereiken. Kies 'Sta toe' als ernaar wordt gevraagd."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "För att hitta din Jellyfin-server hemma behöver RetroGuide.TV nå enheter i ditt nätverk. Välj Tillåt när du får frågan."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby znaleźć Twój serwer Jellyfin w domu, RetroGuide.TV musi mieć dostęp do urządzeń w Twojej sieci. Gdy pojawi się pytanie, wybierz Zezwól."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby RetroGuide.TV našla tvůj server Jellyfin doma, potřebuje přístup k zařízením ve tvé síti. Až se zobrazí dotaz, zvol Povolit."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чтобы найти ваш сервер Jellyfin дома, RetroGuide.TV нужен доступ к устройствам в вашей сети. Когда появится запрос, выберите «Разрешить»."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自宅のJellyfinサーバを見つけるには、RetroGuide.TVがネットワーク上のデバイスにアクセスする必要があります。確認が表示されたら「許可」を選んでください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "집에 있는 Jellyfin 서버를 찾으려면 RetroGuide.TV가 네트워크의 기기에 접근해야 합니다. 물어보면 '허용'을 선택하십시오."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要找到你家中的 Jellyfin 服务器，RetroGuide.TV 需要访问你网络中的设备。出现询问时请选择“允许”。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要找到你家中的 Jellyfin 伺服器，RetroGuide.TV 需要連線到你網路上的裝置。出現詢問時請選擇「允許」。"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "घर पर अपना Jellyfin सर्वर ढूँढने के लिए RetroGuide.TV को आपके नेटवर्क के डिवाइस तक पहुँचना होगा। पूछे जाने पर अनुमति दें चुनें।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "বাড়িতে আপনার Jellyfin সার্ভার খুঁজে পেতে RetroGuide.TV-কে আপনার নেটওয়ার্কের ডিভাইসগুলোতে পৌঁছাতে হবে। জিজ্ঞেস করা হলে অনুমতি দিন বেছে নিন।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "घरातील तुमचा Jellyfin सर्व्हर शोधण्यासाठी RetroGuide.TV ला तुमच्या नेटवर्कवरील डिव्हाइसपर्यंत पोहोचावे लागते. विचारल्यावर परवानगी द्या निवडा."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "வீட்டில் உள்ள உங்கள் Jellyfin சர்வரைக் கண்டறிய, RetroGuide.TV உங்கள் நெட்வொர்க்கில் உள்ள சாதனங்களை அணுக வேண்டும். கேட்கும்போது அனுமதி என்பதைத் தேர்ந்தெடுக்கவும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇంట్లో మీ Jellyfin సర్వర్‌ను కనుగొనడానికి RetroGuide.TV మీ నెట్‌వర్క్‌లోని పరికరాలను చేరుకోవాలి. అడిగినప్పుడు అనుమతించు ఎంచుకోండి."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ઘરે તમારું Jellyfin સર્વર શોધવા માટે RetroGuide.TVને તમારા નેટવર્ક પરનાં ડિવાઇસ સુધી પહોંચવું પડે છે. પૂછવામાં આવે ત્યારે મંજૂરી આપો પસંદ કરો."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಮನೆಯಲ್ಲಿರುವ ನಿಮ್ಮ Jellyfin ಸರ್ವರ್ ಹುಡುಕಲು RetroGuide.TV ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ನ ಸಾಧನಗಳನ್ನು ತಲುಪಬೇಕು. ಕೇಳಿದಾಗ ಅನುಮತಿಸಿ ಆಯ್ಕೆಮಾಡಿ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "വീട്ടിലെ നിങ്ങളുടെ Jellyfin സെർവർ കണ്ടെത്താൻ RetroGuide.TV-ക്ക് നിങ്ങളുടെ നെറ്റ്‌വർക്കിലെ ഉപകരണങ്ങളിലേക്ക് എത്തണം. ചോദിക്കുമ്പോൾ അനുവദിക്കുക തിരഞ്ഞെടുക്കുക."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਘਰ ਵਿੱਚ ਤੁਹਾਡਾ Jellyfin ਸਰਵਰ ਲੱਭਣ ਲਈ RetroGuide.TV ਨੂੰ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਦੇ ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚਣਾ ਪੈਂਦਾ ਹੈ। ਪੁੱਛੇ ਜਾਣ 'ਤੇ ਇਜਾਜ਼ਤ ਦਿਓ ਚੁਣੋ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଘରେ ଆପଣଙ୍କ Jellyfin ସର୍ଭର ଖୋଜିବା ପାଇଁ RetroGuide.TVକୁ ଆପଣଙ୍କ ନେଟୱର୍କର ଡିଭାଇସଗୁଡ଼ିକ ପର୍ଯ୍ୟନ୍ତ ପହଞ୍ଚିବାକୁ ପଡ଼େ। ପଚରାଗଲେ ଅନୁମତି ଦିଅନ୍ତୁ ବାଛନ୍ତୁ।"
+          }
+        }
+      }
+    },
     "Tomorrow %@" : {
       "localizations" : {
         "es" : {
@@ -84982,6 +85426,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ଏହାକୁ ଅନୁମତି ଦେବାକୁ Apple TVର Settings → Video and Audioରେ Match Content ଚାଲୁ କରନ୍ତୁ।"
+          }
+        }
+      }
+    },
+    "Turned it off? In Settings, open RetroGuide.TV and turn on Local Network." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Lo desactivaste? En Configuración, abre RetroGuide.TV y activa Red local."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desativou? Em Ajustes, abra o RetroGuide.TV e ative Rede Local."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vous l'avez désactivé ? Dans Réglages, ouvrez RetroGuide.TV et activez Réseau local."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'hai disattivato? In Impostazioni, apri RetroGuide.TV e attiva Rete locale."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgeschaltet? Öffne in den Einstellungen RetroGuide.TV und schalte „Lokales Netzwerk“ ein."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uitgezet? Open in Instellingen RetroGuide.TV en zet 'Lokaal netwerk' aan."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Har du stängt av det? Öppna RetroGuide.TV i Inställningar och slå på Lokalt nätverk."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wyłączone? W Ustawieniach otwórz RetroGuide.TV i włącz Sieć lokalna."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vypnul(a) jsi to? V Nastavení otevři RetroGuide.TV a zapni Místní síť."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отключили доступ? В Настройках откройте RetroGuide.TV и включите «Локальная сеть»."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オフにした場合は、「設定」でRetroGuide.TVを開き、「ローカルネットワーク」をオンにしてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "꺼 두셨나요? 설정에서 RetroGuide.TV를 열고 '로컬 네트워크'를 켜십시오."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已关闭？请在“设置”中打开 RetroGuide.TV，然后开启“本地网络”。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已關閉？請在「設定」中打開 RetroGuide.TV，然後開啟「區域網路」。"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "बंद कर दिया था? सेटिंग्ज़ में RetroGuide.TV खोलें और लोकल नेटवर्क चालू करें।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "বন্ধ করে দিয়েছিলেন? সেটিংসে RetroGuide.TV খুলে লোকাল নেটওয়ার্ক চালু করুন।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "बंद केले होते? सेटिंग्जमध्ये RetroGuide.TV उघडा आणि लोकल नेटवर्क सुरू करा."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "முடக்கிவிட்டீர்களா? அமைப்புகளில் RetroGuide.TV-ஐத் திறந்து லோக்கல் நெட்வொர்க்கை இயக்கவும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఆఫ్ చేశారా? సెట్టింగ్‌లలో RetroGuide.TV తెరిచి లోకల్ నెట్‌వర్క్‌ను ఆన్ చేయండి."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "બંધ કર્યું હતું? સેટિંગ્સમાં RetroGuide.TV ખોલો અને લોકલ નેટવર્ક ચાલુ કરો."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಆಫ್ ಮಾಡಿದ್ದೀರಾ? ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ RetroGuide.TV ತೆರೆದು ಲೋಕಲ್ ನೆಟ್‌ವರ್ಕ್ ಆನ್ ಮಾಡಿ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഓഫാക്കിയോ? ക്രമീകരണത്തിൽ RetroGuide.TV തുറന്ന് ലോക്കൽ നെറ്റ്‌വർക്ക് ഓണാക്കുക."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਬੰਦ ਕਰ ਦਿੱਤਾ ਸੀ? ਸੈਟਿੰਗਾਂ ਵਿੱਚ RetroGuide.TV ਖੋਲ੍ਹੋ ਅਤੇ ਲੋਕਲ ਨੈੱਟਵਰਕ ਚਾਲੂ ਕਰੋ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ବନ୍ଦ କରିଦେଇଥିଲେ? ସେଟିଂସ୍‌ରେ RetroGuide.TV ଖୋଲି ଲୋକାଲ ନେଟୱର୍କ ଚାଲୁ କରନ୍ତୁ।"
           }
         }
       }

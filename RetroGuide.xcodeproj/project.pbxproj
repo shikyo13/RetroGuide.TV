@@ -150,6 +150,7 @@
 		8C955EEAFAE30CFB487639CA /* SubtitleFileCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B68E5AC3DC82C2CD3E3E89AE /* SubtitleFileCache.swift */; };
 		8D00E4D917C2281DC0F6A532 /* DemoServerClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E5637EF46BF1F9602655380 /* DemoServerClient.swift */; };
 		8D4FC6F90CC52CF5F1A2059D /* ProStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA93DD29E354AB8A3A08DF7 /* ProStore.swift */; };
+		8D5ADC0A8173A73D3013C37C /* LocalNetworkStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0F47804BF6DDA4BC7F5944 /* LocalNetworkStepView.swift */; };
 		8DBC9BF9907BF654E22B1C18 /* FacetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2342F75A3FFB608FE4032CE5 /* FacetPickerView.swift */; };
 		8DED937D109F78188054FD22 /* CloudSettingsSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAEBEA0B64D57030F2DF72E /* CloudSettingsSync.swift */; };
 		8FF5A5B693EF76B5DF1F280F /* MPVKit in Frameworks */ = {isa = PBXBuildFile; productRef = AF7766867AB8515623736C48 /* MPVKit */; };
@@ -468,6 +469,7 @@
 		A604772E5E8D0C8B0781A8BE /* ParentalGenresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentalGenresView.swift; sourceTree = "<group>"; };
 		A77B0F3DA9D4FC1402E22BED /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A7AECD051DADEF83FBA81A36 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		AD0F47804BF6DDA4BC7F5944 /* LocalNetworkStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNetworkStepView.swift; sourceTree = "<group>"; };
 		ADCCA6A01AE43CF824FF252E /* ChannelBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelBanner.swift; sourceTree = "<group>"; };
 		AEF0DB268F4E64DD81622652 /* MPVCore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVCore.swift; sourceTree = "<group>"; };
 		B003E790A6BE3A71C2932FF5 /* NoSignalCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoSignalCard.swift; sourceTree = "<group>"; };
@@ -718,6 +720,7 @@
 				763C20515AE2ADA517542857 /* JellyfinPlainHTTPStepView.swift */,
 				E3E07938E6889F36FA17D189 /* JellyfinSignInStepView.swift */,
 				106458C76CA02AA261456C9F /* LibraryPickerView.swift */,
+				AD0F47804BF6DDA4BC7F5944 /* LocalNetworkStepView.swift */,
 				42DFDA25C249B7C1171C5798 /* OnboardingFlowView.swift */,
 				651E3EB72BF671C9E1ABE5CA /* OnboardingModel.swift */,
 				30E77B88A04DED5A68588776 /* OnboardingModel+Jellyfin.swift */,
@@ -1478,6 +1481,7 @@
 				223D48DA2CED32A8289DA5DA /* LibrarySnapshotStore.swift in Sources */,
 				7682187C070D0105B5CC9127 /* LineupEngine.swift in Sources */,
 				96EFAD1FAC58EE6D40D218C2 /* LiveVideoStack.swift in Sources */,
+				8D5ADC0A8173A73D3013C37C /* LocalNetworkStepView.swift in Sources */,
 				D19447801B956C0F4121F97F /* LoopbackPlaybackRelay.swift in Sources */,
 				B636AB6FE4DCA9287D32E3DD /* LoopbackPlaybackRelayExchange.swift in Sources */,
 				BA7A2FE9DD215C06195B3FF1 /* LoopbackPlaybackRelayManifest.swift in Sources */,
