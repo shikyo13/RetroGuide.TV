@@ -13,18 +13,25 @@ extension OnboardingModel {
         let discovery = JellyfinDiscovery(service: jellyfinService)
         let excluded = excludedServerIDs
         task = Task { [weak self] in
-            guard await self?.waitForLocalNetwork() == true, let self else { return }
-            setStep(.findingJellyfin(JellyfinScan(), isSearching: true))
             var found = JellyfinScan()
             var scan = JellyfinScan()
-            for await partial in discovery.scans() {
+            // Searches again if nothing answered because access was refused
+            // meanwhile (the system can ask only once the search has begun).
+            while true {
+                guard await self?.waitForLocalNetwork() == true, let self else { return }
+                setStep(.findingJellyfin(JellyfinScan(), isSearching: true))
+                for await partial in discovery.scans() {
+                    guard !Task.isCancelled else { return }
+                    found = partial
+                    scan = partial
+                    scan.servers.removeAll { excluded.contains($0.id) }
+                    setStep(.findingJellyfin(scan, isSearching: true))
+                }
                 guard !Task.isCancelled else { return }
-                found = partial
-                scan = partial
-                scan.servers.removeAll { excluded.contains($0.id) }
-                setStep(.findingJellyfin(scan, isSearching: true))
+                if found.problem == .jellyfinFoundNone, await LocalNetworkAccess.check() == .blocked { continue }
+                break
             }
-            guard !Task.isCancelled else { return }
+            guard let self else { return }
             if let problem = found.problem { record(problem) }
             lastJellyfinScan = scan
             // One server and nothing else to choose: straight to signing in,

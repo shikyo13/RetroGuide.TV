@@ -17,13 +17,17 @@ public enum LocalNetworkAccess {
     }
 
     private enum Tuning {
-        /// UDP's discard port: connecting a UDP socket sends nothing.
+        /// The discard port: usually refused, which still shows the
+        /// connection was allowed to reach the local network.
         static let port: NWEndpoint.Port = 9
         /// How long one check waits for the connection to settle.
         static let checkTimeout: Duration = .seconds(2)
         /// How often to check again while blocked.
         static let recheckInterval: Duration = .seconds(1)
         static let subnetMask: UInt32 = 0xFFFF_FF00
+        /// Where routers usually are in a /24.
+        static let routerHosts: Set<UInt32> = [1, 254]
+        static let lastHost: UInt32 = 254
     }
 
     /// `.blocked` while access is refused (at most once), then `.allowed`
@@ -61,12 +65,15 @@ public enum LocalNetworkAccess {
         return false
     }
 
-    /// One attempt: connects a UDP socket to an address on this device's
-    /// local network, which needs local network access but sends nothing.
-    static func check() async -> State {
+    /// One attempt: a TCP connection to another device on this local network.
+    /// Without access it stops at once with "network down" (or waits with
+    /// `localNetworkDenied`, Apple TN3179); with access it connects, is
+    /// refused or times out. (A UDP socket reports ready either way, and the
+    /// router answers either way.)
+    public static func check() async -> State {
         guard let own = LocalInterfaces.privateIPv4Addresses().first,
               let target = IPv4Address(neighbor(of: own)) else { return .allowed }
-        let connection = NWConnection(host: .ipv4(target), port: Tuning.port, using: .udp)
+        let connection = NWConnection(host: .ipv4(target), port: Tuning.port, using: .tcp)
         let outcome = Outcome()
         defer { connection.cancel() }
         return await withTaskCancellationHandler {
@@ -74,17 +81,20 @@ public enum LocalNetworkAccess {
                 outcome.set(continuation)
                 connection.stateUpdateHandler = { [weak connection] state in
                     switch state {
-                    case .ready, .failed:
+                    case .ready:
                         outcome.resolve(.allowed)
-                    case .waiting:
-                        if connection?.currentPath?.unsatisfiedReason == .localNetworkDenied {
-                            outcome.resolve(.blocked)
-                        }
+                    case let .waiting(error), let .failed(error):
+                        let denied = connection?.currentPath?.unsatisfiedReason == .localNetworkDenied
+                            || error == .posix(.ENETDOWN)
+                        outcome.resolve(denied ? .blocked : .allowed)
                     case .cancelled:
                         outcome.resolve(.allowed)
                     default:
                         break
                     }
+                }
+                connection.pathUpdateHandler = { path in
+                    if path.unsatisfiedReason == .localNetworkDenied { outcome.resolve(.blocked) }
                 }
                 connection.start(queue: .global(qos: .userInitiated))
                 Task {
@@ -97,11 +107,12 @@ public enum LocalNetworkAccess {
         }
     }
 
-    /// The first other address of `own`'s /24 (usually the router).
+    /// An address next to `own` that's unlikely to be the router: the
+    /// router is reachable even while access is refused.
     private static func neighbor(of own: UInt32) -> String {
-        let subnet = own & Tuning.subnetMask
-        let first = subnet + 1
-        return LocalInterfaces.dotted(first == own ? first + 1 : first)
+        let host = own & ~Tuning.subnetMask
+        let next = Tuning.routerHosts.contains(host + 1) || host + 1 > Tuning.lastHost ? own - 1 : own + 1
+        return LocalInterfaces.dotted(next)
     }
 
     /// Resumes the continuation once, whichever answer comes first.
