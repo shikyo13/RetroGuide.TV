@@ -16,12 +16,16 @@ final class CloudSettingsSync {
     private(set) var isBusy = false
     private(set) var needsInitialChoice = false
     private(set) var hasPendingApplication = false
+    /// On, but this device isn't signed in to iCloud (or iCloud is
+    /// unavailable): nothing is wrong, sync starts once it is.
+    private(set) var isWaitingForICloud = false
     var message: String?
     var lastSync: Date?
     var settingsRevision = 0
     var summary: String {
         _ = settingsRevision
         if !isEnabled { return String(localized: "Off", comment: "iCloud Sync status: turned off") }
+        if isWaitingForICloud { return String(localized: "Waiting for iCloud", comment: "iCloud Sync status: on, but the device isn't signed in to iCloud yet") }
         if needsInitialChoice { return String(localized: "Choose setup", comment: "iCloud Sync status: waiting for the viewer to choose which setup to keep") }
         if hasPendingApplication { return String(localized: "Changes waiting", comment: "iCloud Sync status") }
         if message != nil { return String(localized: "Needs attention", comment: "iCloud Sync status") }
@@ -48,6 +52,7 @@ final class CloudSettingsSync {
     @ObservationIgnored private var task: Task<Void, Never>?
     @ObservationIgnored private var generation = 0
     @ObservationIgnored private var corruptState = false
+    @ObservationIgnored private var accountWatch: Task<Void, Never>?
 
     init(defaults: UserDefaults = .standard, storage: CloudSettingsStorage = CloudSettingsStorage(), zoneID: CKRecordZone.ID = CloudSettingsRecords.zoneID, automaticallySync: Bool = true) {
         self.defaults = defaults
@@ -97,6 +102,7 @@ final class CloudSettingsSync {
         generation += 1
         isEnabled = false
         defaults.set(false, forKey: Storage.enabled)
+        isWaitingForICloud = false
         task?.cancel()
         task = nil
         let old = engine
@@ -129,9 +135,11 @@ final class CloudSettingsSync {
             do {
                 let container = CKContainer(identifier: CloudSettingsRecords.container)
                 guard try await container.accountStatus() == .available else {
-                    message = String(localized: "Sign in to iCloud in this device’s Settings, then try again.")
+                    isWaitingForICloud = true
+                    watchForICloudAccount()
                     return
                 }
+                isWaitingForICloud = false
                 let account = try await container.userRecordID().recordName
                 guard isEnabled, generation == self.generation, !Task.isCancelled else { return }
                 guard try acceptAccount(account) else { return }
@@ -153,6 +161,17 @@ final class CloudSettingsSync {
                     try await active.sendChanges()
                 }
             } catch { if generation == self.generation { report(error) } }
+        }
+    }
+
+    /// Tries again when the device signs in to iCloud.
+    private func watchForICloudAccount() {
+        guard accountWatch == nil else { return }
+        accountWatch = Task { [weak self] in
+            for await _ in NotificationCenter.default.notifications(named: .CKAccountChanged) {
+                guard let self, isEnabled, isWaitingForICloud else { continue }
+                retry()
+            }
         }
     }
 

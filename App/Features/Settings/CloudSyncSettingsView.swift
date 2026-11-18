@@ -27,7 +27,9 @@ struct CloudSyncSettingsView: View {
             if app.settingsSync.isEnabled {
                 SettingsSection(String(localized: "Status")) {
                     if app.settingsSync.isBusy { ProgressView("Syncing settings…") }
-                    if let message = app.settingsSync.message {
+                    if app.settingsSync.isWaitingForICloud {
+                        CloudSyncExplanation("Sync starts when this device is signed in to iCloud.")
+                    } else if let message = app.settingsSync.message {
                         Text(message).font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
                     } else if app.settingsSync.hasPendingApplication {
                         CloudSyncExplanation("Settings are waiting for setup or a library refresh to finish. If parental settings are locked, unlock them to apply changes.")
