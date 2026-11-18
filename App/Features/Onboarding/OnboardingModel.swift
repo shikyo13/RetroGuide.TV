@@ -213,6 +213,16 @@ final class OnboardingModel {
         }
     }
 
+    /// The viewer opened Plex's sign-in page or plex.tv/link.
+    func plexSignInOpened() {
+        PurchaseAttribution.shared.record(UsageEvent(.setup, detail: UsageEvent.SetupStep.plexSignInOpened.rawValue))
+    }
+
+    /// The viewer closed Plex's sign-in page before linking the account.
+    func plexSignInClosed() {
+        record(.plexSignInClosed)
+    }
+
     func showLocalNetworkBlocked(for kind: ServerKind) {
         guard !Task.isCancelled else { return }
         record(kind == .plex ? .plexLocalNetworkBlocked : .jellyfinLocalNetworkBlocked)
@@ -232,6 +242,8 @@ final class OnboardingModel {
                     await showServers(accountToken: token)
                     return
                 }
+                guard !Task.isCancelled else { return }
+                record(.plexCodeExpired)
             } catch {
                 guard !Task.isCancelled else { return }
                 fail(error)

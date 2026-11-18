@@ -39,11 +39,11 @@ final class MPVPlaybackEngine: PlaybackEngine {
     func play(_ request: StreamRequest, tracks: TrackSelection?) {
         guard SecureTransport.permits(request.url) else {
             stop()
-            onEvent?(.failed(HTTPError.secureConnectionRequired.localizedDescription))
+            onEvent?(.failed(HTTPError.secureConnectionRequired.localizedDescription, .notSecure))
             return
         }
         guard let core else {
-            onEvent?(.failed(String(localized: "The video player could not be started.")))
+            onEvent?(.failed(String(localized: "The video player could not be started."), .player))
             return
         }
         generation += 1

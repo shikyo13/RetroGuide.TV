@@ -8,14 +8,29 @@ import UIKit
 @MainActor
 final class PlexSignInSheet: NSObject, ASWebAuthenticationPresentationContextProviding {
     private var session: ASWebAuthenticationSession?
+    /// Counts pages opened, so a late answer from an earlier one is ignored.
+    private var opened = 0
 
-    func open(_ url: URL) {
+    /// Opens `url`. `onClosedByViewer` runs if the viewer closes the page
+    /// (not when the owner closes it after approval).
+    func open(_ url: URL, onClosedByViewer: @escaping @MainActor () -> Void) {
         close()
+        opened += 1
+        let thisPage = opened
         let session: ASWebAuthenticationSession
+        // The page never calls back, so an error here is the viewer's Cancel.
+        let completion: ASWebAuthenticationSession.CompletionHandler = { [weak self] _, error in
+            guard (error as? ASWebAuthenticationSessionError)?.code == .canceledLogin else { return }
+            Task { @MainActor in
+                guard let self, self.session != nil, self.opened == thisPage else { return }
+                self.session = nil
+                onClosedByViewer()
+            }
+        }
         if #available(iOS 17.4, *) {
-            session = ASWebAuthenticationSession(url: url, callback: .customScheme(PlexAPI.signInCallbackScheme)) { _, _ in }
+            session = ASWebAuthenticationSession(url: url, callback: .customScheme(PlexAPI.signInCallbackScheme), completionHandler: completion)
         } else {
-            session = ASWebAuthenticationSession(url: url, callbackURLScheme: PlexAPI.signInCallbackScheme) { _, _ in }
+            session = ASWebAuthenticationSession(url: url, callbackURLScheme: PlexAPI.signInCallbackScheme, completionHandler: completion)
         }
         session.presentationContextProvider = self
         session.prefersEphemeralWebBrowserSession = false

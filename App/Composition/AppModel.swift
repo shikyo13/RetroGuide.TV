@@ -165,6 +165,12 @@ final class AppModel {
         tuner.onServerTrouble = { [weak self] _ in
             Task { await self?.recheckServers() }
         }
+        tuner.onNoSignal = { [weak self] reason in
+            self?.recordUsage(.playbackFailed, detail: reason.rawValue)
+        }
+        tuner.stallWatch.onStalled = { [weak self] location in
+            self?.recordUsage(.playbackStalled, detail: location.rawValue)
+        }
         tuner.onVideoFormatChanged = { [weak self] in
             self?.updateDisplayMode()
         }

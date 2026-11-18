@@ -13,6 +13,7 @@
 		0982F4C63893AE7898CF9C5A /* OnboardingFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42DFDA25C249B7C1171C5798 /* OnboardingFlowView.swift */; };
 		0A04CD1DA93577BEB6F6D308 /* JellyfinSignInStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E07938E6889F36FA17D189 /* JellyfinSignInStepView.swift */; };
 		0B1208B8BBD9B99984C3898D /* OnboardingModel+Jellyfin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 30E77B88A04DED5A68588776 /* OnboardingModel+Jellyfin.swift */; };
+		0C65E285B33600066D2458C2 /* StallWatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B9E429A024FC554F6505EA7 /* StallWatch.swift */; };
 		0DC981F2F16ABD5B5C876254 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 3CDEA718689A5E8DC19FCCD2 /* InfoPlist.xcstrings */; };
 		0DD9E163854A65A39D800750 /* CommercialLibraryPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821A2340E559A51991D36908 /* CommercialLibraryPickerView.swift */; };
 		0F70EBE0D88DE0438F1BB070 /* AVPlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */; };
@@ -389,6 +390,7 @@
 		46F65DFF726E08D9C5D9CAD1 /* WelcomeStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeStepView.swift; sourceTree = "<group>"; };
 		49960C6E5611553858B36F83 /* DisplayMatchingPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayMatchingPickerView.swift; sourceTree = "<group>"; };
 		4B23A277D13DDAB3F7138C0D /* ThemeCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeCatalog.swift; sourceTree = "<group>"; };
+		4B9E429A024FC554F6505EA7 /* StallWatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StallWatch.swift; sourceTree = "<group>"; };
 		4F1D42864977210441816A9E /* PlaybackReporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackReporting.swift; sourceTree = "<group>"; };
 		4FB6B1A4149A228D3D71A1B8 /* AddServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddServerView.swift; sourceTree = "<group>"; };
 		4FBEA280867125292968A959 /* RetroIconButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroIconButtonStyle.swift; sourceTree = "<group>"; };
@@ -603,6 +605,7 @@
 				4F1D42864977210441816A9E /* PlaybackReporting.swift */,
 				77FEA5AEE01D65F4ECE6E5B3 /* ProgramReminders.swift */,
 				891C8FCB689DEBC577C6DD61 /* SleepTimer.swift */,
+				4B9E429A024FC554F6505EA7 /* StallWatch.swift */,
 				0601DF37765D3C776688AF60 /* TrackSync.swift */,
 				16540AD44B0BC427225A94A4 /* Tuner.swift */,
 			);
@@ -1590,6 +1593,7 @@
 				FAC9EB776A297E606ABBD669 /* SleepTimerControl.swift in Sources */,
 				B5078207034B483739FBEE0D /* SnapshotFileWriter.swift in Sources */,
 				A81E12379CDB78335D6E9042 /* SplashView.swift in Sources */,
+				0C65E285B33600066D2458C2 /* StallWatch.swift in Sources */,
 				344BBCFC8E4E7130D58A182A /* StaticNoiseView.swift in Sources */,
 				8C955EEAFAE30CFB487639CA /* SubtitleFileCache.swift in Sources */,
 				83534407C63AEF805602EF14 /* SubtitleTimingControl.swift in Sources */,

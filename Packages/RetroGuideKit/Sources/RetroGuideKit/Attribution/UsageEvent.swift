@@ -23,6 +23,12 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         case lineupReady
         /// A program started playing. Detail: its ``ServerKind``.
         case watched
+        /// The screen showed No Signal: a program couldn't be played after
+        /// the quick retries. Detail: its ``FailureReason``.
+        case playbackFailed
+        /// A playing program stopped to buffer for a while. Detail: the
+        /// playback ``Location``.
+        case playbackStalled
         /// The Pro page was opened.
         case proViewed
     }
@@ -31,6 +37,8 @@ public struct UsageEvent: Codable, Hashable, Sendable {
     public enum SetupStep: String, Sendable, CaseIterable {
         case welcome
         case plexLink
+        /// Plex's sign-in page or plex.tv/link was opened from setup.
+        case plexSignInOpened
         case plexServers
         case jellyfinFind
         case jellyfinAddress
@@ -60,6 +68,10 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         /// Connecting a Plex server with a home address waited on local
         /// network access.
         case plexLocalNetworkBlocked
+        /// Plex's sign-in page was closed before the account was linked.
+        case plexSignInClosed
+        /// A Plex link code expired without being approved (a new one is shown).
+        case plexCodeExpired
         /// A typed Jellyfin address has a certificate this device doesn't trust.
         case jellyfinUntrusted
         /// Nothing answered at a typed Jellyfin address.
@@ -87,6 +99,10 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         case interrupted
         /// The server has no movie or TV show libraries the account can see.
         case noLibraries
+        /// The video player couldn't play the file it was given.
+        case player
+        /// The stream opened but no picture arrived in time.
+        case didNotStart
         case other
 
         public init(_ error: any Error) {
@@ -133,6 +149,13 @@ public struct UsageEvent: Codable, Hashable, Sendable {
             default: nil
             }
         }
+    }
+
+    /// Where a stream came from, for ``Name/playbackStalled``: buffering at
+    /// home and away from home have different fixes.
+    public enum Location: String, Sendable, CaseIterable {
+        case home
+        case away
     }
 
     /// How many channels a lineup has, in coarse buckets.

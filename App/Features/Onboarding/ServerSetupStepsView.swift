@@ -21,6 +21,8 @@ struct ServerSetupStepsView: View {
                     code: code,
                     signIn: model.plexSignIn,
                     onSwitchSignIn: model.switchPlexSignIn,
+                    onSignInOpened: model.plexSignInOpened,
+                    onSignInClosed: model.plexSignInClosed,
                     onCancel: onCancel
                 )
             case let .choosingServer(servers, accountHasServers):

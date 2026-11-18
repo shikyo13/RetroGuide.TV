@@ -13,20 +13,26 @@ SERVERS = {'none', 'plex', 'jellyfin', 'jellyfin+plex'}
 # UsageEvent.FailureReason and UsageEvent.SetupProblem in the app.
 REASONS = {'timeout', 'offline', 'unreachable', 'notSecure', 'certificate', 'unauthorized',
            'serverError', 'rejected', 'unreadable', 'badAddress', 'cancelled', 'interrupted',
-           'noLibraries', 'other'}
+           'noLibraries', 'player', 'didNotStart', 'other'}
 PROBLEMS = {'plexNoServers', 'jellyfinFoundNone', 'jellyfinFoundNotSecure', 'jellyfinFoundUntrusted',
             'jellyfinNotSecure', 'jellyfinUntrusted', 'jellyfinNoAnswer', 'jellyfinUnencryptedChosen',
-            'jellyfinNotSecureInternet', 'jellyfinLocalNetworkBlocked', 'plexLocalNetworkBlocked'}
+            'jellyfinNotSecureInternet', 'jellyfinLocalNetworkBlocked', 'plexLocalNetworkBlocked',
+            'plexSignInClosed', 'plexCodeExpired'}
+# UsageEvent.SetupStep and UsageEvent.Location in the app.
+STEPS = {'welcome', 'plexLink', 'plexSignInOpened', 'plexServers', 'jellyfinFind', 'jellyfinAddress',
+         'jellyfinSignIn', 'libraries', 'failed'}
+LOCATIONS = {'home', 'away'}
 EVENTS = {
     'active': SERVERS,
-    'setup': {'welcome', 'plexLink', 'plexServers', 'jellyfinFind', 'jellyfinAddress',
-              'jellyfinSignIn', 'libraries', 'failed'},
+    'setup': STEPS,
     'serverConnected': {'plex', 'jellyfin'},
     'libraryFailed': {''} | REASONS,
     'setupFailed': REASONS,
     'setupProblem': PROBLEMS,
     'lineupReady': {'0', '1-9', '10-49', '50+'},
     'watched': {'', 'plex', 'jellyfin'},
+    'playbackFailed': REASONS,
+    'playbackStalled': LOCATIONS,
     'proViewed': {''},
 }
 PLATFORMS = ('iPhone', 'iPad', 'AppleTV', 'Mac')
@@ -89,11 +95,12 @@ def store(database, installation, platform, version, events, storefront=None, la
                 language=COALESCE(excluded.language,installation_context.language),
                 updated_at=excluded.updated_at''', (installation, storefront, language, now))
 
-WHY = ('setupProblem', 'setupFailed', 'libraryFailed')
+WHY = ('setupProblem', 'setupFailed', 'libraryFailed', 'playbackFailed', 'playbackStalled')
 
-FUNNEL = [('setup', 'welcome'), ('setup', 'plexLink'), ('setup', 'jellyfinFind'),
+FUNNEL = [('setup', 'welcome'), ('setup', 'plexLink'), ('setup', 'plexSignInOpened'), ('setup', 'jellyfinFind'),
           ('setup', 'libraries'), ('setup', 'failed'), ('setupProblem', None), ('serverConnected', None),
-          ('libraryFailed', None), ('lineupReady', None), ('watched', None), ('proViewed', None)]
+          ('libraryFailed', None), ('lineupReady', None), ('watched', None), ('playbackFailed', None),
+          ('playbackStalled', None), ('proViewed', None)]
 
 def usage_report(database, start, end):
     """Daily activity, and how far installations first seen in [start, end] got.

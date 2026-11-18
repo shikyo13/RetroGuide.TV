@@ -177,13 +177,15 @@ def test_usage_reasons_match_the_app():
     """The app's reason names must be the service's, or its events are dropped."""
     import re
     from pathlib import Path
-    from attribution.usage import REASONS, PROBLEMS
+    from attribution.usage import REASONS, PROBLEMS, STEPS, LOCATIONS
     swift = (Path(__file__).parents[3] / 'Packages/RetroGuideKit/Sources/RetroGuideKit/Attribution/UsageEvent.swift').read_text()
     def cases(enum):
         body = swift.split(f'enum {enum}:')[1].split('\n    }\n')[0]
         return set(re.findall(r'^\s+case (\w+)\s*$', body, re.M))
     assert cases('FailureReason') == REASONS
     assert cases('SetupProblem') == PROBLEMS
+    assert cases('SetupStep') == STEPS
+    assert cases('Location') == LOCATIONS
 
 def test_usage_report_says_why_setup_stopped(setup):
     from datetime import datetime, timezone

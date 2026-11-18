@@ -8,7 +8,10 @@ enum PlaybackEvent: Equatable, Sendable {
     case playing
     /// The file finished before the schedule expected it to.
     case ended
-    case failed(String)
+    /// The stream can't be played: what to show, and why in coarse terms.
+    case failed(String, UsageEvent.FailureReason)
+    /// Playback paused to fill its buffer (`true`), or carried on (`false`).
+    case buffering(Bool)
     /// The video's dynamic range and frame rate, once known.
     case format(VideoFormat)
 }

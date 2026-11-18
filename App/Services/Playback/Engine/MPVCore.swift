@@ -111,6 +111,8 @@ final class MPVCore: @unchecked Sendable {
         static let windowID = "wid"
         static let trackListProperty = "track-list"
         static let positionProperty = "time-pos"
+        /// True while playback waits for the network cache to refill.
+        static let pausedForCacheProperty = "paused-for-cache"
         static let subtitleDelayProperty = "sub-delay"
         static let pauseProperty = "pause"
         static let maxBytesProperty = "demuxer-max-bytes"
@@ -174,6 +176,7 @@ final class MPVCore: @unchecked Sendable {
             mpv_observe_property(handle, .zero, property, MPV_FORMAT_INT64)
         }
         #endif
+        mpv_observe_property(handle, .zero, Option.pausedForCacheProperty, MPV_FORMAT_FLAG)
         guard mpv_initialize(handle) >= .zero else {
             mpv_terminate_destroy(handle)
             self.handle = nil
@@ -389,6 +392,12 @@ final class MPVCore: @unchecked Sendable {
 
     private static func map(_ event: mpv_event) -> PlaybackEvent? {
         switch event.event_id {
+        case MPV_EVENT_PROPERTY_CHANGE:
+            guard let property = event.data?.assumingMemoryBound(to: mpv_event_property.self).pointee,
+                  property.format == MPV_FORMAT_FLAG,
+                  String(cString: property.name) == Option.pausedForCacheProperty,
+                  let flag = property.data?.assumingMemoryBound(to: Int32.self).pointee else { return nil }
+            return .buffering(flag != .zero)
         case MPV_EVENT_PLAYBACK_RESTART:
             return .playing
         case MPV_EVENT_END_FILE:
@@ -398,7 +407,11 @@ final class MPVCore: @unchecked Sendable {
                 return .ended
             case MPV_END_FILE_REASON_ERROR:
                 let message = mpv_error_string(data.error).map { String(cString: $0) } ?? String(localized: "Playback error")
-                return .failed(String(localized: "The video couldn't be played (\(message)).", comment: "The player's technical error message, in parentheses"))
+                // Loading failed: the stream couldn't be read from the server.
+                // Anything else is the file itself (format, tracks, decoding).
+                let reason: UsageEvent.FailureReason = data.error == MPV_ERROR_LOADING_FAILED.rawValue ? .unreachable : .player
+                return .failed(String(localized: "The video couldn't be played (\(message)).", comment: "The player's technical error message, in parentheses"),
+                               reason)
             default:
                 return nil
             }

@@ -60,6 +60,7 @@ final class CommercialPlayback {
         case .failed:
             showCard()
         case .format(let format): onFormat(format)
+        case .buffering: break
         }
     }
     func enforceAccess() {

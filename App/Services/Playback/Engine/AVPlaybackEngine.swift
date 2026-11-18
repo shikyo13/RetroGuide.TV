@@ -48,7 +48,16 @@ final class AVPlaybackEngine: PlaybackEngine {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] status in
                 MainActor.assumeIsolated {
-                    if status == .playing { self?.onEvent?(.playing) }
+                    switch status {
+                    case .playing:
+                        self?.onEvent?(.buffering(false))
+                        self?.onEvent?(.playing)
+                    case .waitingToPlayAtSpecifiedRate:
+                        // Waiting for data, not for the viewer (that's .paused).
+                        self?.onEvent?(.buffering(true))
+                    default:
+                        break
+                    }
                 }
             }
     }
@@ -58,7 +67,7 @@ final class AVPlaybackEngine: PlaybackEngine {
     func play(_ request: StreamRequest, tracks: TrackSelection?) {
         guard SecureTransport.permits(request.url) else {
             stop()
-            onEvent?(.failed(HTTPError.secureConnectionRequired.localizedDescription))
+            onEvent?(.failed(HTTPError.secureConnectionRequired.localizedDescription, .notSecure))
             return
         }
         stop()
@@ -88,7 +97,7 @@ final class AVPlaybackEngine: PlaybackEngine {
                 guard !Task.isCancelled else { return }
                 self.relay?.stop()
                 self.relay = nil
-                self.onEvent?(.failed(String(localized: "A secure connection to this stream could not be established.")))
+                self.onEvent?(.failed(String(localized: "A secure connection to this stream could not be established."), UsageEvent.FailureReason(error)))
             }
         }
     }
@@ -117,6 +126,12 @@ final class AVPlaybackEngine: PlaybackEngine {
         player.replaceCurrentItem(with: nil)
     }
 
+    /// A network failure says so; anything else is the player's.
+    private static func reason(_ error: any Error) -> UsageEvent.FailureReason {
+        let reason = UsageEvent.FailureReason(error)
+        return reason == .other ? .player : reason
+    }
+
     private func observe(_ item: AVPlayerItem) {
         itemCancellables.removeAll()
         item.publisher(for: \.status)
@@ -124,7 +139,8 @@ final class AVPlaybackEngine: PlaybackEngine {
             .sink { [weak self, weak item] status in
                 MainActor.assumeIsolated {
                     guard status == .failed else { return }
-                    self?.onEvent?(.failed(item?.error?.localizedDescription ?? String(localized: "The stream could not be played.")))
+                    self?.onEvent?(.failed(item?.error?.localizedDescription ?? String(localized: "The stream could not be played."),
+                        item?.error.map(Self.reason) ?? .player))
                 }
             }
             .store(in: &itemCancellables)

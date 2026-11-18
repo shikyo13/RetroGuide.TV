@@ -19,6 +19,10 @@ struct PlexLinkStepView: View {
     let code: PlexLinkCode?
     let signIn: OnboardingModel.PlexSignIn
     let onSwitchSignIn: () -> Void
+    /// The viewer opened Plex's page (sign-in or plex.tv/link).
+    let onSignInOpened: () -> Void
+    /// The viewer closed Plex's sign-in page without finishing.
+    let onSignInClosed: @MainActor () -> Void
     let onCancel: () -> Void
 
     @Environment(\.theme) private var theme
@@ -88,6 +92,7 @@ struct PlexLinkStepView: View {
             waiting
             #if os(iOS)
             Button {
+                onSignInOpened()
                 openURL(PlexAPI.linkPageURL)
             } label: {
                 Label("Open \(linkPageDisplay)", systemImage: "safari")
@@ -133,7 +138,8 @@ struct PlexLinkStepView: View {
     /// The model's polling sees the approval and moves setup on.
     private func openSignInPage() {
         guard let code else { return }
-        signInSheet.open(code.linkURL)
+        onSignInOpened()
+        signInSheet.open(code.linkURL, onClosedByViewer: onSignInClosed)
     }
     #endif
 

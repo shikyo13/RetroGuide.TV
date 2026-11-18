@@ -62,6 +62,8 @@ final class Tuner {
     private(set) var signal: Signal = .off {
         didSet {
             if signal != oldValue {
+                // Buffering only counts while a program is on screen.
+                if signal != .live { stallWatch.reset() }
                 onSignalChanged?()
                 #if os(iOS)
                 // Picture in Picture may start by itself only while a channel plays.
@@ -96,6 +98,12 @@ final class Tuner {
     @ObservationIgnored var onChannelChanged: ((String) -> Void)?
     /// Called with a server id when its streams keep failing, so reachability can be re-checked.
     @ObservationIgnored var onServerTrouble: ((String) -> Void)?
+    /// Called when the screen shows No Signal for a program that couldn't play, with why.
+    @ObservationIgnored var onNoSignal: ((UsageEvent.FailureReason) -> Void)?
+    /// Notices long buffering on what's playing; its owner says what to do with it.
+    @ObservationIgnored let stallWatch = StallWatch()
+    /// Where the playing stream comes from, for ``stallWatch``.
+    @ObservationIgnored private var streamLocation = UsageEvent.Location.home
     @ObservationIgnored var onVideoFormatChanged: (() -> Void)?
     /// Called when the Picture in Picture window is closed (not returned to the app from).
     @ObservationIgnored var onPictureInPictureClosed: (() -> Void)?
@@ -568,6 +576,7 @@ final class Tuner {
         }
         guard let client = clientProvider(program.item.serverID) else {
             signal = .noSignal(String(localized: "The server for this channel isn't connected."))
+            onNoSignal?(.unreachable)
             return
         }
         // Every (re)start shows the tuning state until frames actually play.
@@ -645,13 +654,14 @@ final class Tuner {
             if let tuneStart {
                 logger.notice("stream ready in \((ContinuousClock.now - tuneStart).milliseconds, privacy: .public) ms (\(String(describing: request.method), privacy: .public))")
             }
+            streamLocation = NetworkLocation.isLikelyLocal(request.url) ? .home : .away
             engine.play(request.starting(at: independentPosition ?? program.elapsed(at: joinedAt)), tracks: selection)
             UIApplication.shared.isIdleTimerDisabled = true
             if independentPosition == nil { scheduleBoundary(at: program.contentEnd) }
             watchStart(of: program, generation: generation)
         } catch {
             guard generation == tuneGeneration, !Task.isCancelled else { return }
-            fail(with: error.localizedDescription)
+            fail(with: error.localizedDescription, reason: UsageEvent.FailureReason(error))
         }
     }
 
@@ -677,11 +687,14 @@ final class Tuner {
             if let program, signal == .live {
                 enterIntermission(until: program.slotEnd)
             }
-        case let .failed(message):
+        case let .failed(message, reason):
             guard signal == .tuning || signal == .live else { return }
-            fail(with: message)
+            fail(with: message, reason: reason)
         case let .format(format):
             setVideoFormat(format)
+        case let .buffering(isBuffering):
+            guard signal == .live else { stallWatch.reset(); return }
+            stallWatch.buffering(isBuffering, location: streamLocation)
         }
     }
 
@@ -692,10 +705,11 @@ final class Tuner {
         startWatchdog = Task { [weak self] in
             try? await Task.sleep(for: Timing.startTimeout)
             guard !Task.isCancelled, let self, generation == tuneGeneration, signal == .tuning else { return }
-            if independentPlayback != nil { fail(with: Message.didNotStart); return }
+            if independentPlayback != nil { fail(with: Message.didNotStart, reason: .didNotStart); return }
             endActiveStream()
             engine.stop()
             signal = .noSignal(Message.didNotStart)
+            onNoSignal?(.didNotStart)
             scheduleBoundary(at: program.slotEnd)
         }
     }
@@ -756,7 +770,7 @@ final class Tuner {
         }
     }
 
-    private func fail(with message: String) {
+    private func fail(with message: String, reason: UsageEvent.FailureReason) {
         rememberIndependentPosition()
         startWatchdog?.cancel()
         endActiveStream()
@@ -771,6 +785,7 @@ final class Tuner {
         } else {
             delay = Timing.retryDelay
             signal = .noSignal(message)
+            onNoSignal?(reason)
         }
         // Check the server's address on the first failure (the viewer may have
         // left home), so the quick retries can already use the new address.
