@@ -1,16 +1,15 @@
 import RetroGuideKit
 import SwiftUI
 
-/// Connected servers in priority order, with their status, plus "Add a server".
+/// Connected servers with their status, "Add a server", refreshing the
+/// library, and removing every server.
 struct ServersView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
+    @State private var isConfirmingRemoveAll = false
 
     var body: some View {
         SettingsPage(title: String(localized: "Servers")) {
-            Text("Channels combine content from your selected libraries. For matching copies, servers higher in this list are preferred. Availability, parental restrictions and playable versions can affect which copy is used.")
-                .font(Typography.body)
-                .foregroundStyle(theme.textSecondary)
             SettingsSection(String(localized: "Connected")) {
                 ForEach(app.servers.accounts) { account in
                     NavigationLink {
@@ -33,7 +32,33 @@ struct ServersView: View {
                     ProLockedRow(title: String(localized: "Add another server"), systemImage: "plus.circle")
                 }
             }
+            SettingsSection(String(localized: "Library")) {
+                Button {
+                    Task { await app.refreshLibrary() }
+                } label: {
+                    SettingsRowLabel(title: String(localized: "Refresh library"), systemImage: "arrow.clockwise", value: refreshSummary, accessory: nil)
+                }
+                .disabled(app.isRefreshing)
+                Button(role: .destructive) {
+                    isConfirmingRemoveAll = true
+                } label: {
+                    SettingsRowLabel(title: String(localized: "Remove all servers"), systemImage: "trash", value: nil, accessory: nil)
+                }
+            }
         }
+        .confirmationDialog("Remove all servers and channels from this device?", isPresented: $isConfirmingRemoveAll, titleVisibility: .visible) {
+            Button("Remove All Servers", role: .destructive) { app.signOut() }
+            Button("Cancel", role: .cancel) {}
+        }
+    }
+
+    private var refreshSummary: String {
+        if app.isRefreshing { return String(localized: "Refreshing…") }
+        if let error = app.refreshError { return error }
+        guard let lastRefreshed = app.lastRefreshed else {
+            return String(localized: "Never", comment: "Library refresh status: the library has not been refreshed yet")
+        }
+        return String(localized: "Updated \(ScheduleFormatting.relativeDate(lastRefreshed))", comment: "Library refresh status; the argument is a relative time such as “5 minutes ago”")
     }
 
     private func statusText(for account: ServerAccount) -> String {

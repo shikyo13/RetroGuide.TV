@@ -2280,156 +2280,156 @@
         }
       }
     },
-    "%@ is removed from %@. Settings › Channels › Removed from channels lists everything you've removed." : {
+    "%@ is removed from %@. Settings › Advanced › Removed from channels lists everything you've removed." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@ is removed from %2$@. Settings › Channels › Removed from channels lists everything you've removed."
+            "value" : "%1$@ is removed from %2$@. Settings › Advanced › Removed from channels lists everything you've removed."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se quitó %1$@ de %2$@. En Configuración › Canales › Quitados de canales aparece todo lo que quitaste."
+            "value" : "Se quitó %1$@ de %2$@. En Configuración › Avanzado › Quitados de canales aparece todo lo que quitaste."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ foi removido de %2$@. Ajustes › Canais › Removidos dos canais lista tudo o que você removeu."
+            "value" : "%1$@ foi removido de %2$@. Ajustes › Avançado › Removidos dos canais lista tudo o que você removeu."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ est retiré de %2$@. Réglages › Chaînes › Retirés des chaînes liste tout ce que vous avez retiré."
+            "value" : "%1$@ est retiré de %2$@. Réglages › Avancé › Retirés des chaînes liste tout ce que vous avez retiré."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ è stato rimosso da %2$@. Impostazioni › Canali › Rimossi dai canali elenca tutto ciò che hai rimosso."
+            "value" : "%1$@ è stato rimosso da %2$@. Impostazioni › Avanzate › Rimossi dai canali elenca tutto ciò che hai rimosso."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ wurde aus %2$@ entfernt. Unter Einstellungen › Kanäle › Aus Kanälen entfernt findest du alles, was du entfernt hast."
+            "value" : "%1$@ wurde aus %2$@ entfernt. Unter Einstellungen › Erweitert › Aus Kanälen entfernt findest du alles, was du entfernt hast."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ is verwijderd uit %2$@. Bij Instellingen › Zenders › Verwijderd uit zenders staat alles wat je hebt verwijderd."
+            "value" : "%1$@ is verwijderd uit %2$@. Bij Instellingen › Geavanceerd › Verwijderd uit zenders staat alles wat je hebt verwijderd."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ har tagits bort från %2$@. Inställningar › Kanaler › Borttaget från kanaler visar allt du har tagit bort."
+            "value" : "%1$@ har tagits bort från %2$@. Inställningar › Avancerat › Borttaget från kanaler visar allt du har tagit bort."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usunięto %1$@ z kanału %2$@. Wszystko, co usunięto, znajdziesz w Ustawienia › Kanały › Usunięte z kanałów."
+            "value" : "Usunięto %1$@ z kanału %2$@. Wszystko, co usunięto, znajdziesz w Ustawienia › Zaawansowane › Usunięte z kanałów."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Titul %1$@ byl odebrán z kanálu %2$@. Vše odebrané najdeš v Nastavení › Kanály › Odebráno z kanálů."
+            "value" : "Titul %1$@ byl odebrán z kanálu %2$@. Vše odebrané najdeš v Nastavení › Pokročilé › Odebráno z kanálů."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Вы убрали «%1$@» с канала %2$@. Всё, что вы убрали, перечислено в разделе «Настройки › Каналы › Убрано с каналов»."
+            "value" : "Вы убрали «%1$@» с канала %2$@. Всё, что вы убрали, перечислено в разделе «Настройки › Дополнительно › Убрано с каналов»."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@を%2$@から除外しました。除外したものはすべて「設定 › チャンネル › チャンネルから除外」で確認できます。"
+            "value" : "%1$@を%2$@から除外しました。除外したものはすべて「設定 › 詳細 › チャンネルから除外」で確認できます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@을(를) %2$@에서 제외했습니다. 제외한 항목은 모두 설정 › 채널 › 채널에서 제외됨에서 확인할 수 있습니다."
+            "value" : "%1$@을(를) %2$@에서 제외했습니다. 제외한 항목은 모두 설정 › 고급 › 채널에서 제외됨에서 확인할 수 있습니다."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 已从 %2$@ 中移除。“设置 › 频道 › 已从频道移除”会列出你移除的所有内容。"
+            "value" : "%1$@ 已从 %2$@ 中移除。“设置 › 高级 › 已从频道移除”会列出你移除的所有内容。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已將 %1$@ 從 %2$@ 移除。「設定 › 頻道 › 已從頻道移除」會列出你移除的所有內容。"
+            "value" : "已將 %1$@ 從 %2$@ 移除。「設定 › 進階 › 已從頻道移除」會列出你移除的所有內容。"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ को %2$@ से हटा दिया गया है। आपने जो कुछ भी हटाया है, वह सेटिंग्ज़ › चैनल › चैनलों से हटाए गए में दिखता है।"
+            "value" : "%1$@ को %2$@ से हटा दिया गया है। आपने जो कुछ भी हटाया है, वह सेटिंग्ज़ › उन्नत › चैनलों से हटाए गए में दिखता है।"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ সরানো হয়েছে %2$@ থেকে। আপনি যা যা সরিয়েছেন, তা সেটিংস › চ্যানেল › চ্যানেল থেকে সরানো-তে দেখা যাবে।"
+            "value" : "%1$@ সরানো হয়েছে %2$@ থেকে। আপনি যা যা সরিয়েছেন, তা সেটিংস › উন্নত › চ্যানেল থেকে সরানো-তে দেখা যাবে।"
           }
         },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ हे %2$@ मधून काढले आहे. सेटिंग्ज › चॅनेल › चॅनेलमधून काढलेले येथे तुम्ही काढलेले सर्व काही दिसते."
+            "value" : "%1$@ हे %2$@ मधून काढले आहे. सेटिंग्ज › प्रगत › चॅनेलमधून काढलेले येथे तुम्ही काढलेले सर्व काही दिसते."
           }
         },
         "ta" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@, %2$@-இலிருந்து அகற்றப்பட்டது. நீங்கள் அகற்றிய அனைத்தும் அமைப்புகள் › சேனல்கள் › சேனல்களிலிருந்து அகற்றியவை என்பதில் இருக்கும்."
+            "value" : "%1$@, %2$@-இலிருந்து அகற்றப்பட்டது. நீங்கள் அகற்றிய அனைத்தும் அமைப்புகள் › மேம்பட்டவை › சேனல்களிலிருந்து அகற்றியவை என்பதில் இருக்கும்."
           }
         },
         "te" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ %2$@ నుండి తీసివేయబడింది. మీరు తీసివేసినవన్నీ సెట్టింగ్‌లు › ఛానెల్‌లు › ఛానెల్‌ల నుండి తీసివేసినవిలో ఉంటాయి."
+            "value" : "%1$@ %2$@ నుండి తీసివేయబడింది. మీరు తీసివేసినవన్నీ సెట్టింగ్‌లు › అధునాతనం › ఛానెల్‌ల నుండి తీసివేసినవిలో ఉంటాయి."
           }
         },
         "gu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ને %2$@માંથી દૂર કર્યું. તમે દૂર કરેલું બધું સેટિંગ્સ › ચેનલો › ચેનલોમાંથી દૂર કરેલાંમાં દેખાય છે."
+            "value" : "%1$@ને %2$@માંથી દૂર કર્યું. તમે દૂર કરેલું બધું સેટિંગ્સ › ઍડવાન્સ્ડ › ચેનલોમાંથી દૂર કરેલાંમાં દેખાય છે."
           }
         },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ ಅನ್ನು %2$@ ಚಾನಲ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ. ನೀವು ತೆಗೆದುಹಾಕಿದ ಎಲ್ಲವೂ ಇಲ್ಲಿ ಕಾಣುತ್ತವೆ: ಸೆಟ್ಟಿಂಗ್‌ಗಳು › ಚಾನಲ್‌ಗಳು › ಚಾನಲ್‌ಗಳಿಂದ ತೆಗೆದವು."
+            "value" : "%1$@ ಅನ್ನು %2$@ ಚಾನಲ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ. ನೀವು ತೆಗೆದುಹಾಕಿದ ಎಲ್ಲವೂ ಇಲ್ಲಿ ಕಾಣುತ್ತವೆ: ಸೆಟ್ಟಿಂಗ್‌ಗಳು › ಸುಧಾರಿತ › ಚಾನಲ್‌ಗಳಿಂದ ತೆಗೆದವು."
           }
         },
         "ml" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@, %2$@-ൽ നിന്ന് നീക്കം ചെയ്തു. നിങ്ങൾ നീക്കം ചെയ്തതെല്ലാം ക്രമീകരണം › ചാനലുകൾ › ചാനലുകളിൽ നിന്ന് നീക്കിയവ എന്നതിൽ കാണാം."
+            "value" : "%1$@, %2$@-ൽ നിന്ന് നീക്കം ചെയ്തു. നിങ്ങൾ നീക്കം ചെയ്തതെല്ലാം ക്രമീകരണം › വിപുലമായവ › ചാനലുകളിൽ നിന്ന് നീക്കിയവ എന്നതിൽ കാണാം."
           }
         },
         "pa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ ਨੂੰ %2$@ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਹਟਾਈ ਹਰ ਚੀਜ਼ ਸੈਟਿੰਗਾਂ › ਚੈਨਲ › ਚੈਨਲਾਂ ਤੋਂ ਹਟਾਏ ਗਏ ਵਿੱਚ ਦਿਖਦੀ ਹੈ।"
+            "value" : "%1$@ ਨੂੰ %2$@ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ। ਤੁਹਾਡੇ ਵੱਲੋਂ ਹਟਾਈ ਹਰ ਚੀਜ਼ ਸੈਟਿੰਗਾਂ › ਉੱਨਤ › ਚੈਨਲਾਂ ਤੋਂ ਹਟਾਏ ਗਏ ਵਿੱਚ ਦਿਖਦੀ ਹੈ।"
           }
         },
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ କୁ %2$@ ରୁ ହଟାଯାଇଛି। ଆପଣ ହଟାଇଥିବା ସବୁକିଛି ଦେଖିବାକୁ ସେଟିଂସ୍ › ଚ୍ୟାନେଲ › ଚ୍ୟାନେଲରୁ ହଟାଯାଇଥିବା ଖୋଲନ୍ତୁ।"
+            "value" : "%1$@ କୁ %2$@ ରୁ ହଟାଯାଇଛି। ଆପଣ ହଟାଇଥିବା ସବୁକିଛି ଦେଖିବାକୁ ସେଟିଂସ୍ › ଉନ୍ନତ › ଚ୍ୟାନେଲରୁ ହଟାଯାଇଥିବା ଖୋଲନ୍ତୁ।"
           }
         }
       }
@@ -12732,6 +12732,154 @@
         }
       }
     },
+    "Advanced" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "উন্নত"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pokročilé"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erweitert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avanzado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avancé"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ઍડવાન્સ્ડ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "उन्नत"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avanzate"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "詳細"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಸುಧಾರಿತ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "고급"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "വിപുലമായവ"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "प्रगत"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geavanceerd"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଉନ୍ନତ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਉੱਨਤ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zaawansowane"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avançado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Дополнительно"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avancerat"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "மேம்பட்டவை"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అధునాతనం"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高级"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進階"
+          }
+        }
+      }
+    },
     "All" : {
       "comment" : "Settings row value: every library or genre is allowed",
       "localizations" : {
@@ -12877,6 +13025,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ସବୁ"
+          }
+        }
+      }
+    },
+    "All %lld" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সব %lld"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vše %lld"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toutes %lld"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "બધી %lld"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सभी %lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tutti %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべて %lld"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಎಲ್ಲಾ %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "전체 %lld"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "എല്ലാം %lld"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्व %lld"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle %lld"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସମସ୍ତ %lld"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਾਰੇ %lld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wszystkie %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos %lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Все %lld"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alla %lld"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "எல்லாம் %lld"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అన్నీ %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部 %lld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部 %lld"
           }
         }
       }
@@ -15248,6 +15544,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ଯେକୌଣସି"
+          }
+        }
+      }
+    },
+    "Appearance" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "চেহারা"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vzhled"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Darstellung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apariencia"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apparence"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "દેખાવ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "रूप-रंग"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aspetto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外観"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ನೋಟ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모양"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "രൂപം"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "स्वरूप"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weergave"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ରୂପ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਦਿੱਖ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wygląd"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aparência"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Оформление"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utseende"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "தோற்றம்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "రూపం"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外观"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外觀"
           }
         }
       }
@@ -20441,6 +20885,304 @@
         }
       }
     },
+    "Ch +" : {
+      "comment" : "Short caption under the channel-up button",
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "চ্যানেল +"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanál +"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanal +"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can. +"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ch. +"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ચેનલ +"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चैनल +"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can. +"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CH +"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಚಾನಲ್ +"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채널 +"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ചാനൽ +"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चॅनेल +"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zender +"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଚ୍ୟାନେଲ +"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਚੈਨਲ +"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan. +"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can. +"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кан. +"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanal +"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "சேனல் +"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఛానెల్ +"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频道 +"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻道 +"
+          }
+        }
+      }
+    },
+    "Ch −" : {
+      "comment" : "Short caption under the channel-down button",
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "চ্যানেল −"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanál −"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanal −"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can. −"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ch. −"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ચેનલ −"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चैनल −"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can. −"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "CH −"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಚಾನಲ್ −"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채널 −"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ചാനൽ −"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चॅनेल −"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zender −"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଚ୍ୟାନେଲ −"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਚੈਨਲ −"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan. −"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can. −"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Кан. −"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanal −"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "சேனல் −"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఛానెల్ −"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频道 −"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻道 −"
+          }
+        }
+      }
+    },
     "Change schedule order" : {
       "localizations" : {
         "es" : {
@@ -22375,6 +23117,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ଚ୍ୟାନେଲ ନାମ"
+          }
+        }
+      }
+    },
+    "Channel settings" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "চ্যানেল সেটিংস"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nastavení kanálu"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanaleinstellungen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes del canal"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages de la chaîne"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ચેનલ સેટિંગ્સ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चैनल सेटिंग्ज़"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impostazioni del canale"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チャンネル設定"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಚಾನಲ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채널 설정"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ചാനൽ ക്രമീകരണം"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चॅनेल सेटिंग्ज"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zenderinstellingen"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଚ୍ୟାନେଲ ସେଟିଂସ୍"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਚੈਨਲ ਸੈਟਿੰਗਾਂ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ustawienia kanału"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes do canal"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Настройки канала"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanalinställningar"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "சேனல் அமைப்புகள்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఛానెల్ సెట్టింగ్‌లు"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频道设置"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻道設定"
           }
         }
       }
@@ -26534,150 +27424,150 @@
         }
       }
     },
-    "Choosing audio and subtitles needs the RetroGuide Player. You can switch to it in Settings › Playback › Player." : {
+    "Choosing audio and subtitles needs the RetroGuide Player. You can switch to it in Settings › Advanced › Player." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para elegir audio y subtítulos se necesita el Reproductor RetroGuide. Puedes cambiarlo en Configuración › Reproducción › Reproductor."
+            "value" : "Para elegir audio y subtítulos se necesita el Reproductor RetroGuide. Puedes cambiarlo en Configuración › Avanzado › Reproductor."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Para escolher áudio e legendas, é preciso usar o Player RetroGuide. Você pode trocar em Ajustes › Reprodução › Player."
+            "value" : "Para escolher áudio e legendas, é preciso usar o Player RetroGuide. Você pode trocar em Ajustes › Avançado › Player."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le choix de l'audio et des sous-titres nécessite le lecteur RetroGuide. Vous pouvez l'activer dans Réglages › Lecture › Lecteur."
+            "value" : "Le choix de l'audio et des sous-titres nécessite le lecteur RetroGuide. Vous pouvez l'activer dans Réglages › Avancé › Lecteur."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Per scegliere audio e sottotitoli serve il Lettore RetroGuide. Puoi attivarlo in Impostazioni › Riproduzione › Lettore."
+            "value" : "Per scegliere audio e sottotitoli serve il Lettore RetroGuide. Puoi attivarlo in Impostazioni › Avanzate › Lettore."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Für die Auswahl von Audio und Untertiteln ist der RetroGuide-Player nötig. Du kannst unter Einstellungen › Wiedergabe › Player zu ihm wechseln."
+            "value" : "Für die Auswahl von Audio und Untertiteln ist der RetroGuide-Player nötig. Du kannst unter Einstellungen › Erweitert › Player zu ihm wechseln."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Voor het kiezen van audio en ondertiteling is de RetroGuide-speler nodig. Je kunt overschakelen via Instellingen › Afspelen › Speler."
+            "value" : "Voor het kiezen van audio en ondertiteling is de RetroGuide-speler nodig. Je kunt overschakelen via Instellingen › Geavanceerd › Speler."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "För att välja ljud och undertexter krävs RetroGuide-spelaren. Du kan byta till den i Inställningar › Uppspelning › Spelare."
+            "value" : "För att välja ljud och undertexter krävs RetroGuide-spelaren. Du kan byta till den i Inställningar › Avancerat › Spelare."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wybór dźwięku i napisów wymaga Odtwarzacza RetroGuide. Możesz go włączyć w Ustawienia › Odtwarzanie › Odtwarzacz."
+            "value" : "Wybór dźwięku i napisów wymaga Odtwarzacza RetroGuide. Możesz go włączyć w Ustawienia › Zaawansowane › Odtwarzacz."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Výběr zvuku a titulků vyžaduje přehrávač RetroGuide. Přepnout na něj můžeš v Nastavení › Přehrávání › Přehrávač."
+            "value" : "Výběr zvuku a titulků vyžaduje přehrávač RetroGuide. Přepnout na něj můžeš v Nastavení › Pokročilé › Přehrávač."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Для выбора аудио и субтитров нужен плеер RetroGuide. Переключиться на него можно в разделе «Настройки › Воспроизведение › Плеер»."
+            "value" : "Для выбора аудио и субтитров нужен плеер RetroGuide. Переключиться на него можно в разделе «Настройки › Дополнительно › Плеер»."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "オーディオと字幕を選択するにはRetroGuideプレーヤーが必要です。「設定 › 再生 › プレーヤー」で切り替えられます。"
+            "value" : "オーディオと字幕を選択するにはRetroGuideプレーヤーが必要です。「設定 › 詳細 › プレーヤー」で切り替えられます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "오디오와 자막을 선택하려면 RetroGuide 플레이어가 필요합니다. 설정 › 재생 › 플레이어에서 전환할 수 있습니다."
+            "value" : "오디오와 자막을 선택하려면 RetroGuide 플레이어가 필요합니다. 설정 › 고급 › 플레이어에서 전환할 수 있습니다."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择音频和字幕需要使用 RetroGuide 播放器。你可以在“设置 › 播放 › 播放器”中切换。"
+            "value" : "选择音频和字幕需要使用 RetroGuide 播放器。你可以在“设置 › 高级 › 播放器”中切换。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "選擇音訊和字幕需要使用 RetroGuide 播放器。你可以在「設定 › 播放 › 播放器」中切換。"
+            "value" : "選擇音訊和字幕需要使用 RetroGuide 播放器。你可以在「設定 › 進階 › 播放器」中切換。"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ऑडियो और सबटाइटल चुनने के लिए RetroGuide प्लेयर चाहिए। आप सेटिंग्ज़ › प्लेबैक › प्लेयर में इस पर स्विच कर सकते हैं।"
+            "value" : "ऑडियो और सबटाइटल चुनने के लिए RetroGuide प्लेयर चाहिए। आप सेटिंग्ज़ › उन्नत › प्लेयर में इस पर स्विच कर सकते हैं।"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "অডিও ও সাবটাইটেল বাছাই করতে RetroGuide প্লেয়ার প্রয়োজন। সেটিংস › প্লেব্যাক › প্লেয়ার-এ গিয়ে এটিতে বদলাতে পারেন।"
+            "value" : "অডিও ও সাবটাইটেল বাছাই করতে RetroGuide প্লেয়ার প্রয়োজন। সেটিংস › উন্নত › প্লেয়ার-এ গিয়ে এটিতে বদলাতে পারেন।"
           }
         },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ऑडिओ आणि सबटायटल्स निवडण्यासाठी RetroGuide प्लेअर आवश्यक आहे. सेटिंग्ज › प्लेबॅक › प्लेअर मध्ये तुम्ही त्यावर स्विच करू शकता."
+            "value" : "ऑडिओ आणि सबटायटल्स निवडण्यासाठी RetroGuide प्लेअर आवश्यक आहे. सेटिंग्ज › प्रगत › प्लेअर मध्ये तुम्ही त्यावर स्विच करू शकता."
           }
         },
         "ta" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ஆடியோ, சப்டைட்டில்களைத் தேர்வுசெய்ய RetroGuide பிளேயர் தேவை. அமைப்புகள் › பிளேபேக் › பிளேயர் என்பதில் அதற்கு மாறலாம்."
+            "value" : "ஆடியோ, சப்டைட்டில்களைத் தேர்வுசெய்ய RetroGuide பிளேயர் தேவை. அமைப்புகள் › மேம்பட்டவை › பிளேயர் என்பதில் அதற்கு மாறலாம்."
           }
         },
         "te" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ఆడియో, సబ్‌టైటిల్‌లు ఎంచుకోవడానికి RetroGuide ప్లేయర్ అవసరం. మీరు సెట్టింగ్‌లు › ప్లేబ్యాక్ › ప్లేయర్‌లో దానికి మారవచ్చు."
+            "value" : "ఆడియో, సబ్‌టైటిల్‌లు ఎంచుకోవడానికి RetroGuide ప్లేయర్ అవసరం. మీరు సెట్టింగ్‌లు › అధునాతనం › ప్లేయర్‌లో దానికి మారవచ్చు."
           }
         },
         "gu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ઑડિયો અને સબટાઇટલ પસંદ કરવા માટે RetroGuide પ્લેયર જરૂરી છે. તમે સેટિંગ્સ › પ્લેબૅક › પ્લેયરમાં તેના પર સ્વિચ કરી શકો છો."
+            "value" : "ઑડિયો અને સબટાઇટલ પસંદ કરવા માટે RetroGuide પ્લેયર જરૂરી છે. તમે સેટિંગ્સ › ઍડવાન્સ્ડ › પ્લેયરમાં તેના પર સ્વિચ કરી શકો છો."
           }
         },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ಆಡಿಯೋ ಮತ್ತು ಉಪಶೀರ್ಷಿಕೆಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲು RetroGuide ಪ್ಲೇಯರ್ ಬೇಕು. ಸೆಟ್ಟಿಂಗ್‌ಗಳು › ಪ್ಲೇಬ್ಯಾಕ್ › ಪ್ಲೇಯರ್ ನಲ್ಲಿ ನೀವು ಅದಕ್ಕೆ ಬದಲಾಯಿಸಬಹುದು."
+            "value" : "ಆಡಿಯೋ ಮತ್ತು ಉಪಶೀರ್ಷಿಕೆಗಳನ್ನು ಆಯ್ಕೆಮಾಡಲು RetroGuide ಪ್ಲೇಯರ್ ಬೇಕು. ಸೆಟ್ಟಿಂಗ್‌ಗಳು › ಸುಧಾರಿತ › ಪ್ಲೇಯರ್ ನಲ್ಲಿ ನೀವು ಅದಕ್ಕೆ ಬದಲಾಯಿಸಬಹುದು."
           }
         },
         "ml" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ഓഡിയോയും സബ്ടൈറ്റിലുകളും തിരഞ്ഞെടുക്കാൻ RetroGuide പ്ലെയർ വേണം. ക്രമീകരണം › പ്ലേബാക്ക് › പ്ലെയർ എന്നതിൽ അതിലേക്ക് മാറാം."
+            "value" : "ഓഡിയോയും സബ്ടൈറ്റിലുകളും തിരഞ്ഞെടുക്കാൻ RetroGuide പ്ലെയർ വേണം. ക്രമീകരണം › വിപുലമായവ › പ്ലെയർ എന്നതിൽ അതിലേക്ക് മാറാം."
           }
         },
         "pa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ਆਡੀਓ ਅਤੇ ਸਬਟਾਈਟਲ ਚੁਣਨ ਲਈ RetroGuide ਪਲੇਅਰ ਚਾਹੀਦਾ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ › ਪਲੇਬੈਕ › ਪਲੇਅਰ ਵਿੱਚ ਇਸ 'ਤੇ ਬਦਲ ਸਕਦੇ ਹੋ।"
+            "value" : "ਆਡੀਓ ਅਤੇ ਸਬਟਾਈਟਲ ਚੁਣਨ ਲਈ RetroGuide ਪਲੇਅਰ ਚਾਹੀਦਾ ਹੈ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ › ਉੱਨਤ › ਪਲੇਅਰ ਵਿੱਚ ਇਸ 'ਤੇ ਬਦਲ ਸਕਦੇ ਹੋ।"
           }
         },
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ଅଡିଓ ଓ ସବଟାଇଟଲ୍ ବାଛିବାକୁ RetroGuide ପ୍ଲେୟାର୍ ଦରକାର। ଆପଣ ସେଟିଂସ୍ › ପ୍ଲେବ୍ୟାକ୍ › ପ୍ଲେୟାର୍‌ରେ ଏହାକୁ ବଦଳାଇପାରିବେ।"
+            "value" : "ଅଡିଓ ଓ ସବଟାଇଟଲ୍ ବାଛିବାକୁ RetroGuide ପ୍ଲେୟାର୍ ଦରକାର। ଆପଣ ସେଟିଂସ୍ › ଉନ୍ନତ › ପ୍ଲେୟାର୍‌ରେ ଏହାକୁ ବଦଳାଇପାରିବେ।"
           }
         }
       }
@@ -35144,6 +36034,154 @@
         }
       }
     },
+    "Delete %@?" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ মুছবেন?"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Smazat %@?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ löschen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Eliminar %@?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supprimer %@ ?"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ડિલીટ કરીએ?"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ मिटाएँ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eliminare %@?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@を削除しますか？"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ಅಳಿಸಬೇಕೆ?"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@을(를) 삭제하시겠습니까?"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ഇല്ലാതാക്കണോ?"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ हटवायचे?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ verwijderen?"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ଡିଲିଟ୍ କରିବେ?"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਕੀ %@ ਮਿਟਾਉਣਾ ਹੈ?"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usunąć %@?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apagar %@?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить «%@»?"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radera %@?"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@-ஐ நீக்கவா?"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ తొలగించాలా?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要删除“%@”吗？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要刪除「%@」嗎？"
+          }
+        }
+      }
+    },
     "Delete Channel" : {
       "localizations" : {
         "es" : {
@@ -40189,6 +41227,154 @@
         }
       }
     },
+    "Favorite channel" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "প্রিয় চ্যানেল"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oblíbený kanál"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lieblingskanal"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canal favorito"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaîne favorite"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "મનપસંદ ચેનલ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पसंदीदा चैनल"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canale preferito"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りのチャンネル"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಮೆಚ್ಚಿನ ಚಾನಲ್"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾는 채널"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "പ്രിയപ്പെട്ട ചാനൽ"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आवडते चॅनेल"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriete zender"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ପସନ୍ଦର ଚ୍ୟାନେଲ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਮਨਪਸੰਦ ਚੈਨਲ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ulubiony kanał"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canal favorito"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Избранный канал"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoritkanal"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "பிடித்த சேனல்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇష్టమైన ఛానెల్"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "喜爱频道"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "喜愛頻道"
+          }
+        }
+      }
+    },
     "Favorite channels" : {
       "localizations" : {
         "es" : {
@@ -40481,6 +41667,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ପସନ୍ଦିତ"
+          }
+        }
+      }
+    },
+    "Favorites %lld" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "প্রিয় %lld"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oblíbené %lld"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriten %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoritos %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoris %lld"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "મનપસંદ %lld"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पसंदीदा %lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferiti %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入り %lld"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಮೆಚ್ಚಿನವು %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾기 %lld"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "പ്രിയപ്പെട്ടവ %lld"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आवडते %lld"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorieten %lld"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ପସନ୍ଦ %lld"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਮਨਪਸੰਦ %lld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ulubione %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoritos %lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Избранное %lld"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoriter %lld"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "பிடித்தவை %lld"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇష్టమైనవి %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "喜爱 %lld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "喜愛 %lld"
           }
         }
       }
@@ -41521,6 +42855,155 @@
         }
       }
     },
+    "Go to %@" : {
+      "comment" : "Search result that airs later: tune to its channel now anyway; the argument is the channel name",
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@-এ যান"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přejít na %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir a %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aller sur %@"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ પર જાઓ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ पर जाएँ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vai a %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@へ移動"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ ಗೆ ಹೋಗಿ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@(으)로 이동"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@-ലേക്ക് പോകുക"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ वर जा"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Naar %@"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@କୁ ଯାଆନ୍ତୁ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 'ਤੇ ਜਾਓ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przejdź do: %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ir para %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Перейти на %@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gå till %@"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@-க்குச் செல்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@కు వెళ్లండి"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往“%@”"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前往「%@」"
+          }
+        }
+      }
+    },
     "Guide" : {
       "comment" : "Remote hint: the select button opens the program guide",
       "localizations" : {
@@ -41818,6 +43301,302 @@
         }
       }
     },
+    "Help" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সাহায্য"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nápověda"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayuda"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aide"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "મદદ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मदद"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aiuto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルプ"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಸಹಾಯ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "도움말"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "സഹായം"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मदत"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hulp"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସାହାଯ୍ୟ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਮਦਦ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pomoc"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajuda"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Справка"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hjälp"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "உதவி"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "సహాయం"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帮助"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "說明"
+          }
+        }
+      }
+    },
+    "Help and About" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সাহায্য ও পরিচিতি"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nápověda a informace"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfe und Info"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayuda e información"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aide et informations"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "મદદ અને માહિતી"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मदद और जानकारी"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aiuto e info"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルプと情報"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಸಹಾಯ ಮತ್ತು ಮಾಹಿತಿ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "도움말 및 정보"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "സഹായവും വിവരവും"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मदत आणि माहिती"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hulp en info"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସାହାଯ୍ୟ ଓ ସୂଚନା"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਮਦਦ ਅਤੇ ਜਾਣਕਾਰੀ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pomoc i informacje"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajuda e sobre"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Справка и сведения"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hjälp och om"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "உதவி, தகவல்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "సహాయం, సమాచారం"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帮助与关于"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "說明與關於"
+          }
+        }
+      }
+    },
     "Hidden" : {
       "localizations" : {
         "es" : {
@@ -41962,6 +43741,302 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ଲୁଚା"
+          }
+        }
+      }
+    },
+    "Hidden %lld" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "লুকানো %lld"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skryté %lld"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausgeblendet %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultos %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquées %lld"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "છુપાવેલી %lld"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "छिपे %lld"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nascosti %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非表示 %lld"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಮರೆಮಾಡಿದವು %lld"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "숨김 %lld"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "മറച്ചവ %lld"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "लपवलेले %lld"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verborgen %lld"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଲୁଚାଯାଇଥିବା %lld"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਲੁਕਾਏ %lld"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukryte %lld"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultos %lld"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрытые %lld"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dolda %lld"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "மறைத்தவை %lld"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "దాచినవి %lld"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已隐藏 %lld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已隱藏 %lld"
+          }
+        }
+      }
+    },
+    "Hidden from guide" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "গাইডে লুকানো"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skryto v průvodci"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Programmführer ausgeblendet"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oculto en la guía"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquée dans le guide"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ગાઇડમાં છુપાવેલી"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "गाइड में छिपा है"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nascosto nella guida"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "番組表で非表示中"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಗೈಡ್‌ನಲ್ಲಿ ಮರೆಮಾಡಲಾಗಿದೆ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가이드에서 숨겨짐"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഗൈഡിൽ മറച്ചിരിക്കുന്നു"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मार्गदर्शकात लपवलेले"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verborgen in gids"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଗାଇଡରେ ଲୁଚାଯାଇଛି"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਗਾਈਡ ਵਿੱਚ ਲੁਕਿਆ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukryty w przewodniku"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oculto no guia"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыт в гиде"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dold i guiden"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "வழிகாட்டியில் மறைக்கப்பட்டது"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "గైడ్‌లో దాచబడింది"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已在节目表中隐藏"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已在節目表中隱藏"
           }
         }
       }
@@ -42111,6 +44186,303 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ ଲୁଚାନ୍ତୁ"
+          }
+        }
+      }
+    },
+    "Hide from guide" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "গাইডে লুকান"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skrýt v průvodci"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Programmführer ausblenden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar en la guía"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Masquer dans le guide"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ગાઇડમાં છુપાવો"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "गाइड में छिपाएँ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nascondi nella guida"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "番組表で非表示"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಗೈಡ್‌ನಲ್ಲಿ ಮರೆಮಾಡಿ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가이드에서 숨기기"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഗൈഡിൽ മറയ്ക്കുക"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मार्गदर्शकात लपवा"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verberg in gids"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଗାଇଡରେ ଲୁଚାନ୍ତୁ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਗਾਈਡ ਵਿੱਚ ਲੁਕਾਓ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ukryj w przewodniku"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar no guia"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Скрыть в гиде"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dölj i guiden"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "வழிகாட்டியில் மறை"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "గైడ్‌లో దాచండి"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在节目表中隐藏"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在節目表中隱藏"
+          }
+        }
+      }
+    },
+    "Hold for Options" : {
+      "comment" : "Remote hint: pressing and holding the select button opens the Options panel",
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "চেপে ধরুন: অপশন"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podrž: Volby"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gedrückt halten: Optionen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantén pulsado: Opciones"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maintenir : Options"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "દબાવી રાખો: વિકલ્પો"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "दबाकर रखें: विकल्प"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tieni premuto: Opzioni"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "長押し：オプション"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಒತ್ತಿ ಹಿಡಿಯಿರಿ: ಆಯ್ಕೆಗಳು"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "길게 누르기: 옵션"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "അമർത്തിപ്പിടിക്കുക: ഓപ്ഷനുകൾ"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "दाबून ठेवा: पर्याय"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingedrukt houden: Opties"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଦବାଇ ରଖନ୍ତୁ: ବିକଳ୍ପ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਦਬਾ ਕੇ ਰੱਖੋ: ਵਿਕਲਪ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przytrzymaj: Opcje"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantenha pressionado: Opções"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удерживайте: Параметры"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Håll in: Alternativ"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "அழுத்திப் பிடி: விருப்பங்கள்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "నొక్కి ఉంచండి: ఎంపికలు"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住：选项"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住：選項"
           }
         }
       }
@@ -43450,150 +45822,150 @@
         }
       }
     },
-    "It stays on your other channels. You can put it back any time in Settings › Channels › Removed from channels." : {
+    "It stays on your other channels. You can put it back any time in Settings › Advanced › Removed from channels." : {
       "localizations" : {
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sigue en tus otros canales. Puedes restaurarlo cuando quieras en Configuración › Canales › Quitados de canales."
+            "value" : "Sigue en tus otros canales. Puedes restaurarlo cuando quieras en Configuración › Avanzado › Quitados de canales."
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ele continua nos seus outros canais. Você pode restaurá-lo quando quiser em Ajustes › Canais › Removidos dos canais."
+            "value" : "Ele continua nos seus outros canais. Você pode restaurá-lo quando quiser em Ajustes › Avançado › Removidos dos canais."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il reste sur vos autres chaînes. Vous pouvez le remettre à tout moment dans Réglages › Chaînes › Retirés des chaînes."
+            "value" : "Il reste sur vos autres chaînes. Vous pouvez le remettre à tout moment dans Réglages › Avancé › Retirés des chaînes."
           }
         },
         "it" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Resta sugli altri canali. Puoi rimetterlo in qualsiasi momento in Impostazioni › Canali › Rimossi dai canali."
+            "value" : "Resta sugli altri canali. Puoi rimetterlo in qualsiasi momento in Impostazioni › Avanzate › Rimossi dai canali."
           }
         },
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Auf deinen anderen Kanälen bleibt der Titel erhalten. Du kannst ihn jederzeit unter Einstellungen › Kanäle › Aus Kanälen entfernt zurückholen."
+            "value" : "Auf deinen anderen Kanälen bleibt der Titel erhalten. Du kannst ihn jederzeit unter Einstellungen › Erweitert › Aus Kanälen entfernt zurückholen."
           }
         },
         "nl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Op je andere zenders blijft de titel staan. Je kunt hem altijd terugzetten via Instellingen › Zenders › Verwijderd uit zenders."
+            "value" : "Op je andere zenders blijft de titel staan. Je kunt hem altijd terugzetten via Instellingen › Geavanceerd › Verwijderd uit zenders."
           }
         },
         "sv" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Den finns kvar på dina andra kanaler. Du kan lägga tillbaka den när som helst i Inställningar › Kanaler › Borttaget från kanaler."
+            "value" : "Den finns kvar på dina andra kanaler. Du kan lägga tillbaka den när som helst i Inställningar › Avancerat › Borttaget från kanaler."
           }
         },
         "pl" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pozostaje na innych kanałach. Możesz go przywrócić w dowolnej chwili w Ustawienia › Kanały › Usunięte z kanałów."
+            "value" : "Pozostaje na innych kanałach. Możesz go przywrócić w dowolnej chwili w Ustawienia › Zaawansowane › Usunięte z kanałów."
           }
         },
         "cs" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Na ostatních kanálech zůstane. Vrátit ho můžeš kdykoli v Nastavení › Kanály › Odebráno z kanálů."
+            "value" : "Na ostatních kanálech zůstane. Vrátit ho můžeš kdykoli v Nastavení › Pokročilé › Odebráno z kanálů."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "На других каналах он остаётся. Вернуть его можно в любое время в разделе «Настройки › Каналы › Убрано с каналов»."
+            "value" : "На других каналах он остаётся. Вернуть его можно в любое время в разделе «Настройки › Дополнительно › Убрано с каналов»."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ほかのチャンネルでは引き続き放送されます。「設定 › チャンネル › チャンネルから除外」でいつでも元に戻せます。"
+            "value" : "ほかのチャンネルでは引き続き放送されます。「設定 › 詳細 › チャンネルから除外」でいつでも元に戻せます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다른 채널에서는 계속 방송됩니다. 설정 › 채널 › 채널에서 제외됨에서 언제든지 되돌릴 수 있습니다."
+            "value" : "다른 채널에서는 계속 방송됩니다. 설정 › 고급 › 채널에서 제외됨에서 언제든지 되돌릴 수 있습니다."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "它仍会在其他频道播出。你可以随时在“设置 › 频道 › 已从频道移除”中将其放回。"
+            "value" : "它仍会在其他频道播出。你可以随时在“设置 › 高级 › 已从频道移除”中将其放回。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "它仍會在其他頻道播出。你隨時可以在「設定 › 頻道 › 已從頻道移除」中將其放回。"
+            "value" : "它仍會在其他頻道播出。你隨時可以在「設定 › 進階 › 已從頻道移除」中將其放回。"
           }
         },
         "hi" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "यह आपके बाकी चैनलों पर बना रहता है। आप इसे कभी भी सेटिंग्ज़ › चैनल › चैनलों से हटाए गए में वापस ला सकते हैं।"
+            "value" : "यह आपके बाकी चैनलों पर बना रहता है। आप इसे कभी भी सेटिंग्ज़ › उन्नत › चैनलों से हटाए गए में वापस ला सकते हैं।"
           }
         },
         "bn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "এটি আপনার অন্য চ্যানেলগুলোতে থেকে যায়। যেকোনো সময় সেটিংস › চ্যানেল › চ্যানেল থেকে সরানো-তে গিয়ে এটি ফিরিয়ে আনতে পারেন।"
+            "value" : "এটি আপনার অন্য চ্যানেলগুলোতে থেকে যায়। যেকোনো সময় সেটিংস › উন্নত › চ্যানেল থেকে সরানো-তে গিয়ে এটি ফিরিয়ে আনতে পারেন।"
           }
         },
         "mr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ते तुमच्या इतर चॅनेलवर राहते. सेटिंग्ज › चॅनेल › चॅनेलमधून काढलेले येथे तुम्ही ते कधीही परत आणू शकता."
+            "value" : "ते तुमच्या इतर चॅनेलवर राहते. सेटिंग्ज › प्रगत › चॅनेलमधून काढलेले येथे तुम्ही ते कधीही परत आणू शकता."
           }
         },
         "ta" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "இது உங்கள் மற்ற சேனல்களில் தொடரும். அமைப்புகள் › சேனல்கள் › சேனல்களிலிருந்து அகற்றியவை என்பதில் எப்போது வேண்டுமானாலும் இதைத் திரும்பச் சேர்க்கலாம்."
+            "value" : "இது உங்கள் மற்ற சேனல்களில் தொடரும். அமைப்புகள் › மேம்பட்டவை › சேனல்களிலிருந்து அகற்றியவை என்பதில் எப்போது வேண்டுமானாலும் இதைத் திரும்பச் சேர்க்கலாம்."
           }
         },
         "te" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ఇది మీ ఇతర ఛానెల్‌లలో ఉంటుంది. సెట్టింగ్‌లు › ఛానెల్‌లు › ఛానెల్‌ల నుండి తీసివేసినవిలో మీరు ఎప్పుడైనా దాన్ని తిరిగి చేర్చవచ్చు."
+            "value" : "ఇది మీ ఇతర ఛానెల్‌లలో ఉంటుంది. సెట్టింగ్‌లు › అధునాతనం › ఛానెల్‌ల నుండి తీసివేసినవిలో మీరు ఎప్పుడైనా దాన్ని తిరిగి చేర్చవచ్చు."
           }
         },
         "gu" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "તે તમારી બીજી ચેનલો પર રહે છે. તમે ગમે ત્યારે સેટિંગ્સ › ચેનલો › ચેનલોમાંથી દૂર કરેલાંમાં તેને પાછું મૂકી શકો છો."
+            "value" : "તે તમારી બીજી ચેનલો પર રહે છે. તમે ગમે ત્યારે સેટિંગ્સ › ઍડવાન્સ્ડ › ચેનલોમાંથી દૂર કરેલાંમાં તેને પાછું મૂકી શકો છો."
           }
         },
         "kn" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ಇದು ನಿಮ್ಮ ಇತರ ಚಾನಲ್‌ಗಳಲ್ಲಿ ಉಳಿಯುತ್ತದೆ. ಯಾವಾಗ ಬೇಕಾದರೂ ಇದನ್ನು ಮರಳಿ ಸೇರಿಸಬಹುದು: ಸೆಟ್ಟಿಂಗ್‌ಗಳು › ಚಾನಲ್‌ಗಳು › ಚಾನಲ್‌ಗಳಿಂದ ತೆಗೆದವು."
+            "value" : "ಇದು ನಿಮ್ಮ ಇತರ ಚಾನಲ್‌ಗಳಲ್ಲಿ ಉಳಿಯುತ್ತದೆ. ಯಾವಾಗ ಬೇಕಾದರೂ ಇದನ್ನು ಮರಳಿ ಸೇರಿಸಬಹುದು: ಸೆಟ್ಟಿಂಗ್‌ಗಳು › ಸುಧಾರಿತ › ಚಾನಲ್‌ಗಳಿಂದ ತೆಗೆದವು."
           }
         },
         "ml" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ഇത് നിങ്ങളുടെ മറ്റ് ചാനലുകളിൽ തുടരും. ക്രമീകരണം › ചാനലുകൾ › ചാനലുകളിൽ നിന്ന് നീക്കിയവ എന്നതിൽ എപ്പോൾ വേണമെങ്കിലും തിരികെ വയ്ക്കാം."
+            "value" : "ഇത് നിങ്ങളുടെ മറ്റ് ചാനലുകളിൽ തുടരും. ക്രമീകരണം › വിപുലമായവ › ചാനലുകളിൽ നിന്ന് നീക്കിയവ എന്നതിൽ എപ്പോൾ വേണമെങ്കിലും തിരികെ വയ്ക്കാം."
           }
         },
         "pa" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ਇਹ ਤੁਹਾਡੇ ਹੋਰ ਚੈਨਲਾਂ 'ਤੇ ਰਹਿੰਦਾ ਹੈ। ਤੁਸੀਂ ਕਦੇ ਵੀ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ › ਚੈਨਲ › ਚੈਨਲਾਂ ਤੋਂ ਹਟਾਏ ਗਏ ਵਿੱਚ ਵਾਪਸ ਪਾ ਸਕਦੇ ਹੋ।"
+            "value" : "ਇਹ ਤੁਹਾਡੇ ਹੋਰ ਚੈਨਲਾਂ 'ਤੇ ਰਹਿੰਦਾ ਹੈ। ਤੁਸੀਂ ਕਦੇ ਵੀ ਇਸਨੂੰ ਸੈਟਿੰਗਾਂ › ਉੱਨਤ › ਚੈਨਲਾਂ ਤੋਂ ਹਟਾਏ ਗਏ ਵਿੱਚ ਵਾਪਸ ਪਾ ਸਕਦੇ ਹੋ।"
           }
         },
         "or" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ଏହା ଆପଣଙ୍କ ଅନ୍ୟ ଚ୍ୟାନେଲରେ ରହେ। ଫେରାଇ ଆଣିବାକୁ ଯେକୌଣସି ସମୟରେ ସେଟିଂସ୍ › ଚ୍ୟାନେଲ › ଚ୍ୟାନେଲରୁ ହଟାଯାଇଥିବା ଖୋଲନ୍ତୁ।"
+            "value" : "ଏହା ଆପଣଙ୍କ ଅନ୍ୟ ଚ୍ୟାନେଲରେ ରହେ। ଫେରାଇ ଆଣିବାକୁ ଯେକୌଣସି ସମୟରେ ସେଟିଂସ୍ › ଉନ୍ନତ › ଚ୍ୟାନେଲରୁ ହଟାଯାଇଥିବା ଖୋଲନ୍ତୁ।"
           }
         }
       }
@@ -43890,6 +46262,155 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ଏହି ଡିଭାଇସ୍ ଏହାର ସର୍ଟିଫିକେଟ୍‌କୁ ବିଶ୍ୱାସ କରେ ନାହିଁ। Let's Encrypt ଭଳି ଏକ ବିଶ୍ୱସ୍ତ ସଂସ୍ଥାର ସର୍ଟିଫିକେଟ୍ ବ୍ୟବହାର କରନ୍ତୁ।"
+          }
+        }
+      }
+    },
+    "Last" : {
+      "comment" : "Short caption under the last-channel button",
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "আগের"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Předchozí"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuletzt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Último"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Précédente"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "અગાઉની"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पिछला"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Precedente"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前回"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಹಿಂದಿನ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이전"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "മുമ്പത്തെ"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "मागील"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorige"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ପୂର୍ବ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਪਿਛਲਾ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poprzedni"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Último"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Пред."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Förra"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "முந்தைய"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "మునుపటి"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一个"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一個"
           }
         }
       }
@@ -47304,6 +49825,154 @@
         }
       }
     },
+    "More" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "আরও"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Další"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehr"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "વધુ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "और"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Altro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "その他"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಇನ್ನಷ್ಟು"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "더 보기"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "കൂടുതൽ"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "अधिक"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meer"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଅଧିକ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਹੋਰ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Więcej"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mais"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ещё"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mer"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "மேலும்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "మరిన్ని"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多"
+          }
+        }
+      }
+    },
     "Move RetroGuide.TV to the top row of your Apple TV Home Screen to see what's on." : {
       "localizations" : {
         "es" : {
@@ -50570,6 +53239,154 @@
         }
       }
     },
+    "No channels here yet." : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "এখানে এখনো কোনো চ্যানেল নেই।"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zatím tu nejsou žádné kanály."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier gibt es noch keine Kanäle."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay canales aquí."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune chaîne ici pour l'instant."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "અહીં હજી કોઈ ચેનલ નથી."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यहाँ अभी कोई चैनल नहीं है।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ancora nessun canale qui."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだチャンネルがありません。"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಇಲ್ಲಿ ಇನ್ನೂ ಚಾನಲ್‌ಗಳಿಲ್ಲ."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 채널이 없습니다."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഇവിടെ ഇതുവരെ ചാനലുകളില്ല."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इथे अजून कोणतेही चॅनेल नाहीत."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier zijn nog geen zenders."
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଏଠାରେ ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଚ୍ୟାନେଲ ନାହିଁ।"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਇੱਥੇ ਹਾਲੇ ਕੋਈ ਚੈਨਲ ਨਹੀਂ ਹੈ।"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Na razie nie ma tu kanałów."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ainda não há canais aqui."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Здесь пока нет каналов."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Här finns inga kanaler än."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "இங்கே இன்னும் சேனல்கள் இல்லை."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇక్కడ ఇంకా ఛానెల్‌లు లేవు."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里还没有频道。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這裡還沒有頻道。"
+          }
+        }
+      }
+    },
     "No channels in this view" : {
       "localizations" : {
         "es" : {
@@ -51158,6 +53975,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "କୌଣସି ପସନ୍ଦିତ ଚ୍ୟାନେଲ ଉପଲବ୍ଧ ନାହିଁ। ଆପଣଙ୍କ ୱିଜେଟ୍‌ରେ ଚ୍ୟାନେଲ ଯୋଗ କରିବାକୁ ତଳେ ପସନ୍ଦିତ ବାଛନ୍ତୁ।"
+          }
+        }
+      }
+    },
+    "No favorite channels are available. Star channels in Settings › Channels to show them on Top Shelf." : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "কোনো প্রিয় চ্যানেল নেই। Top Shelf-এ দেখাতে সেটিংস › চ্যানেল-এ চ্যানেলে তারা দিন।"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Žádné oblíbené kanály nejsou k dispozici. Označ kanály hvězdičkou v Nastavení › Kanály a zobrazí se na Top Shelf."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Favoritenkanäle verfügbar. Markiere Kanäle unter Einstellungen › Kanäle mit einem Stern, um sie in der Top Shelf zu zeigen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay canales favoritos disponibles. Marca canales con una estrella en Configuración › Canales para verlos en Top Shelf."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune chaîne favorite disponible. Ajoutez des chaînes en favori dans Réglages › Chaînes pour les afficher dans Top Shelf."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "કોઈ મનપસંદ ચેનલ ઉપલબ્ધ નથી. Top Shelf પર બતાવવા માટે સેટિંગ્સ › ચેનલોમાં ચેનલોને સ્ટાર આપો."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कोई पसंदीदा चैनल उपलब्ध नहीं है। Top Shelf पर दिखाने के लिए सेटिंग्ज़ › चैनल में चैनलों पर स्टार लगाएँ।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun canale preferito disponibile. Aggiungi canali ai preferiti in Impostazioni › Canali per mostrarli in Top Shelf."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りのチャンネルがありません。「設定 › チャンネル」でチャンネルに星を付けると、トップシェルフに表示されます。"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಯಾವುದೇ ಮೆಚ್ಚಿನ ಚಾನಲ್‌ಗಳಿಲ್ಲ. Top Shelf ನಲ್ಲಿ ತೋರಿಸಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳು › ಚಾನಲ್‌ಗಳು ನಲ್ಲಿ ಚಾನಲ್‌ಗಳಿಗೆ ನಕ್ಷತ್ರ ಹಾಕಿ."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾는 채널이 없습니다. 설정 › 채널에서 채널에 별표를 표시하면 Top Shelf에 나타납니다."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "പ്രിയപ്പെട്ട ചാനലുകളൊന്നുമില്ല. Top Shelf-ൽ കാണിക്കാൻ ക്രമീകരണം › ചാനലുകൾ എന്നതിൽ ചാനലുകൾക്ക് നക്ഷത്രമിടുക."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "कोणतेही आवडते चॅनेल उपलब्ध नाहीत. Top Shelf वर दाखवण्यासाठी सेटिंग्ज › चॅनेल मध्ये चॅनेलना तारा द्या."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen favoriete zenders beschikbaar. Geef zenders een ster in Instellingen › Zenders om ze in Top Shelf te tonen."
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "କୌଣସି ପସନ୍ଦର ଚ୍ୟାନେଲ ନାହିଁ। Top Shelfରେ ଦେଖାଇବାକୁ ସେଟିଂସ୍ › ଚ୍ୟାନେଲରେ ଚ୍ୟାନେଲକୁ ତାରା ଦିଅନ୍ତୁ।"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਕੋਈ ਮਨਪਸੰਦ ਚੈਨਲ ਉਪਲਬਧ ਨਹੀਂ। Top Shelf 'ਤੇ ਦਿਖਾਉਣ ਲਈ ਸੈਟਿੰਗਾਂ › ਚੈਨਲ ਵਿੱਚ ਚੈਨਲਾਂ ਨੂੰ ਸਟਾਰ ਲਾਓ।"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brak ulubionych kanałów. Oznacz kanały gwiazdką w Ustawienia › Kanały, aby pokazać je na Top Shelf."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhum canal favorito disponível. Marque canais com estrela em Ajustes › Canais para mostrá-los no Top Shelf."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет доступных избранных каналов. Отметьте каналы звёздочкой в разделе «Настройки › Каналы», чтобы они появились в Top Shelf."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Det finns inga favoritkanaler. Stjärnmärk kanaler i Inställningar › Kanaler för att visa dem på Top Shelf."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "பிடித்த சேனல்கள் எதுவும் இல்லை. Top Shelf-இல் காட்ட, அமைப்புகள் › சேனல்கள் என்பதில் சேனல்களுக்கு நட்சத்திரமிடுங்கள்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇష్టమైన ఛానెల్‌లు ఏవీ లేవు. Top Shelfలో చూపించడానికి సెట్టింగ్‌లు › ఛానెల్‌లులో ఛానెల్‌లకు నక్షత్రం గుర్తు పెట్టండి."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可用的喜爱频道。在“设置 › 频道”中为频道加星，即可在 Top Shelf 中显示。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有可用的喜愛頻道。在「設定 › 頻道」中為頻道加上星號，即可在 Top Shelf 中顯示。"
           }
         }
       }
@@ -60060,6 +63025,154 @@
         }
       }
     },
+    "Privacy policy" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "গোপনীয়তা নীতি"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zásady ochrany soukromí"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutzerklärung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de privacidad"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Politique de confidentialité"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ગોપનીયતા નીતિ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "गोपनीयता नीति"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informativa sulla privacy"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシーポリシー"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಗೌಪ್ಯತಾ ನೀತಿ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인정보 처리방침"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "സ്വകാര്യതാ നയം"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "गोपनीयता धोरण"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacybeleid"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଗୋପନୀୟତା ନୀତି"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਪਰਦੇਦਾਰੀ ਨੀਤੀ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Polityka prywatności"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de privacidade"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Политика конфиденциальности"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integritetspolicy"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "தனியுரிமைக் கொள்கை"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "గోప్యతా విధానం"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私政策"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隱私權政策"
+          }
+        }
+      }
+    },
     "Program Start Times" : {
       "localizations" : {
         "es" : {
@@ -64065,6 +67178,598 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%2$@ ରୁ %1$@ ହଟାଇବେ?"
+          }
+        }
+      }
+    },
+    "Remove All Servers" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সব সার্ভার সরান"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odebrat všechny servery"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Server entfernen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar todos los servidores"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retirer tous les serveurs"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "બધા સર્વર દૂર કરો"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सभी सर्वर हटाएँ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovi tutti i server"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのサーバを削除"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಎಲ್ಲಾ ಸರ್ವರ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 서버 제거"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "എല്ലാ സെർവറുകളും നീക്കം ചെയ്യുക"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्व सर्व्हर काढा"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijder alle servers"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସମସ୍ତ ସର୍ଭର ହଟାନ୍ତୁ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਾਰੇ ਸਰਵਰ ਹਟਾਓ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuń wszystkie serwery"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover todos os servidores"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить все серверы"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta bort alla servrar"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "எல்லா சர்வர்களையும் அகற்று"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అన్ని సర్వర్‌లను తీసివేయండి"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除所有服务器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除所有伺服器"
+          }
+        }
+      }
+    },
+    "Remove all servers" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সব সার্ভার সরান"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odebrat všechny servery"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Server entfernen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar todos los servidores"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retirer tous les serveurs"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "બધા સર્વર દૂર કરો"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सभी सर्वर हटाएँ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovi tutti i server"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのサーバを削除"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಎಲ್ಲಾ ಸರ್ವರ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 서버 제거"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "എല്ലാ സെർവറുകളും നീക്കം ചെയ്യുക"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्व सर्व्हर काढा"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijder alle servers"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସମସ୍ତ ସର୍ଭର ହଟାନ୍ତୁ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਾਰੇ ਸਰਵਰ ਹਟਾਓ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuń wszystkie serwery"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover todos os servidores"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить все серверы"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta bort alla servrar"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "எல்லா சர்வர்களையும் அகற்று"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అన్ని సర్వర్‌లను తీసివేయండి"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除所有服务器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除所有伺服器"
+          }
+        }
+      }
+    },
+    "Remove all servers and channels from this device?" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "এই ডিভাইস থেকে সব সার্ভার ও চ্যানেল সরাবেন?"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odebrat z tohoto zařízení všechny servery a kanály?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Server und Kanäle von diesem Gerät entfernen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Quitar todos los servidores y canales de este dispositivo?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retirer tous les serveurs et chaînes de cet appareil ?"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "આ ડિવાઇસમાંથી બધા સર્વર અને ચેનલો દૂર કરીએ?"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस डिवाइस से सभी सर्वर और चैनल हटाएँ?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovere tutti i server e i canali da questo dispositivo?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスからすべてのサーバとチャンネルを削除しますか？"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಈ ಸಾಧನದಿಂದ ಎಲ್ಲಾ ಸರ್ವರ್‌ಗಳು ಮತ್ತು ಚಾನಲ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಬೇಕೆ?"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 기기에서 모든 서버와 채널을 제거하시겠습니까?"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഈ ഉപകരണത്തിൽ നിന്ന് എല്ലാ സെർവറുകളും ചാനലുകളും നീക്കം ചെയ്യണോ?"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "या डिव्हाइसवरून सर्व सर्व्हर आणि चॅनेल काढायचे?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle servers en zenders van dit apparaat verwijderen?"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଏହି ଡିଭାଇସରୁ ସମସ୍ତ ସର୍ଭର ଓ ଚ୍ୟାନେଲ ହଟାଇବେ?"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਕੀ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਸਾਰੇ ਸਰਵਰ ਅਤੇ ਚੈਨਲ ਹਟਾਉਣੇ ਹਨ?"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usunąć wszystkie serwery i kanały z tego urządzenia?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover todos os servidores e canais deste dispositivo?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Удалить все серверы и каналы с этого устройства?"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta bort alla servrar och kanaler från den här enheten?"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "இந்தச் சாதனத்திலிருந்து எல்லா சர்வர்களையும் சேனல்களையும் அகற்றவா?"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఈ పరికరం నుండి అన్ని సర్వర్‌లు, ఛానెల్‌లను తీసివేయాలా?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要从此设备移除所有服务器和频道吗？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要從此裝置移除所有伺服器和頻道嗎？"
+          }
+        }
+      }
+    },
+    "Remove favorite" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "প্রিয় থেকে সরান"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Odebrat z oblíbených"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus Favoriten entfernen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar de favoritos"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retirer des favoris"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "મનપસંદમાંથી દૂર કરો"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पसंदीदा से हटाएँ"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rimuovi dai preferiti"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "お気に入りから削除"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಮೆಚ್ಚಿನವುಗಳಿಂದ ತೆಗೆದುಹಾಕಿ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "즐겨찾기에서 제거"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "പ്രിയപ്പെട്ടവയിൽ നിന്ന് നീക്കുക"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आवडत्यांमधून काढा"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwijder uit favorieten"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ପସନ୍ଦରୁ ହଟାନ୍ତୁ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਮਨਪਸੰਦ ਤੋਂ ਹਟਾਓ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usuń z ulubionych"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remover dos favoritos"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Убрать из избранного"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta bort favorit"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "பிடித்தவையிலிருந்து அகற்று"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇష్టమైనవి నుండి తీసివేయండి"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "从喜爱中移除"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "從喜愛中移除"
           }
         }
       }
@@ -69997,6 +73702,302 @@
         }
       }
     },
+    "Schedule order for all channels" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সব চ্যানেলের সময়সূচির ক্রম"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pořadí pro všechny kanály"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reihenfolge für alle Kanäle"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Orden de programación para todos los canales"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordre de programmation pour toutes les chaînes"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "બધી ચેનલો માટે સમયપત્રક ક્રમ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सभी चैनलों का शेड्यूल क्रम"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordine di programmazione per tutti i canali"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのチャンネルの放送順"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಎಲ್ಲಾ ಚಾನಲ್‌ಗಳ ವೇಳಾಪಟ್ಟಿ ಕ್ರಮ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 채널의 편성 순서"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "എല്ലാ ചാനലുകൾക്കുമുള്ള ഷെഡ്യൂൾ ക്രമം"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्व चॅनेलसाठी वेळापत्रक क्रम"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volgorde voor alle zenders"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସମସ୍ତ ଚ୍ୟାନେଲ ପାଇଁ ସମୟସୂଚୀ କ୍ରମ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਾਰੇ ਚੈਨਲਾਂ ਲਈ ਸਮਾਂ-ਸਾਰਣੀ ਕ੍ਰਮ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kolejność dla wszystkich kanałów"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordem de programação para todos os canais"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Порядок для всех каналов"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ordning för alla kanaler"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "எல்லா சேனல்களுக்குமான அட்டவணை வரிசை"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అన్ని ఛానెల్‌ల షెడ్యూల్ క్రమం"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有频道的排播顺序"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有頻道的排播順序"
+          }
+        }
+      }
+    },
+    "Scheduling" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সময়সূচি"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plánování"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programmplanung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programación"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programmation"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "સમયપત્રક"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "शेड्यूलिंग"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programmazione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スケジュール"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ವೇಳಾಪಟ್ಟಿ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "편성"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഷെഡ്യൂളിംഗ്"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "वेळापत्रक"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programmering"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସମୟସୂଚୀ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਮਾਂ-ਸਾਰਣੀ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Harmonogram"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Programação"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Расписание"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schemaläggning"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "நிரல் அட்டவணை"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "షెడ్యూలింగ్"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "排播"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "排播"
+          }
+        }
+      }
+    },
     "Search" : {
       "localizations" : {
         "es" : {
@@ -72089,6 +76090,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ସର୍ଭର"
+          }
+        }
+      }
+    },
+    "Servers and Sync" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সার্ভার ও সিঙ্ক"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servery a synchronizace"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server und Synchronisierung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidores y sincronización"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serveurs et synchronisation"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "સર્વર અને સિંક"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्वर और सिंक"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server e sincronizzazione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバと同期"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಸರ್ವರ್‌ಗಳು ಮತ್ತು ಸಿಂಕ್"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버 및 동기화"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "സെർവറുകളും സിങ്കും"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्व्हर आणि सिंक"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servers en synchronisatie"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସର୍ଭର ଓ ସିଙ୍କ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਰਵਰ ਅਤੇ ਸਿੰਕ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serwery i synchronizacja"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidores e sincronização"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Серверы и синхронизация"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servrar och synkning"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "சர்வர்களும் ஒத்திசைவும்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "సర్వర్‌లు, సింక్"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器与同步"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伺服器與同步"
           }
         }
       }
@@ -77865,6 +82014,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ସବଟାଇଟଲ୍ ଲାଗୁ"
+          }
+        }
+      }
+    },
+    "Support" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সহায়তা"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Podpora"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soporte"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assistance"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "સપોર્ટ"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सहायता"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supporto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サポート"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಬೆಂಬಲ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지원"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "പിന്തുണ"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सहाय्य"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ondersteuning"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସହାୟତା"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਹਾਇਤਾ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wsparcie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suporte"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поддержка"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ஆதரவு"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "సపోర్ట్"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支援"
           }
         }
       }
@@ -83940,6 +88237,154 @@
         }
       }
     },
+    "This replaces the order chosen for each channel, including your own channels." : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "এতে প্রতিটি চ্যানেলের জন্য বেছে নেওয়া ক্রম বদলে যাবে, আপনার নিজের চ্যানেলগুলোরও।"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nahradí to pořadí zvolené pro každý kanál, včetně tvých vlastních kanálů."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das ersetzt die für jeden Kanal gewählte Reihenfolge, auch bei deinen eigenen Kanälen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto reemplaza el orden elegido para cada canal, incluidos tus propios canales."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cela remplace l'ordre choisi pour chaque chaîne, y compris vos propres chaînes."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "આથી દરેક ચેનલ માટે પસંદ કરેલો ક્રમ બદલાઈ જશે, તમારી પોતાની ચેનલો સહિત."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इससे हर चैनल के लिए चुना गया क्रम बदल जाएगा, आपके अपने चैनल भी।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sostituisce l'ordine scelto per ogni canale, compresi i tuoi canali."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チャンネルごとに選んだ放送順（自分で作ったチャンネルを含む）が置き換えられます。"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಇದು ಪ್ರತಿ ಚಾನಲ್‌ಗೆ ಆಯ್ಕೆಮಾಡಿದ ಕ್ರಮವನ್ನು ಬದಲಾಯಿಸುತ್ತದೆ, ನಿಮ್ಮ ಸ್ವಂತ ಚಾನಲ್‌ಗಳೂ ಸೇರಿ."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "직접 만든 채널을 포함해 채널마다 선택한 순서가 대체됩니다."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഇത് ഓരോ ചാനലിനും തിരഞ്ഞെടുത്ത ക്രമം മാറ്റിസ്ഥാപിക്കും, നിങ്ങളുടെ സ്വന്തം ചാനലുകൾ ഉൾപ്പെടെ."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यामुळे प्रत्येक चॅनेलसाठी निवडलेला क्रम बदलेल, तुमच्या स्वतःच्या चॅनेलसह."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit vervangt de volgorde die per zender is gekozen, ook voor je eigen zenders."
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଏହା ପ୍ରତ୍ୟେକ ଚ୍ୟାନେଲ ପାଇଁ ବଛାଯାଇଥିବା କ୍ରମକୁ ବଦଳାଇବ, ଆପଣଙ୍କ ନିଜ ଚ୍ୟାନେଲ ସମେତ।"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਇਸ ਨਾਲ ਹਰ ਚੈਨਲ ਲਈ ਚੁਣਿਆ ਕ੍ਰਮ ਬਦਲ ਜਾਵੇਗਾ, ਤੁਹਾਡੇ ਆਪਣੇ ਚੈਨਲਾਂ ਸਮੇਤ।"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zastępuje to kolejność wybraną dla każdego kanału, także dla Twoich kanałów."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isso substitui a ordem escolhida para cada canal, incluindo os seus próprios canais."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Это заменит порядок, выбранный для каждого канала, включая ваши собственные каналы."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detta ersätter ordningen som valts för varje kanal, även dina egna kanaler."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "இது ஒவ்வொரு சேனலுக்கும் தேர்ந்தெடுத்த வரிசையை மாற்றும், உங்கள் சொந்தச் சேனல்கள் உட்பட."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇది ప్రతి ఛానెల్‌కు ఎంచుకున్న క్రమాన్ని మార్చేస్తుంది, మీ సొంత ఛానెల్‌లతో సహా."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这会替换为每个频道（包括你自己的频道）选择的顺序。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這會取代為每個頻道（包括你自己的頻道）選擇的順序。"
+          }
+        }
+      }
+    },
     "This restores the shared settings saved before this device joined iCloud Sync. If sync is on, the restored choices will also sync to your other devices. Parental restrictions remain unchanged until reviewed." : {
       "localizations" : {
         "es" : {
@@ -88244,6 +92689,154 @@
         }
       }
     },
+    "Use %@ on every channel?" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সব চ্যানেলে %@ ব্যবহার করবেন?"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Použít %@ na všech kanálech?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ für alle Kanäle verwenden?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Usar %@ en todos los canales?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser %@ sur toutes les chaînes ?"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "બધી ચેનલો પર %@ વાપરીએ?"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सभी चैनलों पर %@ इस्तेमाल करें?"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usare %@ su tutti i canali?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのチャンネルで%@を使いますか？"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಎಲ್ಲಾ ಚಾನಲ್‌ಗಳಲ್ಲಿ %@ ಬಳಸಬೇಕೆ?"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 채널에 %@을(를) 사용하시겠습니까?"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "എല്ലാ ചാനലുകളിലും %@ ഉപയോഗിക്കണോ?"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्व चॅनेलवर %@ वापरायचे?"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ voor alle zenders gebruiken?"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସମସ୍ତ ଚ୍ୟାନେଲରେ %@ ବ୍ୟବହାର କରିବେ?"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਕੀ ਸਾਰੇ ਚੈਨਲਾਂ 'ਤੇ %@ ਵਰਤਣਾ ਹੈ?"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Używać %@ na wszystkich kanałach?"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar %@ em todos os canais?"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использовать «%@» на всех каналах?"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd %@ på alla kanaler?"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "எல்லா சேனல்களிலும் %@-ஐப் பயன்படுத்தவா?"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అన్ని ఛానెల్‌లలో %@ ఉపయోగించాలా?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要在所有频道使用“%@”吗？"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要在所有頻道使用「%@」嗎？"
+          }
+        }
+      }
+    },
     "Use Another Plex Account" : {
       "localizations" : {
         "es" : {
@@ -89720,6 +94313,302 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "iCloud ସେଟଅପ୍ ବ୍ୟବହାର କରନ୍ତୁ"
+          }
+        }
+      }
+    },
+    "Use on Every Channel" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সব চ্যানেলে ব্যবহার করুন"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Použít na všech kanálech"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für alle Kanäle verwenden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar en todos los canales"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser sur toutes les chaînes"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "બધી ચેનલો પર વાપરો"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सभी चैनलों पर इस्तेमाल करें"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa su tutti i canali"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのチャンネルで使用"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಎಲ್ಲಾ ಚಾನಲ್‌ಗಳಲ್ಲಿ ಬಳಸಿ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 채널에 사용"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "എല്ലാ ചാനലുകളിലും ഉപയോഗിക്കുക"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्व चॅनेलवर वापरा"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebruik voor alle zenders"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସମସ୍ତ ଚ୍ୟାନେଲରେ ବ୍ୟବହାର କରନ୍ତୁ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਾਰੇ ਚੈਨਲਾਂ 'ਤੇ ਵਰਤੋ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Użyj na wszystkich kanałach"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usar em todos os canais"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Использовать на всех каналах"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd på alla kanaler"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "எல்லா சேனல்களிலும் பயன்படுத்து"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అన్ని ఛానెల్‌లలో ఉపయోగించండి"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在所有频道使用"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在所有頻道使用"
+          }
+        }
+      }
+    },
+    "Use one program order on every channel. To change a single channel, open it in Settings › Channels." : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সব চ্যানেলে একই অনুষ্ঠান-ক্রম ব্যবহার করুন। শুধু একটি চ্যানেল বদলাতে সেটিংস › চ্যানেল-এ সেটি খুলুন।"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Použij stejné pořadí pořadů na všech kanálech. Chceš-li změnit jen jeden kanál, otevři ho v Nastavení › Kanály."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verwende eine Reihenfolge für alle Kanäle. Um nur einen Kanal zu ändern, öffne ihn unter Einstellungen › Kanäle."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa un mismo orden de programas en todos los canales. Para cambiar un solo canal, ábrelo en Configuración › Canales."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisez un même ordre de programmes sur toutes les chaînes. Pour modifier une seule chaîne, ouvrez-la dans Réglages › Chaînes."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "બધી ચેનલો પર એક જ કાર્યક્રમ ક્રમ વાપરો. ફક્ત એક ચેનલ બદલવા માટે તેને સેટિંગ્સ › ચેનલોમાં ખોલો."
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सभी चैनलों पर एक ही प्रोग्राम क्रम इस्तेमाल करें। सिर्फ़ एक चैनल बदलने के लिए उसे सेटिंग्ज़ › चैनल में खोलें।"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usa lo stesso ordine dei programmi su tutti i canali. Per cambiare un solo canale, aprilo in Impostazioni › Canali."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのチャンネルで同じ放送順を使います。1つのチャンネルだけを変更するには、「設定 › チャンネル」で開いてください。"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಎಲ್ಲಾ ಚಾನಲ್‌ಗಳಲ್ಲಿ ಒಂದೇ ಕಾರ್ಯಕ್ರಮ ಕ್ರಮ ಬಳಸಿ. ಒಂದು ಚಾನಲ್ ಮಾತ್ರ ಬದಲಾಯಿಸಲು, ಅದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳು › ಚಾನಲ್‌ಗಳು ನಲ್ಲಿ ತೆರೆಯಿರಿ."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 채널에 같은 프로그램 순서를 사용합니다. 한 채널만 바꾸려면 설정 › 채널에서 해당 채널을 여십시오."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "എല്ലാ ചാനലുകളിലും ഒരേ പരിപാടി ക്രമം ഉപയോഗിക്കുക. ഒരു ചാനൽ മാത്രം മാറ്റാൻ, ക്രമീകരണം › ചാനലുകൾ എന്നതിൽ അത് തുറക്കുക."
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्व चॅनेलवर एकच कार्यक्रम क्रम वापरा. फक्त एक चॅनेल बदलण्यासाठी ते सेटिंग्ज › चॅनेल मध्ये उघडा."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gebruik één programmavolgorde voor alle zenders. Open een zender in Instellingen › Zenders om alleen die te wijzigen."
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସମସ୍ତ ଚ୍ୟାନେଲରେ ଗୋଟିଏ କାର୍ଯ୍ୟକ୍ରମ କ୍ରମ ବ୍ୟବହାର କରନ୍ତୁ। କେବଳ ଗୋଟିଏ ଚ୍ୟାନେଲ ବଦଳାଇବାକୁ, ସେଟିଂସ୍ › ଚ୍ୟାନେଲରେ ତାହାକୁ ଖୋଲନ୍ତୁ।"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਾਰੇ ਚੈਨਲਾਂ 'ਤੇ ਇੱਕੋ ਪ੍ਰੋਗਰਾਮ ਕ੍ਰਮ ਵਰਤੋ। ਸਿਰਫ਼ ਇੱਕ ਚੈਨਲ ਬਦਲਣ ਲਈ, ਉਸਨੂੰ ਸੈਟਿੰਗਾਂ › ਚੈਨਲ ਵਿੱਚ ਖੋਲ੍ਹੋ।"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Używaj jednej kolejności programów na wszystkich kanałach. Aby zmienić jeden kanał, otwórz go w Ustawienia › Kanały."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use uma única ordem de programas em todos os canais. Para mudar um só canal, abra-o em Ajustes › Canais."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Используйте один порядок передач на всех каналах. Чтобы изменить только один канал, откройте его в разделе «Настройки › Каналы»."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Använd samma programordning på alla kanaler. Om du vill ändra en enda kanal öppnar du den i Inställningar › Kanaler."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "எல்லா சேனல்களிலும் ஒரே நிகழ்ச்சி வரிசையைப் பயன்படுத்துங்கள். ஒரு சேனலை மட்டும் மாற்ற, அமைப்புகள் › சேனல்கள் என்பதில் அதைத் திறக்கவும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "అన్ని ఛానెల్‌లలో ఒకే ప్రోగ్రామ్ క్రమం ఉపయోగించండి. ఒక ఛానెల్‌ను మాత్రమే మార్చడానికి, సెట్టింగ్‌లు › ఛానెల్‌లులో దాన్ని తెరవండి."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在所有频道使用同一种节目顺序。要只更改一个频道，请在“设置 › 频道”中打开它。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在所有頻道使用同一種節目順序。若只要更改一個頻道，請在「設定 › 頻道」中打開它。"
           }
         }
       }
@@ -92711,6 +97600,154 @@
         }
       }
     },
+    "Watching" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "দেখা"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sledování"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fernsehen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Viendo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visionnage"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "જોવું"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "देखना"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visione"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "視聴"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ವೀಕ್ಷಣೆ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시청"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "കാണൽ"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "पाहणे"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kijken"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଦେଖିବା"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਦੇਖਣਾ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oglądanie"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Assistindo"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Просмотр"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tittande"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "பார்த்தல்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "చూడటం"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "观看"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "觀看"
+          }
+        }
+      }
+    },
     "Watching away from home" : {
       "localizations" : {
         "es" : {
@@ -93595,6 +98632,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“କ'ଣ ଚାଲିଛି” ଚ୍ୟାନେଲ"
+          }
+        }
+      }
+    },
+    "What's new" : {
+      "localizations" : {
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "নতুন কী"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novinky"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neuigkeiten"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novedades"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveautés"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "નવું શું છે"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "नया क्या है"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novità"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新機能"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಹೊಸತೇನು"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "새로운 기능"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "പുതിയതെന്ത്"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "नवीन काय"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wat is er nieuw"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ନୂଆ କଣ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਨਵਾਂ ਕੀ ਹੈ"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Co nowego"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Novidades"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Что нового"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nyheter"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "புதியவை"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "కొత్తవి"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新功能"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新功能"
           }
         }
       }

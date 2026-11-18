@@ -33,6 +33,17 @@ struct ThemePickerView: View {
                     }
                 }
             }
+            Button {
+                app.preferences.showsScanlines.toggle()
+            } label: {
+                SettingsRowLabel(
+                    title: String(localized: "Scanlines on menus"),
+                    systemImage: "tv",
+                    value: SettingsValueText.onOff(app.preferences.showsScanlines),
+                    accessory: nil
+                )
+            }
+            .buttonStyle(.retroRow)
         }
     }
 

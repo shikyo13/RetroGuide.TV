@@ -14,6 +14,10 @@ enum AppIdentity {
     static let bundleIdentifier = "com.adamhunt.retroguide"
     /// The App Store page's "Write a Review" sheet.
     static let writeReviewURL = URL(string: "https://apps.apple.com/app/id6816213425?action=write-review")!
+    /// Shown as text on Apple TV, which has no browser.
+    static let supportURL = URL(string: "https://www.retroguide.tv/support")!
+    static let privacyURL = URL(string: "https://www.retroguide.tv/privacy")!
+    static let changelogURL = URL(string: "https://www.retroguide.tv/changelog")!
     static let keychainService = "com.adamhunt.retroguide.tokens"
     static let cacheFolderName = "RetroGuide"
 

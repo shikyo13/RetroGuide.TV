@@ -25,7 +25,7 @@ struct WidgetSettingsView: View {
                         Text("No favorite channels are available. Choose Favorites below to add channels to your widget.")
                             .font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
                     }
-                    NavigationLink { FavoritesView() } label: {
+                    NavigationLink { ChannelManagerView() } label: {
                         SettingsRowLabel(title: String(localized: "Choose Favorites"), systemImage: "star", value: nil)
                     }
                     .buttonStyle(.retroRow)

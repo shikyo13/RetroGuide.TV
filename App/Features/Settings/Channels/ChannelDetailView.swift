@@ -12,6 +12,7 @@ struct ChannelDetailView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.dismiss) private var dismiss
     @Environment(\.theme) private var theme
+    @State private var isConfirmingDelete = false
 
     var body: some View {
         if let channel = app.lineup.first(where: { $0.id == channelID }) {
@@ -43,11 +44,17 @@ struct ChannelDetailView: View {
                         } label: {
                             SettingsRowLabel(title: String(localized: "Edit channel"), systemImage: "slider.horizontal.3", value: nil)
                         }
-                        Button {
-                            dismiss()
-                            app.deleteCustomChannel(id: channel.id)
+                        Button(role: .destructive) {
+                            isConfirmingDelete = true
                         } label: {
                             SettingsRowLabel(title: String(localized: "Delete channel"), systemImage: "trash", value: nil, accessory: nil)
+                        }
+                        .confirmationDialog(String(localized: "Delete \(channel.name)?"), isPresented: $isConfirmingDelete, titleVisibility: .visible) {
+                            Button("Delete Channel", role: .destructive) {
+                                dismiss()
+                                app.deleteCustomChannel(id: channel.id)
+                            }
+                            Button("Cancel", role: .cancel) {}
                         }
                     }
                 }

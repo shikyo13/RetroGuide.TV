@@ -60,12 +60,13 @@ struct PlayerTouchInput: View {
     }
 }
 
-/// On-screen buttons shown with the info banner on iPhone and iPad.
+/// On-screen buttons shown with the info banner on iPhone and iPad: Guide is
+/// the one highlighted button; the rest are icons with short captions.
 struct PlayerTouchControls: View {
     let onCommand: (PlayerCommand) -> Void
 
     var body: some View {
-        HStack(spacing: DesignTokens.Spacing.sm) {
+        HStack(alignment: .top, spacing: DesignTokens.Spacing.sm) {
             Button {
                 onCommand(.openGuide)
             } label: {
@@ -77,30 +78,52 @@ struct PlayerTouchControls: View {
             }
             .buttonStyle(.retroPrimary)
             .layoutPriority(1)
-            Button {
-                onCommand(.openOptions)
-            } label: {
-                Label("Options", systemImage: "slider.horizontal.3")
-            }
-            .buttonStyle(.retroIcon)
             Spacer(minLength: DesignTokens.Spacing.md)
-            Button {
+            CaptionedIconButton(String(localized: "Options"), caption: String(localized: "Options"), systemImage: "slider.horizontal.3") {
+                onCommand(.openOptions)
+            }
+            CaptionedIconButton(String(localized: "Last channel"), caption: String(localized: "Last", comment: "Short caption under the last-channel button"), systemImage: "arrow.left.arrow.right") {
                 onCommand(.lastChannel)
-            } label: {
-                Label("Last channel", systemImage: "arrow.uturn.backward")
             }
-            Button {
+            CaptionedIconButton(String(localized: "Channel down"), caption: String(localized: "Ch −", comment: "Short caption under the channel-down button"), systemImage: "chevron.down") {
                 onCommand(.channelDown)
-            } label: {
-                Label("Channel down", systemImage: "chevron.down")
             }
-            Button {
+            CaptionedIconButton(String(localized: "Channel up"), caption: String(localized: "Ch +", comment: "Short caption under the channel-up button"), systemImage: "chevron.up") {
                 onCommand(.channelUp)
-            } label: {
-                Label("Channel up", systemImage: "chevron.up")
             }
         }
-        .buttonStyle(.retroIcon)
+    }
+}
+
+/// A round icon button with a short caption under it; `title` stays its
+/// accessibility label.
+private struct CaptionedIconButton: View {
+    let title: String
+    let caption: String
+    let systemImage: String
+    let action: () -> Void
+
+    @Environment(\.theme) private var theme
+
+    init(_ title: String, caption: String, systemImage: String, action: @escaping () -> Void) {
+        self.title = title
+        self.caption = caption
+        self.systemImage = systemImage
+        self.action = action
+    }
+
+    var body: some View {
+        VStack(spacing: DesignTokens.Spacing.xxs) {
+            Button(action: action) {
+                Label(title, systemImage: systemImage)
+            }
+            .buttonStyle(.retroIcon)
+            Text(caption)
+                .font(Typography.micro)
+                .foregroundStyle(theme.textSecondary)
+                .lineLimit(1)
+                .accessibilityHidden(true)
+        }
     }
 }
 #endif

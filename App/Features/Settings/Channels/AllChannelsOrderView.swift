@@ -7,11 +7,13 @@ struct AllChannelsOrderView: View {
     @Environment(\.theme) private var theme
     /// Shown right away on tap; rebuilding a large lineup takes a few seconds.
     @State private var pending: ScheduleOrdering??
+    /// An order for every channel replaces the choices made per channel.
+    @State private var confirming: ScheduleOrdering?
 
     var body: some View {
         let current = pending ?? app.customization.defaultOrdering
-        SettingsPage(title: String(localized: "Schedule Order")) {
-            Text("Set the program order for the current lineup. You can change individual channels in Manage channels. Choosing Each channel's own restores automatic-channel defaults and keeps custom-channel orders.")
+        SettingsPage(title: String(localized: "Schedule order for all channels")) {
+            Text("Use one program order on every channel. To change a single channel, open it in Settings › Channels.")
                 .font(Typography.body)
                 .foregroundStyle(theme.textSecondary)
             VStack(spacing: DesignTokens.Spacing.sm) {
@@ -24,11 +26,24 @@ struct AllChannelsOrderView: View {
                 }
                 ForEach(ScheduleOrdering.allChannelsChoices, id: \.self) { ordering in
                     CheckmarkRow(title: ordering.displayName, detail: ordering.explanation, isSelected: current == ordering) {
-                        choose(ordering)
+                        if current != ordering { confirming = ordering }
                     }
                 }
                 ScheduleUpdatingNote(isVisible: pending != nil && app.isRebuildingLineup)
             }
+        }
+        .confirmationDialog(
+            confirming.map { String(localized: "Use \($0.displayName) on every channel?") } ?? "",
+            isPresented: Binding(get: { confirming != nil }, set: { if !$0 { confirming = nil } }),
+            titleVisibility: .visible
+        ) {
+            Button(String(localized: "Use on Every Channel")) {
+                if let confirming { choose(confirming) }
+                confirming = nil
+            }
+            Button("Cancel", role: .cancel) { confirming = nil }
+        } message: {
+            Text("This replaces the order chosen for each channel, including your own channels.")
         }
         .onChange(of: app.isRebuildingLineup) { _, isRebuilding in
             if !isRebuilding {

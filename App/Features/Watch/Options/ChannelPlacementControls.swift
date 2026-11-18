@@ -37,7 +37,7 @@ struct ChannelPlacementControls: View {
             ))
         }
         if let removed {
-            note(String(localized: "\(removed.name) is removed from \(channel.name). Settings › Channels › Removed from channels lists everything you've removed."))
+            note(String(localized: "\(removed.name) is removed from \(channel.name). Settings › Advanced › Removed from channels lists everything you've removed."))
             Button {
                 app.restoreTitle(showID: removed.showID, toChannel: channel.id)
                 self.removed = nil
@@ -63,7 +63,7 @@ struct ChannelPlacementControls: View {
                     }
                     Button("Cancel", role: .cancel) {}
                 } message: {
-                    Text("It stays on your other channels. You can put it back any time in Settings › Channels › Removed from channels.")
+                    Text("It stays on your other channels. You can put it back any time in Settings › Advanced › Removed from channels.")
                 }
             } else {
                 note(String(localized: "Removing a show from a channel is part of RetroGuide Pro (Settings › RetroGuide Pro)."))

@@ -99,7 +99,6 @@
 		546ED60F3E6CC2C7A0C266EB /* PlayerCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39F7880DEA5886D79C537900 /* PlayerCommand.swift */; };
 		550072530FE2537BB8206054 /* InterstitialPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC1B0A525F43C6F9AF3F80C /* InterstitialPresenter.swift */; };
 		56E05681A6FED34E1D9EAB51 /* ParentalControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33EA917A7EF2A45EC2531EF3 /* ParentalControlsView.swift */; };
-		58ACF61B2BBF8F2134CEEEB6 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C7DA98DAE4D2BF096DEE843 /* FavoritesView.swift */; };
 		59313839CBFAE00CA4414E37 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = DD85868C015BC96DC51B5D7A /* cacert.pem */; };
 		5BDAA992D3DB2FFEF0CE0318 /* TouchGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604801F13D23463BECF5C12F /* TouchGesture.swift */; };
 		5C4C2056C7C14376617BA45D /* DisplayModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96EB049DC12D2F608C879BFE /* DisplayModeController.swift */; };
@@ -155,6 +154,7 @@
 		8DBC9BF9907BF654E22B1C18 /* FacetPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2342F75A3FFB608FE4032CE5 /* FacetPickerView.swift */; };
 		8DED937D109F78188054FD22 /* CloudSettingsSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAEBEA0B64D57030F2DF72E /* CloudSettingsSync.swift */; };
 		8FF5A5B693EF76B5DF1F280F /* MPVKit in Frameworks */ = {isa = PBXBuildFile; productRef = AF7766867AB8515623736C48 /* MPVKit */; };
+		91D085C5FB7AA78D9D9F914F /* FavoriteChannelButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 161264393CE3AF75509EA547 /* FavoriteChannelButton.swift */; };
 		930B7ED7E49AE404D4FE0B43 /* RemovedTitlesSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BCE63CDE2B10FA67A293BE9 /* RemovedTitlesSection.swift */; };
 		9442620285F56AC8A8835026 /* RateAppRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CBBC455A32EB76BFE7D7850 /* RateAppRow.swift */; };
 		94E4C5E01039B184321A2E3E /* TrackSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0601DF37765D3C776688AF60 /* TrackSync.swift */; };
@@ -190,8 +190,10 @@
 		AF9F80CCF79978692322149D /* ProgressTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DCAC7B46690CFA2F832866A /* ProgressTrack.swift */; };
 		AFB43F16813097D1BD219877 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC26551711A344A1AF0596B4 /* SearchView.swift */; };
 		B0DC4F67B45978F6AE026906 /* GuidePreviewPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82759BC73311902FA6622798 /* GuidePreviewPanel.swift */; };
+		B2D0BBF2138D4E9371D5B9E9 /* HelpAboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FCCB32F83536553A896944E /* HelpAboutView.swift */; };
 		B320FC43F4B0A7A00F3941AA /* MPVPlaybackEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B588766984AE2C0AD5684E00 /* MPVPlaybackEngine.swift */; };
 		B5078207034B483739FBEE0D /* SnapshotFileWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82AAAA597DFCC457352A15FA /* SnapshotFileWriter.swift */; };
+		B5ADD9C617D0D1C1E4C5C312 /* AdvancedSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05AC2F15284CB0EB2BDCC073 /* AdvancedSettingsView.swift */; };
 		B636AB6FE4DCA9287D32E3DD /* LoopbackPlaybackRelayExchange.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37BDABCB3CBA894BBA772DE7 /* LoopbackPlaybackRelayExchange.swift */; };
 		B66C07FE1CF420FE0096A97A /* InterstitialAdCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCB6731C444FEE3F03A694F3 /* InterstitialAdCache.swift */; };
 		B8F5061B6E0B8A86076A6926 /* AttributionDelivery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B9979118C8D8F76CCD16BA /* AttributionDelivery.swift */; };
@@ -216,6 +218,7 @@
 		CAF1BC763B78B77BC055856C /* CloudSettingsSync+Refresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1A7B75728737173C2E19EDE /* CloudSettingsSync+Refresh.swift */; };
 		CB186DCCC0445BBDA5B6D6BF /* TopShelfCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3A2BCDF57A53EB4AB815E58 /* TopShelfCard.swift */; };
 		CDB14AEAB71D26F37081A975 /* BrandMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4866448AD788DB8689A527F /* BrandMark.swift */; };
+		CE00C4F2FAF11DF5FE64E46D /* TopShelfSettingsRows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951F5DFC124BA4D294186661 /* TopShelfSettingsRows.swift */; };
 		CE09E445121734C33140387B /* ParentalContentChoices.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DB422CDE34271350FAC1F8 /* ParentalContentChoices.swift */; };
 		CE1C01DE51D07F70A4F400D0 /* ChannelBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADCCA6A01AE43CF824FF252E /* ChannelBanner.swift */; };
 		CE7B5CD801AFF87B63A43039 /* ParentalEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB111A23A6974B21B2FFDB72 /* ParentalEmptyView.swift */; };
@@ -308,6 +311,7 @@
 /* Begin PBXFileReference section */
 		0452ECDC6FD9A5997A83DE95 /* DebugBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugBootstrap.swift; sourceTree = "<group>"; };
 		05519101644E79F643199F68 /* ProBenefit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProBenefit.swift; sourceTree = "<group>"; };
+		05AC2F15284CB0EB2BDCC073 /* AdvancedSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedSettingsView.swift; sourceTree = "<group>"; };
 		0601DF37765D3C776688AF60 /* TrackSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackSync.swift; sourceTree = "<group>"; };
 		064EE987D9D8443665A87780 /* RetroGuideTopShelf.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = RetroGuideTopShelf.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		07D0C030AC68A93441288482 /* TVGlyph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVGlyph.swift; sourceTree = "<group>"; };
@@ -327,6 +331,7 @@
 		1345E19C849BD96021180BB9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		14EBB550D625B329BE602117 /* ServerRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerRegistry.swift; sourceTree = "<group>"; };
 		1576787E4500E23843801F06 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
+		161264393CE3AF75509EA547 /* FavoriteChannelButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoriteChannelButton.swift; sourceTree = "<group>"; };
 		16540AD44B0BC427225A94A4 /* Tuner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tuner.swift; sourceTree = "<group>"; };
 		17AF5172E646D18AE60F4779 /* ParentalAllowedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentalAllowedContentView.swift; sourceTree = "<group>"; };
 		187AFD75F0AE0640CC040E41 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -401,7 +406,6 @@
 		5BC6B7BA73B48F700F7F3282 /* LandscapeTopClearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandscapeTopClearance.swift; sourceTree = "<group>"; };
 		5C3ABF62769BA3CD53E6EB02 /* StaticNoiseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StaticNoiseView.swift; sourceTree = "<group>"; };
 		5C5C915609130F57A5F8D278 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		5C7DA98DAE4D2BF096DEE843 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
 		5D0C847C9E7A0879CC1B1751 /* AppModel+SettingsSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppModel+SettingsSync.swift"; sourceTree = "<group>"; };
 		5D86A861EAF73F92B9F472DD /* ThemePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemePickerView.swift; sourceTree = "<group>"; };
 		5E44AAE7290159B8B452F78D /* LoopbackPlaybackRelayManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoopbackPlaybackRelayManifest.swift; sourceTree = "<group>"; };
@@ -447,11 +451,13 @@
 		8A5891962ED332144D11376D /* LGPL-3.0.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "LGPL-3.0.txt"; sourceTree = "<group>"; };
 		8AAB9ADD8EF6E37FEB1BAE28 /* GuideTouchGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideTouchGrid.swift; sourceTree = "<group>"; };
 		8F90413A593D82BD4A01F34C /* PlayerEnginePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerEnginePickerView.swift; sourceTree = "<group>"; };
+		8FCCB32F83536553A896944E /* HelpAboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpAboutView.swift; sourceTree = "<group>"; };
 		9029C99BEF6053C4A6983937 /* AdRequestFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdRequestFactory.swift; sourceTree = "<group>"; };
 		91D49E2B4B545E6F01BF4C29 /* SearchResultRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultRow.swift; sourceTree = "<group>"; };
 		922045A46943D0123F6F2AC5 /* ColumnWidth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColumnWidth.swift; sourceTree = "<group>"; };
 		93683E074553CFCA34A85900 /* RetroGuideWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = RetroGuideWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		9510907E446131660CB70046 /* ChannelGroupsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelGroupsView.swift; sourceTree = "<group>"; };
+		951F5DFC124BA4D294186661 /* TopShelfSettingsRows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopShelfSettingsRows.swift; sourceTree = "<group>"; };
 		95843027416E7A2D02D29C52 /* NetworkChangeMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkChangeMonitor.swift; sourceTree = "<group>"; };
 		963B3F2FED7B7B2C1B9A70AA /* AppModel+Usage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppModel+Usage.swift"; sourceTree = "<group>"; };
 		96B10C9626D0DCA643B8DC05 /* PictureInPictureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PictureInPictureUITests.swift; sourceTree = "<group>"; };
@@ -634,7 +640,7 @@
 				1F0AE37025797A6FA461DDEB /* ChannelEditorView.swift */,
 				3933430448AF3B606CA85CF3 /* ChannelManagerView.swift */,
 				2342F75A3FFB608FE4032CE5 /* FacetPickerView.swift */,
-				5C7DA98DAE4D2BF096DEE843 /* FavoritesView.swift */,
+				161264393CE3AF75509EA547 /* FavoriteChannelButton.swift */,
 				0DE43C199C63B99627A5397C /* RemovedTitlesPage.swift */,
 				0BCE63CDE2B10FA67A293BE9 /* RemovedTitlesSection.swift */,
 				217F6E0574F0BA824BD17F4B /* ScheduleOrderSection.swift */,
@@ -1136,11 +1142,13 @@
 				E4472560A9FB948DEA37A8AE /* ParentalControls */,
 				F5B93B8369078B326918FE54 /* Servers */,
 				9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */,
+				05AC2F15284CB0EB2BDCC073 /* AdvancedSettingsView.swift */,
 				9510907E446131660CB70046 /* ChannelGroupsView.swift */,
 				5691D3DDC1E74C0D3231427D /* CloudSyncSettingsView.swift */,
 				62DB958ECEA994B8461042BF /* CommercialBreaksView.swift */,
 				821A2340E559A51991D36908 /* CommercialLibraryPickerView.swift */,
 				49960C6E5611553858B36F83 /* DisplayMatchingPickerView.swift */,
+				8FCCB32F83536553A896944E /* HelpAboutView.swift */,
 				8F90413A593D82BD4A01F34C /* PlayerEnginePickerView.swift */,
 				07D961CBC1D1F79931643393 /* PrivacyChoicesRow.swift */,
 				6CBBC455A32EB76BFE7D7850 /* RateAppRow.swift */,
@@ -1148,6 +1156,7 @@
 				1228ACA50F43CD93B6C327B2 /* ScheduleGridPickerView.swift */,
 				D0C26D1723E494C6278D25A4 /* SettingsView.swift */,
 				5D86A861EAF73F92B9F472DD /* ThemePickerView.swift */,
+				951F5DFC124BA4D294186661 /* TopShelfSettingsRows.swift */,
 				A326D5A774DB4C55EB7D3269 /* WidgetSettingsView.swift */,
 			);
 			path = Settings;
@@ -1407,6 +1416,7 @@
 				9FD60B8EA06499AF823DCED0 /* AdUnits.swift in Sources */,
 				1DF9E74DCE9B167CED109160 /* AddServerView.swift in Sources */,
 				60703CE336C8D9EBC245A5B4 /* AdsController.swift in Sources */,
+				B5ADD9C617D0D1C1E4C5C312 /* AdvancedSettingsView.swift in Sources */,
 				410FA5737C282A1FD83D314B /* AllChannelsOrderView.swift in Sources */,
 				7A97EC4C2488630574448B8A /* AppIdentity.swift in Sources */,
 				8A6E3CE18658F2D62FF47E04 /* AppModel+Reminders.swift in Sources */,
@@ -1450,7 +1460,7 @@
 				4FF28030B8CFDC6C4600C3FB /* EngineVideoView.swift in Sources */,
 				8DBC9BF9907BF654E22B1C18 /* FacetPickerView.swift in Sources */,
 				B9282DBA728F082BB3ECED5E /* FailureView.swift in Sources */,
-				58ACF61B2BBF8F2134CEEEB6 /* FavoritesView.swift in Sources */,
+				91D085C5FB7AA78D9D9F914F /* FavoriteChannelButton.swift in Sources */,
 				7905A8F9F409C1026DFF069F /* FreeVersionAds.swift in Sources */,
 				C172B2FB3CFE05F74645CD57 /* GuideGridView.swift in Sources */,
 				9AF228041C1FE7CB6BD7AE27 /* GuideHeader.swift in Sources */,
@@ -1466,6 +1476,7 @@
 				C746F075491D19A8408B6860 /* GuideTouchGrid.swift in Sources */,
 				4EA683F19A5ACF8B0FCB40DF /* GuideTouchView.swift in Sources */,
 				EE02E369366A08BA4AC32A34 /* GuideView.swift in Sources */,
+				B2D0BBF2138D4E9371D5B9E9 /* HelpAboutView.swift in Sources */,
 				DB50B9412E0263891F7A0823 /* HomeScreenTheme.swift in Sources */,
 				505A3CFA60A3B09373BDCC80 /* ImagePipeline.swift in Sources */,
 				B9806FFA4BFBED302C2FFDF2 /* IndexingView.swift in Sources */,
@@ -1593,6 +1604,7 @@
 				9AA0329A1FE988E8FEF917EF /* ThemePalettes.swift in Sources */,
 				F28C95A80322AA0D40CDF4EA /* ThemePickerView.swift in Sources */,
 				CB186DCCC0445BBDA5B6D6BF /* TopShelfCard.swift in Sources */,
+				CE00C4F2FAF11DF5FE64E46D /* TopShelfSettingsRows.swift in Sources */,
 				5BDAA992D3DB2FFEF0CE0318 /* TouchGesture.swift in Sources */,
 				94E4C5E01039B184321A2E3E /* TrackSync.swift in Sources */,
 				764180AA7D4B3A82B264A860 /* Tuner.swift in Sources */,

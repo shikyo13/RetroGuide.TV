@@ -14,9 +14,6 @@ struct ChannelBanner: View {
     let channel: Channel
     let program: ScheduledProgram?
     let isShowingNext: Bool
-    /// Apple TV: the viewer opened the info (not a channel change), so Down
-    /// reaches the Options button.
-    var offersOptions = false
     var isIndependent = false
     var isCommercial = false
 
@@ -122,7 +119,7 @@ struct ChannelBanner: View {
             }
             }
             #if os(tvOS)
-            RemoteHints(offersOptions: offersOptions)
+            RemoteHints()
             #endif
         }
     }
@@ -164,8 +161,6 @@ struct ChannelBanner: View {
 /// A compact legend of remote controls. On iPhone and iPad the on-screen
 /// controls take its place.
 struct RemoteHints: View {
-    var offersOptions = false
-
     @Environment(\.theme) private var theme
 
     var body: some View {
@@ -174,9 +169,7 @@ struct RemoteHints: View {
             hint("chevron.left.chevron.right", String(localized: "Now / Next", comment: "Remote hint: left and right switch between the current and next program"))
             hint("circle.circle", String(localized: "Guide", comment: "Remote hint: the select button opens the program guide"))
             hint("playpause", String(localized: "Last channel", comment: "Remote hint: play/pause returns to the previous channel"))
-            if offersOptions {
-                hint("chevron.down", String(localized: "Playback / Options", comment: "Remote hint: swipe down opens playback options"))
-            }
+            hint("hand.tap", String(localized: "Hold for Options", comment: "Remote hint: pressing and holding the select button opens the Options panel"))
         }
         .font(Typography.micro)
         .foregroundStyle(theme.textSecondary.opacity(DesignTokens.Opacity.strong))

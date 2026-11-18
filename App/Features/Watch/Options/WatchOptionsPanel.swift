@@ -19,6 +19,8 @@ struct WatchOptionsPanel: View {
     @Environment(\.dismiss) private var dismiss
     /// Shown right away; rebuilding a large lineup takes a few seconds.
     @State private var pendingOrdering: ScheduleOrdering?
+    @State private var showsSubtitleTiming = false
+    @State private var showsChannelSettings = false
     /// Focus starts on Subtitles, the usual reason to open the panel.
     @FocusState private var isSubtitlesFocused: Bool
     @FocusState private var isReturnFocused: Bool
@@ -27,48 +29,17 @@ struct WatchOptionsPanel: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                 header
-                if let program = tuner.program, let channel = tuner.channel {
-                    SettingsSection(String(localized: "Playback")) {
-                        if tuner.isWatchingFromBeginning {
-                            Text("Watching from beginning. Your channels are still following their normal schedule.")
-                                .font(Typography.callout)
-                                .foregroundStyle(theme.textSecondary)
-                            Button("Return to Live") {
-                                tuner.returnToLive()
-                                closeAfterPlaybackAction()
-                            }
-                            .buttonStyle(.retroPrimary)
-                            .focused($isReturnFocused)
-                            Button("Restart from Beginning") {
-                                tuner.watchFromBeginning(program, on: channel)
-                                closeAfterPlaybackAction()
-                            }
-                            .buttonStyle(.retro)
-                        } else {
-                            Button("Watch from Beginning") {
-                                tuner.watchFromBeginning(program, on: channel)
-                                closeAfterPlaybackAction()
-                            }
-                            .buttonStyle(.retroPrimary)
-                            Text("Start this program at 0:00. You can return to the live channel at any time.")
-                                .font(Typography.callout)
-                                .foregroundStyle(theme.textSecondary)
-                        }
-                    }
-                }
-                SettingsSection(String(localized: "Audio & Subtitles")) {
+                VStack(spacing: DesignTokens.Spacing.sm) {
+                    playbackRows
                     content
-                }
-                SleepTimerControl()
-                if let channel = tuner.channel {
-                    SettingsSection(String(localized: "Channel \(channel.number) · \(channel.name)")) {
-                        FavoriteChannelButton(channel: channel)
-                        if !app.parentalControls.needsAuthorization { scheduleOrder(for: channel) }
-                        if let item = tuner.program?.item {
-                            ChannelPlacementControls(channel: channel, item: item)
-                        }
+                    SleepTimerControl()
+                    if let channel = tuner.channel {
+                        FavoriteChannelButton(channel: channel, namesChannel: false)
+                            .buttonStyle(.retroRow)
+                        channelSettings(for: channel)
                     }
                 }
+                trackSaveStatus
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(DesignTokens.Spacing.lg)
@@ -81,6 +52,58 @@ struct WatchOptionsPanel: View {
                 else { isSubtitlesFocused = true }
             }
         }
+    }
+
+    /// Watch from Beginning, or Return to Live and Restart while doing so.
+    @ViewBuilder
+    private var playbackRows: some View {
+        if let program = tuner.program, let channel = tuner.channel {
+            if tuner.isWatchingFromBeginning {
+                row(String(localized: "Return to Live"), systemImage: "dot.radiowaves.left.and.right") {
+                    tuner.returnToLive()
+                    closeAfterPlaybackAction()
+                }
+                .focused($isReturnFocused)
+                row(String(localized: "Restart from Beginning"), systemImage: "backward.end.fill") {
+                    tuner.watchFromBeginning(program, on: channel)
+                    closeAfterPlaybackAction()
+                }
+            } else {
+                row(String(localized: "Watch from Beginning"), systemImage: "backward.end.fill") {
+                    tuner.watchFromBeginning(program, on: channel)
+                    closeAfterPlaybackAction()
+                }
+            }
+        }
+    }
+
+    /// Schedule order, why this is here and removing it, behind one row.
+    @ViewBuilder
+    private func channelSettings(for channel: Channel) -> some View {
+        disclosureRow(String(localized: "Channel settings"), systemImage: "tv", isExpanded: $showsChannelSettings)
+        if showsChannelSettings {
+            if !app.parentalControls.needsAuthorization { scheduleOrder(for: channel) }
+            if let item = tuner.program?.item {
+                ChannelPlacementControls(channel: channel, item: item)
+            }
+        }
+    }
+
+    private func row(_ title: String, systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            SettingsRowLabel(title: title, systemImage: systemImage, value: nil, accessory: nil)
+        }
+        .buttonStyle(.retroRow)
+    }
+
+    private func disclosureRow(_ title: String, systemImage: String, isExpanded: Binding<Bool>) -> some View {
+        Button {
+            withAnimation(DesignTokens.Motion.quickEase) { isExpanded.wrappedValue.toggle() }
+        } label: {
+            SettingsRowLabel(title: title, systemImage: systemImage, value: nil,
+                             accessory: isExpanded.wrappedValue ? "chevron.up" : "chevron.down")
+        }
+        .buttonStyle(.retroRow)
     }
 
     private func closeAfterPlaybackAction() {
@@ -111,7 +134,7 @@ struct WatchOptionsPanel: View {
     @ViewBuilder
     private var content: some View {
         if !tuner.engine.switchesTracksLive {
-            note(String(localized: "Choosing audio and subtitles needs the RetroGuide Player. You can switch to it in Settings › Playback › Player."))
+            note(String(localized: "Choosing audio and subtitles needs the RetroGuide Player. You can switch to it in Settings › Advanced › Player."))
         } else if let tracks = tuner.currentTracks, let selection = tuner.currentSelection {
             choices(tracks: tracks, selection: selection)
         } else if tuner.signal == .tuning {
@@ -139,7 +162,8 @@ struct WatchOptionsPanel: View {
                 )
             )
             .disabled(tracks.audio.count < 2)
-            if tracks.audio.count > 1 {
+            // How widely a choice applies, once there is one.
+            if tracks.audio.count > 1, tuner.audioScope != nil {
                 scopeMenu(title: String(localized: "Audio for", comment: "Menu: how widely the chosen audio track applies (this episode, season, show…)"), scope: tuner.audioScope) { scope in
                     if let scope, let audio {
                         tuner.chooseAudio(audio, scope: scope)
@@ -161,6 +185,7 @@ struct WatchOptionsPanel: View {
                 )
             )
             .focused($isSubtitlesFocused)
+            if tuner.subtitleScope != nil {
             scopeMenu(title: String(localized: "Subtitles for", comment: "Menu: how widely the chosen subtitles apply (this episode, season, show…)"), scope: tuner.subtitleScope) { scope in
                 if let scope {
                     tuner.chooseSubtitles(subtitle, scope: scope)
@@ -168,10 +193,19 @@ struct WatchOptionsPanel: View {
                     tuner.resetSubtitles()
                 }
             }
+            }
             if subtitle != nil, tuner.engine.adjustsSubtitleTiming {
-                SubtitleTimingControl(tuner: tuner)
+                disclosureRow(String(localized: "Subtitle timing"), systemImage: "clock.arrow.2.circlepath", isExpanded: $showsSubtitleTiming)
+                if showsSubtitleTiming {
+                    SubtitleTimingControl(tuner: tuner)
+                }
             }
         }
+    }
+
+    /// Saving track choices to Plex, and retrying what failed.
+    @ViewBuilder
+    private var trackSaveStatus: some View {
         if let progress = app.trackSync.progress {
             note(String(localized: "Saving to Plex… \(progress.done) of \(progress.total)"))
         } else if app.trackSync.failedCount > .zero {

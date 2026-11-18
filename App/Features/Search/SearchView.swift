@@ -33,20 +33,45 @@ struct SearchView: View {
     @State private var results: [SearchResult] = []
     @State private var isSearchPresented = false
 
+    /// On now: the row tunes in. Later: the row says when, and the actions
+    /// are a reminder (the main one) or going to the channel anyway.
+    @ViewBuilder
+    private func resultView(_ result: SearchResult) -> some View {
+        let channel = result.channel.flatMap(app.currentChannel)
+        if let channel, let airing = result.airing, airing.contains(.now) {
+            Button { onTune(channel) } label: { SearchResultRow(result: result) }
+                .buttonStyle(.retroRow)
+        } else {
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+                SearchResultRow(result: result)
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: DesignTokens.Spacing.sm) { laterActions(result, channel: channel) }
+                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) { laterActions(result, channel: channel) }
+                }
+            }
+            .panel(padding: DesignTokens.Spacing.md)
+        }
+    }
+
+    @ViewBuilder
+    private func laterActions(_ result: SearchResult, channel: Channel?) -> some View {
+        if let scheduled = result.channel, let program = result.airing, program.start > .now {
+            ReminderButton(channel: scheduled, program: program, isProminent: true)
+                .fixedSize()
+        }
+        if let channel {
+            Button(String(localized: "Go to \(channel.name)"), systemImage: "arrow.right") { onTune(channel) }
+                .buttonStyle(.retro)
+                .fixedSize()
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
                     ForEach(results) { result in
-                        Button {
-                            if let channel = result.channel.flatMap(app.currentChannel) { onTune(channel) }
-                        } label: {
-                            SearchResultRow(result: result)
-                        }
-                        .buttonStyle(.retroRow)
-                        if let channel = result.channel, let program = result.airing, program.start > .now {
-                            ReminderButton(channel: channel, program: program)
-                        }
+                        resultView(result)
                     }
                     if results.isEmpty {
                         Text(query.isEmpty ? "Search every show and movie on your channels." : "Nothing on your channels matches \u{201C}\(query)\u{201D}.")
