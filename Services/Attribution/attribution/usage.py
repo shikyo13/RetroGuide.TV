@@ -10,12 +10,13 @@ import re
 import time
 
 SERVERS = {'none', 'plex', 'jellyfin', 'jellyfin+plex'}
-# UsageEvent.FailureReason and UsageEvent.SetupProblem in the app (1.9.1).
+# UsageEvent.FailureReason and UsageEvent.SetupProblem in the app.
 REASONS = {'timeout', 'offline', 'unreachable', 'notSecure', 'certificate', 'unauthorized',
            'serverError', 'rejected', 'unreadable', 'badAddress', 'cancelled', 'interrupted',
            'noLibraries', 'other'}
 PROBLEMS = {'plexNoServers', 'jellyfinFoundNone', 'jellyfinFoundNotSecure', 'jellyfinFoundUntrusted',
-            'jellyfinNotSecure', 'jellyfinUntrusted', 'jellyfinNoAnswer', 'jellyfinUnencryptedChosen'}
+            'jellyfinNotSecure', 'jellyfinUntrusted', 'jellyfinNoAnswer', 'jellyfinUnencryptedChosen',
+            'jellyfinNotSecureInternet', 'jellyfinLocalNetworkBlocked'}
 EVENTS = {
     'active': SERVERS,
     'setup': {'welcome', 'plexLink', 'plexServers', 'jellyfinFind', 'jellyfinAddress',
