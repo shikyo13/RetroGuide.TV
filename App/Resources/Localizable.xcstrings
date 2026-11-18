@@ -11696,6 +11696,154 @@
         }
       }
     },
+    "Add a Plex or Jellyfin server" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadir un servidor Plex o Jellyfin"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Adicionar um servidor Plex ou Jellyfin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter un serveur Plex ou Jellyfin"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aggiungi un server Plex o Jellyfin"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex- oder Jellyfin-Server hinzufügen"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voeg een Plex- of Jellyfin-server toe"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lägg till en Plex- eller Jellyfin-server"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodaj serwer Plex lub Jellyfin"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Přidat server Plex nebo Jellyfin"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Добавить сервер Plex или Jellyfin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PlexまたはJellyfinサーバを追加"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex 또는 Jellyfin 서버 추가"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加 Plex 或 Jellyfin 服务器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加入 Plex 或 Jellyfin 伺服器"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex या Jellyfin सर्वर जोड़ें"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex বা Jellyfin সার্ভার যোগ করুন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex किंवा Jellyfin सर्व्हर जोडा"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex அல்லது Jellyfin சர்வரைச் சேர்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex లేదా Jellyfin సర్వర్‌ను జోడించండి"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex અથવા Jellyfin સર્વર ઉમેરો"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex ಅಥವಾ Jellyfin ಸರ್ವರ್ ಸೇರಿಸಿ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex അല്ലെങ്കിൽ Jellyfin സെർവർ ചേർക്കുക"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex ਜਾਂ Jellyfin ਸਰਵਰ ਜੋੜੋ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plex କିମ୍ବା Jellyfin ସର୍ଭର ଯୋଗ କରନ୍ତୁ"
+          }
+        }
+      }
+    },
     "Add a server" : {
       "localizations" : {
         "es" : {
@@ -22967,6 +23115,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ଚ୍ୟାନେଲଗୁଡ଼ିକ ଆପଣଙ୍କ ବଛା ଲାଇବ୍ରେରୀର ବିଷୟବସ୍ତୁ ମିଶାଏ। ମେଳ ଖାଉଥିବା କପି ପାଇଁ, ଏହି ତାଲିକାରେ ଉପରେ ଥିବା ସର୍ଭରକୁ ପସନ୍ଦ କରାଯାଏ। ଉପଲବ୍ଧତା, ଅଭିଭାବକ ପ୍ରତିବନ୍ଧ ଓ ଚାଲିପାରୁଥିବା ସଂସ୍କରଣ କେଉଁ କପି ବ୍ୟବହୃତ ହେବ ତାହା ପ୍ରଭାବିତ କରିପାରେ।"
+          }
+        }
+      }
+    },
+    "Channels mix programs from every server here." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los canales mezclan programas de todos los servidores de aquí."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Os canais misturam programas de todos os servidores daqui."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les chaînes mélangent les programmes de tous les serveurs ci-dessous."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I canali mescolano i programmi di tutti i server qui elencati."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Sender mischen Sendungen aller Server hier."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zenders mengen programma's van alle servers hier."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanalerna blandar program från alla servrar här."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanały łączą programy ze wszystkich serwerów z tej listy."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kanály mísí pořady ze všech serverů zde."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Каналы объединяют передачи со всех серверов из списка."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チャンネルには、ここにあるすべてのサーバの番組が組み合わされます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채널에는 여기 있는 모든 서버의 프로그램이 섞여 나옵니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "频道会混合播放这里所有服务器的节目。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "頻道會混合播放這裡所有伺服器的節目。"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चैनल यहाँ के सभी सर्वरों के प्रोग्राम मिलाकर दिखाते हैं।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "চ্যানেলগুলো এখানের সব সার্ভারের অনুষ্ঠান মিলিয়ে দেখায়।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "चॅनेल इथल्या सर्व सर्व्हरवरील कार्यक्रम एकत्र दाखवतात."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "சேனல்கள் இங்குள்ள எல்லா சர்வர்களின் நிகழ்ச்சிகளையும் கலந்து காட்டும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఛానెల్‌లు ఇక్కడి అన్ని సర్వర్‌ల ప్రోగ్రామ్‌లను కలిపి చూపిస్తాయి."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ચૅનલો અહીંનાં બધાં સર્વરના કાર્યક્રમો ભેળવીને બતાવે છે."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಚಾನೆಲ್‌ಗಳು ಇಲ್ಲಿನ ಎಲ್ಲಾ ಸರ್ವರ್‌ಗಳ ಕಾರ್ಯಕ್ರಮಗಳನ್ನು ಮಿಶ್ರಮಾಡಿ ತೋರಿಸುತ್ತವೆ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഇവിടെയുള്ള എല്ലാ സെർവറുകളിലെയും പരിപാടികൾ ചാനലുകൾ ഇടകലർത്തി കാണിക്കും."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਚੈਨਲ ਇੱਥੇ ਦੇ ਸਾਰੇ ਸਰਵਰਾਂ ਦੇ ਪ੍ਰੋਗਰਾਮ ਮਿਲਾ ਕੇ ਦਿਖਾਉਂਦੇ ਹਨ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଚ୍ୟାନେଲଗୁଡ଼ିକ ଏଠାରେ ଥିବା ସମସ୍ତ ସର୍ଭରର କାର୍ଯ୍ୟକ୍ରମ ମିଶାଇ ଦେଖାଏ।"
           }
         }
       }
@@ -61537,6 +61833,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ପ୍ରସ୍ତୁତ"
+          }
+        }
+      }
+    },
+    "Ready to build your channels" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listo para crear tus canales"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pronto para criar seus canais"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prêt à créer vos chaînes"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pronto a creare i tuoi canali"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereit, deine Sender zu erstellen"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klaar om je zenders te maken"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redo att skapa dina kanaler"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gotowe do utworzenia kanałów"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Připraveno k vytvoření kanálů"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Всё готово для создания каналов"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チャンネルを作成する準備ができました"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "채널을 만들 준비가 되었습니다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "准备好创建你的频道"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準備好建立你的頻道"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आपके चैनल बनाने के लिए तैयार"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "আপনার চ্যানেল তৈরির জন্য প্রস্তুত"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "तुमचे चॅनेल तयार करण्यासाठी सज्ज"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "உங்கள் சேனல்களை உருவாக்கத் தயார்"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "మీ ఛానెల్‌లను సృష్టించడానికి సిద్ధం"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "તમારી ચૅનલો બનાવવા માટે તૈયાર"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ನಿಮ್ಮ ಚಾನೆಲ್‌ಗಳನ್ನು ರಚಿಸಲು ಸಿದ್ಧ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "നിങ്ങളുടെ ചാനലുകൾ സൃഷ്ടിക്കാൻ തയ്യാർ"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਤੁਹਾਡੇ ਚੈਨਲ ਬਣਾਉਣ ਲਈ ਤਿਆਰ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଆପଣଙ୍କ ଚ୍ୟାନେଲ ତିଆରି କରିବାକୁ ପ୍ରସ୍ତୁତ"
           }
         }
       }

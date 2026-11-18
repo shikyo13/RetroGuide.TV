@@ -47,7 +47,7 @@ struct LibraryPickerView: View {
             Button {
                 onConfirm(selection)
             } label: {
-                Label(confirmTitle, systemImage: "play.tv")
+                Text(confirmTitle)
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.retroPrimary)

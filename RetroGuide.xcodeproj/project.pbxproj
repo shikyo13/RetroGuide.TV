@@ -119,6 +119,7 @@
 		6FEE7A34E46237027CB8CD3A /* CloudSettingsSync+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCA7B9E76C54A320D934B812 /* CloudSettingsSync+Events.swift */; };
 		7111305601B451A9EF33D735 /* ProLockedRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296C10ED8D5F5E2349EA0734 /* ProLockedRow.swift */; };
 		71D986EA8F389DDE7EBA6578 /* SleepTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891C8FCB689DEBC577C6DD61 /* SleepTimer.swift */; };
+		753C805CEC88C0254B8C71D7 /* RetroAddRowButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A58D12440135285562E3DEC /* RetroAddRowButtonStyle.swift */; };
 		764180AA7D4B3A82B264A860 /* Tuner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16540AD44B0BC427225A94A4 /* Tuner.swift */; };
 		7682187C070D0105B5CC9127 /* LineupEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE9E450D8C95F92B6095A95 /* LineupEngine.swift */; };
 		7802EC1470B056226DFD541C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A77B0F3DA9D4FC1402E22BED /* PrivacyInfo.xcprivacy */; };
@@ -206,6 +207,7 @@
 		C172B2FB3CFE05F74645CD57 /* GuideGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277431B53EC9DD3EEEFDADB9 /* GuideGridView.swift */; };
 		C1EA2922B2E0452CFF105621 /* ChannelDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBE95A2421FA0C633DD728E8 /* ChannelDetailView.swift */; };
 		C430A3021350C381E4070322 /* PictureInPictureController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C731BE64FA6CFC9CE56AF9E /* PictureInPictureController.swift */; };
+		C49D96E7AC5AF40BBECA8ACF /* SetupReadyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEBDBD73E13637A3DDA93F21 /* SetupReadyView.swift */; };
 		C556E4646D07A253F94E3258 /* MPVTrackSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9B881830F35AE894929CE47 /* MPVTrackSelector.swift */; };
 		C746F075491D19A8408B6860 /* GuideTouchGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AAB9ADD8EF6E37FEB1BAE28 /* GuideTouchGrid.swift */; };
 		C7B14A870865E72A2F960EC3 /* MPVVideoFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E7246A4347CD32EDDBEAE57 /* MPVVideoFormat.swift */; };
@@ -456,6 +458,7 @@
 		96EB049DC12D2F608C879BFE /* DisplayModeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayModeController.swift; sourceTree = "<group>"; };
 		9789481B699253A7417B58A5 /* ThemePalettes+Terminal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ThemePalettes+Terminal.swift"; sourceTree = "<group>"; };
 		983187B0604149F94F303387 /* NavigationTitleFit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationTitleFit.swift; sourceTree = "<group>"; };
+		9A58D12440135285562E3DEC /* RetroAddRowButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroAddRowButtonStyle.swift; sourceTree = "<group>"; };
 		9ACC72B3AD12BDB45141FB2F /* SignalOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalOverlay.swift; sourceTree = "<group>"; };
 		9AF4A2BB25F60A315CAD8D8E /* AcknowledgementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcknowledgementsView.swift; sourceTree = "<group>"; };
 		9B3A9AA130F8C00A7844C132 /* LiveVideoStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveVideoStack.swift; sourceTree = "<group>"; };
@@ -489,6 +492,7 @@
 		BC46D819D23A297C0A6FE728 /* RetroGuideApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetroGuideApp.swift; sourceTree = "<group>"; };
 		BDF3B69A97C06359C34C23DE /* DemoCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoCatalog.swift; sourceTree = "<group>"; };
 		BDFA22752013854A669C76A3 /* JellyfinConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JellyfinConnectionView.swift; sourceTree = "<group>"; };
+		BEBDBD73E13637A3DDA93F21 /* SetupReadyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupReadyView.swift; sourceTree = "<group>"; };
 		BEEFF98634580A62CA20573D /* WatchOptionsPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchOptionsPanel.swift; sourceTree = "<group>"; };
 		C08BDDF85EEA045DAB1751FA /* PlexLinkStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlexLinkStepView.swift; sourceTree = "<group>"; };
 		C2C1825C55B3DB5DBB385A28 /* WhatsOnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsOnView.swift; sourceTree = "<group>"; };
@@ -728,6 +732,7 @@
 				B9B8265E6EDDF9DB13F03F7D /* PlexSignInSheet.swift */,
 				D63AA8E86BF9C02B61AE1DCF /* ServerPickerStepView.swift */,
 				529E54D5CBE1128C70DF51E6 /* ServerSetupStepsView.swift */,
+				BEBDBD73E13637A3DDA93F21 /* SetupReadyView.swift */,
 				46F65DFF726E08D9C5D9CAD1 /* WelcomeStepView.swift */,
 			);
 			path = Onboarding;
@@ -835,6 +840,7 @@
 				7DCAC7B46690CFA2F832866A /* ProgressTrack.swift */,
 				56CFCF3C393427EE3A94F97A /* QRCodeView.swift */,
 				2760837DFDCC008C26DB6AD8 /* RatingChip.swift */,
+				9A58D12440135285562E3DEC /* RetroAddRowButtonStyle.swift */,
 				2BE18FA6C7DBB131D48EDD15 /* RetroButtonStyle.swift */,
 				4FBEA280867125292968A959 /* RetroIconButtonStyle.swift */,
 				640A1EE370DC839D29A43C74 /* RetroRowButtonStyle.swift */,
@@ -1544,6 +1550,7 @@
 				61B84956AE4E2BB297319733 /* RemoteImage.swift in Sources */,
 				BD80567F20BF4EB83FA3CFF5 /* RemovedTitlesPage.swift in Sources */,
 				930B7ED7E49AE404D4FE0B43 /* RemovedTitlesSection.swift in Sources */,
+				753C805CEC88C0254B8C71D7 /* RetroAddRowButtonStyle.swift in Sources */,
 				4D0B7232C2F171D4B09C8BFB /* RetroButtonStyle.swift in Sources */,
 				1B22F184D9F92EA9941A6E64 /* RetroGuideApp.swift in Sources */,
 				343B16325AD70913DCF1B210 /* RetroIconButtonStyle.swift in Sources */,
@@ -1565,6 +1572,7 @@
 				346E73890827CD5921DC9ED9 /* ServersView.swift in Sources */,
 				5252BA898645AA0FADA135DE /* SettingsComponents.swift in Sources */,
 				DF4C68D78AF1775762716641 /* SettingsView.swift in Sources */,
+				C49D96E7AC5AF40BBECA8ACF /* SetupReadyView.swift in Sources */,
 				07BE24DAC854FDC5AB82ABD8 /* SignalOverlay.swift in Sources */,
 				BFB7AE33797AE06B256FBBD5 /* SimulcastLimitPickerView.swift in Sources */,
 				71D986EA8F389DDE7EBA6578 /* SleepTimer.swift in Sources */,
