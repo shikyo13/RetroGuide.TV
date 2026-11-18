@@ -28608,6 +28608,154 @@
         }
       }
     },
+    "Connect Over the Internet" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectar por internet"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conectar pela internet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se connecter par Internet"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collegati via Internet"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über das Internet verbinden"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verbind via internet"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anslut via internet"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Połącz przez internet"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Připojit přes internet"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Подключиться через интернет"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インターネット経由で接続"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "인터넷으로 연결"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通过互联网连接"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "透過網際網路連線"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इंटरनेट से कनेक्ट करें"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ইন্টারনেটে সংযোগ করুন"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इंटरनेटवरून कनेक्ट करा"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "இணையம் வழியாக இணை"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇంటర్నెట్ ద్వారా కనెక్ట్ చేయండి"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ઇન્ટરનેટ દ્વારા કનેક્ટ કરો"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಇಂಟರ್ನೆಟ್ ಮೂಲಕ ಸಂಪರ್ಕಿಸಿ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഇന്റർനെറ്റ് വഴി കണക്റ്റ് ചെയ്യുക"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਇੰਟਰਨੈੱਟ ਰਾਹੀਂ ਜੁੜੋ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଇଣ୍ଟରନେଟ୍ ମାଧ୍ୟମରେ ସଂଯୋଗ କରନ୍ତୁ"
+          }
+        }
+      }
+    },
     "Connect Plex" : {
       "localizations" : {
         "es" : {
@@ -83788,6 +83936,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ଏହି ସେଟଅପ୍ ଏହି Apple TVର ସେଟିଂସ୍ ଷ୍ଟୋରେଜ୍ ପାଇଁ ବହୁତ ବଡ଼। ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ସେଟଅପ୍ ରଖାଯାଇଛି।"
+          }
+        }
+      }
+    },
+    "To connect to your Plex server at home, RetroGuide.TV needs to reach devices on your network. Choose Allow when asked." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para conectarte a tu servidor Plex en casa, RetroGuide.TV necesita acceder a los dispositivos de tu red. Elige Permitir cuando se te pregunte."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para se conectar ao seu servidor Plex em casa, o RetroGuide.TV precisa acessar os dispositivos da sua rede. Escolha Permitir quando for perguntado."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour se connecter à votre serveur Plex à la maison, RetroGuide.TV doit accéder aux appareils de votre réseau. Choisissez Autoriser quand la question s'affiche."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per collegarsi al tuo server Plex a casa, RetroGuide.TV deve raggiungere i dispositivi della tua rete. Scegli Consenti quando ti viene chiesto."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Um sich zu Hause mit deinem Plex-Server zu verbinden, muss RetroGuide.TV Geräte in deinem Netzwerk erreichen. Wähle „Erlauben“, wenn du gefragt wirst."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om thuis verbinding te maken met je Plex-server, moet RetroGuide.TV apparaten op je netwerk kunnen bereiken. Kies 'Sta toe' als ernaar wordt gevraagd."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "För att ansluta till din Plex-server hemma behöver RetroGuide.TV nå enheter i ditt nätverk. Välj Tillåt när du får frågan."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby połączyć się z Twoim serwerem Plex w domu, RetroGuide.TV musi mieć dostęp do urządzeń w Twojej sieci. Gdy pojawi się pytanie, wybierz Zezwól."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aby se RetroGuide.TV doma připojila k tvému serveru Plex, potřebuje přístup k zařízením ve tvé síti. Až se zobrazí dotaz, zvol Povolit."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Чтобы подключиться к вашему серверу Plex дома, RetroGuide.TV нужен доступ к устройствам в вашей сети. Когда появится запрос, выберите «Разрешить»."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自宅のPlexサーバに接続するには、RetroGuide.TVがネットワーク上のデバイスにアクセスする必要があります。確認が表示されたら「許可」を選んでください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "집에 있는 Plex 서버에 연결하려면 RetroGuide.TV가 네트워크의 기기에 접근해야 합니다. 물어보면 '허용'을 선택하십시오."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要连接你家中的 Plex 服务器，RetroGuide.TV 需要访问你网络中的设备。出现询问时请选择“允许”。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要連線到你家中的 Plex 伺服器，RetroGuide.TV 需要連線到你網路上的裝置。出現詢問時請選擇「允許」。"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "घर पर अपने Plex सर्वर से जुड़ने के लिए RetroGuide.TV को आपके नेटवर्क के डिवाइस तक पहुँचना होगा। पूछे जाने पर अनुमति दें चुनें।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "বাড়িতে আপনার Plex সার্ভারে সংযোগ করতে RetroGuide.TV-কে আপনার নেটওয়ার্কের ডিভাইসগুলোতে পৌঁছাতে হবে। জিজ্ঞেস করা হলে অনুমতি দিন বেছে নিন।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "घरातील तुमच्या Plex सर्व्हरशी कनेक्ट होण्यासाठी RetroGuide.TV ला तुमच्या नेटवर्कवरील डिव्हाइसपर्यंत पोहोचावे लागते. विचारल्यावर परवानगी द्या निवडा."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "வீட்டில் உள்ள உங்கள் Plex சர்வருடன் இணைக்க, RetroGuide.TV உங்கள் நெட்வொர்க்கில் உள்ள சாதனங்களை அணுக வேண்டும். கேட்கும்போது அனுமதி என்பதைத் தேர்ந்தெடுக்கவும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఇంట్లో మీ Plex సర్వర్‌కు కనెక్ట్ కావడానికి RetroGuide.TV మీ నెట్‌వర్క్‌లోని పరికరాలను చేరుకోవాలి. అడిగినప్పుడు అనుమతించు ఎంచుకోండి."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ઘરે તમારા Plex સર્વર સાથે કનેક્ટ થવા માટે RetroGuide.TVને તમારા નેટવર્ક પરનાં ડિવાઇસ સુધી પહોંચવું પડે છે. પૂછવામાં આવે ત્યારે મંજૂરી આપો પસંદ કરો."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಮನೆಯಲ್ಲಿರುವ ನಿಮ್ಮ Plex ಸರ್ವರ್‌ಗೆ ಸಂಪರ್ಕಿಸಲು RetroGuide.TV ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ನ ಸಾಧನಗಳನ್ನು ತಲುಪಬೇಕು. ಕೇಳಿದಾಗ ಅನುಮತಿಸಿ ಆಯ್ಕೆಮಾಡಿ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "വീട്ടിലെ നിങ്ങളുടെ Plex സെർവറുമായി കണക്റ്റ് ചെയ്യാൻ RetroGuide.TV-ക്ക് നിങ്ങളുടെ നെറ്റ്‌വർക്കിലെ ഉപകരണങ്ങളിലേക്ക് എത്തണം. ചോദിക്കുമ്പോൾ അനുവദിക്കുക തിരഞ്ഞെടുക്കുക."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਘਰ ਵਿੱਚ ਆਪਣੇ Plex ਸਰਵਰ ਨਾਲ ਜੁੜਨ ਲਈ RetroGuide.TV ਨੂੰ ਤੁਹਾਡੇ ਨੈੱਟਵਰਕ ਦੇ ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚਣਾ ਪੈਂਦਾ ਹੈ। ਪੁੱਛੇ ਜਾਣ 'ਤੇ ਇਜਾਜ਼ਤ ਦਿਓ ਚੁਣੋ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଘରେ ଆପଣଙ୍କ Plex ସର୍ଭର ସହ ସଂଯୋଗ କରିବା ପାଇଁ RetroGuide.TVକୁ ଆପଣଙ୍କ ନେଟୱର୍କର ଡିଭାଇସଗୁଡ଼ିକ ପର୍ଯ୍ୟନ୍ତ ପହଞ୍ଚିବାକୁ ପଡ଼େ। ପଚରାଗଲେ ଅନୁମତି ଦିଅନ୍ତୁ ବାଛନ୍ତୁ।"
           }
         }
       }

@@ -18,6 +18,12 @@ public struct PlexServerCandidate: Sendable, Hashable, Identifiable {
     /// plex.tv's view of whether this device is on the server's network
     /// (same public address); `nil` when unknown.
     var isOnSameNetwork: Bool? = nil
+
+    /// Whether plex.tv lists an address on the server's own network, which
+    /// needs local network access to reach.
+    public var hasHomeAddress: Bool {
+        connections.contains(where: \.isLocal)
+    }
 }
 
 struct PlexConnectionCandidate: Sendable, Hashable {

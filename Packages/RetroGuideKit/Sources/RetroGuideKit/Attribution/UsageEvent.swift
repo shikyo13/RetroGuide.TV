@@ -57,6 +57,9 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         /// Finding a Jellyfin server waited on local network access: the
         /// system was asking, or it's turned off in Settings.
         case jellyfinLocalNetworkBlocked
+        /// Connecting a Plex server with a home address waited on local
+        /// network access.
+        case plexLocalNetworkBlocked
         /// A typed Jellyfin address has a certificate this device doesn't trust.
         case jellyfinUntrusted
         /// Nothing answered at a typed Jellyfin address.

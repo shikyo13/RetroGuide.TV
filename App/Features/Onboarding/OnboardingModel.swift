@@ -17,9 +17,10 @@ final class OnboardingModel {
         /// neither its own nor shared with it.
         case choosingServer([PlexServerCandidate], accountHasServers: Bool)
         case findingJellyfin(JellyfinScan, isSearching: Bool)
-        /// Finding a Jellyfin server waits for local network access: the
-        /// system is asking (iPhone and iPad), or it's off in Settings.
-        case waitingForLocalNetwork
+        /// Finding a Jellyfin server, or reaching a Plex server at home, waits
+        /// for local network access: the system is asking (iPhone and iPad),
+        /// or it's off in Settings.
+        case waitingForLocalNetwork(ServerKind)
         case enteringJellyfinAddress(message: String?)
         /// A home or VPN Jellyfin server that only offers plain HTTP: ask
         /// before connecting without encryption.
@@ -103,6 +104,9 @@ final class OnboardingModel {
     @ObservationIgnored let excludedServerIDs: Set<String>
     @ObservationIgnored var task: Task<Void, Never>?
     @ObservationIgnored private var flow = Flow.plex
+    /// The Plex server being connected, for connecting over the internet
+    /// instead of waiting for local network access.
+    @ObservationIgnored private var pendingPlexServer: PlexServerCandidate?
 
     /// - Parameters:
     ///   - accountToken: A saved Plex account token; when present, linking is skipped.
@@ -179,11 +183,40 @@ final class OnboardingModel {
         step = .welcome
     }
 
+    /// Connects `server`. One with a home address waits for local network
+    /// access first, so the home address can win (and home playback
+    /// settings with it) instead of the internet address.
     func choose(_ server: PlexServerCandidate) {
+        task?.cancel()
+        pendingPlexServer = server
         step = .connecting(serverName: server.name)
-        Task { [weak self] in
+        task = Task { [weak self] in
+            if server.hasHomeAddress {
+                let allowed = await LocalNetworkAccess.waitUntilAllowed { [weak self] in
+                    await self?.showLocalNetworkBlocked(for: .plex)
+                }
+                guard allowed, !Task.isCancelled else { return }
+                self?.step = .connecting(serverName: server.name)
+            }
             await self?.connect(to: server)
         }
+    }
+
+    /// While waiting for local network access: connect through the server's
+    /// internet address instead.
+    func connectPlexOverInternet() {
+        guard let server = pendingPlexServer else { return }
+        task?.cancel()
+        step = .connecting(serverName: server.name)
+        task = Task { [weak self] in
+            await self?.connect(to: server)
+        }
+    }
+
+    func showLocalNetworkBlocked(for kind: ServerKind) {
+        guard !Task.isCancelled else { return }
+        record(kind == .plex ? .plexLocalNetworkBlocked : .jellyfinLocalNetworkBlocked)
+        setStep(.waitingForLocalNetwork(kind))
     }
 
     // MARK: - Plex flow

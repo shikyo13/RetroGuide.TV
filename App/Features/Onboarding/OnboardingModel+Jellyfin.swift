@@ -53,14 +53,8 @@ extension OnboardingModel {
     /// can't. `false` if setup moved on meanwhile.
     private func waitForLocalNetwork() async -> Bool {
         await LocalNetworkAccess.waitUntilAllowed { [weak self] in
-            await self?.showLocalNetworkBlocked()
+            await self?.showLocalNetworkBlocked(for: .jellyfin)
         } && !Task.isCancelled
-    }
-
-    private func showLocalNetworkBlocked() {
-        guard !Task.isCancelled else { return }
-        record(.jellyfinLocalNetworkBlocked)
-        setStep(.waitingForLocalNetwork)
     }
 
     func enterJellyfinAddress() {
