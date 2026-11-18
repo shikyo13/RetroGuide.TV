@@ -36,6 +36,9 @@ final class CloudSettingsSync {
 
     @ObservationIgnored var readLocal: (() throws -> SettingsValues)?
     @ObservationIgnored var apply: ((SettingsValues) throws -> Bool)?
+    /// Whether this device has a setup worth keeping (a server is connected).
+    /// One that doesn't takes the iCloud setup without asking.
+    @ObservationIgnored var hasLocalSetup: (() -> Bool)?
     @ObservationIgnored let defaults: UserDefaults
     @ObservationIgnored let storage: CloudSettingsStorage
     @ObservationIgnored var state: CloudSettingsState
@@ -51,7 +54,8 @@ final class CloudSettingsSync {
         self.storage = storage
         self.zoneID = zoneID
         self.automaticallySync = automaticallySync
-        isEnabled = defaults.bool(forKey: Storage.enabled)
+        // On unless the viewer turned it off.
+        isEnabled = defaults.object(forKey: Storage.enabled) as? Bool ?? true
         do {
             state = try storage.load() ?? CloudSettingsState()
             state.replica.startNewSession()
@@ -141,6 +145,7 @@ final class CloudSettingsSync {
                 guard isEnabled, engine === active, generation == self.generation else { return }
                 if !state.joined {
                     if state.replica.records.isEmpty { try finishJoining(useLocal: true) }
+                    else if hasLocalSetup?() == false { try finishJoining(useLocal: false) }
                     else { needsInitialChoice = true }
                 } else {
                     applyLatest()

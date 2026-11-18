@@ -1,7 +1,9 @@
 import SwiftUI
 
 /// The app's standard focusable button: a themed capsule that fills with the
-/// focus color and lifts slightly when focused.
+/// focus color and lifts slightly when focused. On iPhone and iPad, where
+/// nothing is focused, a primary button always wears the focus color so the
+/// next step stands out.
 struct RetroButtonStyle: ButtonStyle {
     enum Prominence {
         case primary
@@ -26,7 +28,7 @@ private struct RetroButtonBody: View {
     var body: some View {
         configuration.label
             .font(Typography.bodyEmphasis)
-            .foregroundStyle(isFocused ? theme.textOnFocus : theme.textPrimary)
+            .foregroundStyle(isHighlighted ? theme.textOnFocus : theme.textPrimary)
             .padding(.horizontal, DesignTokens.Spacing.lg)
             .padding(.vertical, DesignTokens.Spacing.sm)
             .frame(minHeight: DesignTokens.Control.minimumHeight)
@@ -43,8 +45,16 @@ private struct RetroButtonBody: View {
             .opacity(isEnabled ? 1 : DesignTokens.Opacity.muted)
     }
 
+    private var isHighlighted: Bool {
+        #if os(tvOS)
+        isFocused
+        #else
+        isFocused || prominence == .primary
+        #endif
+    }
+
     private var background: Color {
-        if isFocused { return theme.focusFill }
+        if isHighlighted { return theme.focusFill }
         return prominence == .primary ? theme.surfaceRaised : theme.surface
     }
 

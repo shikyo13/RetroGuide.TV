@@ -7,6 +7,9 @@ extension AppModel {
             guard let self else { return SettingsValues() }
             return try sharedSettings().encoded()
         }
+        settingsSync.hasLocalSetup = { [weak self] in
+            !(self?.servers.accounts.isEmpty ?? true)
+        }
         settingsSync.apply = { [weak self] values in
             guard let self else { return false }
             return try applySharedSettings(values)
