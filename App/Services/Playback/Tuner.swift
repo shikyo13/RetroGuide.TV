@@ -37,6 +37,12 @@ final class Tuner {
         /// start (typically a file with missing data, which the player would
         /// otherwise read for minutes): the channel moves on at the next program.
         static let startTimeout: Duration = .seconds(30)
+        /// A stream that reports its end with more than this left of its program
+        /// was cut off, not finished: a dropped connection can read as the end of the file.
+        static let cutOffTolerance: TimeInterval = 30
+        /// Rejoins after a cut-off stream for one program. A file that really is
+        /// shorter than its metadata ends again at once and settles into the intermission.
+        static let maxCutOffRejoins = 3
     }
 
     private enum Message {
@@ -102,6 +108,8 @@ final class Tuner {
     @ObservationIgnored var onNoSignal: ((UsageEvent.FailureReason) -> Void)?
     /// Notices long buffering on what's playing; its owner says what to do with it.
     @ObservationIgnored let stallWatch = StallWatch()
+    /// Called when a stream stops long before its program ends and is rejoined, with where it came from.
+    @ObservationIgnored var onStreamCutOff: ((UsageEvent.Location) -> Void)?
     /// Where the playing stream comes from, for ``stallWatch``.
     @ObservationIgnored private var streamLocation = UsageEvent.Location.home
     @ObservationIgnored var onVideoFormatChanged: (() -> Void)?
@@ -139,6 +147,9 @@ final class Tuner {
     @ObservationIgnored private var boundaryTask: Task<Void, Never>?
     @ObservationIgnored private var startWatchdog: Task<Void, Never>?
     @ObservationIgnored private var failedAttempts = 0
+    /// The program whose stream was last cut off, and how often it was rejoined.
+    @ObservationIgnored private var cutOffProgram: ScheduledProgram?
+    @ObservationIgnored private var cutOffRejoins = 0
     /// When the viewer last flipped a channel (see ``Timing/flippingWindow``).
     @ObservationIgnored private var lastSurf: ContinuousClock.Instant?
     /// When the current tune started, for the time-to-picture log.
@@ -683,10 +694,14 @@ final class Tuner {
             failedAttempts = .zero
         case .ended:
             if independentPlayback != nil { returnToLive(); return }
-            // The file ran shorter than its metadata; fill until the next program.
-            if let program, signal == .live {
-                enterIntermission(until: program.slotEnd)
+            guard let program, signal == .live || signal == .tuning else { return }
+            if signal == .live, program.contentEnd.timeIntervalSinceNow > Timing.cutOffTolerance, rejoinCutOff(program) {
+                return
             }
+            // The file ran shorter than its metadata (or ended as soon as it
+            // was joined, past its real end); fill until the next program.
+            startWatchdog?.cancel()
+            enterIntermission(until: program.slotEnd)
         case let .failed(message, reason):
             guard signal == .tuning || signal == .live else { return }
             fail(with: message, reason: reason)
@@ -696,6 +711,27 @@ final class Tuner {
             guard signal == .live else { stallWatch.reset(); return }
             stallWatch.buffering(isBuffering, location: streamLocation)
         }
+    }
+
+    /// The stream stopped well before its program ends: rejoin where the
+    /// program is now, unless this program was already rejoined too often.
+    private func rejoinCutOff(_ program: ScheduledProgram) -> Bool {
+        if cutOffProgram != program {
+            cutOffProgram = program
+            cutOffRejoins = .zero
+        }
+        guard cutOffRejoins < Timing.maxCutOffRejoins else { return false }
+        cutOffRejoins += 1
+        logger.notice("stream ended \(Int(program.contentEnd.timeIntervalSinceNow), privacy: .public) s before its program; rejoining")
+        onStreamCutOff?(streamLocation)
+        endActiveStream()
+        engine.stop()
+        playbackGeneration = nil
+        boundaryTask?.cancel()
+        tuneTask?.cancel()
+        signal = .tuning
+        tuneTask = Task { [weak self] in await self?.startPlayback() }
+        return true
     }
 
     /// Gives up on a program that hasn't started after ``Timing/startTimeout``

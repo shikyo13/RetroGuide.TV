@@ -171,6 +171,10 @@ final class AppModel {
         tuner.stallWatch.onStalled = { [weak self] location in
             self?.recordUsage(.playbackStalled, detail: location.rawValue)
         }
+        // A stream cut off mid-program stopped to load too, just for longer.
+        tuner.onStreamCutOff = { [weak self] location in
+            self?.recordUsage(.playbackStalled, detail: location.rawValue)
+        }
         tuner.onVideoFormatChanged = { [weak self] in
             self?.updateDisplayMode()
         }
