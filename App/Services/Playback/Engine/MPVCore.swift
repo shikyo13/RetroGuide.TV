@@ -66,10 +66,15 @@ final class MPVCore: @unchecked Sendable {
         ]
         static let streamProtocols = "stream-lavf-o"
         static let demuxerProtocols = "demuxer-lavf-o"
-        static let secureProtocols = "protocol_whitelist=[https,tls,tcp,crypto,data,file]"
+        static let secureProtocols = "protocol_whitelist=[https,tls,tcp,crypto,data,file]," + reconnect
         /// Only for a stream that is itself a plain-HTTP address the viewer allowed
         /// (home network or VPN): an HTTPS stream can never fall back to HTTP.
-        static let plainProtocols = "protocol_whitelist=[http,https,tls,tcp,crypto,data,file]"
+        static let plainProtocols = "protocol_whitelist=[http,https,tls,tcp,crypto,data,file]," + reconnect
+        /// A dropped connection picks up where it left off (a ranged request to the
+        /// same address) instead of ending the file. Bounded, so a server that's
+        /// really gone still ends the stream and the tuner rejoins or retries.
+        static let reconnect = "reconnect=1,reconnect_streamed=1,reconnect_on_network_error=1,"
+            + "reconnect_delay_max=2,reconnect_delay_total_max=8,reconnect_max_retries=4"
         /// FFmpeg's TLS (GnuTLS) can't read Apple's trust store, so it checks against
         /// a bundled copy of Mozilla's (see Tools/CABundle).
         static let certificateAuthoritiesFile = "tls-ca-file"

@@ -43,11 +43,30 @@ final class Tuner {
         /// Rejoins after a cut-off stream for one program. A file that really is
         /// shorter than its metadata ends again at once and settles into the intermission.
         static let maxCutOffRejoins = 3
+        /// A stream that played this long before it was cut off proves the file
+        /// goes on: the rejoin count starts over, so a flaky connection during a
+        /// long movie never runs out of rejoins.
+        static let cutOffRearm: TimeInterval = 120
+        /// How often the position is noted while watching from the beginning, so
+        /// a cut-off stream can pick up where it was (the player forgets it at the end).
+        static let positionSampleInterval: Duration = .seconds(5)
+        /// A program watched from the beginning that ends again within this much
+        /// of where it was picked up has reached its file's real end.
+        static let minimumProgressAfterRejoin: TimeInterval = 10
+        /// A playing stream stuck loading this long is treated as cut off. RetroGuide
+        /// Player gives up on a dropped connection by itself; the Apple player
+        /// would wait forever on the last frame.
+        static let stallTimeout: Duration = .seconds(20)
     }
 
     private enum Message {
         static let didNotStart = String(localized: "This program won't start. Its file may be damaged.")
+        static let serverOffline = String(localized: "The server for this channel isn't connected.")
     }
+
+    /// The lineup emptied because its servers went offline while a channel was
+    /// on; it's tuned again when they're back.
+    private(set) var isWaitingForServer = false
 
     private struct IndependentPlayback {
         let program: ScheduledProgram
@@ -69,7 +88,10 @@ final class Tuner {
         didSet {
             if signal != oldValue {
                 // Buffering only counts while a program is on screen.
-                if signal != .live { stallWatch.reset() }
+                if signal != .live {
+                    stallWatch.reset()
+                    stallRecovery?.cancel()
+                }
                 onSignalChanged?()
                 #if os(iOS)
                 // Picture in Picture may start by itself only while a channel plays.
@@ -150,6 +172,13 @@ final class Tuner {
     /// The program whose stream was last cut off, and how often it was rejoined.
     @ObservationIgnored private var cutOffProgram: ScheduledProgram?
     @ObservationIgnored private var cutOffRejoins = 0
+    /// When the current stream started playing, to tell a long-running stream
+    /// that was cut off from a file that ends right after it's joined.
+    @ObservationIgnored private var liveSince: Date?
+    @ObservationIgnored private var positionSampler: Task<Void, Never>?
+    @ObservationIgnored private var stallRecovery: Task<Void, Never>?
+    /// Where a program watched from the beginning was last picked up after a cut-off.
+    @ObservationIgnored private var resumedAt: TimeInterval?
     /// When the viewer last flipped a channel (see ``Timing/flippingWindow``).
     @ObservationIgnored private var lastSurf: ContinuousClock.Instant?
     /// When the current tune started, for the time-to-picture log.
@@ -182,6 +211,7 @@ final class Tuner {
         self.channel = channel
         self.program = program
         independentPlayback = IndependentPlayback(program: program, originChannelID: channel.id)
+        resumedAt = nil
         failedAttempts = .zero
         signal = .tuning
         tuneTask = Task { [weak self] in await self?.startPlayback() }
@@ -309,7 +339,20 @@ final class Tuner {
         guard let current = channel else { return }
         if let updated = channels.first(where: { $0.id == current.id }) {
             channel = updated
-            refreshProgram(on: updated)
+            if isWaitingForServer {
+                // The server is back: carry on with the channel that was on.
+                isWaitingForServer = false
+                tune(to: updated, isAutomatic: true)
+            } else {
+                refreshProgram(on: updated)
+            }
+        } else if channels.isEmpty, signal != .off {
+            // Every server went offline while watching: say so and keep the
+            // channel, instead of leaving the last frame on screen.
+            stopPlayback()
+            isWaitingForServer = true
+            signal = .noSignal(Message.serverOffline)
+            onNoSignal?(.unreachable)
         } else if let first = channels.first {
             if signal == .off {
                 channel = first
@@ -428,6 +471,7 @@ final class Tuner {
     /// `isAutomatic`: the app retuned (a rebuilt lineup, a reconnected server),
     /// not the viewer.
     func tune(to channel: Channel, surfing: Bool = false, isAutomatic: Bool = false) {
+        isWaitingForServer = false
         if let candidate = channel.timeline.program(at: .now), !playbackAllowed(candidate.item) { return }
         if independentPlayback != nil {
             if isAutomatic {
@@ -550,6 +594,7 @@ final class Tuner {
 
     func powerOff() {
         suspend()
+        isWaitingForServer = false
         independentPlayback = nil
         channel = nil
         program = nil
@@ -586,7 +631,7 @@ final class Tuner {
             return
         }
         guard let client = clientProvider(program.item.serverID) else {
-            signal = .noSignal(String(localized: "The server for this channel isn't connected."))
+            signal = .noSignal(Message.serverOffline)
             onNoSignal?(.unreachable)
             return
         }
@@ -690,40 +735,85 @@ final class Tuner {
                 self.tuneStart = nil
             }
             signal = .live
+            liveSince = .now
             playbackReporting.started()
             failedAttempts = .zero
+            if independentPlayback != nil { samplePosition() }
         case .ended:
-            if independentPlayback != nil { returnToLive(); return }
-            guard let program, signal == .live || signal == .tuning else { return }
-            if signal == .live, program.contentEnd.timeIntervalSinceNow > Timing.cutOffTolerance, rejoinCutOff(program) {
-                return
-            }
-            // The file ran shorter than its metadata (or ended as soon as it
-            // was joined, past its real end); fill until the next program.
-            startWatchdog?.cancel()
-            enterIntermission(until: program.slotEnd)
+            streamStopped(stalled: false)
         case let .failed(message, reason):
             guard signal == .tuning || signal == .live else { return }
             fail(with: message, reason: reason)
         case let .format(format):
             setVideoFormat(format)
         case let .buffering(isBuffering):
-            guard signal == .live else { stallWatch.reset(); return }
+            guard signal == .live else { stallWatch.reset(); stallRecovery?.cancel(); return }
             stallWatch.buffering(isBuffering, location: streamLocation)
+            if isBuffering { recoverIfStillStalled() } else { stallRecovery?.cancel() }
+        }
+    }
+
+    /// The stream ended, or has been stuck loading too long (the Apple player
+    /// waits forever for a server that's gone). Rejoins if the program goes on;
+    /// otherwise a finished file fills until the next program and a stuck one
+    /// retries like any failed stream.
+    private func streamStopped(stalled: Bool) {
+        if stalled { rememberIndependentPosition() }
+        let playedFor = liveSince.map { Date.now.timeIntervalSince($0) } ?? .zero
+        liveSince = nil
+        if let independent = independentPlayback {
+            // Cut off well before the program's end: carry on from where it was.
+            let left = independent.program.item.duration - independent.position
+            let progressed = resumedAt.map { independent.position - $0 } ?? .infinity
+            if signal == .live, left > Timing.cutOffTolerance, progressed > Timing.minimumProgressAfterRejoin,
+               rejoinCutOff(independent.program, after: playedFor, secondsLeft: left) {
+                resumedAt = independent.position
+                return
+            }
+            if stalled { fail(with: Message.serverOffline, reason: .unreachable) } else { returnToLive() }
+            return
+        }
+        guard let program, signal == .live || signal == .tuning else { return }
+        let left = program.contentEnd.timeIntervalSinceNow
+        if signal == .live, left > Timing.cutOffTolerance, rejoinCutOff(program, after: playedFor, secondsLeft: left) {
+            return
+        }
+        if stalled {
+            fail(with: Message.serverOffline, reason: .unreachable)
+            return
+        }
+        // The file ran shorter than its metadata (or ended as soon as it
+        // was joined, past its real end); fill until the next program.
+        startWatchdog?.cancel()
+        enterIntermission(until: program.slotEnd)
+    }
+
+    /// Gives a stream that stopped to load ``Timing/stallTimeout`` to carry on.
+    private func recoverIfStillStalled() {
+        stallRecovery?.cancel()
+        stallRecovery = Task { [weak self] in
+            try? await Task.sleep(for: Timing.stallTimeout)
+            guard !Task.isCancelled, let self, signal == .live else { return }
+            logger.notice("stream stuck loading for \(Timing.stallTimeout.components.seconds, privacy: .public) s")
+            streamStopped(stalled: true)
         }
     }
 
     /// The stream stopped well before its program ends: rejoin where the
     /// program is now, unless this program was already rejoined too often.
-    private func rejoinCutOff(_ program: ScheduledProgram) -> Bool {
-        if cutOffProgram != program {
+    private func rejoinCutOff(_ program: ScheduledProgram, after playedFor: TimeInterval, secondsLeft: TimeInterval) -> Bool {
+        if cutOffProgram != program || playedFor >= Timing.cutOffRearm {
             cutOffProgram = program
             cutOffRejoins = .zero
         }
         guard cutOffRejoins < Timing.maxCutOffRejoins else { return false }
         cutOffRejoins += 1
-        logger.notice("stream ended \(Int(program.contentEnd.timeIntervalSinceNow), privacy: .public) s before its program; rejoining")
+        logger.notice("stream ended \(Int(secondsLeft), privacy: .public) s early after \(Int(playedFor), privacy: .public) s; rejoining")
         onStreamCutOff?(streamLocation)
+        if independentPlayback != nil {
+            restartIndependentPlayback()
+            return true
+        }
         endActiveStream()
         engine.stop()
         playbackGeneration = nil
@@ -850,6 +940,20 @@ final class Tuner {
         tuneTask?.cancel()
         boundaryTask?.cancel()
         startWatchdog?.cancel()
+        positionSampler?.cancel()
+        stallRecovery?.cancel()
+    }
+
+    /// Notes the position every few seconds while watching from the beginning.
+    private func samplePosition() {
+        positionSampler?.cancel()
+        positionSampler = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: Timing.positionSampleInterval)
+                guard !Task.isCancelled, let self, independentPlayback != nil else { return }
+                rememberIndependentPosition()
+            }
+        }
     }
 
     /// Tells the server to release a repackaged stream.

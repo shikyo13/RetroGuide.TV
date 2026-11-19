@@ -21,6 +21,9 @@ final class AppModel {
         static let staleAfter: TimeInterval = 6 * ScheduleConstants.secondsPerHour
         /// How often server reachability is re-checked while the app is open.
         static let healthCheckInterval: Duration = .seconds(10 * 60)
+        /// While a channel waits for its offline server, look again this often,
+        /// so it comes back on soon after the server does.
+        static let offlineRecheckInterval: Duration = .seconds(30)
     }
 
     private enum Lifecycle {
@@ -116,6 +119,7 @@ final class AppModel {
     @ObservationIgnored let store: PreferencesStore
     @ObservationIgnored private let engine = LineupEngine()
     @ObservationIgnored private var healthTask: Task<Void, Never>?
+    @ObservationIgnored private var offlineRecheck: Task<Void, Never>?
     /// When the app went to the background, and the release of the stream
     /// waiting out ``Lifecycle/backgroundGrace``.
     @ObservationIgnored private var backgroundedAt: ContinuousClock.Instant?
@@ -736,10 +740,24 @@ final class AppModel {
     private func recheckServers() async {
         guard !isRecheckingServers else { return }
         isRecheckingServers = true
-        defer { isRecheckingServers = false }
+        defer {
+            isRecheckingServers = false
+            scheduleOfflineRecheck()
+        }
         guard await servers.checkReachability() else { return }
         refreshError = offlineServersMessage
         await rebuildIndexAndLineup()
+    }
+
+    /// Checks again soon while the screen says the server isn't connected.
+    private func scheduleOfflineRecheck() {
+        offlineRecheck?.cancel()
+        guard tuner.isWaitingForServer else { return }
+        offlineRecheck = Task { [weak self] in
+            try? await Task.sleep(for: Refresh.offlineRecheckInterval)
+            guard !Task.isCancelled else { return }
+            await self?.recheckServers()
+        }
     }
 
     // MARK: - Lineup
