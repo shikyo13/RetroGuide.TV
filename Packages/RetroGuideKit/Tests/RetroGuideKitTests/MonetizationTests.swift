@@ -72,12 +72,28 @@ struct AdPacingTests {
 struct RatingPromptPacingTests {
     private let hour = ScheduleConstants.secondsPerHour
 
-    @Test("First request after three hours of watching")
-    func firstRequest() {
+    @Test("First request requires playback on two local calendar days, across launches")
+    func firstRequest() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try #require(TimeZone(identifier: "America/Chicago"))
+        let first = try #require(calendar.date(from: DateComponents(year: 2026, month: 11, day: 18, hour: 20)))
         var pacing = RatingPromptPacing()
-        pacing.recordWatching(3 * hour - 1)
+        pacing.recordWatching(60, at: first, calendar: calendar)
+        pacing.recordWatching(3 * hour, at: first + 3 * hour, calendar: calendar)
         #expect(!pacing.isRequestDue(version: "1.2"))
-        pacing.recordWatching(1)
+        let saved = try JSONEncoder().encode(pacing)
+        pacing = try JSONDecoder().decode(RatingPromptPacing.self, from: saved)
+        pacing.recordWatching(.zero, at: first + 5 * hour, calendar: calendar)
+        #expect(!pacing.isRequestDue(version: "1.2"))
+        pacing.recordWatching(60, at: first + 5 * hour, calendar: calendar)
+        #expect(pacing.isRequestDue(version: "1.2"))
+    }
+
+    @Test("Previously eligible viewers keep their first request")
+    func keepsLegacyEligibility() throws {
+        let saved = Data(#"{"watched":10800}"#.utf8)
+        var pacing = try JSONDecoder().decode(RatingPromptPacing.self, from: saved)
+        pacing.recordWatching(60)
         #expect(pacing.isRequestDue(version: "1.2"))
     }
 

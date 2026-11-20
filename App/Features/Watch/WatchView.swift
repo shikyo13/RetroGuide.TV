@@ -112,10 +112,10 @@ struct WatchView: View {
         .freeVersionAds(isWatchingFullScreen: overlay == .none, isGuideOpen: overlay == .guide, tuner: tuner, bannerHeight: $bannerHeight)
         .ratingPrompt(isWatchingFullScreen: overlay == .none, finishedTasks: finishedTasks, tuner: tuner)
         #endif
-        .onChange(of: overlay) { previous, current in
+        .onChange(of: overlay) { _, current in
             isGuideTopBarActive = false
             isShowingOptions = false
-            if current == .guide, previous == .settings || previous == .search {
+            if current == .guide {
                 finishedTasks += 1
             }
         }

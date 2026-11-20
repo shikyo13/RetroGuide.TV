@@ -3,12 +3,7 @@ import RetroGuideKit
 import StoreKit
 import SwiftUI
 
-/// Asks for an App Store rating on iPhone and iPad once enough watching has
-/// passed (see ``RatingPromptPacing``). Only time spent watching a live
-/// picture full screen counts. The request comes when the viewer has just
-/// finished something (back in the guide from Settings or Search), while the
-/// picture plays, never with parental controls on, and never on a guide visit
-/// that ends in a full-screen ad.
+/// Requests a rating on a return to the guide after qualifying full-screen playback.
 private struct RatingPrompt: ViewModifier {
     private enum Timing {
         static let tick: Duration = .seconds(ScheduleConstants.secondsPerMinute)
@@ -16,7 +11,7 @@ private struct RatingPrompt: ViewModifier {
     }
 
     let isWatchingFullScreen: Bool
-    /// Increases each time the viewer finishes a task and is back in the guide.
+    /// Increases each time the viewer returns to the guide.
     let finishedTasks: Int
     let tuner: Tuner
 
@@ -33,6 +28,7 @@ private struct RatingPrompt: ViewModifier {
     private var isGoodMoment: Bool {
         scenePhase == .active
             && tuner.signal == .live
+            && !ads.isPresentingInterstitial
             && !app.parentalControls.policy.isEnabled
             && !(app.pro.access.showsAds && ads.isInterstitialDue)
     }

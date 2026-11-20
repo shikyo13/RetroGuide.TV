@@ -1,12 +1,9 @@
 import Foundation
 
-/// Paces asking for an App Store rating: first after a few hours of
-/// watching, then again only after a long stretch more, a few months and a
-/// new app version. Counted in time actually spent watching, like
-/// ``AdPacing``. Nothing says whether someone already rated, so repeats are
-/// rare. (The system also caps the prompt at three times a year.)
+/// The first rating request follows playback on two local calendar days.
+/// Later requests require more viewing time, a new version and a cooldown.
 public struct RatingPromptPacing: Codable, Sendable, Hashable {
-    /// Watching time before the first request.
+    /// First-request threshold for saved pacing that predates viewing days.
     public static let firstRequestAfter: TimeInterval = 3 * ScheduleConstants.secondsPerHour
     /// Watching time between later requests.
     public static let requestInterval: TimeInterval = 48 * ScheduleConstants.secondsPerHour
@@ -19,6 +16,8 @@ public struct RatingPromptPacing: Codable, Sendable, Hashable {
     public private(set) var lastRequestedVersion: String?
     /// When the rating was last requested (`nil` in pacing saved before 1.9).
     public private(set) var lastRequestedAt: Date?
+    private var firstViewingDate: Date?
+    private var qualifiedOnLaterDay: Bool?
 
     public init(watched: TimeInterval = .zero, watchedAtLastRequest: TimeInterval? = nil, lastRequestedVersion: String? = nil, lastRequestedAt: Date? = nil) {
         self.watched = max(watched, .zero)
@@ -29,14 +28,27 @@ public struct RatingPromptPacing: Codable, Sendable, Hashable {
 
     public func isRequestDue(version: String, now: Date = .now) -> Bool {
         guard lastRequestedVersion != version else { return false }
-        guard let watchedAtLastRequest else { return watched >= Self.firstRequestAfter }
+        guard let watchedAtLastRequest else { return firstRequestIsDue }
         let interval = TimeInterval(Self.minimumDaysBetweenRequests) * 86_400
         if let lastRequestedAt, now.timeIntervalSince(lastRequestedAt) < interval { return false }
         return watched - watchedAtLastRequest >= Self.requestInterval
     }
 
-    public mutating func recordWatching(_ duration: TimeInterval) {
+    private var firstRequestIsDue: Bool {
+        qualifiedOnLaterDay == true || (firstViewingDate == nil && watched >= Self.firstRequestAfter)
+    }
+
+    public mutating func recordWatching(_ duration: TimeInterval, at date: Date = .now, calendar: Calendar = .autoupdatingCurrent) {
         guard duration > .zero else { return }
+        if watchedAtLastRequest == nil && !firstRequestIsDue {
+            if let firstViewingDate {
+                if calendar.compare(date, to: firstViewingDate, toGranularity: .day) == .orderedDescending {
+                    qualifiedOnLaterDay = true
+                }
+            } else {
+                firstViewingDate = date
+            }
+        }
         watched += duration
     }
 
