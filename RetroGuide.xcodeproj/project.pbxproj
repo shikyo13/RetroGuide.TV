@@ -118,6 +118,7 @@
 		6F616B19949D1E258B35617E /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1576787E4500E23843801F06 /* DesignTokens.swift */; };
 		6FEE7A34E46237027CB8CD3A /* CloudSettingsSync+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCA7B9E76C54A320D934B812 /* CloudSettingsSync+Events.swift */; };
 		7111305601B451A9EF33D735 /* ProLockedRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 296C10ED8D5F5E2349EA0734 /* ProLockedRow.swift */; };
+		71BF4D1DC9AAB6305E2F9DC4 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4BA6883D2530D8CCFF1BC0D /* AppEnvironment.swift */; };
 		71D986EA8F389DDE7EBA6578 /* SleepTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 891C8FCB689DEBC577C6DD61 /* SleepTimer.swift */; };
 		753C805CEC88C0254B8C71D7 /* RetroAddRowButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A58D12440135285562E3DEC /* RetroAddRowButtonStyle.swift */; };
 		764180AA7D4B3A82B264A860 /* Tuner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16540AD44B0BC427225A94A4 /* Tuner.swift */; };
@@ -477,6 +478,7 @@
 		A321569C746FBE10FFB02BA4 /* CommercialLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommercialLibrary.swift; sourceTree = "<group>"; };
 		A326D5A774DB4C55EB7D3269 /* WidgetSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSettingsView.swift; sourceTree = "<group>"; };
 		A4B9979118C8D8F76CCD16BA /* AttributionDelivery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributionDelivery.swift; sourceTree = "<group>"; };
+		A4BA6883D2530D8CCFF1BC0D /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		A604772E5E8D0C8B0781A8BE /* ParentalGenresView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParentalGenresView.swift; sourceTree = "<group>"; };
 		A77B0F3DA9D4FC1402E22BED /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A7AECD051DADEF83FBA81A36 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -585,6 +587,7 @@
 		0686BA8BE62CE94AB6876446 /* Root */ = {
 			isa = PBXGroup;
 			children = (
+				A4BA6883D2530D8CCFF1BC0D /* AppEnvironment.swift */,
 				1D9DDD4AB63AB0D2F04F3DC1 /* FailureView.swift */,
 				400321D38B8063B8C8749040 /* IndexingView.swift */,
 				EFAACA5FC2EAC37012DF71EE /* RemoteCommands.swift */,
@@ -1421,6 +1424,7 @@
 				60703CE336C8D9EBC245A5B4 /* AdsController.swift in Sources */,
 				B5ADD9C617D0D1C1E4C5C312 /* AdvancedSettingsView.swift in Sources */,
 				410FA5737C282A1FD83D314B /* AllChannelsOrderView.swift in Sources */,
+				71BF4D1DC9AAB6305E2F9DC4 /* AppEnvironment.swift in Sources */,
 				7A97EC4C2488630574448B8A /* AppIdentity.swift in Sources */,
 				8A6E3CE18658F2D62FF47E04 /* AppModel+Reminders.swift in Sources */,
 				33CD91A4777B38BBEF07571A /* AppModel+SettingsSync.swift in Sources */,

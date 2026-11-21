@@ -53,7 +53,7 @@ struct RootView: View {
                 .padding(DesignTokens.Spacing.xl)
             }
         }
-        .sheet(isPresented: $showsStartupSettings) {
+        .appSheet(isPresented: $showsStartupSettings) {
             ParentalSettingsGate {
                 NavigationStack {
                     ServersView()

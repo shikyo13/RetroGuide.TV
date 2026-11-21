@@ -19,7 +19,7 @@ struct WatchOptionsPresentation: ViewModifier {
             }
         }
         #else
-        content.sheet(isPresented: $isPresented) {
+        content.appSheet(isPresented: $isPresented) {
             WatchOptionsPanel(tuner: tuner)
                 .screenBackground()
                 .presentationDetents([.medium, .large])

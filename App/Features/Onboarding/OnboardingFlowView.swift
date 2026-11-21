@@ -44,7 +44,7 @@ struct OnboardingFlowView: View {
             }
         }
         .onDisappear { model?.cancel() }
-        .sheet(isPresented: $showsPro) {
+        .appSheet(isPresented: $showsPro) {
             NavigationStack {
                 ProUpgradeView()
                     .toolbar {

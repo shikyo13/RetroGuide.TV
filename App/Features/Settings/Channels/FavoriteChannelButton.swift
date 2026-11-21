@@ -18,7 +18,7 @@ struct FavoriteChannelButton: View {
                              systemImage: app.viewing.isFavorite(channel) ? "star.fill" : "star",
                              value: app.pro.isPro ? favoriteValue : "Pro", accessory: nil)
         }
-        .sheet(isPresented: $showsUpgrade) { ProUpgradeView() }
+        .appSheet(isPresented: $showsUpgrade) { ProUpgradeView() }
     }
 
     private var favoriteValue: String {

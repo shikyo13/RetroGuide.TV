@@ -13,7 +13,7 @@ struct ParentalEmptyView: View {
             Button("Parental Controls") { showsSettings = true }.buttonStyle(.retroPrimary)
         }
         .screenBackground()
-        .sheet(isPresented: $showsSettings, onDismiss: { app.parentalControls.endAuthorization() }) {
+        .appSheet(isPresented: $showsSettings, onDismiss: { app.parentalControls.endAuthorization() }) {
             ParentalSettingsGate {
                 NavigationStack { ParentalControlsView() }
             }

@@ -43,19 +43,14 @@ struct RetroGuideApp: App {
             RootView()
                 #if os(iOS)
                 .debugLaunchOrientation()
+                .modifier(AppEnvironment(model: model, ads: ads))
+                #else
+                .modifier(AppEnvironment(model: model))
                 #endif
-                .environment(model)
-                #if os(iOS)
-                .environment(ads)
-                #endif
-                .environment(\.theme, model.theme)
                 // Typeset in the language the app is showing, not the device's:
                 // Japanese and Chinese then break lines between words, and each
                 // script gets its own fonts.
                 .typesettingLanguage(Self.appLanguage)
-                .environment(\.artworkResolver, model.artworkResolver)
-                .environment(\.showsScanlines, model.preferences.showsScanlines)
-                .tint(model.theme.accent)
                 .preferredColorScheme(.dark)
                 .onChange(of: model.pro.hasLoaded ? model.pro.isPro : nil) { model.proAccessChanged() }
                 .task { await model.start() }

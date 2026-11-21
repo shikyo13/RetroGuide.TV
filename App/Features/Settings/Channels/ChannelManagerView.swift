@@ -105,7 +105,7 @@ private struct ChannelListRow: View {
             }
             .channelRowIconStyle()
         }
-        .sheet(isPresented: $showsUpgrade) { ProUpgradeView() }
+        .appSheet(isPresented: $showsUpgrade) { ProUpgradeView() }
     }
 
     private var isFavorite: Bool { app.viewing.isFavorite(channel) }
