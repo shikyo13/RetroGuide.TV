@@ -126,6 +126,8 @@ final class MPVCore: @unchecked Sendable {
         static let debugLogLevel = "info"
         static let logFile = "log-file"
         static let mute = "mute"
+        /// Seconds to shift sound against the picture (negative plays it earlier).
+        static let audioDelay = "audio-delay"
         static let enabled = "yes"
         static let logFileName = "mpv.log"
         /// Where a debug play-URL override starts, well inside any episode.
@@ -171,6 +173,9 @@ final class MPVCore: @unchecked Sendable {
         #if DEBUG
         if DebugLaunchOptions.isMuted {
             mpv_set_option_string(handle, Option.mute, Option.enabled)
+        }
+        if let audioDelay = DebugLaunchOptions.audioDelay {
+            mpv_set_option_string(handle, Option.audioDelay, audioDelay)
         }
         if DebugLaunchOptions.probesAudio,
            let folder = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {

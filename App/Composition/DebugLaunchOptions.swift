@@ -60,6 +60,7 @@ enum DebugLaunchOptions {
         static let mute = "RETROGUIDE_DEV_MUTE"
         static let attributionURL = "RETROGUIDE_DEV_ATTRIBUTION_URL"
         static let relinkPlex = "RETROGUIDE_DEV_RELINK_PLEX"
+        static let audioDelay = "RETROGUIDE_DEV_AUDIO_DELAY"
     }
 
     private static let landscape = "landscape"
@@ -117,6 +118,11 @@ enum DebugLaunchOptions {
 
     static var attributionURL: String? {
         value(for: Variable.attributionURL)
+    }
+
+    /// Shifts the player's sound by this many seconds, to measure audio timing on a device.
+    static var audioDelay: String? {
+        value(for: Variable.audioDelay).flatMap(Double.init).map { String($0) }
     }
 
     static var relinksPlex: Bool {
