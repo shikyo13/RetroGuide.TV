@@ -27,7 +27,8 @@ struct WatchView: View {
     @State private var overlay = Overlay.initial
     @State private var previewFrame: CGRect?
     @State private var screenSize = CGSize.zero
-    @State private var safeArea = EdgeInsets()
+    /// The safe area's frame on screen (see `safeArea`).
+    @State private var safeFrame = CGRect.zero
     /// Height of the on-screen keyboard (iPhone and iPad), so the PiP window stays above it.
     @State private var keyboardHeight: CGFloat = .zero
     /// Height of the free version's ad banner under the menus (iPhone and iPad).
@@ -123,13 +124,22 @@ struct WatchView: View {
             previewFrame = frame
         }
         .background {
-            // Spans the whole screen, so it reports both the full size and the safe-area insets.
+            // Spans the whole screen, so it reports the full size.
             GeometryReader { _ in
                 Color.clear
                     .onGeometryChange(for: CGSize.self) { $0.size } action: { screenSize = $0 }
-                    .onGeometryChange(for: EdgeInsets.self) { $0.safeAreaInsets } action: { safeArea = $0 }
             }
             .ignoresSafeArea()
+        }
+        .background {
+            // Where the safe area sits on screen. Reading the insets from the
+            // full-screen reader above reports zero on iPhone Duo, whose camera
+            // column and home indicator area the layout still keeps clear of.
+            GeometryReader { _ in
+                Color.clear
+                    .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { safeFrame = $0 }
+            }
+            .ignoresSafeArea(.keyboard)
         }
         #if os(iOS)
         .background {
@@ -185,6 +195,17 @@ struct WatchView: View {
 
     private var isPictureInPicture: Bool {
         overlay == .settings || overlay == .search || (overlay == .guide && app.browsingChannels.isEmpty)
+    }
+
+    /// The screen's safe-area insets, from where the safe area sits within it.
+    private var safeArea: EdgeInsets {
+        guard safeFrame != .zero, screenSize != .zero else { return EdgeInsets() }
+        return EdgeInsets(
+            top: max(safeFrame.minY, .zero),
+            leading: max(safeFrame.minX, .zero),
+            bottom: max(screenSize.height - safeFrame.maxY, .zero),
+            trailing: max(screenSize.width - safeFrame.maxX, .zero)
+        )
     }
 
     /// Apple TV's PiP insets already account for overscan. On iPhone and iPad

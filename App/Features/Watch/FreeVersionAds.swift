@@ -60,9 +60,21 @@ private struct FreeVersionAds: ViewModifier {
             .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
             .safeAreaInset(edge: .bottom, spacing: .zero) {
                 if showsBanner {
-                    BannerAdView(adSize: bannerSize)
-                        .frame(width: cgSize(for: bannerSize).width, height: bannerHeightWhenShown)
-                        .frame(maxWidth: .infinity)
+                    // The strip takes exactly the width it's offered and the ad sits
+                    // over it, so the ad never sizes the layout. Otherwise, when the
+                    // screen narrows (iPhone Duo closing), the ad's old width holds the
+                    // whole screen wide and the width that would resize it never arrives.
+                    Color.clear
+                        .frame(height: bannerHeightWhenShown)
+                        .overlay {
+                            BannerAdView(adSize: bannerSize)
+                                .frame(width: cgSize(for: bannerSize).width, height: bannerHeightWhenShown)
+                                // A new width gets a new banner: an existing one reloaded at
+                                // another size stays blank.
+                                .id(cgSize(for: bannerSize).width)
+                        }
+                        .clipped()
+                        // Also fills the home indicator area below the strip.
                         .background(theme.surface)
                         // The ad view must never be resized frame by frame: the SDK
                         // slows down with every resize and animating it freezes the app.
@@ -70,8 +82,10 @@ private struct FreeVersionAds: ViewModifier {
                         .transaction { $0.animation = nil }
                 }
             }
-            .onChange(of: showsBanner, initial: true) { _, shown in
-                bannerHeight = shown ? bannerHeightWhenShown : .zero
+            // Also follows the banner's height when the width changes (rotation,
+            // iPhone Duo opening or closing), not only when it appears.
+            .onChange(of: showsBanner ? bannerHeightWhenShown : .zero, initial: true) { _, height in
+                bannerHeight = height
             }
             .task(id: app.pro.hasLoaded && !app.pro.isPro) {
                 guard app.pro.hasLoaded, !app.pro.isPro else {
