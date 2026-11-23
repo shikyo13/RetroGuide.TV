@@ -71,59 +71,68 @@ struct AdPacingTests {
 @Suite("RatingPromptPacing")
 struct RatingPromptPacingTests {
     private let hour = ScheduleConstants.secondsPerHour
+    private let minute = ScheduleConstants.secondsPerMinute
+    private let day: TimeInterval = 86_400
 
-    @Test("First request requires playback on two local calendar days, across launches")
-    func firstRequest() throws {
+    private func chicagoEvening() throws -> (Calendar, Date) {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = try #require(TimeZone(identifier: "America/Chicago"))
-        let first = try #require(calendar.date(from: DateComponents(year: 2026, month: 11, day: 18, hour: 20)))
+        let evening = try #require(calendar.date(from: DateComponents(year: 2026, month: 11, day: 18, hour: 20)))
+        return (calendar, evening)
+    }
+
+    @Test("First request after half an hour of watching, across launches")
+    func firstRequestAfterHalfAnHour() throws {
+        let (calendar, evening) = try chicagoEvening()
         var pacing = RatingPromptPacing()
-        pacing.recordWatching(60, at: first, calendar: calendar)
-        pacing.recordWatching(3 * hour, at: first + 3 * hour, calendar: calendar)
+        pacing.recordWatching(29 * minute, at: evening, calendar: calendar)
         #expect(!pacing.isRequestDue(version: "1.2"))
-        let saved = try JSONEncoder().encode(pacing)
-        pacing = try JSONDecoder().decode(RatingPromptPacing.self, from: saved)
-        pacing.recordWatching(.zero, at: first + 5 * hour, calendar: calendar)
-        #expect(!pacing.isRequestDue(version: "1.2"))
-        pacing.recordWatching(60, at: first + 5 * hour, calendar: calendar)
+        pacing = try JSONDecoder().decode(RatingPromptPacing.self, from: JSONEncoder().encode(pacing))
+        pacing.recordWatching(minute, at: evening + hour, calendar: calendar)
         #expect(pacing.isRequestDue(version: "1.2"))
     }
 
-    @Test("Previously eligible viewers keep their first request")
-    func keepsLegacyEligibility() throws {
-        let saved = Data(#"{"watched":10800}"#.utf8)
-        var pacing = try JSONDecoder().decode(RatingPromptPacing.self, from: saved)
-        pacing.recordWatching(60)
+    @Test("First request on the second day of watching, however little was watched")
+    func firstRequestOnSecondDay() throws {
+        let (calendar, evening) = try chicagoEvening()
+        var pacing = RatingPromptPacing()
+        pacing.recordWatching(5 * minute, at: evening, calendar: calendar)
+        pacing.recordWatching(minute, at: evening + 3 * hour, calendar: calendar)
+        #expect(!pacing.isRequestDue(version: "1.2"))
+        pacing.recordWatching(minute, at: evening + 5 * hour, calendar: calendar)
         #expect(pacing.isRequestDue(version: "1.2"))
     }
 
-    @Test("Next request after another 48 hours and 120 days, in a newer version")
-    func laterRequests() {
+    @Test("One follow-up a week later after two more hours, then only rarely and in a newer version")
+    func followUpThenRarely() {
         let asked = Date(timeIntervalSince1970: 1_800_000_000)
-        let day: TimeInterval = 86_400
-        var pacing = RatingPromptPacing(watched: 3 * hour)
+        var pacing = RatingPromptPacing()
+        pacing.recordWatching(30 * minute)
         pacing.requested(version: "1.2", at: asked)
+        #expect(!pacing.isRequestDue(version: "1.2", now: asked + 30 * day))
+        pacing.recordWatching(2 * hour)
+        #expect(!pacing.isRequestDue(version: "1.2", now: asked + 6 * day))
+        #expect(pacing.isRequestDue(version: "1.2", now: asked + 7 * day))
+
+        let followedUp = asked + 7 * day
+        pacing.requested(version: "1.2", at: followedUp)
         pacing.recordWatching(48 * hour)
-        #expect(!pacing.isRequestDue(version: "1.2", now: asked + 200 * day))
-        #expect(!pacing.isRequestDue(version: "1.3", now: asked + 119 * day))
-        #expect(pacing.isRequestDue(version: "1.3", now: asked + 120 * day))
+        #expect(!pacing.isRequestDue(version: "1.2", now: followedUp + 200 * day))
+        #expect(!pacing.isRequestDue(version: "1.3", now: followedUp + 119 * day))
+        #expect(pacing.isRequestDue(version: "1.3", now: followedUp + 120 * day))
     }
 
-    @Test("Pacing saved by 1.8 still applies")
+    @Test("Pacing saved by earlier versions: never asked is due, asked once gets the follow-up")
     func readsEarlierPacing() throws {
-        let saved = Data(#"{"watched":10800,"watchedAtLastRequest":10800,"lastRequestedVersion":"1.8"}"#.utf8)
-        var pacing = try JSONDecoder().decode(RatingPromptPacing.self, from: saved)
-        #expect(!pacing.isRequestDue(version: "1.9"))
-        pacing.recordWatching(48 * hour)
-        #expect(pacing.isRequestDue(version: "1.9"))
-    }
+        let neverAsked = try JSONDecoder().decode(RatingPromptPacing.self, from: Data(#"{"watched":10800}"#.utf8))
+        #expect(neverAsked.isRequestDue(version: "1.11.3"))
 
-    @Test("A new version alone doesn't make a request due")
-    func newVersionNeedsWatching() {
-        var pacing = RatingPromptPacing(watched: 3 * hour)
-        pacing.requested(version: "1.2")
-        pacing.recordWatching(47 * hour)
-        #expect(!pacing.isRequestDue(version: "1.3"))
+        let saved = Data(#"{"watched":10800,"watchedAtLastRequest":10800,"lastRequestedVersion":"1.11.2","lastRequestedAt":0}"#.utf8)
+        var askedOnce = try JSONDecoder().decode(RatingPromptPacing.self, from: saved)
+        let asked = Date(timeIntervalSinceReferenceDate: 0)
+        askedOnce.recordWatching(2 * hour)
+        #expect(!askedOnce.isRequestDue(version: "1.11.3", now: asked + 6 * day))
+        #expect(askedOnce.isRequestDue(version: "1.11.3", now: asked + 7 * day))
     }
 
     @Test("Negative or zero durations are ignored")
