@@ -108,6 +108,7 @@
 		6032F5ED0A46B737CD20A950 /* VideoQualityPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82FF8EDDA9295A1E94B86BF8 /* VideoQualityPickerView.swift */; };
 		60703CE336C8D9EBC245A5B4 /* AdsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0EBE1540EB09EEDE7296CA6 /* AdsController.swift */; };
 		61B84956AE4E2BB297319733 /* RemoteImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C74D1D89B009950D0839113 /* RemoteImage.swift */; };
+		63037D5E4C3AC4B88C251E6D /* MPVAudioRouteTiming.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9866363AF24399D17ED2A65 /* MPVAudioRouteTiming.swift */; };
 		63BD91C1071983CC0EF685C4 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4256AEAB82EABD170AA2AEE3 /* AppModel.swift */; };
 		667BA24F39F75AEE109B0F1F /* AppIconWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE261A33A591CEA05CE5E8CC /* AppIconWidget.swift */; };
 		6822ABDBC8E0598FB2684D8C /* TopShelfArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A2272040C5CA5F3BB6612A0 /* TopShelfArtwork.swift */; };
@@ -543,6 +544,7 @@
 		E633ECF9952536A0557CC30B /* GuideHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GuideHeader.swift; sourceTree = "<group>"; };
 		E6A9FCDB157646BFB4D534C0 /* WidgetPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPalette.swift; sourceTree = "<group>"; };
 		E91331A410DCC822983B10A3 /* ServerDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerDetailView.swift; sourceTree = "<group>"; };
+		E9866363AF24399D17ED2A65 /* MPVAudioRouteTiming.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MPVAudioRouteTiming.swift; sourceTree = "<group>"; };
 		EBE95A2421FA0C633DD728E8 /* ChannelDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelDetailView.swift; sourceTree = "<group>"; };
 		EE261A33A591CEA05CE5E8CC /* AppIconWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIconWidget.swift; sourceTree = "<group>"; };
 		EFAACA5FC2EAC37012DF71EE /* RemoteCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteCommands.swift; sourceTree = "<group>"; };
@@ -942,6 +944,7 @@
 			children = (
 				621AFFAB0C64F158C012ABC0 /* AudioRouteProbe.swift */,
 				DE04141E222BC085BCF92B40 /* AVPlaybackEngine.swift */,
+				E9866363AF24399D17ED2A65 /* MPVAudioRouteTiming.swift */,
 				AEF0DB268F4E64DD81622652 /* MPVCore.swift */,
 				B588766984AE2C0AD5684E00 /* MPVPlaybackEngine.swift */,
 				C9B881830F35AE894929CE47 /* MPVTrackSelector.swift */,
@@ -1509,6 +1512,7 @@
 				D19447801B956C0F4121F97F /* LoopbackPlaybackRelay.swift in Sources */,
 				B636AB6FE4DCA9287D32E3DD /* LoopbackPlaybackRelayExchange.swift in Sources */,
 				BA7A2FE9DD215C06195B3FF1 /* LoopbackPlaybackRelayManifest.swift in Sources */,
+				63037D5E4C3AC4B88C251E6D /* MPVAudioRouteTiming.swift in Sources */,
 				C0F9BCB17F46A8FD75224803 /* MPVCore.swift in Sources */,
 				B320FC43F4B0A7A00F3941AA /* MPVPlaybackEngine.swift in Sources */,
 				C556E4646D07A253F94E3258 /* MPVTrackSelector.swift in Sources */,

@@ -23,8 +23,9 @@ final class MPVCore: @unchecked Sendable {
             ("hwdec", "videotoolbox"),
             // Audio through AVSampleBufferAudioRenderer: it's what Control Center's speaker
             // picker (HomePod, AirPlay) can route, and it follows route changes. Our libmpv
-            // patch paces it and accounts for the route's latency. The AudioUnit output
-            // (also patched to survive route changes) is the fallback.
+            // patch paces it and accounts for the route's latency (see MPVAudioRouteTiming
+            // for tvOS 27). The AudioUnit output (also patched to survive route changes) is
+            // the fallback.
             ("ao", "avfoundation,audiounit"),
             // Don't register as mixable audio: Control Center only routes the Now Playing
             // app's audio, and mixable audio never is.
@@ -126,6 +127,9 @@ final class MPVCore: @unchecked Sendable {
         static let debugLogLevel = "info"
         static let logFile = "log-file"
         static let mute = "mute"
+        /// Whether one audio output is kept across files.
+        static let gaplessAudio = "gapless-audio"
+        static let disabled = "no"
         /// Seconds to shift sound against the picture (negative plays it earlier).
         static let audioDelay = "audio-delay"
         static let enabled = "yes"
@@ -163,6 +167,10 @@ final class MPVCore: @unchecked Sendable {
         mpv_set_option(handle, Option.windowID, MPV_FORMAT_INT64, &windowID)
         for (name, value) in Option.values + Option.platformValues {
             mpv_set_option_string(handle, name, value)
+        }
+        if MPVAudioRouteTiming.systemTimesWirelessRoutes {
+            // A new audio output for every file (see MPVAudioRouteTiming).
+            mpv_set_option_string(handle, Option.gaplessAudio, Option.disabled)
         }
         if let authorities = Bundle.main.path(forResource: Option.certificateAuthorities.name, ofType: Option.certificateAuthorities.type) {
             mpv_set_option_string(handle, Option.certificateAuthoritiesFile, authorities)
@@ -219,6 +227,9 @@ final class MPVCore: @unchecked Sendable {
             start = DebugLaunchOptions.playStartOverride ?? Option.debugOverrideStart
         }
         mpv_set_property_string(handle, Option.startPositionProperty, start)
+        if DebugLaunchOptions.audioDelay == nil {
+            mpv_set_property_string(handle, Option.audioDelay, MPVAudioRouteTiming.audioDelay)
+        }
         // A released background stream may have left the player paused.
         setPaused(false)
         let file = DebugLaunchOptions.playURLOverride ?? url
