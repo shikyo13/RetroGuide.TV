@@ -22,11 +22,12 @@ settings:
 packages:
   RetroGuideKit:
     path: Packages/RetroGuideKit
-  # MPVKit 1.0.0 with libmpv patched: audio route changes can't crash playback, and the
-  # AVFoundation audio output is paced. FFmpeg also reads external VobSub pairs on iOS/tvOS.
+  # MPVKit 1.0.0 with libmpv patched: audio route changes can't crash playback, the
+  # AVFoundation audio output is paced, and HomePod/AirPlay sound stays in sync on tvOS 27.
+  # FFmpeg also reads external VobSub pairs on iOS/tvOS.
   MPVKit:
     url: https://github.com/shikyo13/MPVKit
-    exactVersion: 1.0.0-retroguide.4
+    exactVersion: 1.0.0-retroguide.5
   # Ads in the free version on iPhone and iPad (not Apple TV); includes Google's consent SDK.
   GoogleMobileAds:
     url: https://github.com/googleads/swift-package-manager-google-mobile-ads

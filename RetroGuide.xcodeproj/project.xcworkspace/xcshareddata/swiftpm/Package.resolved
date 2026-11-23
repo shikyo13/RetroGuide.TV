@@ -1,13 +1,13 @@
 {
-  "originHash" : "68c3aff96a07eb28d1b47c25fd43504fa26726db90c5fbe2929d55409082a0d3",
+  "originHash" : "719fbbe90848bdb169a109a34cba11406a89ab8748402e94460be600558eaff9",
   "pins" : [
     {
       "identity" : "mpvkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/shikyo13/MPVKit",
       "state" : {
-        "revision" : "4693673d81aefaf769ece969387b97a357da34d3",
-        "version" : "1.0.0-retroguide.4"
+        "revision" : "e7b59a8b32115ca1f13f8e66e695a5bb4f678e27",
+        "version" : "1.0.0-retroguide.5"
       }
     },
     {
