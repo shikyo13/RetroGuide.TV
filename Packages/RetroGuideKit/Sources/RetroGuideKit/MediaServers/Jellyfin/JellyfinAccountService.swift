@@ -34,6 +34,10 @@ public enum JellyfinProbe: Sendable, Hashable {
     case untrustedCertificate
     case noAnswer
 
+    fileprivate var isServer: Bool {
+        if case .server = self { true } else { false }
+    }
+
     /// Lower explains more.
     fileprivate var rank: Int {
         switch self {
@@ -142,12 +146,21 @@ public struct JellyfinAccountService: Sendable {
             for (index, url) in candidates.enumerated() {
                 group.addTask { (index, await probe(url)) }
             }
-            var answers: [(Int, JellyfinProbe)] = []
-            for await answer in group { answers.append(answer) }
+            var answers: [Int: JellyfinProbe] = [:]
+            for await (index, answer) in group {
+                answers[index] = answer
+                // A server whose earlier candidates have all answered can't be
+                // beaten: no need to wait out the ones that never answer.
+                if let first = answers.filter({ $0.value.isServer }).keys.min(),
+                   (0..<first).allSatisfy({ answers[$0] != nil }) {
+                    group.cancelAll()
+                    break
+                }
+            }
             return answers
         }
         // The earliest candidate wins among servers, as if tried in order.
-        return answers.min { ($0.1.rank, $0.0) < ($1.1.rank, $1.0) }?.1 ?? .noAnswer
+        return answers.min { ($0.value.rank, $0.key) < ($1.value.rank, $1.key) }?.value ?? .noAnswer
     }
 
     /// Whether `text` reaches the Jellyfin server `serverID` (or any server

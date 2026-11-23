@@ -77,17 +77,56 @@ struct JellyfinMappingTests {
         #expect(item.released == ISO8601DateFormatter().date(from: "2008-08-06T00:00:00Z"))
     }
 
+    private func tried(_ text: String) -> [String] {
+        JellyfinAddress.candidates(from: JellyfinAddress.upgradingInsecureScheme(text)).map(\.absoluteString)
+    }
+
     @Test("A typed address becomes the URLs worth trying")
     func addressCandidates() {
-        #expect(JellyfinAddress.candidates(from: "10.0.1.5").map(\.absoluteString)
-            == ["https://10.0.1.5", "https://10.0.1.5:8920", "https://10.0.1.5:8096"])
+        #expect(tried("10.0.1.5") == ["https://10.0.1.5", "https://10.0.1.5:8920", "https://10.0.1.5:8096"])
         // An http:// address is never tried as typed, only over HTTPS at the same place.
-        #expect(JellyfinAddress.candidates(from: JellyfinAddress.upgradingInsecureScheme("http://10.0.1.5:8096")).map(\.absoluteString)
-            == ["https://10.0.1.5:8096"])
-        #expect(JellyfinAddress.candidates(from: " media.example.com:8920 ").map(\.absoluteString)
-            == ["https://media.example.com:8920"])
-        #expect(JellyfinAddress.candidates(from: "https://example.com/jellyfin/").map(\.absoluteString)
-            == ["https://example.com/jellyfin"])
-        #expect(JellyfinAddress.candidates(from: "  ").isEmpty)
+        #expect(tried("http://10.0.1.5:8096") == ["https://10.0.1.5:8096"])
+        #expect(tried(" media.example.com:8920 ") == ["https://media.example.com:8920"])
+        #expect(tried("  ").isEmpty)
+        #expect(JellyfinAddress.candidates(from: "http://10.0.1.5:8096").isEmpty)
+    }
+
+    @Test("A scheme without a port tries the same ports as a bare address")
+    func schemeWithoutPort() {
+        #expect(tried("http://10.0.1.5") == tried("10.0.1.5"))
+        #expect(tried("https://media.example.com") == tried("media.example.com"))
+    }
+
+    @Test("An address copied from the browser finds the server behind the page")
+    func browserAddress() {
+        let server = ["https://10.0.1.5:8096"]
+        #expect(tried("http://10.0.1.5:8096/web/#/home.html") == server)
+        #expect(tried("http://10.0.1.5:8096/web/index.html#!/home.html") == server)
+        #expect(tried("10.0.1.5:8096/web/") == server)
+        // A server under its own path keeps it.
+        #expect(tried("https://example.com:8920/jellyfin/web/index.html") == ["https://example.com:8920/jellyfin", "https://example.com:8920"])
+        #expect(JellyfinAddress.plainHTTP(from: "http://10.0.1.5:8096/web/index.html")?.absoluteString == "http://10.0.1.5:8096")
+    }
+
+    @Test("A path that may not be the server's is tried first, then the address without it")
+    func pathFallsBackToRoot() {
+        #expect(tried("https://example.com/jellyfin/") == [
+            "https://example.com/jellyfin", "https://example.com:8920/jellyfin", "https://example.com:8096/jellyfin",
+            "https://example.com", "https://example.com:8920", "https://example.com:8096",
+        ])
+    }
+
+    @Test("A port typed after a space, comma or semicolon still counts")
+    func loosePort() {
+        let server = ["https://10.0.1.5:8096"]
+        #expect(tried("10.0.1.5 8096") == server)
+        #expect(tried("10.0.1.5,8096") == server)
+        #expect(tried("10.0.1.5; 8096") == server)
+        #expect(tried(" 10.0.1.5 :8096 ") == server)
+        #expect(tried("http://10.0.1.5 8096") == server)
+        #expect(JellyfinAddress.plainHTTP(from: "10.0.1.5 8096")?.absoluteString == "http://10.0.1.5:8096")
+        // Not a port: left as typed.
+        #expect(tried("10.0.1.5") == ["https://10.0.1.5", "https://10.0.1.5:8920", "https://10.0.1.5:8096"])
+        #expect(tried("[fe80::1]:8096") == ["https://[fe80::1]:8096"])
     }
 }

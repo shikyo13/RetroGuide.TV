@@ -104,7 +104,8 @@ extension OnboardingModel {
                 return
             case .noAnswer:
                 record(.jellyfinNoAnswer)
-                setStep(.enteringJellyfinAddress(message: JellyfinSetupText.noAnswer))
+                let tried = JellyfinAddress.candidates(from: JellyfinAddress.upgradingInsecureScheme(address))
+                setStep(.enteringJellyfinAddress(message: JellyfinSetupText.noAnswer(tried: tried)))
                 return
             }
             guard !excludedServerIDs.contains(server.id) else {
@@ -144,10 +145,14 @@ extension OnboardingModel {
         setStep(.connecting(serverName: JellyfinConnectionText.short(address)))
         task = Task { [weak self] in
             guard let self else { return }
-            let answer = await jellyfinService.probe(address)
+            var answer = await jellyfinService.probe(address)
+            // The path may have been some page rather than where the server lives.
+            if case .server = answer {} else if let root = JellyfinAddress.withoutPath(address) {
+                answer = await jellyfinService.probe(root)
+            }
             guard !Task.isCancelled else { return }
             guard case let .server(server) = answer else {
-                setStep(.enteringJellyfinAddress(message: JellyfinSetupText.noAnswer))
+                setStep(.enteringJellyfinAddress(message: JellyfinSetupText.noAnswer(tried: [address])))
                 return
             }
             guard !excludedServerIDs.contains(server.id) else {
@@ -296,6 +301,18 @@ enum JellyfinSetupText {
     static let notSecureOnInternet = String(localized: "A server answered, but only without encryption (plain HTTP). Over the internet, RetroGuide.TV needs HTTPS with a trusted certificate. At home or over a VPN like Tailscale, use the server's home or VPN address instead.")
     static let untrusted = String(localized: "A server answered, but this device doesn't trust its certificate. A self-signed certificate won't work: use one from a trusted authority, such as Let's Encrypt.")
     static let noAnswer = String(localized: "No Jellyfin server answered at that address. Check the address and port (Jellyfin usually uses 8096).")
+
+    /// ``noAnswer`` followed by the places that were tried, so a mistyped
+    /// address or port shows.
+    static func noAnswer(tried: [URL]) -> String {
+        var places: [String] = []
+        for place in tried.map(JellyfinConnectionText.short) where !places.contains(place) {
+            places.append(place)
+        }
+        guard !places.isEmpty else { return noAnswer }
+        let list = places.formatted(.list(type: .and, width: .narrow))
+        return noAnswer + "\n" + String(localized: "Addresses tried: \(list)")
+    }
 }
 
 /// Jellyfin addresses as people type them.
