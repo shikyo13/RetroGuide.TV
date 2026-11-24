@@ -30,7 +30,6 @@ final class MPVCore: @unchecked Sendable {
             // Don't register as mixable audio: Control Center only routes the Now Playing
             // app's audio, and mixable audio never is.
             ("audio-exclusive", "yes"),
-            ("video-rotate", "no"),
             // Measure each scene's real brightness when tone mapping HDR to SDR. Static
             // metadata (mastered for 1000–4000 nits) makes most scenes far too dark.
             ("hdr-compute-peak", "yes"),

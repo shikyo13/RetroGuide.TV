@@ -9,8 +9,10 @@ enum MPVVideoFormat {
         static let gamma = "video-params/gamma"
         /// Frame rate from the container, then as measured by the decoder.
         static let frameRates = ["container-fps", "estimated-vf-fps"]
-        /// Display aspect ratio, with the file's pixel shape applied.
+        /// Display aspect ratio, with the file's pixel shape applied (before rotation).
         static let aspect = "video-params/aspect"
+        /// How far the file asks to be turned when shown, in degrees (a phone held upright: 90).
+        static let rotate = "video-params/rotate"
     }
 
     private enum Gamma {
@@ -28,8 +30,12 @@ enum MPVVideoFormat {
     }
 
     /// The current video's shape as shown (width over height), or `nil` if not known yet.
+    /// A file turned a quarter turn (recorded on a phone held upright) is shown
+    /// tall, so its shape is the other way round.
     static func aspectRatio(from handle: OpaquePointer) -> Double? {
-        string(Property.aspect, handle).flatMap(Double.init).flatMap { $0.isFinite && $0 > .zero ? $0 : nil }
+        guard let aspect = string(Property.aspect, handle).flatMap(Double.init), aspect.isFinite, aspect > .zero else { return nil }
+        let quarterTurns = (string(Property.rotate, handle).flatMap(Int.init) ?? .zero) / 90
+        return quarterTurns.isMultiple(of: 2) ? aspect : 1 / aspect
     }
 
     static func dynamicRange(forGamma gamma: String) -> VideoDynamicRange {
