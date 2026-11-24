@@ -22,10 +22,9 @@ public struct PlexServerClient: MediaServerClient {
         context.serverID
     }
 
+    /// Reachable only if this server answers at the address; asked without the token.
     public func isReachable() async -> Bool {
-        let builder = RequestBuilder(baseURL: context.baseURL, headers: context.builder.headers, timeout: PlexAPI.Defaults.probeTimeout)
-        guard let request = try? builder.request(path: PlexAPI.Path.identity) else { return false }
-        return (try? await context.http.data(for: request)) != nil
+        await PlexIdentityProbe(identity: context.identity, http: context.http).isServer(serverID, at: context.baseURL)
     }
 
     public func fetchLibraries() async throws -> [MediaLibrary] {

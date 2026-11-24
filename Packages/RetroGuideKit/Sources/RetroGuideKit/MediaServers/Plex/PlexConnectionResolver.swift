@@ -36,7 +36,7 @@ public struct PlexConnectionResolver: Sendable {
         let groups = Self.probeGroups(server, settings: settings, isVPNActive: isVPNActive)
         guard !groups.isEmpty else { throw HTTPError.secureConnectionRequired }
         for group in groups {
-            let reachable = await reachableConnections(group, token: server.accessToken)
+            let reachable = await reachableConnections(group, serverID: server.id)
             if let best = reachable.min(by: { $0.preferenceRank < $1.preferenceRank }) {
                 return (best.url, best.isLocal)
             }
@@ -92,31 +92,17 @@ public struct PlexConnectionResolver: Sendable {
         static let internet = 2
     }
 
-    private func reachableConnections(_ connections: [PlexConnectionCandidate], token: String) async -> [PlexConnectionCandidate] {
-        await withTaskGroup(of: PlexConnectionCandidate?.self) { group in
+    private func reachableConnections(_ connections: [PlexConnectionCandidate], serverID: String) async -> [PlexConnectionCandidate] {
+        let probe = PlexIdentityProbe(identity: identity, http: HTTPClient(session: session))
+        return await withTaskGroup(of: PlexConnectionCandidate?.self) { group in
             for connection in connections {
-                group.addTask { await isReachable(connection, token: token) ? connection : nil }
+                group.addTask { await probe.isServer(serverID, at: connection.url) ? connection : nil }
             }
             var results: [PlexConnectionCandidate] = []
             for await result in group {
                 if let result { results.append(result) }
             }
             return results
-        }
-    }
-
-    private func isReachable(_ connection: PlexConnectionCandidate, token: String) async -> Bool {
-        let builder = RequestBuilder(
-            baseURL: connection.url,
-            headers: identity.headers.merging([PlexAPI.Header.token: token]) { _, new in new },
-            timeout: PlexAPI.Defaults.probeTimeout
-        )
-        guard let request = try? builder.request(path: PlexAPI.Path.identity) else { return false }
-        do {
-            _ = try await HTTPClient(session: session).data(for: request)
-            return true
-        } catch {
-            return false
         }
     }
 }

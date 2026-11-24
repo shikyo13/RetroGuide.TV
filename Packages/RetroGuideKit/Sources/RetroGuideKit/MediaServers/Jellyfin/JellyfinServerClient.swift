@@ -33,9 +33,12 @@ public struct JellyfinServerClient: MediaServerClient {
     }
 
     /// Reachable only if the server answering is this one, so another
-    /// Jellyfin server that took over the address isn't mistaken for it.
+    /// Jellyfin server that took over the address isn't mistaken for it. Asked
+    /// without the token: the public info needs none, and whoever answers at the
+    /// address hasn't been confirmed yet.
     public func isReachable() async -> Bool {
-        guard let request = try? context.builder(timeout: JellyfinAPI.Defaults.probeTimeout).request(path: JellyfinAPI.Path.publicInfo),
+        let builder = RequestBuilder(baseURL: context.baseURL, headers: context.identity.headers(token: nil), timeout: JellyfinAPI.Defaults.probeTimeout)
+        guard let request = try? builder.request(path: JellyfinAPI.Path.publicInfo),
               let info = try? await context.http.decode(JellyfinPublicInfo.self, for: request)
         else { return false }
         return JellyfinServerInfo.sameServer(info.id, serverID)
