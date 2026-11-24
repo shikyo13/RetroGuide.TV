@@ -57,6 +57,9 @@ final class OnboardingModel {
     private enum Timing {
         /// Plex link codes expire after ~15 minutes; request a fresh one a little earlier.
         static let codeLifetime: Duration = .seconds(14 * 60)
+        /// Local network access still off this long after asking counts as refused
+        /// (answering the system's question takes a few seconds).
+        static let localNetworkRefusal: Duration = .seconds(10)
     }
 
     private enum Flow {
@@ -107,6 +110,8 @@ final class OnboardingModel {
     /// The Plex server being connected, for connecting over the internet
     /// instead of waiting for local network access.
     @ObservationIgnored private var pendingPlexServer: PlexServerCandidate?
+    /// Records a refusal if local network access is still off a while after asking.
+    @ObservationIgnored private var refusalCheck: Task<Void, Never>?
 
     /// - Parameters:
     ///   - accountToken: A saved Plex account token; when present, linking is skipped.
@@ -215,7 +220,7 @@ final class OnboardingModel {
 
     /// The viewer opened Plex's sign-in page or plex.tv/link.
     func plexSignInOpened() {
-        PurchaseAttribution.shared.record(UsageEvent(.setup, detail: UsageEvent.SetupStep.plexSignInOpened.rawValue))
+        record(UsageEvent.SetupStep.plexSignInOpened)
     }
 
     /// The viewer closed Plex's sign-in page before linking the account.
@@ -227,6 +232,12 @@ final class OnboardingModel {
         guard !Task.isCancelled else { return }
         record(kind == .plex ? .plexLocalNetworkBlocked : .jellyfinLocalNetworkBlocked)
         setStep(.waitingForLocalNetwork(kind))
+        refusalCheck?.cancel()
+        refusalCheck = Task { [weak self] in
+            try? await Task.sleep(for: Timing.localNetworkRefusal)
+            guard !Task.isCancelled, let self, step == .waitingForLocalNetwork(kind) else { return }
+            record(kind == .plex ? .plexLocalNetworkRefused : .jellyfinLocalNetworkRefused)
+        }
     }
 
     // MARK: - Plex flow
@@ -313,6 +324,11 @@ final class OnboardingModel {
 
     func record(_ problem: UsageEvent.SetupProblem) {
         PurchaseAttribution.shared.record(UsageEvent(.setupProblem, detail: problem.rawValue))
+    }
+
+    /// Records a setup step that isn't a screen of its own.
+    func record(_ step: UsageEvent.SetupStep) {
+        PurchaseAttribution.shared.record(UsageEvent(.setup, detail: step.rawValue))
     }
 }
 

@@ -32,7 +32,7 @@ extension OnboardingModel {
                 break
             }
             guard let self else { return }
-            if let problem = found.problem { record(problem) }
+            if let problem = found.problem { record(problem) } else { record(UsageEvent.SetupStep.jellyfinFound) }
             lastJellyfinScan = scan
             // One server and nothing else to choose: straight to signing in,
             // or to connecting without encryption.

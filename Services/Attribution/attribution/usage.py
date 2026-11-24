@@ -17,10 +17,10 @@ REASONS = {'timeout', 'offline', 'unreachable', 'notSecure', 'certificate', 'una
 PROBLEMS = {'plexNoServers', 'jellyfinFoundNone', 'jellyfinFoundNotSecure', 'jellyfinFoundUntrusted',
             'jellyfinNotSecure', 'jellyfinUntrusted', 'jellyfinNoAnswer', 'jellyfinUnencryptedChosen',
             'jellyfinNotSecureInternet', 'jellyfinLocalNetworkBlocked', 'plexLocalNetworkBlocked',
-            'plexSignInClosed', 'plexCodeExpired'}
+            'jellyfinLocalNetworkRefused', 'plexLocalNetworkRefused', 'plexSignInClosed', 'plexCodeExpired'}
 # UsageEvent.SetupStep and UsageEvent.Location in the app.
-STEPS = {'welcome', 'plexLink', 'plexSignInOpened', 'plexServers', 'jellyfinFind', 'jellyfinAddress',
-         'jellyfinSignIn', 'libraries', 'failed'}
+STEPS = {'welcome', 'plexLink', 'plexSignInOpened', 'plexServers', 'jellyfinFind', 'jellyfinFound',
+         'jellyfinAddress', 'jellyfinSignIn', 'libraries', 'failed'}
 LOCATIONS = {'home', 'away'}
 EVENTS = {
     'active': SERVERS,
@@ -98,8 +98,8 @@ def store(database, installation, platform, version, events, storefront=None, la
 WHY = ('setupProblem', 'setupFailed', 'libraryFailed', 'playbackFailed', 'playbackStalled')
 
 FUNNEL = [('setup', 'welcome'), ('setup', 'plexLink'), ('setup', 'plexSignInOpened'), ('setup', 'jellyfinFind'),
-          ('setup', 'libraries'), ('setup', 'failed'), ('setupProblem', None), ('serverConnected', None),
-          ('libraryFailed', None), ('lineupReady', None), ('watched', None), ('playbackFailed', None),
+          ('setup', 'jellyfinFound'), ('setup', 'libraries'), ('setup', 'failed'), ('setupProblem', None),
+          ('serverConnected', None), ('libraryFailed', None), ('lineupReady', None), ('watched', None), ('playbackFailed', None),
           ('playbackStalled', None), ('proViewed', None)]
 
 def usage_report(database, start, end):

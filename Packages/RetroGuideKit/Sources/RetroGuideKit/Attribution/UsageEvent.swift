@@ -41,6 +41,8 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         case plexSignInOpened
         case plexServers
         case jellyfinFind
+        /// The Jellyfin search found at least one server it can connect to.
+        case jellyfinFound
         case jellyfinAddress
         case jellyfinSignIn
         case libraries
@@ -63,11 +65,17 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         /// offered (the viewer was told to use the home or VPN address).
         case jellyfinNotSecureInternet
         /// Finding a Jellyfin server waited on local network access: the
-        /// system was asking, or it's turned off in Settings.
+        /// system was asking (as it does the first time on iPhone and iPad),
+        /// or it's turned off in Settings.
         case jellyfinLocalNetworkBlocked
         /// Connecting a Plex server with a home address waited on local
         /// network access.
         case plexLocalNetworkBlocked
+        /// Local network access was still off a while after the Jellyfin
+        /// search asked for it: refused, or the question left unanswered.
+        case jellyfinLocalNetworkRefused
+        /// The same, while connecting a Plex server at home.
+        case plexLocalNetworkRefused
         /// Plex's sign-in page was closed before the account was linked.
         case plexSignInClosed
         /// A Plex link code expired without being approved (a new one is shown).
