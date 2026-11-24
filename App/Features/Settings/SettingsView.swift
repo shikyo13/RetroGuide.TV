@@ -20,7 +20,7 @@ struct SettingsView: View {
                 SettingsPage(title: String(localized: "Settings"), onExit: onClose) {
                     SettingsSection(Self.proName) {
                         NavigationLink {
-                            ProUpgradeView()
+                            ProUpgradeView().proEntry(.settings)
                         } label: {
                             SettingsRowLabel(
                                 title: app.pro.isPro ? Self.proName : String(localized: "Upgrade to Pro"),
@@ -39,6 +39,7 @@ struct SettingsView: View {
                             }
                         } else {
                             ProLockedRow(title: String(localized: "Create another channel"), systemImage: "plus.rectangle.on.rectangle")
+                                .proEntry(.channels)
                         }
                         if !app.parentalControls.policy.isEnabled || !app.parentalControls.policy.usesCustomLineup {
                             NavigationLink { ChannelGroupsView() } label: {

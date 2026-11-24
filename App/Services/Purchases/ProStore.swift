@@ -65,6 +65,7 @@ final class ProStore {
     func purchase() async {
         guard let product else { return }
         purchaseState = .purchasing
+        record(.started)
         do {
             var options: Set<Product.PurchaseOption> = []
             if let token = PurchaseAttribution.shared.accountToken {
@@ -72,18 +73,27 @@ final class ProStore {
             }
             switch try await product.purchase(options: options) {
             case .success(let verification):
-                purchaseState = await handle(verification) ? .idle : .unverified
+                let verified = await handle(verification)
+                purchaseState = verified ? .idle : .unverified
+                record(verified ? .completed : .unverified)
             case .pending:
                 purchaseState = .pending
+                record(.pending)
             case .userCancelled:
                 purchaseState = .idle
+                record(.cancelled)
             @unknown default:
                 purchaseState = .idle
             }
         } catch {
             logger.error("Purchase failed: \(error.localizedDescription, privacy: .public)")
             purchaseState = .failed(error.localizedDescription)
+            record(.failed)
         }
+    }
+
+    private func record(_ step: UsageEvent.PurchaseStep) {
+        PurchaseAttribution.shared.record(UsageEvent(.proPurchase, detail: step.rawValue))
     }
 
     /// Asks the App Store to re-sync purchases (after a reinstall or on a new device),

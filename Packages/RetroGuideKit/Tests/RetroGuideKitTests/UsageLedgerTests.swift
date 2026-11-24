@@ -37,3 +37,16 @@ struct UsageLedgerTests {
         func add(_ batch: [UsageEvent]) { events += batch }
     }
 }
+
+@Suite("Watch time tally")
+struct WatchTimeTallyTests {
+    @Test("Each threshold is reported once a day, and a new UTC day starts over")
+    func thresholdsOncePerDay() {
+        var tally = WatchTimeTally()
+        let morning = Date(timeIntervalSince1970: 1_800_000_000)
+        #expect(tally.add(10 * 60, at: morning).isEmpty)
+        #expect(tally.add(55 * 60, at: morning) == [.quarterHour, .hour])
+        #expect(tally.add(60 * 60, at: morning).isEmpty)
+        #expect(tally.add(20 * 60, at: morning.addingTimeInterval(86_400)) == [.quarterHour])
+    }
+}

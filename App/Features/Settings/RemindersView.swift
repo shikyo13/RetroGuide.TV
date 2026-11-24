@@ -11,7 +11,7 @@ struct RemindersView: View {
             Text("On Apple TV, reminders appear while RetroGuide is open. Set reminders on your iPhone or iPad for notifications outside the app.")
                 .font(Typography.settingsCaption).foregroundStyle(theme.textSecondary)
             #endif
-            if !app.pro.isPro { ProLockedRow(title: String(localized: "Program reminders"), systemImage: "bell") }
+            if !app.pro.isPro { ProLockedRow(title: String(localized: "Program reminders"), systemImage: "bell").proEntry(.reminders) }
             if app.reminders.pending.isEmpty {
                 Text("No upcoming reminders").font(Typography.settingsBody).foregroundStyle(theme.textSecondary)
             }

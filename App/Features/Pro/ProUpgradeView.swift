@@ -1,9 +1,11 @@
+import RetroGuideKit
 import SwiftUI
 
 /// What RetroGuide Pro includes, with the purchase and restore buttons.
 struct ProUpgradeView: View {
     @Environment(AppModel.self) private var app
     @Environment(\.theme) private var theme
+    @Environment(\.proEntry) private var entry
 
     var body: some View {
         let pro = app.pro
@@ -31,7 +33,7 @@ struct ProUpgradeView: View {
         }
         .task { await pro.loadProductIfNeeded() }
         .onAppear {
-            if !pro.isPro { app.recordUsage(.proViewed) }
+            if !pro.isPro { app.recordUsage(.proViewed, detail: entry.rawValue) }
         }
     }
 

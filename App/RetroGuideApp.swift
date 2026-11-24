@@ -53,7 +53,12 @@ struct RetroGuideApp: App {
                 .typesettingLanguage(Self.appLanguage)
                 .preferredColorScheme(.dark)
                 .onChange(of: model.pro.hasLoaded ? model.pro.isPro : nil) { model.proAccessChanged() }
-                .task { await model.start() }
+                .task {
+                    #if os(iOS)
+                    CrashReports.shared.start()
+                    #endif
+                    await model.start()
+                }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {

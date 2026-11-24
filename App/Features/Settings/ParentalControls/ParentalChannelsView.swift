@@ -33,6 +33,7 @@ struct ParentalChannelsView: View {
                             }
                         } else {
                             ProLockedRow(title: String(localized: "Add another channel"), systemImage: "plus")
+                                .proEntry(.channels)
                         }
                         if draft.channelCustomization.customChannels.isEmpty {
                             Text("Add your first channel. An empty custom lineup shows no channels.")

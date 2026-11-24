@@ -28,8 +28,8 @@ struct AdvancedSettingsView: View {
                                          value: AllChannelsOrdering.summary(app.customization.defaultOrdering))
                     }
                 } else {
-                    ProLockedRow(title: String(localized: "Program start times"), systemImage: "clock")
-                    ProLockedRow(title: String(localized: "Schedule order for all channels"), systemImage: "shuffle")
+                    ProLockedRow(title: String(localized: "Program start times"), systemImage: "clock").proEntry(.schedule)
+                    ProLockedRow(title: String(localized: "Schedule order for all channels"), systemImage: "shuffle").proEntry(.schedule)
                 }
                 if removedTitleCount > .zero {
                     NavigationLink { RemovedTitlesPage() } label: {

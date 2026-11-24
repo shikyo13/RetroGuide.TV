@@ -48,7 +48,7 @@ struct WidgetSettingsView: View {
                     }
                 }
             } else {
-                ProLockedRow(title: String(localized: "Customize widget channels"), systemImage: "slider.horizontal.3")
+                ProLockedRow(title: String(localized: "Customize widget channels"), systemImage: "slider.horizontal.3").proEntry(.widgets)
             }
         }
     }

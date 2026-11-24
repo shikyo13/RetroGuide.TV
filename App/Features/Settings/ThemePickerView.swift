@@ -25,7 +25,7 @@ struct ThemePickerView: View {
                         .themeSwatchStyle()
                     } else {
                         NavigationLink {
-                            ProUpgradeView()
+                            ProUpgradeView().proEntry(.theme)
                         } label: {
                             swatch(for: theme, isLocked: true)
                         }

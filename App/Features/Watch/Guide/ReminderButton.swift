@@ -20,6 +20,6 @@ struct ReminderButton: View {
         }
         .buttonStyle(RetroButtonStyle(prominence: isProminent ? .primary : .secondary))
         .disabled(program.start <= .now)
-        .appSheet(isPresented: $showsUpgrade) { ProUpgradeView() }
+        .appSheet(isPresented: $showsUpgrade) { ProUpgradeView().proEntry(.reminders) }
     }
 }

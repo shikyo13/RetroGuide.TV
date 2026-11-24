@@ -16,7 +16,7 @@ struct TopShelfSettingsRows: View {
                     .font(Typography.caption).foregroundStyle(theme.textSecondary)
             }
         } else {
-            ProLockedRow(title: String(localized: "Use Favorites on Top Shelf"), systemImage: "star")
+            ProLockedRow(title: String(localized: "Use Favorites on Top Shelf"), systemImage: "star").proEntry(.topShelf)
         }
         Text("Move RetroGuide.TV to the top row of your Apple TV Home Screen to see what's on.")
             .font(Typography.caption).foregroundStyle(theme.textSecondary)

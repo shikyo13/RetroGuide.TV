@@ -46,7 +46,7 @@ struct OnboardingFlowView: View {
         .onDisappear { model?.cancel() }
         .appSheet(isPresented: $showsPro) {
             NavigationStack {
-                ProUpgradeView()
+                ProUpgradeView().proEntry(.setup)
                     .toolbar {
                         ToolbarItem(placement: .confirmationAction) {
                             Button("Done") { showsPro = false }

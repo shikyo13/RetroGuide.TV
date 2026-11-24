@@ -23,7 +23,7 @@ struct ScheduleOrderSection: View {
                 ScheduleUpdatingNote(isVisible: pending != nil && app.isRebuildingLineup)
             } else {
                 CheckmarkRow(title: selection.displayName, detail: selection.explanation, isSelected: true) {}
-                ProLockedRow(title: String(localized: "Change schedule order"), systemImage: "shuffle")
+                ProLockedRow(title: String(localized: "Change schedule order"), systemImage: "shuffle").proEntry(.schedule)
             }
         }
         .onChange(of: selection) { _, newValue in

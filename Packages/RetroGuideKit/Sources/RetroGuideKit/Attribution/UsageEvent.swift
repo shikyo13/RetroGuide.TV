@@ -29,8 +29,98 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         /// A playing program stopped to buffer for a while. Detail: the
         /// playback ``Location``.
         case playbackStalled
-        /// The Pro page was opened.
+        /// The Pro page was opened. Detail: where from, a ``ProEntry`` (empty before 1.11.4).
         case proViewed
+        /// A program started playing. Detail: the ``Player``.
+        case played
+        /// No Signal, by player. Detail: `player.reason` (``detail(_:_:)``).
+        case playerFailed
+        /// Buffering, by player. Detail: `player.location`.
+        case playerStalled
+        /// How long a channel change took to show a picture. Detail: `player.time` (``TuneTime``).
+        case tuneTime
+        /// Programs played for at least this long today. Detail: ``WatchTime``.
+        case watchTime
+        /// A step of buying Pro. Detail: ``PurchaseStep``.
+        case proPurchase
+        /// The app crashed (MetricKit, iPhone and iPad). Detail: the build it crashed in.
+        case crashed
+        /// The app stopped responding for a while (MetricKit). Detail: the build.
+        case hung
+    }
+
+    /// The video player, for the `player…` events.
+    public enum Player: String, Sendable, CaseIterable {
+        /// RetroGuide Player (libmpv).
+        case retroguide
+        /// Apple Player (AVFoundation).
+        case apple
+    }
+
+    /// `player.value`, the detail of the per-player events.
+    public static func detail(_ player: Player, _ value: some RawRepresentable<String>) -> String {
+        "\(player.rawValue).\(value.rawValue)"
+    }
+
+    /// Channel change to picture, in coarse buckets.
+    public enum TuneTime: String, Sendable, CaseIterable {
+        case underOne = "0-1s"
+        case underThree = "1-3s"
+        case underTen = "3-10s"
+        case longer = "10s+"
+
+        public init(seconds: Double) {
+            switch seconds {
+            case ..<1: self = .underOne
+            case ..<3: self = .underThree
+            case ..<10: self = .underTen
+            default: self = .longer
+            }
+        }
+    }
+
+    /// Daily playing time thresholds, each reported once a day when crossed.
+    public enum WatchTime: String, Sendable, CaseIterable {
+        case quarterHour = "15m"
+        case hour = "1h"
+        case threeHours = "3h"
+        case sixHours = "6h"
+
+        public var seconds: Double {
+            switch self {
+            case .quarterHour: 15 * 60
+            case .hour: 60 * 60
+            case .threeHours: 3 * 60 * 60
+            case .sixHours: 6 * 60 * 60
+            }
+        }
+    }
+
+    /// Where the Pro page was opened from.
+    public enum ProEntry: String, Sendable, CaseIterable {
+        case settings
+        case theme
+        case channels
+        case favorites
+        case guide
+        case reminders
+        case setup
+        case servers
+        case schedule
+        case topShelf
+        case widgets
+        case other
+    }
+
+    /// The steps of buying Pro.
+    public enum PurchaseStep: String, Sendable, CaseIterable {
+        case started
+        case completed
+        case pending
+        case cancelled
+        case failed
+        /// Paid, but the App Store's signature didn't check out.
+        case unverified
     }
 
     /// Server setup steps, in the order they're reached.

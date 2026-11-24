@@ -136,6 +136,8 @@ final class Tuner {
     @ObservationIgnored let stallWatch = StallWatch()
     /// Called when a stream stops long before its program ends and is rejoined, with where it came from.
     @ObservationIgnored var onStreamCutOff: ((UsageEvent.Location) -> Void)?
+    /// Called when a channel change shows its picture, with how many seconds that took.
+    @ObservationIgnored var onTuned: ((Double) -> Void)?
     /// Where the playing stream comes from, for ``stallWatch``.
     @ObservationIgnored private var streamLocation = UsageEvent.Location.home
     @ObservationIgnored var onVideoFormatChanged: (() -> Void)?
@@ -740,8 +742,10 @@ final class Tuner {
             guard signal == .tuning else { return }
             startWatchdog?.cancel()
             if let tuneStart {
-                logger.notice("live in \((ContinuousClock.now - tuneStart).milliseconds, privacy: .public) ms")
+                let elapsed = ContinuousClock.now - tuneStart
+                logger.notice("live in \(elapsed.milliseconds, privacy: .public) ms")
                 self.tuneStart = nil
+                onTuned?(elapsed.seconds)
             }
             signal = .live
             liveSince = .now
@@ -981,5 +985,9 @@ final class Tuner {
 private extension Duration {
     var milliseconds: Int64 {
         components.seconds * 1000 + components.attoseconds / 1_000_000_000_000_000
+    }
+
+    var seconds: Double {
+        Double(components.seconds) + Double(components.attoseconds) / 1e18
     }
 }

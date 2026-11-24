@@ -59,7 +59,7 @@ struct GuideHeader: View {
                     if direction == .left { actions.onFocusLiveControls() }
                 }
                 #endif
-                .appSheet(isPresented: $showsUpgrade) { ProUpgradeView() }
+                .appSheet(isPresented: $showsUpgrade) { ProUpgradeView().proEntry(.guide) }
                 if let channel, let program, program.start > .now {
                     ReminderButton(channel: channel, program: program)
                         .labelStyle(.iconOnly)

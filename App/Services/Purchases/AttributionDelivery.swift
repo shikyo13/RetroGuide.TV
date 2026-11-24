@@ -163,6 +163,7 @@ actor AttributionDelivery {
     private struct UsageBatch: Encodable {
         let platform: String
         let version: String
+        let os: String
         let storefront: String?
         let language: String?
         let events: [UsageEvent]
@@ -170,6 +171,7 @@ actor AttributionDelivery {
         init(client: UsageClient, context: UsageContext, events: [UsageEvent]) {
             platform = client.platform
             version = client.version
+            os = client.os
             storefront = context.storefront
             language = context.language
             self.events = events
@@ -177,10 +179,12 @@ actor AttributionDelivery {
     }
 }
 
-/// The device type and app version sent with usage events.
+/// The device type, major system version and app version sent with usage events.
 struct UsageClient: Sendable {
     let platform: String
     let version: String
+    /// "27" for iOS 27 or tvOS 27.
+    let os = String(ProcessInfo.processInfo.operatingSystemVersion.majorVersion)
 }
 
 /// Where usage comes from, coarsely: the App Store country the person buys from

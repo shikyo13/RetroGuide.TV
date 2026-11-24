@@ -29,7 +29,7 @@ struct ServersView: View {
                         SettingsRowLabel(title: String(localized: "Add a server"), systemImage: "plus.circle", value: nil)
                     }
                 } else {
-                    ProLockedRow(title: String(localized: "Add another server"), systemImage: "plus.circle")
+                    ProLockedRow(title: String(localized: "Add another server"), systemImage: "plus.circle").proEntry(.servers)
                 }
             }
             SettingsSection(String(localized: "Library")) {

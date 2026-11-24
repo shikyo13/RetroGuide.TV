@@ -104,6 +104,7 @@ final class AppModel {
     private var parentalAllowedItemIDs: Set<String> = []
 
     let sleepTimer = SleepTimer()
+    @ObservationIgnored let watchTime = WatchTimeCounter()
     let reminders = ProgramReminders()
 
     let tuner: Tuner
@@ -171,13 +172,17 @@ final class AppModel {
         }
         tuner.onNoSignal = { [weak self] reason in
             self?.recordUsage(.playbackFailed, detail: reason.rawValue)
+            self?.recordPlayerUsage(.playerFailed, reason)
         }
         tuner.stallWatch.onStalled = { [weak self] location in
-            self?.recordUsage(.playbackStalled, detail: location.rawValue)
+            self?.recordStall(at: location)
         }
         // A stream cut off mid-program stopped to load too, just for longer.
         tuner.onStreamCutOff = { [weak self] location in
-            self?.recordUsage(.playbackStalled, detail: location.rawValue)
+            self?.recordStall(at: location)
+        }
+        tuner.onTuned = { [weak self] elapsed in
+            self?.recordPlayerUsage(.tuneTime, UsageEvent.TuneTime(seconds: elapsed))
         }
         tuner.onVideoFormatChanged = { [weak self] in
             self?.updateDisplayMode()
@@ -195,6 +200,7 @@ final class AppModel {
             guard let self else { return }
             nowPlaying?.update(channel: tuner.channel, program: tuner.program, isPlaying: tuner.signal == .live, independentPosition: tuner.independentPlaybackPosition)
             if tuner.signal == .live { recordWatching() }
+            countWatchTime()
         }
         tuner.languagePreferences = store.languagePreferences
         // Carry over the previous iCloud rules once. All subsequent cloud
