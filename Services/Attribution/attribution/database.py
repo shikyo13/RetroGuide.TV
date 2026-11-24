@@ -64,6 +64,11 @@ class Database:
             import hmac
             if not hmac.compare_digest(row['secret_hash'], digest(secret)):
                 raise PermissionError('Installation credentials do not match')
+            if row['app_identity'] is None and identity:
+                # Apple marks the identity optional: an install first registered without it
+                # takes it once it arrives. An established identity never changes.
+                db.execute('UPDATE installations SET app_identity=? WHERE id=? AND app_identity IS NULL', (identity, identifier))
+                row = db.execute('SELECT * FROM installations WHERE id=?', (identifier,)).fetchone()
             if row['app_identity'] != identity:
                 raise PermissionError('Installation identity changed')
             return dict(row)

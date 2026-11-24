@@ -151,6 +151,15 @@ def test_changed_apple_account_does_not_inherit_previous_accounts_campaign(setup
     upload(client,identifier)
     assert revenue_report(db,0,3000)['groups'][0]['campaignId'] is None
 
+def test_identity_arriving_later_is_taken_once_and_never_replaced(setup):
+    db,apple,client,identifier = setup
+    apple.installation = lambda signed: NS(appTransactionId=None)
+    assert register(client,identifier).status_code == 200
+    apple.installation = lambda signed: NS(appTransactionId='app-1')
+    assert register(client,identifier).status_code == 200
+    apple.installation = lambda signed: NS(appTransactionId='another-account')
+    assert register(client,identifier).status_code == 403
+
 def test_usage_needs_a_registered_installation_and_keeps_only_known_events(setup):
     from datetime import datetime, timezone
     from attribution.usage import usage_report
