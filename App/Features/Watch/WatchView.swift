@@ -151,7 +151,7 @@ struct WatchView: View {
             .ignoresSafeArea(.container)
         }
         #endif
-        .environment(\.pictureInPictureClearance, WatchLayout.pictureInPictureClearance(in: screenSize))
+        .environment(\.pictureInPictureClearance, pictureInPictureClearance)
         #if os(iOS)
         .statusBarHidden(overlay == .none)
         .persistentSystemOverlays(overlay == .none ? .hidden : .automatic)
@@ -206,6 +206,15 @@ struct WatchView: View {
             bottom: max(screenSize.height - safeFrame.maxY, .zero),
             trailing: max(screenSize.width - safeFrame.maxX, .zero)
         )
+    }
+
+    /// Room menus leave for the PiP window. The window sits above the free
+    /// version's banner, so in portrait the banner's height is added: otherwise
+    /// a page's last lines can't scroll out from under the window.
+    private var pictureInPictureClearance: EdgeInsets {
+        var clearance = WatchLayout.pictureInPictureClearance(in: screenSize)
+        if clearance.bottom > .zero { clearance.bottom += bannerHeight }
+        return clearance
     }
 
     /// Apple TV's PiP insets already account for overscan. On iPhone and iPad

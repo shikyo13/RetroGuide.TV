@@ -44,7 +44,7 @@ struct ProUpgradeView: View {
                 Label { buyTitle(pro) } icon: { Image(systemName: "star.fill") }
             }
             .buttonStyle(.retroPrimary)
-            .disabled(pro.product == nil || pro.purchaseState == .purchasing)
+            .disabled(pro.product == nil || pro.purchaseState == .purchasing || pro.purchaseState == .restoring)
 
             if pro.product == nil, !pro.isLoadingProduct {
                 Button {
@@ -61,6 +61,7 @@ struct ProUpgradeView: View {
                 Label("Restore Purchase", systemImage: "arrow.clockwise")
             }
             .buttonStyle(.retro)
+            .disabled(pro.purchaseState == .restoring)
 
             if let status = statusMessage(pro) {
                 Text(status)
@@ -85,6 +86,11 @@ struct ProUpgradeView: View {
         case .purchasing: String(localized: "Contacting the App Store…")
         case .pending: String(localized: "Waiting for approval. Pro unlocks as soon as the purchase goes through.")
         case .failed(let message): String(localized: "The purchase didn't go through: \(message)")
+        case .unverified: String(localized: "The App Store couldn't verify the purchase. Try Restore Purchase.")
+        case .restoring: String(localized: "Checking your purchases…")
+        case .restored: String(localized: "Pro restored.")
+        case .nothingToRestore: String(localized: "No RetroGuide Pro purchase was found for this Apple Account.")
+        case .restoreFailed(let message): String(localized: "Couldn't reach the App Store: \(message)")
         }
     }
 }

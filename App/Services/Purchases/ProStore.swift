@@ -18,6 +18,12 @@ final class ProStore {
         case purchasing
         case pending
         case failed(String)
+        /// The App Store approved a purchase but its signature didn't check out.
+        case unverified
+        case restoring
+        case restored
+        case nothingToRestore
+        case restoreFailed(String)
     }
 
     private(set) var isPro = false
@@ -66,8 +72,7 @@ final class ProStore {
             }
             switch try await product.purchase(options: options) {
             case .success(let verification):
-                await handle(verification)
-                purchaseState = .idle
+                purchaseState = await handle(verification) ? .idle : .unverified
             case .pending:
                 purchaseState = .pending
             case .userCancelled:
@@ -81,14 +86,25 @@ final class ProStore {
         }
     }
 
-    /// Asks the App Store to re-sync purchases (after a reinstall or on a new device).
+    /// Asks the App Store to re-sync purchases (after a reinstall or on a new device),
+    /// and says what came of it.
     func restore() async {
+        purchaseState = .restoring
         do {
             try await AppStore.sync()
+        } catch StoreKitError.userCancelled {
+            // The viewer closed the Apple Account sign-in: nothing to report.
+            purchaseState = .idle
+            return
         } catch {
             logger.error("Restore failed: \(error.localizedDescription, privacy: .public)")
+            await refreshOwnership()
+            // Already owned on this device: nothing was lost, so don't report a failure.
+            purchaseState = isPro ? .restored : .restoreFailed(error.localizedDescription)
+            return
         }
         await refreshOwnership()
+        purchaseState = isPro ? .restored : .nothingToRestore
     }
 
     /// Loads the product if an earlier try failed (no network at launch),
@@ -119,11 +135,15 @@ final class ProStore {
         isPro = owned
     }
 
-    private func handle(_ result: VerificationResult<Transaction>) async {
-        guard case .verified(let transaction) = result, transaction.productID == ProductID.pro else { return }
+    /// Applies a purchase; `false` if its signature didn't verify (Pro stays locked).
+    @discardableResult
+    private func handle(_ result: VerificationResult<Transaction>) async -> Bool {
+        guard case .verified(let transaction) = result else { return false }
+        guard transaction.productID == ProductID.pro else { return true }
         PurchaseAttribution.shared.record(result)
         await transaction.finish()
         await refreshOwnership()
+        return true
     }
 
     private static func grantsPro(_ transaction: Transaction) -> Bool {
