@@ -140,7 +140,11 @@ final class LoopbackPlaybackRelayExchange: NSObject, @preconcurrency URLSessionD
             completionHandler(.cancel); reject(502); return
         }
         resetDeadline()
-        if !isHead && (url.pathExtension.lowercased() == "m3u8" || http.mimeType?.lowercased().contains("mpegurl") == true) {
+        let isPlaylist = url.pathExtension.lowercased() == "m3u8" || http.mimeType?.lowercased().contains("mpegurl") == true
+        if isHead && isPlaylist {
+            // The body a GET returns is rewritten, so the server's length and ranges don't apply to it.
+            sendHeaders(http.statusCode == 206 ? 200 : http.statusCode, ["Content-Type": "application/vnd.apple.mpegurl"])
+        } else if !isHead && isPlaylist {
             if http.statusCode == 206, var fullRequest = dataTask.originalRequest,
                fullRequest.value(forHTTPHeaderField: "Range") != nil {
                 fullRequest.setValue(nil, forHTTPHeaderField: "Range")
@@ -182,7 +186,7 @@ final class LoopbackPlaybackRelayExchange: NSObject, @preconcurrency URLSessionD
         if let base = manifestBase {
             do {
                 guard let relay else { cancel(); return }
-                let body = try LoopbackPlaybackRelayManifest.rewrite(manifest, base: base, register: relay.register)
+                let body = try LoopbackPlaybackRelayManifest.rewrite(manifest, base: base) { try relay.register($0, pinned: $1) }
                 manifest.removeAll()
                 guard body.count <= LoopbackPlaybackRelay.Limits.manifestBytes else { reject(502); return }
                 sendHeaders(200, ["Content-Type": "application/vnd.apple.mpegurl", "Transfer-Encoding": "chunked"])
@@ -244,7 +248,9 @@ final class LoopbackPlaybackRelayExchange: NSObject, @preconcurrency URLSessionD
     }
 
     private func enqueue(_ data: Data) {
-        guard !ended, queuedBytes + data.count <= LoopbackPlaybackRelay.Limits.bufferedBytes else { cancel(); return }
+        // Headroom for headers and chunk framing: a playlist exactly at its size limit must still fit.
+        let limit = LoopbackPlaybackRelay.Limits.bufferedBytes + LoopbackPlaybackRelay.Limits.headerBytes
+        guard !ended, queuedBytes + data.count <= limit else { cancel(); return }
         queued.append(data)
         queuedBytes += data.count
         drain()

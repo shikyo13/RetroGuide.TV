@@ -7,9 +7,13 @@ import RetroGuideKit
 final class LoopbackPlaybackRelay {
     enum Limits {
         static let connections = 12
-        /// Room for every segment of a long film: servers cut one-second segments,
-        /// so a nine-hour playlist still fits without forgetting its start.
+        /// Media segments kept addressable: servers cut one-second segments, so a
+        /// nine-hour playlist still fits without forgetting its start. Past this the
+        /// oldest segment goes first, as a live window moves on.
         static let resources = 32_768
+        /// Playlists, keys and initialization segments, which players keep reusing and
+        /// which are therefore never forgotten while the stream plays.
+        static let pinnedResources = 4_096
         static let headerBytes = 16_384
         static let sniffBytes = 16
         static let manifestBytes = 1_048_576
@@ -21,7 +25,9 @@ final class LoopbackPlaybackRelay {
     private var exchanges: [UUID: LoopbackPlaybackRelayExchange] = [:]
     private var resources: [String: URL] = [:]
     private var identifiers: [URL: String] = [:]
-    private var resourceOrder: [String] = []
+    /// Segments that may be forgotten, oldest first.
+    private var segmentOrder: [String] = []
+    private var pinned: Set<String> = []
     private var nextResource = 0
     private let secret = UUID().uuidString + UUID().uuidString
     private let origin: URL
@@ -78,23 +84,31 @@ final class LoopbackPlaybackRelay {
         active.forEach { $0.cancel() }
         resources.removeAll()
         identifiers.removeAll()
-        resourceOrder.removeAll()
+        segmentOrder.removeAll()
+        pinned.removeAll()
     }
 
-    func register(_ url: URL) throws -> URL {
+    /// The local address for `url`. `pinned` resources (playlists, keys, maps) stay
+    /// addressable for the whole stream; others are media segments, forgotten oldest
+    /// first once there are too many. Looking up a known address is constant time, so
+    /// refreshing a long playlist costs no more than reading it.
+    func register(_ url: URL, pinned isPinned: Bool = true) throws -> URL {
         guard !stopped, let port, SecureTransport.permitsRedirect(from: origin, to: url) else {
             throw HTTPError.secureConnectionRequired
         }
         let identifier: String
         if let existing = identifiers[url] {
             identifier = existing
-            resourceOrder.removeAll { $0 == existing }
-            resourceOrder.append(existing)
-        }
-        else {
-            if resources.count >= Limits.resources,
-               let index = resourceOrder.firstIndex(where: { resources[$0] != origin }) {
-                let oldest = resourceOrder.remove(at: index)
+            if isPinned, !pinned.contains(existing) {
+                guard pinned.count < Limits.pinnedResources else { throw HTTPError.invalidResponse }
+                segmentOrder.removeAll { $0 == existing }
+                pinned.insert(existing)
+            }
+        } else {
+            if isPinned {
+                guard pinned.count < Limits.pinnedResources else { throw HTTPError.invalidResponse }
+            } else if segmentOrder.count >= Limits.resources {
+                let oldest = segmentOrder.removeFirst()
                 if let previous = resources.removeValue(forKey: oldest) { identifiers.removeValue(forKey: previous) }
             }
             let suffix = ["m3u8", "mp4", "mov", "ts", "m4s", "aac", "wav", "mp3", "vtt"].contains(url.pathExtension.lowercased()) ? "." + url.pathExtension.lowercased() : ""
@@ -103,7 +117,7 @@ final class LoopbackPlaybackRelay {
             nextResource += 1
             resources[identifier] = url
             identifiers[url] = identifier
-            resourceOrder.append(identifier)
+            if isPinned { pinned.insert(identifier) } else { segmentOrder.append(identifier) }
         }
         // No server addresses, credentials or query strings enter local playback URLs.
         return URL(string: "http://\(Limits.host):\(port.rawValue)/\(secret)/\(identifier)")!
