@@ -423,15 +423,19 @@ final class ServerLibrary {
         return updated
     }
 
+    /// Switches the server `account` describes to `baseURL`, found by a check that
+    /// started from `account`. Only the address changes: anything saved while the
+    /// check was waiting on the network (libraries, quality, other settings) is kept.
+    /// If the server's address or connection settings changed meanwhile, the result
+    /// answers a question nobody is asking any more and is dropped.
     private func apply(_ baseURL: URL, to account: ServerAccount) {
-        var updated = account
-        updated.baseURL = baseURL
-        registry.refreshClient(for: updated)
+        guard let index = accounts.firstIndex(where: { $0.id == account.id }),
+              accounts[index].baseURL == account.baseURL,
+              accounts[index].connection == account.connection else { return }
+        accounts[index].baseURL = baseURL
+        registry.refreshClient(for: accounts[index])
         artworkResolver = registry.artworkResolver
-        if let index = accounts.firstIndex(where: { $0.id == account.id }) {
-            accounts[index] = updated
-            store.accounts = accounts
-        }
+        store.accounts = accounts
     }
 
     private func relocatePlexServer(_ account: ServerAccount) async -> URL? {
