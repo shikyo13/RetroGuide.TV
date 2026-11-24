@@ -4,6 +4,7 @@ import AVKit
 import CoreImage
 import CoreMedia
 import Metal
+import os
 import UIKit
 
 /// Gives RetroGuide Player a Picture in Picture source without changing how
@@ -34,13 +35,28 @@ final class SampleBufferFrameCopier: @unchecked Sendable {
     private var pool: CVPixelBufferPool?
     private var poolSize = (width: 0, height: 0)
     private var isCopying = false
-    /// Frames use the GPU, which iOS allows in the background only while the window shows.
-    nonisolated(unsafe) var isPictureInPictureActive = false
-    nonisolated(unsafe) private var isInBackground = false
+    /// Written on the main thread, read on Metal's completion thread, so both
+    /// flags live behind one lock and are read together.
+    private struct Eligibility {
+        var isPictureInPictureActive = false
+        var isInBackground = false
+    }
+    private let eligibility = OSAllocatedUnfairLock(initialState: Eligibility())
     private var observers: [NSObjectProtocol] = []
 
+    var isPictureInPictureActive: Bool {
+        get { eligibility.withLock { $0.isPictureInPictureActive } }
+        set { eligibility.withLock { $0.isPictureInPictureActive = newValue } }
+    }
+
+    private var isInBackground: Bool {
+        get { eligibility.withLock { $0.isInBackground } }
+        set { eligibility.withLock { $0.isInBackground = newValue } }
+    }
+
+    /// Frames use the GPU, which iOS allows in the background only while the window shows.
     private var isEnabled: Bool {
-        !isInBackground || isPictureInPictureActive
+        eligibility.withLock { !$0.isInBackground || $0.isPictureInPictureActive }
     }
 
     deinit {
