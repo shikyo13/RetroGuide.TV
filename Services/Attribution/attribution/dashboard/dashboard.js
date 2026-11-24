@@ -4,12 +4,14 @@ const REFRESH_MS = 60_000;
 // The copy is refreshed every minute; older than this means it stopped.
 const STALE_MS = 5 * 60_000;
 const RANGE_KEY = 'retroguide-stats-days';
+const DEFAULT_DAYS = 30;
 const PLATFORMS = [
   { key: 'iPhone', label: 'iPhone', color: 'var(--series-1)' },
   { key: 'iPad', label: 'iPad', color: 'var(--series-2)' },
   { key: 'AppleTV', label: 'Apple TV', color: 'var(--series-3)' },
   { key: 'Mac', label: 'Mac', color: 'var(--series-4)' },
 ];
+const PLATFORM_NAMES = Object.fromEntries(PLATFORMS.map(p => [p.key, p.label]));
 const REASON_GROUPS = {
   playbackFailed: 'Playback failed',
   setupProblem: 'Setup problems',
@@ -29,26 +31,29 @@ const REASONS = {
   jellyfinNoAnswer: 'Jellyfin: no answer', jellyfinUnencryptedChosen: 'Jellyfin: chose unencrypted',
   jellyfinLocalNetworkBlocked: 'Jellyfin: local network blocked', jellyfinLocalNetworkRefused: 'Jellyfin: local network refused',
 };
+const NOT_REPORTED = '—';
 const SVG = 'http://www.w3.org/2000/svg';
-const CHART = { top: 8, right: 4, bottom: 22, left: 30, gap: 2, radius: 4, ticks: 4 };
+const CHART = { top: 8, right: 4, bottom: 22, left: 30, gap: 2, radius: 4, ticks: 4, labelSpacing: 56 };
 
 let days = readRange();
 let latest = null;
 
+// ---- Small helpers ----------------------------------------------------------
+
 function readRange() {
-  try { const v = localStorage.getItem(RANGE_KEY); if (v !== null) return Number(v); } catch { /* private mode */ }
-  return 30;
+  try { const v = localStorage.getItem(RANGE_KEY); if (v !== null) return Number(v); } catch { /* storage off */ }
+  return DEFAULT_DAYS;
 }
 
 function saveRange(value) {
-  try { localStorage.setItem(RANGE_KEY, String(value)); } catch { /* private mode */ }
+  try { localStorage.setItem(RANGE_KEY, String(value)); } catch { /* storage off */ }
 }
 
-function el(tag, attrs = {}, text) {
+function el(tag, attrs = {}, ...children) {
   const node = document.createElement(tag);
   // Styles go through the CSSOM: the page's security policy refuses style attributes.
   for (const [k, v] of Object.entries(attrs)) k === 'style' ? (node.style.cssText = v) : node.setAttribute(k, v);
-  if (text !== undefined) node.textContent = text;
+  node.append(...children);
   return node;
 }
 
@@ -58,26 +63,70 @@ function svgEl(tag, attrs = {}) {
   return node;
 }
 
-const number = new Intl.NumberFormat();
-function money(revenue) {
-  const entries = Object.entries(revenue || {});
-  if (!entries.length) return '—';
-  return entries.map(([currency, amount]) =>
-    new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount)).join(' + ');
-}
-function shortDay(iso) {
+const count = n => new Intl.NumberFormat().format(n);
+const price = (amount, currency) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+/** One rule for every percentage on the page. */
+const percent = (part, whole) => (whole ? `${((100 * part) / whole).toFixed(1)}%` : NOT_REPORTED);
+
+function parseDay(iso) {
   const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return new Date(y, m - 1, d);
 }
+const shortDay = iso => parseDay(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+const clock = date => date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+// ---- Header and headline cards ---------------------------------------------
+
+function renderStatus(data) {
+  const asOf = new Date(data.dataAsOf);
+  const stale = Date.now() - asOf.getTime() > STALE_MS;
+  const status = document.getElementById('status');
+  status.className = stale ? 'status stale' : 'status';
+  status.textContent = stale
+    ? `Data as of ${clock(asOf)}: not updating. Check the copy from the server.`
+    : `Data as of ${clock(asOf)} · refreshes every minute`;
+  // When the UTC day starts, in the viewer's clock.
+  const midnight = new Date(Date.UTC(2000, 0, 1));
+  const utcStart = midnight.toLocaleTimeString([], { hour: 'numeric', timeZone: data.timezone });
+  document.getElementById('days-note').textContent =
+    `Installs and purchases count local days (${data.timezone}). App activity counts UTC days, which start at ${utcStart} local time` +
+    (data.activitySince ? `, and has been recorded since ${shortDay(data.activitySince)}.` : '.');
+}
+
+function tile(label, value, yesterday, allTime) {
+  const compare = el('div', { class: 'compare' },
+    el('div', {}, el('span', {}, 'Yesterday'), el('b', {}, yesterday)),
+    el('div', {}, el('span', {}, 'All time'), el('b', {}, allTime)));
+  return el('div', { class: 'tile' }, el('div', { class: 'label' }, label), el('div', { class: 'value' }, value), compare);
+}
+
+function renderTiles(h) {
+  const counted = (label, m) => tile(label, count(m.today), count(m.yesterday), count(m.allTime));
+  const rate = key => percent(h.purchases[key], h.installs[key]);
+  document.getElementById('tiles').replaceChildren(
+    counted('Installs', h.installs),
+    counted('Purchases', h.purchases),
+    tile('Buy rate', rate('today'), rate('yesterday'), rate('allTime')),
+    counted('Active devices', h.active),
+    counted('Watchers', h.watched),
+  );
+}
+
+// ---- Charts -----------------------------------------------------------------
 
 function niceMax(value) {
   if (value <= CHART.ticks) return CHART.ticks;
   const step = Math.pow(10, Math.floor(Math.log10(value / CHART.ticks)));
-  const unit = [1, 2, 5, 10].map(m => m * step).find(s => s * CHART.ticks >= value);
-  return unit * CHART.ticks;
+  return [1, 2, 5, 10].map(m => m * step).find(s => s * CHART.ticks >= value) * CHART.ticks;
 }
 
-/** Stacked (or single) bars per day, with a per-day hover tooltip. */
+function roundedTop(x, y, w, h, r) {
+  if (h <= 0) return '';
+  return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+}
+
+/** Stacked (or single) bars per day. A day still in progress is drawn faded;
+ *  days before anything was recorded get a band instead of empty bars. */
 function barChart(container, rows, series, describe) {
   container.replaceChildren();
   const width = container.clientWidth || 600;
@@ -87,56 +136,61 @@ function barChart(container, rows, series, describe) {
   const totals = rows.map(r => series.reduce((sum, s) => sum + (r[s.key] || 0), 0));
   const max = niceMax(Math.max(1, ...totals));
   const svg = svgEl('svg', { viewBox: `0 0 ${width} ${height}`, role: 'img' });
+  const slot = plotW / Math.max(rows.length, 1);
+  const barW = Math.max(1, slot - CHART.gap);
+
+  const unrecorded = rows.filter(r => r.recorded === false).length;
+  if (unrecorded) {
+    svg.append(svgEl('rect', { x: CHART.left, y: CHART.top, width: unrecorded * slot, height: plotH, class: 'unrecorded' }));
+    if (unrecorded * slot > 90) {
+      const label = svgEl('text', { x: CHART.left + (unrecorded * slot) / 2, y: CHART.top + plotH / 2, 'text-anchor': 'middle' });
+      label.textContent = 'Not recorded yet';
+      svg.append(label);
+    }
+  }
   for (let i = 0; i <= CHART.ticks; i++) {
     const value = (max / CHART.ticks) * i;
     const y = CHART.top + plotH - (value / max) * plotH;
     svg.append(svgEl('line', { x1: CHART.left, x2: width - CHART.right, y1: y, y2: y, class: i ? 'gridline' : 'baseline' }));
     const label = svgEl('text', { x: CHART.left - 6, y: y + 4, 'text-anchor': 'end' });
-    label.textContent = number.format(value);
+    label.textContent = count(value);
     svg.append(label);
   }
-  const slot = plotW / Math.max(rows.length, 1);
-  const barW = Math.max(1, slot - CHART.gap);
-  const labelEvery = Math.ceil(rows.length / Math.max(1, Math.floor(plotW / 56)));
+  const labelEvery = Math.ceil(rows.length / Math.max(1, Math.floor(plotW / CHART.labelSpacing)));
   rows.forEach((row, i) => {
     const x = CHART.left + i * slot + CHART.gap / 2;
     let y = CHART.top + plotH;
     const visible = series.filter(s => row[s.key] > 0);
+    const group = svgEl('g', row.partial ? { class: 'partial' } : {});
     visible.forEach((s, j) => {
       const h = (row[s.key] / max) * plotH;
-      const top = j === visible.length - 1;
-      // Separate stacked segments with a thin surface gap.
+      // Stacked segments are separated by a thin surface gap.
       const segment = Math.max(0, h - (j > 0 ? CHART.gap : 0));
       y -= h;
-      const r = top ? Math.min(CHART.radius, barW / 2, segment) : 0;
-      svg.append(svgEl('path', { d: roundedTop(x, y + (h - segment), barW, segment, r), fill: s.color }));
+      const r = j === visible.length - 1 ? Math.min(CHART.radius, barW / 2, segment) : 0;
+      group.append(svgEl('path', { d: roundedTop(x, y + (h - segment), barW, segment, r), fill: s.color }));
     });
+    svg.append(group);
     if ((rows.length - 1 - i) % labelEvery === 0) {
       const label = svgEl('text', { x: x + barW / 2, y: height - 6, 'text-anchor': 'middle' });
       label.textContent = shortDay(row.day);
       svg.append(label);
     }
     const hit = svgEl('rect', { x: CHART.left + i * slot, y: CHART.top, width: slot, height: plotH, class: 'hit' });
-    hit.addEventListener('pointermove', e => showTip(e, shortDay(row.day), describe(row)));
+    const title = shortDay(row.day) + (row.partial ? ' (so far)' : '');
+    const lines = row.recorded === false ? [['Not recorded yet', '']] : describe(row);
+    hit.addEventListener('pointermove', e => showTip(e, title, lines));
     hit.addEventListener('pointerleave', hideTip);
     svg.append(hit);
   });
   container.append(svg);
 }
 
-function roundedTop(x, y, w, h, r) {
-  if (h <= 0) return '';
-  return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
-}
-
 function showTip(event, title, lines) {
   const tip = document.getElementById('tooltip');
   tip.replaceChildren(el('div', { class: 't' }, title));
   for (const [label, value, color] of lines) {
-    const row = el('div', { class: 'r' });
-    const name = el('span', color ? { style: `--swatch:${color}` } : {}, label);
-    row.append(name, el('b', {}, value));
-    tip.append(row);
+    tip.append(el('div', { class: 'r' }, el('span', color ? { style: `--swatch:${color}` } : {}, label), el('b', {}, value)));
   }
   tip.hidden = false;
   const pad = 14;
@@ -149,126 +203,104 @@ function showTip(event, title, lines) {
 
 function hideTip() { document.getElementById('tooltip').hidden = true; }
 
-function tile(label, value, sub) {
-  const node = el('div', { class: 'tile' });
-  node.append(el('div', { class: 'label' }, label), el('div', { class: 'value' }, value));
-  const subline = el('div', { class: 'sub' });
-  subline.innerHTML = sub;
-  node.append(subline);
-  return node;
-}
-
-function escapeHTML(text) {
-  return String(text).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-}
-
-function renderTiles(h) {
-  const rate = (p, i) => (i ? `${((100 * p) / i).toFixed(1)}%` : '—');
-  document.getElementById('tiles').replaceChildren(
-    tile('Installs today', number.format(h.today.installs), `Yesterday <b>${h.yesterday.installs}</b>`),
-    tile('Purchases today', number.format(h.today.purchases),
-      `${h.today.purchases ? escapeHTML(money(h.today.revenue)) + ' · ' : ''}Yesterday <b>${h.yesterday.purchases}</b>` +
-        (h.yesterday.purchases ? ` (${escapeHTML(money(h.yesterday.revenue))})` : '')),
-    tile('Buy rate yesterday', rate(h.yesterday.purchases, h.yesterday.installs), 'Purchases per install'),
-    tile('Devices active today', number.format(h.activeToday), `Yesterday <b>${h.activeYesterday}</b> · UTC day`),
-    tile('Watched today', number.format(h.watchedToday), `Yesterday <b>${h.watchedYesterday}</b> · UTC day`),
-    tile('All time', `${number.format(h.allTime.purchases)} sold`,
-      `${number.format(h.allTime.installs)} installs · ${escapeHTML(money(h.allTime.revenue))}`),
-  );
+function renderCharts(data) {
+  barChart(document.getElementById('installs'), data.daily, [{ key: 'installs', color: 'var(--series-1)' }],
+    r => [['Installs', count(r.installs)]]);
+  barChart(document.getElementById('purchases'), data.daily, [{ key: 'purchases', color: 'var(--series-1)' }],
+    r => [['Purchases', count(r.purchases)], ['Buy rate', percent(r.purchases, r.installs)]]);
+  const used = PLATFORMS.filter(p => data.activity.some(r => r[p.key] > 0));
+  document.getElementById('activity-legend').replaceChildren(...used.map(p => el('span', { style: `--swatch:${p.color}` }, p.label)));
+  barChart(document.getElementById('activity'), data.activity, used,
+    r => [...used.slice().reverse().map(p => [p.label, count(r[p.key]), p.color]),
+      ['Active devices', count(used.reduce((s, p) => s + r[p.key], 0))], ['Watchers', count(r.watched)]]);
 }
 
 function renderFunnel(f) {
   const box = document.getElementById('funnel');
-  box.replaceChildren();
   document.getElementById('funnel-note').textContent = f.since
-    ? `Installations first seen since ${shortDay(f.since)} (setup steps are recorded from Nov 14)`
-    : 'No setup steps recorded yet';
+    ? `Installs first seen since ${shortDay(f.since)} · share of those installs`
+    : 'Nothing recorded yet';
   const base = f.steps[0]?.count || 0;
-  for (const step of f.steps) {
+  box.replaceChildren(...f.steps.map((step, i) => {
     const share = base ? (100 * step.count) / base : 0;
-    const row = el('div', { class: 'row' });
-    const track = el('div', { class: 'track' });
-    track.append(el('div', { class: 'bar', style: `width:${share}%` }));
-    const num = el('div', { class: 'num' }, number.format(step.count) + ' ');
-    num.append(el('small', {}, `${share.toFixed(share < 10 && share > 0 ? 1 : 0)}%`));
-    row.append(el('div', {}, step.label), track, num);
-    box.append(row);
-  }
+    const num = el('div', { class: 'num' }, `${count(step.count)} `, el('small', {}, i ? percent(step.count, base) : ''));
+    return el('div', { class: 'row' }, el('div', {}, step.label),
+      el('div', { class: 'track' }, el('div', { class: 'bar', style: `width:${share}%` })), num);
+  }));
 }
 
+// ---- Tables -----------------------------------------------------------------
+
+/** headers: [label, numeric?]; rows: arrays of cells, or { group: title }. */
 function table(headers, rows) {
   if (!rows.length) return el('p', { class: 'empty' }, 'Nothing in this range');
-  const t = el('table');
-  const head = el('tr');
-  headers.forEach(([text, numeric]) => head.append(el('th', numeric ? { class: 'n' } : {}, text)));
-  t.append(head);
-  for (const row of rows) {
-    const tr = el('tr', row.group ? { class: 'group' } : {});
-    row.cells.forEach((cell, i) => tr.append(el('td', headers[i]?.[1] ? { class: 'n' } : (row.group ? { colspan: headers.length } : {}), cell)));
-    t.append(tr);
-  }
-  return t;
+  const head = el('tr', {}, ...headers.map(([text, numeric]) => el('th', numeric ? { class: 'n' } : {}, text)));
+  const body = rows.map(row => row.group
+    ? el('tr', { class: 'group' }, el('td', { colspan: headers.length }, row.group))
+    : el('tr', {}, ...row.map((cell, i) => el('td', headers[i][1] ? { class: 'n' } : {}, cell))));
+  return el('table', {}, head, ...body);
 }
 
-function renderReasons(reasons) {
-  const rows = [];
+function renderTables(data) {
+  const reasons = [];
   for (const [key, title] of Object.entries(REASON_GROUPS)) {
-    if (!reasons[key]?.length) continue;
-    rows.push({ group: true, cells: [title] });
-    for (const [reason, count] of reasons[key]) rows.push({ cells: [REASONS[reason] || reason, number.format(count)] });
+    if (!data.reasons[key]?.length) continue;
+    reasons.push({ group: title });
+    for (const [reason, devices] of data.reasons[key]) reasons.push([REASONS[reason] || reason, count(devices)]);
   }
-  document.getElementById('reasons').replaceChildren(table([['Reason'], ['Devices', true]], rows));
+  document.getElementById('reasons').replaceChildren(table([['Reason'], ['Devices', true]], reasons));
+
+  const { currencies, free, refunded } = data.sales;
+  const left = [free && `${count(free)} free with a code`, refunded && `${count(refunded)} refunded`].filter(Boolean);
+  document.getElementById('sales-note').textContent =
+    'Price paid, before Apple’s cut; currencies aren’t converted' + (left.length ? ` · not counted: ${left.join(', ')}` : '');
+  document.getElementById('sales').replaceChildren(table([['Currency'], ['Purchases', true], ['Sales', true]],
+    currencies.map(s => [s.currency, count(s.purchases), price(s.amount, s.currency)])));
+
+  document.getElementById('recent').replaceChildren(table([['When'], ['Device'], ['Country'], ['Price', true]],
+    data.recent.map(p => [p.time, PLATFORM_NAMES[p.platform] ?? NOT_REPORTED, p.country ?? NOT_REPORTED, price(p.price, p.currency)])));
+
+  document.getElementById('countries').replaceChildren(table([['Country'], ['Installs', true], ['Purchases', true]],
+    data.countries.map(c => [c.country ?? 'Not reported', count(c.installs), count(c.purchases)])));
+
+  document.getElementById('versions').replaceChildren(table([['Version'], ['Devices', true]],
+    data.versions.map(v => [v.version, count(v.devices)])));
 }
+
+// ---- Loading ----------------------------------------------------------------
 
 function render(data) {
   latest = data;
-  const asOf = new Date(data.dataAsOf);
-  const stale = Date.now() - asOf.getTime() > STALE_MS;
-  const updated = document.getElementById('updated');
-  updated.className = stale ? 'error' : 'muted';
-  updated.textContent = `Data as of ${asOf.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}` +
-    (stale ? ' (not updating, check the copy from the server)' : ' · refreshes every minute') + ` · days in ${data.timezone}`;
+  renderStatus(data);
   renderTiles(data.headline);
-  barChart(document.getElementById('installs'), data.daily, [{ key: 'installs', color: 'var(--series-1)' }],
-    r => [['Installs', number.format(r.installs)], ['Purchases', number.format(r.purchases)]]);
-  barChart(document.getElementById('purchases'), data.daily, [{ key: 'purchases', color: 'var(--series-1)' }],
-    r => [['Purchases', number.format(r.purchases)], ['Installs', number.format(r.installs)],
-      ['Buy rate', r.installs ? `${((100 * r.purchases) / r.installs).toFixed(1)}%` : '—']]);
-  const used = PLATFORMS.filter(p => data.active.some(r => r[p.key] > 0));
-  document.getElementById('active-legend').replaceChildren(...used.map(p => el('span', { style: `--swatch:${p.color}` }, p.label)));
-  barChart(document.getElementById('active'), data.active, used,
-    r => [...used.slice().reverse().map(p => [p.label, number.format(r[p.key]), p.color]),
-      ['Total', number.format(used.reduce((s, p) => s + r[p.key], 0))], ['Watched something', number.format(r.watched)]]);
+  const first = data.daily[0]?.day;
+  document.getElementById('range-note').textContent =
+    first ? `Charts and tables below cover ${shortDay(first)} – ${shortDay(data.daily[data.daily.length - 1].day)}` : '';
+  renderCharts(data);
   renderFunnel(data.funnel);
-  renderReasons(data.reasons);
-  document.getElementById('recent').replaceChildren(table([['When'], ['Device'], ['Country'], ['Price', true]],
-    data.recent.map(p => ({ cells: [p.time, { AppleTV: 'Apple TV', unknown: '—' }[p.platform] ?? p.platform, p.country,
-      new Intl.NumberFormat(undefined, { style: 'currency', currency: p.currency }).format(p.price)] }))));
-  document.getElementById('countries').replaceChildren(table([['Country'], ['Installs', true], ['Purchases', true]],
-    data.countries.slice(0, 12).map(([c, i, p]) => ({ cells: [c === 'unknown' ? 'Not reported' : c, number.format(i), number.format(p)] }))));
-  document.getElementById('versions-note').textContent = data.versions.day ? `Devices active on ${shortDay(data.versions.day)} (UTC)` : '';
-  document.getElementById('versions').replaceChildren(table([['Version'], ['Devices', true]],
-    data.versions.versions.map(([v, n]) => ({ cells: [v, number.format(n)] }))));
+  renderTables(data);
 }
 
 async function load() {
   document.querySelectorAll('.ranges button').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.days) === days)));
   try {
-    // Built from the origin: a page opened as user:password@host can't fetch relative URLs.
-    const url = new URL(`data?days=${days}`, location.origin + location.pathname);
-    const response = await fetch(url, { cache: 'no-store', credentials: 'same-origin' });
+    const response = await fetch(`data?days=${days}`, { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     render(await response.json());
   } catch (error) {
-    const updated = document.getElementById('updated');
-    updated.textContent = `Couldn't refresh (${error.message}). Showing the last numbers.`;
-    updated.className = 'error';
+    const status = document.getElementById('status');
+    status.className = 'status stale';
+    status.textContent = `Couldn't refresh (${error.message}). Showing the last numbers.`;
+  } finally {
+    document.body.classList.remove('loading');
   }
 }
 
 document.querySelectorAll('.ranges button').forEach(button => button.addEventListener('click', () => {
   days = Number(button.dataset.days);
   saveRange(days);
+  // Keep the current charts, dimmed, until the new range arrives.
+  document.body.classList.add('loading');
   load();
 }));
 let resizeTimer;

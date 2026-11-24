@@ -44,31 +44,45 @@ body {
   background: var(--page);
   color: var(--ink);
   font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-variant-numeric: tabular-nums;
 }
+/* Aligned digits only where numbers line up in columns. */
+table, .chart text, .funnel .num { font-variant-numeric: tabular-nums; }
 .page { max-width: 1240px; margin: 0 auto; padding: 20px 16px 40px; }
 h1 { font-size: 22px; margin: 0; }
 h2 { font-size: 15px; margin: 0; }
 h2.spaced { margin-top: 20px; }
-.muted, .note { color: var(--ink-2); margin: 2px 0 0; }
-.note { font-size: 12px; margin-bottom: 10px; color: var(--muted); }
+p { margin: 0; }
+.note { font-size: 12px; color: var(--muted); margin: 2px 0 10px; }
+.status { color: var(--ink-2); margin-top: 2px; }
+.status.stale { color: var(--bad); }
 
-.top { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; }
+.top { margin-bottom: 14px; }
+.top .note { margin-bottom: 0; }
+h2.section { margin-bottom: 8px; }
+h2.section .note { display: inline; font-weight: 400; margin-left: 6px; }
+
+.tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+.tiles > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+@media (min-width: 1000px) {
+  .tiles { grid-template-columns: repeat(5, 1fr); }
+  .tiles > :last-child:nth-child(odd) { grid-column: auto; }
+}
+.tile, .card { background: var(--surface); border-radius: 12px; box-shadow: 0 0 0 1px var(--ring); }
+.tile { padding: 14px 16px; display: flex; flex-direction: column; }
+.tile .label { color: var(--ink-2); font-size: 12px; }
+.tile .value { font-size: 30px; font-weight: 650; margin: 2px 0 10px; }
+.tile .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; padding-top: 8px; border-top: 1px solid var(--grid); }
+.tile .compare span { display: block; font-size: 11px; color: var(--muted); }
+.tile .compare b { font-size: 15px; font-weight: 600; color: var(--ink-2); }
+
+.range-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 12px; }
+.range-row .note { margin: 0; }
 .ranges { display: flex; gap: 4px; background: var(--surface); padding: 3px; border-radius: 8px; box-shadow: 0 0 0 1px var(--ring); }
 .ranges button {
   border: 0; background: transparent; color: var(--ink-2); font: inherit; padding: 6px 10px; border-radius: 6px; cursor: pointer;
 }
 .ranges button[aria-pressed="true"] { background: var(--ink); color: var(--surface); font-weight: 600; }
-
-.tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
-@media (min-width: 640px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 1100px) { .tiles { grid-template-columns: repeat(6, 1fr); } }
-.tile, .card { background: var(--surface); border-radius: 12px; box-shadow: 0 0 0 1px var(--ring); }
-.tile { padding: 14px 16px; }
-.tile .label { color: var(--ink-2); font-size: 12px; }
-.tile .value { font-size: 30px; font-weight: 650; margin-top: 2px; }
-.tile .sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.tile .sub b { color: var(--ink-2); font-weight: 600; }
+.loading .grid { opacity: 0.6; transition: opacity 0.15s; }
 
 .grid { display: grid; gap: 12px; margin-bottom: 12px; }
 .grid.two { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
@@ -79,31 +93,34 @@ h2.spaced { margin-top: 20px; }
 .chart text { fill: var(--muted); font-size: 11px; }
 .chart .gridline { stroke: var(--grid); stroke-width: 1; }
 .chart .baseline { stroke: var(--axis); stroke-width: 1; }
-.chart .hit { fill: transparent; cursor: default; }
+.chart .partial { opacity: 0.45; }
+.chart .unrecorded { fill: var(--grid); opacity: 0.5; }
+.chart .hit { fill: transparent; }
 .chart .hit:hover { fill: var(--ring); }
 
 .legend { display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: var(--ink-2); margin-bottom: 6px; }
 .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; background: var(--swatch); }
 
-.funnel .row { display: grid; grid-template-columns: 130px 1fr 92px; gap: 8px; align-items: center; margin: 7px 0; font-size: 13px; }
+.funnel .row { display: grid; grid-template-columns: 130px 1fr 96px; gap: 8px; align-items: center; margin: 7px 0; font-size: 13px; }
 .funnel .track { height: 14px; background: var(--funnel-track); border-radius: 4px; overflow: hidden; }
 .funnel .bar { height: 100%; background: var(--funnel); border-radius: 4px; min-width: 2px; }
 .funnel .num { text-align: right; }
-.funnel .num small { color: var(--muted); }
+.funnel .num small { color: var(--muted); display: inline-block; min-width: 40px; }
 
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th { text-align: left; color: var(--muted); font-weight: 500; font-size: 12px; padding: 4px 0; border-bottom: 1px solid var(--grid); }
 td { padding: 5px 0; border-bottom: 1px solid var(--grid); }
 th + th, td + td { padding-left: 10px; }
-th.n, td.n { text-align: right; }
+th.n, td.n { text-align: right; white-space: nowrap; }
+td { white-space: nowrap; }
 tr.group td { color: var(--ink-2); font-weight: 600; padding-top: 10px; border-bottom: 0; }
 .empty { color: var(--muted); font-size: 13px; }
 
 .tooltip {
   position: fixed; pointer-events: none; z-index: 10; background: var(--surface); color: var(--ink);
-  box-shadow: 0 0 0 1px var(--ring), 0 4px 16px rgba(0, 0, 0, 0.18); border-radius: 8px; padding: 8px 10px; font-size: 12px; min-width: 120px;
+  box-shadow: 0 0 0 1px var(--ring), 0 4px 16px rgba(0, 0, 0, 0.18); border-radius: 8px; padding: 8px 10px; font-size: 12px; min-width: 140px;
+  font-variant-numeric: tabular-nums;
 }
 .tooltip .t { font-weight: 600; margin-bottom: 4px; }
 .tooltip .r { white-space: nowrap; display: flex; justify-content: space-between; gap: 12px; }
-.tooltip .r span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; background: var(--swatch, transparent); }
-.error { color: var(--bad); }
+.tooltip .r span[style]::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; background: var(--swatch, transparent); }
