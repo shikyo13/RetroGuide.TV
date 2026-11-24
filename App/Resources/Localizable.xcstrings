@@ -19700,6 +19700,302 @@
         }
       }
     },
+    "Checking your purchases…" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprobando tus compras…"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verificando suas compras…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérification de vos achats…"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verifica degli acquisti…"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Käufe werden geprüft …"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je aankopen worden gecontroleerd…"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontrollerar dina köp…"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprawdzanie zakupów…"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kontrolují se nákupy…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Проверка покупок…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入を確認中…"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구입 항목 확인 중…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在检查你的购买项目…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在檢查你的購買項目…"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "आपकी ख़रीदारी जाँची जा रही है…"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "আপনার কেনাকাটা যাচাই করা হচ্ছে…"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "तुमच्या खरेदी तपासत आहे…"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "உங்கள் வாங்குதல்களைச் சரிபார்க்கிறது…"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "మీ కొనుగోళ్లను తనిఖీ చేస్తోంది…"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "તમારી ખરીદીઓ તપાસાય છે…"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ನಿಮ್ಮ ಖರೀದಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ…"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "നിങ്ങളുടെ വാങ്ങലുകൾ പരിശോധിക്കുന്നു…"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਤੁਹਾਡੀਆਂ ਖ਼ਰੀਦਾਂ ਦੀ ਜਾਂਚ ਹੋ ਰਹੀ ਹੈ…"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଆପଣଙ୍କ କ୍ରୟ ଯାଞ୍ଚ ହେଉଛି…"
+          }
+        }
+      }
+    },
+    "Couldn't reach the App Store: %@" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo conectar con el App Store: %@"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível acessar a App Store: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossible de joindre l'App Store : %@"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Impossibile contattare l'App Store: %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der App Store ist nicht erreichbar: %@"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan de App Store niet bereiken: %@"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunde inte nå App Store: %@"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie można połączyć się z App Store: %@"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store není dostupný: %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось связаться с App Store: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Storeに接続できませんでした: %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store에 연결할 수 없습니다: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法连接 App Store：%@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法連線至 App Store：%@"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store तक नहीं पहुँच सके: %@"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store-এ পৌঁছানো যায়নি: %@"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store पर्यंत पोहोचता आले नाही: %@"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store-ஐ அடைய முடியவில்லை: %@"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Storeను చేరుకోలేకపోయాము: %@"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store સુધી પહોંચી શકાયું નહીં: %@"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store ತಲುಪಲಾಗಲಿಲ್ಲ: %@"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store-ൽ എത്താനായില്ല: %@"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store ਤੱਕ ਨਹੀਂ ਪਹੁੰਚ ਸਕੇ: %@"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store ସହ ଯୋଗାଯୋଗ ହୋଇପାରିଲା ନାହିଁ: %@"
+          }
+        }
+      }
+    },
     "CRT Green" : {
       "comment" : "Name of a color theme",
       "localizations" : {
@@ -51009,6 +51305,154 @@
         }
       }
     },
+    "No RetroGuide Pro purchase was found for this Apple Account." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontró ninguna compra de RetroGuide Pro para esta cuenta de Apple."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma compra do RetroGuide Pro foi encontrada para esta Conta Apple."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun achat RetroGuide Pro trouvé pour ce compte Apple."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nessun acquisto di RetroGuide Pro trovato per questo Account Apple."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für diesen Apple Account wurde kein Kauf von RetroGuide Pro gefunden."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er is geen aankoop van RetroGuide Pro gevonden voor deze Apple Account."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inget köp av RetroGuide Pro hittades för det här Apple-kontot."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie znaleziono zakupu RetroGuide Pro dla tego konta Apple."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro tento Apple účet nebyl nalezen žádný nákup RetroGuide Pro."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Для этого аккаунта Apple покупка RetroGuide Pro не найдена."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このApple AccountにはRetroGuide Proの購入が見つかりませんでした。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 Apple 계정에서 RetroGuide Pro 구입 내역을 찾을 수 없습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到此 Apple 账户的 RetroGuide Pro 购买记录。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到此 Apple 帳號的 RetroGuide Pro 購買記錄。"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "इस Apple खाते के लिए RetroGuide Pro की कोई ख़रीदारी नहीं मिली।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "এই Apple অ্যাকাউন্টে RetroGuide Pro-র কোনো কেনাকাটা পাওয়া যায়নি।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "या Apple खात्यासाठी RetroGuide Pro ची कोणतीही खरेदी सापडली नाही."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "இந்த Apple கணக்கில் RetroGuide Pro வாங்கியது எதுவும் கிடைக்கவில்லை."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఈ Apple ఖాతాకు RetroGuide Pro కొనుగోలు ఏదీ కనిపించలేదు."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "આ Apple એકાઉન્ટ માટે RetroGuide Proની કોઈ ખરીદી મળી નહીં."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಈ Apple ಖಾತೆಗೆ RetroGuide Pro ಖರೀದಿ ಯಾವುದೂ ಸಿಗಲಿಲ್ಲ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഈ Apple അക്കൗണ്ടിന് RetroGuide Pro വാങ്ങൽ ഒന്നും കണ്ടെത്തിയില്ല."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਇਸ Apple ਖਾਤੇ ਲਈ RetroGuide Pro ਦੀ ਕੋਈ ਖ਼ਰੀਦ ਨਹੀਂ ਮਿਲੀ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଏହି Apple ଆକାଉଣ୍ଟ ପାଇଁ RetroGuide Proର କୌଣସି କ୍ରୟ ମିଳିଲା ନାହିଁ।"
+          }
+        }
+      }
+    },
     "NO SIGNAL" : {
       "localizations" : {
         "es" : {
@@ -63317,6 +63761,154 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隱私權政策"
+          }
+        }
+      }
+    },
+    "Pro restored." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro restaurado."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro restaurado."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro restauré."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro ripristinato."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro wiederhergestellt."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro hersteld."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro har återställts."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Przywrócono Pro."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro obnoveno."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro восстановлен."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Proを復元しました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro가 복원되었습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已恢复 Pro。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已回復 Pro。"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro रीस्टोर हो गया।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro রিস্টোর হয়েছে।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro पुनर्संचयित झाले."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro மீட்டமைக்கப்பட்டது."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro పునరుద్ధరించబడింది."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro રિસ્ટોર થયું."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro പുനഃസ്ഥാപിച്ചു."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro ਬਹਾਲ ਹੋ ਗਿਆ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro ପୁନରୁଦ୍ଧାର ହେଲା।"
           }
         }
       }
@@ -76094,6 +76686,154 @@
         }
       }
     },
+    "Server not added" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor no agregado"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servidor não adicionado"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serveur non ajouté"
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server non aggiunto"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server nicht hinzugefügt"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server niet toegevoegd"
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servern lades inte till"
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nie dodano serwera"
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server nebyl přidán"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сервер не добавлен"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバは追加されませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버가 추가되지 않음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未添加服务器"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未加入伺服器"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्वर नहीं जोड़ा गया"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "সার্ভার যোগ করা হয়নি"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "सर्व्हर जोडला नाही"
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "சர்வர் சேர்க்கப்படவில்லை"
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "సర్వర్ జోడించబడలేదు"
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "સર્વર ઉમેરાયું નહીં"
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಸರ್ವರ್ ಸೇರಿಸಲಾಗಿಲ್ಲ"
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "സെർവർ ചേർത്തില്ല"
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਸਰਵਰ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋਇਆ"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ସର୍ଭର ଯୋଗ ହେଲା ନାହିଁ"
+          }
+        }
+      }
+    },
     "Servers" : {
       "localizations" : {
         "es" : {
@@ -83495,6 +84235,302 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "ସିନ୍ଥୱେଭ୍"
+          }
+        }
+      }
+    },
+    "The App Store couldn't verify the purchase. Try Restore Purchase." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El App Store no pudo verificar la compra. Prueba Restaurar compra."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A App Store não conseguiu verificar a compra. Tente Restaurar compra."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'App Store n'a pas pu vérifier l'achat. Essayez Restaurer l'achat."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'App Store non è riuscito a verificare l'acquisto. Prova Ripristina acquisto."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der App Store konnte den Kauf nicht bestätigen. Versuche „Kauf wiederherstellen“."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De App Store kon de aankoop niet verifiëren. Probeer Herstel aankoop."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store kunde inte verifiera köpet. Prova Återställ köp."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store nie mógł zweryfikować zakupu. Spróbuj Przywróć zakup."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store nemohl nákup ověřit. Zkus Obnovit nákup."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store не удалось подтвердить покупку. Попробуйте «Восстановить покупку»."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Storeで購入を確認できませんでした。「購入を復元」をお試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store에서 구입을 확인하지 못했습니다. 구입 항목 복원을 시도해 보세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store 无法验证此次购买。请尝试“恢复购买”。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store 無法驗證這筆購買。請試試「回復購買項目」。"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store ख़रीदारी की पुष्टि नहीं कर सका। ख़रीदारी रीस्टोर करें आज़माएँ।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store কেনাকাটাটি যাচাই করতে পারেনি। কেনাকাটা রিস্টোর করুন চেষ্টা করুন।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store ला खरेदीची पडताळणी करता आली नाही. खरेदी पुनर्संचयित करा वापरून पहा."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store-ஆல் வாங்குதலைச் சரிபார்க்க முடியவில்லை. வாங்கியதை மீட்டமை என்பதை முயலவும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store కొనుగోలును ధృవీకరించలేకపోయింది. కొనుగోలు పునరుద్ధరించండి ప్రయత్నించండి."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store ખરીદીની ચકાસણી કરી શક્યું નહીં. ખરીદી રિસ્ટોર કરો અજમાવો."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store ಖರೀದಿಯನ್ನು ದೃಢೀಕರಿಸಲಾಗಲಿಲ್ಲ. ಖರೀದಿ ಮರುಸ್ಥಾಪಿಸಿ ಪ್ರಯತ್ನಿಸಿ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store-ന് വാങ്ങൽ സ്ഥിരീകരിക്കാനായില്ല. വാങ്ങൽ പുനഃസ്ഥാപിക്കുക പരീക്ഷിക്കുക."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store ਖ਼ਰੀਦ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕਰ ਸਕਿਆ। ਖ਼ਰੀਦ ਬਹਾਲ ਕਰੋ ਅਜ਼ਮਾਓ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store କ୍ରୟ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। କ୍ରୟ ପୁନରୁଦ୍ଧାର କରନ୍ତୁ ଚେଷ୍ଟା କରନ୍ତୁ।"
+          }
+        }
+      }
+    },
+    "This device couldn't save the server's sign-in, so the server wasn't added. Try adding it again." : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este dispositivo no pudo guardar el inicio de sesión del servidor, así que no se agregó. Intenta agregarlo de nuevo."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este dispositivo não conseguiu salvar o login do servidor, então ele não foi adicionado. Tente adicioná-lo novamente."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cet appareil n'a pas pu enregistrer la connexion au serveur, il n'a donc pas été ajouté. Réessayez de l'ajouter."
+          }
+        },
+        "it" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questo dispositivo non è riuscito a salvare l'accesso al server, quindi il server non è stato aggiunto. Prova ad aggiungerlo di nuovo."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Gerät konnte die Anmeldung für den Server nicht speichern, daher wurde er nicht hinzugefügt. Versuche es noch einmal."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dit apparaat kon de aanmelding voor de server niet bewaren, dus de server is niet toegevoegd. Probeer hem opnieuw toe te voegen."
+          }
+        },
+        "sv" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enheten kunde inte spara inloggningen till servern, så servern lades inte till. Försök lägga till den igen."
+          }
+        },
+        "pl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To urządzenie nie mogło zapisać logowania do serwera, więc serwer nie został dodany. Spróbuj dodać go ponownie."
+          }
+        },
+        "cs" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toto zařízení nemohlo uložit přihlášení k serveru, takže server nebyl přidán. Zkus ho přidat znovu."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Устройству не удалось сохранить вход на сервер, поэтому сервер не добавлен. Попробуйте добавить его снова."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このデバイスでサーバのサインイン情報を保存できなかったため、サーバは追加されませんでした。もう一度追加してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 기기에서 서버 로그인 정보를 저장할 수 없어 서버를 추가하지 못했습니다. 다시 추가해 보세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此设备无法存储服务器的登录信息，因此未添加该服务器。请重新添加。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此裝置無法儲存伺服器的登入資訊，因此未加入伺服器。請再試著加入一次。"
+          }
+        },
+        "hi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "यह डिवाइस सर्वर का साइन-इन सेव नहीं कर सका, इसलिए सर्वर नहीं जोड़ा गया। उसे फिर से जोड़कर देखें।"
+          }
+        },
+        "bn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "এই ডিভাইস সার্ভারের সাইন-ইন সেভ করতে পারেনি, তাই সার্ভারটি যোগ করা হয়নি। আবার যোগ করার চেষ্টা করুন।"
+          }
+        },
+        "mr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "हे डिव्हाइस सर्व्हरचे साइन-इन सेव्ह करू शकले नाही, म्हणून सर्व्हर जोडला गेला नाही. तो पुन्हा जोडून पहा."
+          }
+        },
+        "ta" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "இந்தச் சாதனத்தால் சர்வரின் உள்நுழைவைச் சேமிக்க முடியவில்லை, எனவே சர்வர் சேர்க்கப்படவில்லை. மீண்டும் சேர்க்க முயலவும்."
+          }
+        },
+        "te" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ఈ పరికరం సర్వర్ సైన్-ఇన్‌ను సేవ్ చేయలేకపోయింది, కాబట్టి సర్వర్ జోడించబడలేదు. మళ్లీ జోడించి చూడండి."
+          }
+        },
+        "gu" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "આ ડિવાઇસ સર્વરનું સાઇન-ઇન સાચવી શક્યું નહીં, તેથી સર્વર ઉમેરાયું નહીં. તેને ફરીથી ઉમેરી જુઓ."
+          }
+        },
+        "kn" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ಈ ಸಾಧನಕ್ಕೆ ಸರ್ವರ್‌ನ ಸೈನ್-ಇನ್ ಸೇವ್ ಮಾಡಲಾಗಲಿಲ್ಲ, ಆದ್ದರಿಂದ ಸರ್ವರ್ ಸೇರಿಸಲಾಗಿಲ್ಲ. ಮತ್ತೆ ಸೇರಿಸಲು ಪ್ರಯತ್ನಿಸಿ."
+          }
+        },
+        "ml" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ഈ ഉപകരണത്തിന് സെർവറിന്റെ സൈൻ-ഇൻ സേവ് ചെയ്യാനായില്ല, അതിനാൽ സെർവർ ചേർത്തില്ല. വീണ്ടും ചേർക്കാൻ ശ്രമിക്കുക."
+          }
+        },
+        "pa" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ਇਹ ਡਿਵਾਈਸ ਸਰਵਰ ਦਾ ਸਾਈਨ-ਇਨ ਸੇਵ ਨਹੀਂ ਕਰ ਸਕੀ, ਇਸ ਲਈ ਸਰਵਰ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋਇਆ। ਇਸਨੂੰ ਦੁਬਾਰਾ ਸ਼ਾਮਲ ਕਰਕੇ ਦੇਖੋ।"
+          }
+        },
+        "or" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ଏହି ଡିଭାଇସ ସର୍ଭରର ସାଇନ୍-ଇନ୍ ସେଭ୍ କରିପାରିଲା ନାହିଁ, ତେଣୁ ସର୍ଭର ଯୋଗ ହେଲା ନାହିଁ। ଏହାକୁ ପୁଣି ଯୋଗ କରି ଦେଖନ୍ତୁ।"
           }
         }
       }
