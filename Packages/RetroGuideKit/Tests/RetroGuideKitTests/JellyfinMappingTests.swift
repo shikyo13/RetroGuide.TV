@@ -100,12 +100,24 @@ struct JellyfinMappingTests {
     @Test("An address copied from the browser finds the server behind the page")
     func browserAddress() {
         let server = ["https://10.0.1.5:8096"]
-        #expect(tried("http://10.0.1.5:8096/web/#/home.html") == server)
+        // The root first; a server that really lives at /web is tried after it.
+        let pastedWeb = server + ["https://10.0.1.5:8096/web"]
+        #expect(tried("http://10.0.1.5:8096/web/#/home.html") == pastedWeb)
         #expect(tried("http://10.0.1.5:8096/web/index.html#!/home.html") == server)
-        #expect(tried("10.0.1.5:8096/web/") == server)
+        #expect(tried("10.0.1.5:8096/web/") == pastedWeb)
         // A server under its own path keeps it.
         #expect(tried("https://example.com:8920/jellyfin/web/index.html") == ["https://example.com:8920/jellyfin", "https://example.com:8920"])
         #expect(JellyfinAddress.plainHTTP(from: "http://10.0.1.5:8096/web/index.html")?.absoluteString == "http://10.0.1.5:8096")
+    }
+
+    @Test("A server's own path survives as typed: spaces, escaped slashes, a base at /web")
+    func unusualServerPaths() {
+        #expect(tried("https://media.example.com:8920/TV 2024").first == "https://media.example.com:8920/TV%202024")
+        #expect(tried("https://media.example.com:8920/a%2Fb").first == "https://media.example.com:8920/a%2Fb")
+        #expect(tried("https://media.example.com:8920/web").contains("https://media.example.com:8920/web"))
+        // A loosely typed port is still repaired in the host part.
+        #expect(tried("10.0.1.5 8096").first == "https://10.0.1.5:8096")
+        #expect(JellyfinAddress.plainHTTP(from: "http://10.0.1.5:8096/a%2Fb")?.absoluteString == "http://10.0.1.5:8096/a%2Fb")
     }
 
     @Test("A path that may not be the server's is tried first, then the address without it")
