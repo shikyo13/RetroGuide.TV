@@ -152,7 +152,14 @@ final class MPVCore: @unchecked Sendable {
 
     private var handle: OpaquePointer?
     private let queue = DispatchQueue(label: "com.adamhunt.retroguide.mpv", qos: .userInitiated)
+    /// The load most recently asked for.
     private var currentGeneration = 0
+    /// The load whose file mpv is actually playing: events are reported for it.
+    /// It changes only when mpv starts that load's file, so events still queued
+    /// from the previous file (its end, its last restart) can't pass for the new one.
+    private var eventGeneration = 0
+    /// Which load each playlist entry came from, learned from loadfile's reply.
+    private var entryGenerations: [Int64: Int] = [:]
     /// Track selection to apply once the file for `currentGeneration` has loaded.
     private var pendingTracks: TrackSelection?
     /// The sidecar subtitles being downloaded for the current selection, added when they arrive.
@@ -236,7 +243,14 @@ final class MPVCore: @unchecked Sendable {
         let protocols = file.scheme?.lowercased() == "http" ? Option.plainProtocols : Option.secureProtocols
         mpv_set_property_string(handle, Option.streamProtocols, protocols)
         mpv_set_property_string(handle, Option.demuxerProtocols, protocols)
-        command(["loadfile", file.absoluteString, "replace"])
+        command(["loadfile", file.absoluteString, "replace"], replyTag: LoadReply.tag | UInt64(UInt32(truncatingIfNeeded: generation)))
+    }
+
+    /// loadfile replies carry this tag with the load's generation in the low bits.
+    private enum LoadReply {
+        static let tag: UInt64 = 0x4C4F_4144 << 32
+        static let tagMask: UInt64 = 0xFFFF_FFFF << 32
+        static let entryIDKey = "playlist_entry_id"
     }
 
     func stop() {
@@ -285,12 +299,12 @@ final class MPVCore: @unchecked Sendable {
         mpv_set_property_string(handle, Option.referenceWhite, target.referenceWhite)
     }
 
-    private func command(_ arguments: [String]) {
+    private func command(_ arguments: [String], replyTag: UInt64 = .zero) {
         guard let handle else { return }
         let cStrings = arguments.map { strdup($0) }
         defer { cStrings.forEach { free($0) } }
         var pointers = cStrings.map { UnsafePointer<CChar>($0) } + [nil]
-        mpv_command_async(handle, .zero, &pointers)
+        mpv_command_async(handle, replyTag, &pointers)
     }
 
     // MARK: - Events
@@ -306,6 +320,8 @@ final class MPVCore: @unchecked Sendable {
     private func takePendingTracks() -> TrackSelection? {
         generationLock.lock()
         defer { generationLock.unlock() }
+        // The tracks belong to the latest load: not to an earlier file finishing loading.
+        guard eventGeneration == currentGeneration else { return nil }
         let tracks = pendingTracks
         pendingTracks = nil
         return tracks
@@ -362,13 +378,52 @@ final class MPVCore: @unchecked Sendable {
         guard let rawTrackList = mpv_get_property_string(handle, Option.trackListProperty) else { return }
         let trackList = String(cString: rawTrackList)
         mpv_free(rawTrackList)
-        MPVTrackSelector.commands(for: selection, trackListJSON: trackList).forEach(command)
+        MPVTrackSelector.commands(for: selection, trackListJSON: trackList).forEach { command($0) }
     }
 
+    /// The load events are reported for: the file mpv is playing.
     private var generation: Int {
         generationLock.lock()
         defer { generationLock.unlock() }
-        return currentGeneration
+        return eventGeneration
+    }
+
+    /// Notes which load a playlist entry came from, and when its file starts,
+    /// reports events for that load from then on. A file whose load reply hasn't
+    /// arrived yet counts as the latest load, as before.
+    private func track(_ event: mpv_event) {
+        switch event.event_id {
+        case MPV_EVENT_COMMAND_REPLY:
+            guard event.error >= .zero, event.reply_userdata & LoadReply.tagMask == LoadReply.tag,
+                  let entry = Self.playlistEntryID(inReply: event) else { return }
+            let generation = Int(Int32(truncatingIfNeeded: UInt32(truncatingIfNeeded: event.reply_userdata)))
+            generationLock.lock()
+            entryGenerations[entry] = generation
+            generationLock.unlock()
+        case MPV_EVENT_START_FILE:
+            guard let entry = event.data?.assumingMemoryBound(to: mpv_event_start_file.self).pointee.playlist_entry_id else { return }
+            generationLock.lock()
+            eventGeneration = entryGenerations[entry] ?? currentGeneration
+            generationLock.unlock()
+        case MPV_EVENT_END_FILE:
+            guard let entry = event.data?.assumingMemoryBound(to: mpv_event_end_file.self).pointee.playlist_entry_id else { return }
+            generationLock.lock()
+            entryGenerations[entry] = nil
+            generationLock.unlock()
+        default:
+            break
+        }
+    }
+
+    private static func playlistEntryID(inReply event: mpv_event) -> Int64? {
+        guard let reply = event.data?.assumingMemoryBound(to: mpv_event_command.self).pointee,
+              reply.result.format == MPV_FORMAT_NODE_MAP,
+              let list = reply.result.u.list?.pointee, let keys = list.keys, let values = list.values else { return nil }
+        for index in 0..<Int(list.num) {
+            guard let key = keys[index], String(cString: key) == LoadReply.entryIDKey, values[index].format == MPV_FORMAT_INT64 else { continue }
+            return values[index].u.int64
+        }
+        return nil
     }
 
     private func drainEvents() {
@@ -376,6 +431,7 @@ final class MPVCore: @unchecked Sendable {
             guard let self, let handle = self.handle else { return }
             while let event = mpv_wait_event(handle, .zero), event.pointee.event_id != MPV_EVENT_NONE {
                 Self.log(event.pointee)
+                self.track(event.pointee)
                 if event.pointee.event_id == MPV_EVENT_FILE_LOADED {
                     applyPendingTracks(handle)
                 }
