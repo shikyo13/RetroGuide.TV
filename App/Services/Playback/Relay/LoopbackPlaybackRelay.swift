@@ -7,7 +7,9 @@ import RetroGuideKit
 final class LoopbackPlaybackRelay {
     enum Limits {
         static let connections = 12
-        static let resources = 4_096
+        /// Room for every segment of a long film: servers cut one-second segments,
+        /// so a nine-hour playlist still fits without forgetting its start.
+        static let resources = 32_768
         static let headerBytes = 16_384
         static let sniffBytes = 16
         static let manifestBytes = 1_048_576
@@ -20,6 +22,7 @@ final class LoopbackPlaybackRelay {
     private var resources: [String: URL] = [:]
     private var identifiers: [URL: String] = [:]
     private var resourceOrder: [String] = []
+    private var nextResource = 0
     private let secret = UUID().uuidString + UUID().uuidString
     private let origin: URL
     private var port: NWEndpoint.Port?
@@ -95,7 +98,9 @@ final class LoopbackPlaybackRelay {
                 if let previous = resources.removeValue(forKey: oldest) { identifiers.removeValue(forKey: previous) }
             }
             let suffix = ["m3u8", "mp4", "mov", "ts", "m4s", "aac", "wav", "mp3", "vtt"].contains(url.pathExtension.lowercased()) ? "." + url.pathExtension.lowercased() : ""
-            identifier = UUID().uuidString + suffix
+            // The secret path already guards access, so short names keep rewritten playlists small.
+            identifier = "r\(nextResource)" + suffix
+            nextResource += 1
             resources[identifier] = url
             identifiers[url] = identifier
             resourceOrder.append(identifier)

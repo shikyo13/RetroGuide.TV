@@ -4,6 +4,10 @@ import RetroGuideKit
 @MainActor
 enum LoopbackPlaybackRelayManifest {
     /// Rewrites playlists, keys, maps, alternate tracks and segment URIs through the relay.
+    ///
+    /// Every relay address shares one directory, so each reference is written relative
+    /// to the playlist's own address: a rewritten playlist stays about the size of the
+    /// server's, even with thousands of one-second segments.
     static func rewrite(_ data: Data, base: URL, register: (URL) throws -> URL) throws -> Data {
         guard let text = String(data: data, encoding: .utf8), text.hasPrefix("#EXTM3U") else {
             throw HTTPError.invalidResponse
@@ -13,7 +17,7 @@ enum LoopbackPlaybackRelayManifest {
         func local(_ value: String) throws -> String {
             guard !value.contains("{$"), let url = URL(string: value, relativeTo: base)?.absoluteURL,
                   SecureTransport.permits(url) else { throw HTTPError.secureConnectionRequired }
-            return try register(url).absoluteString
+            return try register(url).lastPathComponent
         }
         func rewriteLine(_ raw: String) throws -> String {
             let line = raw.trimmingCharacters(in: .whitespacesAndNewlines)
