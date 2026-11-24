@@ -22,8 +22,11 @@ public enum SecureTransport {
     }
 
     public static func permitsRedirect(from source: URL, to destination: URL) -> Bool {
-        // Server-specific tokens must not be forwarded to another origin.
-        permits(source) && permits(destination)
+        // Server-specific tokens must not be forwarded to another origin, and what
+        // started encrypted stays encrypted, even where plain HTTP was agreed for that
+        // host and port.
+        let downgrades = source.scheme?.lowercased() == "https" && destination.scheme?.lowercased() == "http"
+        return !downgrades && permits(source) && permits(destination)
             && source.host?.lowercased() == destination.host?.lowercased()
             && port(of: source) == port(of: destination)
     }

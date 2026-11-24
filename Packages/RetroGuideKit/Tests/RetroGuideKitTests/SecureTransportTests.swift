@@ -21,7 +21,18 @@ struct SecureTransportTests {
         }
     }
 
-    @Test func directRequestsCannotBypassBuilder() async throws {
+    @Test func encryptedStreamsNeverFallBackToPlainHTTP() {
+        // A home server the viewer allowed plain HTTP for, also answering over HTTPS on the same port.
+        let plain = URL(string: "http://192.168.77.9:8096/videos/1/master.m3u8")!
+        let secure = URL(string: "https://192.168.77.9:8096/videos/1/master.m3u8")!
+        PlainHTTPOrigins.allowPending(plain)
+        defer { PlainHTTPOrigins.clearPending() }
+        #expect(SecureTransport.permits(plain) && SecureTransport.permits(secure))
+        #expect(!SecureTransport.permitsRedirect(from: secure, to: plain))
+        #expect(SecureTransport.permitsRedirect(from: plain, to: plain.appendingPathComponent("segment.ts")))
+    }
+
+        @Test func directRequestsCannotBypassBuilder() async throws {
         let request = URLRequest(url: URL(string: "http://127.0.0.1:1/?api_key=test")!)
         do {
             _ = try await HTTPClient().data(for: request)
