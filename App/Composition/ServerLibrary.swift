@@ -130,16 +130,19 @@ final class ServerLibrary {
         }
     }
 
-    func add(_ account: ServerAccount, token: String, accountToken: String?) {
+    /// Adds a server; `false` (nothing changed) when its token couldn't be saved.
+    @discardableResult
+    func add(_ account: ServerAccount, token: String, accountToken: String?) -> Bool {
+        guard registry.add(account, token: token) else { return false }
         if let accountToken {
             keychain.setToken(accountToken, for: KeychainAccount.plexAccount)
         }
-        registry.add(account, token: token)
         artworkResolver = registry.artworkResolver
         accounts.removeAll { $0.id == account.id }
         accounts.append(account)
         status[account.id] = .online
         store.accounts = accounts
+        return true
     }
 
     func remove(serverID: String) {
@@ -370,6 +373,11 @@ final class ServerLibrary {
     }
 
     private func isReachable(_ account: ServerAccount) async -> Bool {
+        // A server whose token couldn't be read at launch is connected once it can.
+        if registry.client(for: account.id) == nil {
+            guard registry.reconnect(account) else { return false }
+            artworkResolver = registry.artworkResolver
+        }
         if account.kind == .jellyfin { return await reachJellyfin(account) }
         let currentWorks = await registry.client(for: account.id)?.isReachable() ?? false
         let currentRank = PlexConnectionResolver.rank(of: account.baseURL, settings: account.connection)

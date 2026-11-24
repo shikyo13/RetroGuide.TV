@@ -514,12 +514,20 @@ final class AppModel {
 
     // MARK: - Servers
 
+    /// Set when a server couldn't be added because its sign-in couldn't be saved.
+    var serverNotSaved: String?
+
+    static let serverNotSavedMessage = String(localized: "This device couldn't save the server's sign-in, so the server wasn't added. Try adding it again.")
+
     func completeInitialSetup(_ selections: [OnboardingModel.PendingServer]) async {
         guard !parentalControls.needsAuthorization else { return }
         guard !selections.isEmpty else { return }
         guard selections.count == 1 || pro.access.canAddServer(connectedCount: selections.count - 1) else { return }
         for selection in selections {
-            servers.add(selection.account, token: selection.token, accountToken: selection.accountToken)
+            guard servers.add(selection.account, token: selection.token, accountToken: selection.accountToken) else {
+                phase = .failed(Self.serverNotSavedMessage)
+                return
+            }
             recordUsage(.serverConnected, detail: selection.account.kind.rawValue)
         }
         seedSharedSelections()
@@ -534,7 +542,10 @@ final class AppModel {
     /// Adds a server chosen during onboarding or from Settings, then indexes it.
     func addServer(_ account: ServerAccount, token: String, accountToken: String?) async {
         guard !parentalControls.needsAuthorization else { return }
-        servers.add(account, token: token, accountToken: accountToken)
+        guard servers.add(account, token: token, accountToken: accountToken) else {
+            serverNotSaved = Self.serverNotSavedMessage
+            return
+        }
         recordUsage(.serverConnected, detail: account.kind.rawValue)
         seedSharedSelections()
         recordSettingsChange()

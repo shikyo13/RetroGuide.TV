@@ -18,23 +18,37 @@ final class ServerRegistry {
     }
 
     /// Creates clients for accounts whose tokens are in the keychain.
-    /// Returns the accounts that could not be restored (missing token).
+    /// Returns the accounts whose token is gone. One the keychain can't read
+    /// right now is neither connected nor returned: ``reconnect(_:)`` tries again.
     @discardableResult
     func connect(_ accounts: [ServerAccount]) -> [ServerAccount] {
         var missing: [ServerAccount] = []
         for account in accounts {
-            guard let token = keychain.token(for: account.id) else {
-                missing.append(account)
-                continue
+            switch keychain.lookUpToken(for: account.id) {
+            case let .found(token): clients[account.id] = makeClient(for: account, token: token)
+            case .missing: missing.append(account)
+            case .unavailable: break
             }
-            clients[account.id] = makeClient(for: account, token: token)
         }
         return missing
     }
 
-    func add(_ account: ServerAccount, token: String) {
-        keychain.setToken(token, for: account.id)
+    /// Connects a server that has no client yet because its token couldn't be read
+    /// earlier. Whether it now has one.
+    @discardableResult
+    func reconnect(_ account: ServerAccount) -> Bool {
+        guard clients[account.id] == nil else { return true }
+        guard case let .found(token) = keychain.lookUpToken(for: account.id) else { return false }
         clients[account.id] = makeClient(for: account, token: token)
+        return true
+    }
+
+    /// Saves the server's token and connects it; `false` (and nothing added) when
+    /// the keychain wouldn't save it, since the server would be lost on restart.
+    func add(_ account: ServerAccount, token: String) -> Bool {
+        guard keychain.setToken(token, for: account.id) else { return false }
+        clients[account.id] = makeClient(for: account, token: token)
+        return true
     }
 
     /// Rebuilds a server's client after its address or settings changed, reusing the stored token.

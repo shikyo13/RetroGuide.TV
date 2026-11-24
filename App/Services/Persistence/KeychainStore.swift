@@ -9,15 +9,32 @@ struct KeychainStore: Sendable {
         self.service = service
     }
 
+    /// What reading a token found. `unavailable` is the keychain refusing for now
+    /// (say, before the device's first unlock), not the token being gone.
+    enum Lookup {
+        case found(String)
+        case missing
+        case unavailable
+    }
+
     func token(for account: String) -> String? {
+        if case let .found(token) = lookUpToken(for: account) { token } else { nil }
+    }
+
+    func lookUpToken(for account: String) -> Lookup {
         var query = baseQuery(account: account)
         query[kSecReturnData as String] = true
         query[kSecMatchLimit as String] = kSecMatchLimitOne
         var result: AnyObject?
-        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
-              let data = result as? Data
-        else { return nil }
-        return String(data: data, encoding: .utf8)
+        switch SecItemCopyMatching(query as CFDictionary, &result) {
+        case errSecSuccess:
+            guard let data = result as? Data, let token = String(data: data, encoding: .utf8) else { return .missing }
+            return .found(token)
+        case errSecItemNotFound:
+            return .missing
+        default:
+            return .unavailable
+        }
     }
 
     @discardableResult

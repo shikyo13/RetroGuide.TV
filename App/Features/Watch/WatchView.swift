@@ -107,6 +107,9 @@ struct WatchView: View {
         .alert("Reminders", isPresented: Binding(get: { app.reminders.message != nil }, set: { if !$0 { app.reminders.message = nil } })) {
             Button("OK", role: .cancel) { app.reminders.message = nil }
         } message: { Text(app.reminders.message ?? "") }
+        .alert("Server not added", isPresented: Binding(get: { app.serverNotSaved != nil }, set: { if !$0 { app.serverNotSaved = nil } })) {
+            Button("OK", role: .cancel) { app.serverNotSaved = nil }
+        } message: { Text(app.serverNotSaved ?? "") }
         .onChange(of: tuner.returnToGuideRequest) { overlay = .guide }
         .watchOptions(isPresented: $isShowingOptions, tuner: tuner)
         #if os(iOS)
