@@ -68,7 +68,11 @@ actor AttributionDelivery {
             if registered {
                 let purchases = await outbox.drain { [weak self] record in
                     guard let self else { throw URLError(.cancelled) }
-                    _ = try await self.post(path: "purchases", payload: ["signedTransaction": record.signedTransaction])
+                    do {
+                        _ = try await self.post(path: "purchases", payload: ["signedTransaction": record.signedTransaction])
+                    } catch let failure as HTTPFailure where failure.rejectsRecord {
+                        throw PurchaseOutbox.Rejected()
+                    }
                 }
                 let context = await UsageContext.current()
                 let events = await usage.drain { [weak self] batch in
@@ -151,6 +155,9 @@ actor AttributionDelivery {
         /// The request itself is wrong (or unknown to this service):
         /// sending it again won't help.
         var isPermanent: Bool { [400, 404, 409, 413, 422].contains(status) }
+        /// The service refused this signed record itself (unverifiable or too large),
+        /// not the request path or the installation, so later records can still go.
+        var rejectsRecord: Bool { [413, 422].contains(status) }
     }
 
     private struct UsageBatch: Encodable {

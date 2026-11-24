@@ -11,6 +11,12 @@ public actor PurchaseOutbox {
         }
     }
 
+    /// Thrown by a delivery when the service refuses this record itself (it will
+    /// never accept it), as opposed to being unreachable or refusing everything.
+    public struct Rejected: Error {
+        public init() {}
+    }
+
     public enum Limits {
         public static let records = 64
         public static let transactionBytes = 32 * 1024
@@ -49,13 +55,15 @@ public actor PurchaseOutbox {
     public var pendingCount: Int { records.count }
 
     /// Returns false on delivery failure. The failed record remains for a later retry.
+    /// A record the service rejects outright (``Rejected``) is dropped, so it can't
+    /// hold back the records queued after it.
     @discardableResult
     public func drain(deliver: @Sendable (Record) async throws -> Void) async -> Bool {
         guard !draining else { return true }
         draining = true
         defer { draining = false }
         while let record = records.first {
-            do { try await deliver(record) } catch { return false }
+            do { try await deliver(record) } catch is Rejected { } catch { return false }
             // A newer signed update may arrive while the old one is in flight.
             if let index = records.firstIndex(of: record) { records.remove(at: index) }
             persist()

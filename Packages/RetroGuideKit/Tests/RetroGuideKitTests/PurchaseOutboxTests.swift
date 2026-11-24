@@ -23,6 +23,22 @@ struct PurchaseOutboxTests {
         #expect(await relaunched.pendingCount == 0)
     }
 
+    @Test func aRejectedRecordDoesNotHoldBackTheRest() async {
+        let file = path()
+        defer { try? FileManager.default.removeItem(at: file.deletingLastPathComponent()) }
+        let queue = PurchaseOutbox(file: file)
+        await queue.enqueue(.init(id: "sandbox", signedTransaction: "from an earlier test build"))
+        await queue.enqueue(.init(id: "real", signedTransaction: "real purchase"))
+        let sink = Recorder()
+        let delivered = await queue.drain { record in
+            if record.id == "sandbox" { throw PurchaseOutbox.Rejected() }
+            await sink.append(record.id)
+        }
+        #expect(delivered)
+        #expect(await sink.values == ["real"])
+        #expect(await queue.pendingCount == 0)
+    }
+
     @Test func updateDuringDeliveryIsNotLost() async {
         let file = path()
         defer { try? FileManager.default.removeItem(at: file.deletingLastPathComponent()) }
