@@ -12,6 +12,7 @@ import json
 import os
 import sqlite3
 from zoneinfo import ZoneInfo
+from .countries import alpha2
 
 DEFAULT_TIMEZONE = 'UTC'
 RECENT_PURCHASES = 15
@@ -154,7 +155,8 @@ def sales(purchases, start):
             'free': free, 'refunded': refunded}
 
 def countries(installs, paid, contexts, start):
-    """Installs and purchases per App Store country in the range; None when not reported."""
+    """Installs and purchases per App Store country in the range (`region` is its two-letter
+    code, for its name); None when not reported."""
     rows = defaultdict(lambda: {'installs': 0, 'purchases': 0})
     for installation, day in installs:
         if day >= start:
@@ -162,7 +164,7 @@ def countries(installs, paid, contexts, start):
     for p in paid:
         if p['day'] >= start:
             rows[p['storefront']]['purchases'] += 1
-    return sorted(({'country': k, **v} for k, v in rows.items()),
+    return sorted(({'country': k, 'region': alpha2(k), **v} for k, v in rows.items()),
                   key=lambda r: (r['country'] is None, -r['purchases'], -r['installs']))
 
 def versions(usage, start):
@@ -186,7 +188,7 @@ def recent(paid, usage, zone, start):
     for p in reversed([p for p in paid if p['day'] >= start][-RECENT_PURCHASES:]):
         when = datetime.fromtimestamp(p['purchased_at'] / MILLIS, timezone.utc).astimezone(zone)
         rows.append({'time': when.strftime('%b %-d, %-I:%M %p'), 'price': round(p['price'] / MILLIS, 2),
-                     'currency': p['currency'], 'country': p['storefront'], 'platform': platform.get(p['account_token'])})
+                     'currency': p['currency'], 'country': p['storefront'], 'region': alpha2(p['storefront']), 'platform': platform.get(p['account_token'])})
     return rows
 
 if __name__ == '__main__':

@@ -8,7 +8,7 @@ const DEFAULT_DAYS = 30;
 const PLATFORMS = [
   { key: 'iPhone', label: 'iPhone', color: 'var(--series-1)' },
   { key: 'iPad', label: 'iPad', color: 'var(--series-2)' },
-  { key: 'AppleTV', label: 'Apple TV', color: 'var(--series-3)' },
+  { key: 'AppleTV', label: 'Apple\u00a0TV', color: 'var(--series-3)' },
   { key: 'Mac', label: 'Mac', color: 'var(--series-4)' },
 ];
 const PLATFORM_NAMES = Object.fromEntries(PLATFORMS.map(p => [p.key, p.label]));
@@ -71,6 +71,12 @@ const percent = (part, whole) => (whole ? `${((100 * part) / whole).toFixed(1)}%
 function parseDay(iso) {
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(y, m - 1, d);
+}
+const regionNames = new Intl.DisplayNames(undefined, { type: 'region' });
+/** A country's name, from its two-letter code; the App Store code if there's no name. */
+function countryName(c, missing = NOT_REPORTED) {
+  if (!c.country) return missing;
+  try { return (c.region && regionNames.of(c.region)) || c.country; } catch { return c.country; }
 }
 const shortDay = iso => parseDay(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 const clock = date => date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
@@ -258,10 +264,10 @@ function renderTables(data) {
     currencies.map(s => [s.currency, count(s.purchases), price(s.amount, s.currency)])));
 
   document.getElementById('recent').replaceChildren(table([['When'], ['Device'], ['Country'], ['Price', true]],
-    data.recent.map(p => [p.time, PLATFORM_NAMES[p.platform] ?? NOT_REPORTED, p.country ?? NOT_REPORTED, price(p.price, p.currency)])));
+    data.recent.map(p => [p.time, PLATFORM_NAMES[p.platform] ?? NOT_REPORTED, countryName(p), price(p.price, p.currency)])));
 
   document.getElementById('countries').replaceChildren(table([['Country'], ['Installs', true], ['Purchases', true]],
-    data.countries.map(c => [c.country ?? 'Not reported', count(c.installs), count(c.purchases)])));
+    data.countries.map(c => [countryName(c, 'Not reported'), count(c.installs), count(c.purchases)])));
 
   document.getElementById('versions').replaceChildren(table([['Version'], ['Devices', true]],
     data.versions.map(v => [v.version, count(v.devices)])));
