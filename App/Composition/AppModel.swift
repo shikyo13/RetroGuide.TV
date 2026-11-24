@@ -389,6 +389,8 @@ final class AppModel {
     func enteredBackground() {
         parentalControls.endAuthorization()
         isInBackground = true
+        // The app may be closed from here: count the playing time so far.
+        countWatchTime()
         updateWhatsOnWidget()
         whatsOnWidget.reloadForHomeScreen()
         guard !tuner.isPictureInPictureActive else { return }
