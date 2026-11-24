@@ -64,6 +64,9 @@ final class GuideModel {
     /// Keeps a guide that's following live time on the current slot, and
     /// brings back one whose whole window has passed.
     func followLiveTime(now: Date = .now) {
+        // While following live, the selection moves with the clock even within a slot,
+        // so a show that just ended doesn't stay selected; one picked further ahead stays.
+        if isFollowingLive { focusAnchor = max(focusAnchor, now) }
         let current = GuideLayout.slotStart(containing: now)
         guard windowStart != current, isFollowingLive || windowEnd <= now else { return }
         windowStart = current
