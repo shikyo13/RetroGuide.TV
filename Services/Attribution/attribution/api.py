@@ -34,6 +34,7 @@ class Usage(Payload):
     # Checked in usage.context: a bad value is dropped, not the events.
     storefront: str | None = Field(default=None, max_length=8)
     language: str | None = Field(default=None, max_length=16)
+    os: str | None = Field(default=None, max_length=8)
 
 class Notification(Payload):
     signedPayload: str = Field(min_length=20, max_length=65536)
@@ -105,7 +106,7 @@ def create_app(config=None, apple=None, database=None):
             raise HTTPException(403, 'Installation identity mismatch') from None
         events = usage.accepted(body.events)
         usage.store(database, str(identifier), body.platform, body.version, events,
-                    body.storefront, body.language)
+                    body.storefront, body.language, body.os)
         return {'accepted':len(events)}
 
     @app.post('/v1/notifications/apple')

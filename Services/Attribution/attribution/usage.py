@@ -22,6 +22,18 @@ PROBLEMS = {'plexNoServers', 'jellyfinFoundNone', 'jellyfinFoundNotSecure', 'jel
 STEPS = {'welcome', 'plexLink', 'plexSignInOpened', 'plexServers', 'jellyfinFind', 'jellyfinFound',
          'jellyfinAddress', 'jellyfinSignIn', 'libraries', 'failed'}
 LOCATIONS = {'home', 'away'}
+# UsageEvent.Player, TuneTime, WatchTime, ProEntry and PurchaseStep in the app.
+PLAYERS = ('retroguide', 'apple')
+TUNE_TIMES = ('0-1s', '1-3s', '3-10s', '10s+')
+WATCH_TIMES = {'15m', '1h', '3h', '6h'}
+PRO_ENTRIES = {'settings', 'theme', 'channels', 'favorites', 'guide', 'reminders', 'setup', 'servers',
+               'schedule', 'topShelf', 'widgets', 'other'}
+PURCHASE_STEPS = {'started', 'completed', 'pending', 'cancelled', 'failed', 'unverified'}
+
+def per_player(values):
+    """Details of the form `player.value`, such as `apple.timeout`."""
+    return {f'{player}.{value}' for player in PLAYERS for value in values}
+
 EVENTS = {
     'active': SERVERS,
     'setup': STEPS,
@@ -33,8 +45,22 @@ EVENTS = {
     'watched': {'', 'plex', 'jellyfin'},
     'playbackFailed': REASONS,
     'playbackStalled': LOCATIONS,
-    'proViewed': {''},
+    'proViewed': {''} | PRO_ENTRIES,
+    'played': set(PLAYERS),
+    'playerFailed': per_player(REASONS),
+    'playerStalled': per_player(LOCATIONS),
+    'tuneTime': per_player(TUNE_TIMES),
+    'watchTime': WATCH_TIMES,
+    'proPurchase': PURCHASE_STEPS,
 }
+# Crashes and hangs MetricKit reported (iPhone and iPad), by the build they happened in.
+BUILD = re.compile(r'[0-9]{8}\.[0-9]{1,3}')
+BUILD_EVENTS = {'crashed', 'hung'}
+
+def valid(name, detail):
+    if name in BUILD_EVENTS:
+        return bool(BUILD.fullmatch(detail))
+    return detail in EVENTS.get(name, ())
 PLATFORMS = ('iPhone', 'iPad', 'AppleTV', 'Mac')
 # The App Store country (StoreKit's Storefront.countryCode, ISO 3166-1 alpha-3),
 # not where the device is. Apple signs the same code into each purchase.
@@ -42,6 +68,8 @@ STOREFRONT = re.compile(r'[A-Z]{3}')
 # The languages the app is translated into; it reports the one it shows.
 LANGUAGES = {'en', 'es', 'fr', 'de', 'it', 'pt-BR', 'nl', 'ja', 'ko', 'zh-Hans', 'zh-Hant', 'pl', 'sv', 'ru', 'cs', 'hi', 'bn', 'mr', 'te', 'ta', 'gu', 'kn', 'ml', 'pa', 'or'}
 UNKNOWN = 'unknown'
+# The major system version (iOS 27 → "27").
+OS_VERSION = re.compile(r'[0-9]{1,3}')
 # Events from devices with a wrong clock or a long time offline.
 ACCEPTED_DAYS_BACK = 14
 ACCEPTED_DAYS_AHEAD = 1
@@ -57,6 +85,12 @@ CREATE TABLE IF NOT EXISTS installation_context (
 );
 '''
 
+def migrate(db):
+    """Columns added after the first release of the table."""
+    # 2026-11: the major system version, latest value per installation.
+    if 'os' not in {c['name'] for c in db.execute('PRAGMA table_info(installation_context)')}:
+        db.execute('ALTER TABLE installation_context ADD COLUMN os TEXT')
+
 def accepted(events, today=None):
     """The events worth keeping, as (name, detail, day)."""
     today = today or datetime.now(timezone.utc).date()
@@ -64,7 +98,7 @@ def accepted(events, today=None):
     latest = today + timedelta(days=ACCEPTED_DAYS_AHEAD)
     kept = set()
     for event in events:
-        if event.detail not in EVENTS.get(event.name, ()):
+        if not valid(event.name, event.detail):
             continue
         try:
             day = date.fromisoformat(event.day)
@@ -74,26 +108,29 @@ def accepted(events, today=None):
             kept.add((event.name, event.detail, event.day))
     return kept
 
-def context(storefront, language):
-    """The country and language worth keeping; anything unexpected is dropped."""
+def context(storefront, language, os_version=None):
+    """The country, language and system version worth keeping; anything unexpected is dropped."""
     storefront = storefront if storefront and STOREFRONT.fullmatch(storefront) else None
     language = language if language in LANGUAGES else None
-    return storefront, language
+    os_version = os_version if os_version and OS_VERSION.fullmatch(os_version) else None
+    return storefront, language, os_version
 
-def store(database, installation, platform, version, events, storefront=None, language=None):
+def store(database, installation, platform, version, events, storefront=None, language=None, os_version=None):
     now = int(time.time())
-    storefront, language = context(storefront, language)
+    storefront, language, os_version = context(storefront, language, os_version)
     with database.connection() as db:
         db.executemany('INSERT OR IGNORE INTO usage_events VALUES(?,?,?,?,?,?,?)',
                        [(installation, name, detail, day, platform, version, now)
                         for name, detail, day in events])
-        if storefront or language:
-            # The latest values win: people change their App Store country or language.
-            db.execute('''INSERT INTO installation_context VALUES(?,?,?,?)
+        if storefront or language or os_version:
+            # The latest values win: people change their App Store country or language, and update.
+            db.execute('''INSERT INTO installation_context(installation,storefront,language,updated_at,os)
+                VALUES(?,?,?,?,?)
                 ON CONFLICT(installation) DO UPDATE SET
                 storefront=COALESCE(excluded.storefront,installation_context.storefront),
                 language=COALESCE(excluded.language,installation_context.language),
-                updated_at=excluded.updated_at''', (installation, storefront, language, now))
+                os=COALESCE(excluded.os,installation_context.os),
+                updated_at=excluded.updated_at''', (installation, storefront, language, now, os_version))
 
 WHY = ('setupProblem', 'setupFailed', 'libraryFailed', 'playbackFailed', 'playbackStalled')
 

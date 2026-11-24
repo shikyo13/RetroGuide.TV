@@ -5,7 +5,7 @@ import json
 import os
 import sqlite3
 import time
-from .usage import SCHEMA as USAGE_SCHEMA
+from .usage import SCHEMA as USAGE_SCHEMA, migrate as migrate_usage
 
 SCHEMA = '''
 CREATE TABLE IF NOT EXISTS installations (
@@ -41,6 +41,7 @@ class Database:
             # Added in 2026-11: the App Store country Apple signs into each purchase.
             if 'storefront' not in {c['name'] for c in db.execute('PRAGMA table_info(purchases)')}:
                 db.execute('ALTER TABLE purchases ADD COLUMN storefront TEXT')
+            migrate_usage(db)
         os.chmod(self.path, 0o600)
 
     @contextmanager

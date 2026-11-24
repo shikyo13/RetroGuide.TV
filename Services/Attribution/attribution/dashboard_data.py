@@ -10,6 +10,9 @@ Take-home pay comes from Apple, not this service: `DASHBOARD_PROCEEDS_FILE` name
 JSON file of Apple's purchase reports ({"rows": [{date, territory, purchases,
 proceedsUSD, salesUSD}]}), which say what each sale paid out after Apple's commission
 and taxes. Purchases newer than Apple's latest day are estimated from those figures.
+`DASHBOARD_STORE_FILE` names Apple's App Store reports the same way ({"rows": [{date,
+metric, source, device, count}]}): impressions, product page views, downloads,
+deletions and sessions, per UTC day.
 """
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
@@ -33,6 +36,15 @@ WHY = ('playbackFailed', 'setupProblem', 'setupFailed', 'libraryFailed')
 # Setup and viewing steps, in the order people reach them.
 FUNNEL = (('serverConnected', 'Server connected'), ('lineupReady', 'Channels built'),
           ('watched', 'Watched a program'), ('proViewed', 'Opened Pro page'), ('purchased', 'Bought Pro'))
+# Days after the first one that retention looks at.
+RETENTION_DAYS = (1, 7, 30)
+PLAYERS = ('retroguide', 'apple')
+TUNE_TIMES = ('0-1s', '1-3s', '3-10s', '10s+')
+WATCH_TIMES = ('15m', '1h', '3h', '6h')
+PURCHASE_STEPS = ('started', 'completed', 'pending', 'cancelled', 'failed', 'unverified')
+STORE_METRICS = ('impressions', 'pageViews', 'downloads', 'redownloads', 'deletions', 'sessions', 'sessionSeconds',
+                 'downloadingUsers', 'optedIn')
+SYSTEM_NAMES = {'iPhone': 'iOS', 'iPad': 'iPadOS', 'AppleTV': 'tvOS', 'Mac': 'iOS on Mac'}
 
 def connect(path):
     """A connection that cannot write, even by mistake."""
@@ -61,9 +73,11 @@ def summary(path, days, now=None):
             '''SELECT purchased_at, price, currency, storefront, account_token, revoked_at FROM purchases
                WHERE environment='Production' AND ownership='PURCHASED' ORDER BY purchased_at''')]
         usage = db.execute('SELECT installation, name, detail, day, platform, version FROM usage_events').fetchall()
-        contexts = {r['installation']: r['storefront'] for r in db.execute('SELECT installation, storefront FROM installation_context')}
+        context_rows = [dict(r) for r in db.execute('SELECT * FROM installation_context')]
     finally:
         db.close()
+    contexts = {r['installation']: r['storefront'] for r in context_rows}
+    systems = {r['installation']: r.get('os') for r in context_rows}
     for p in purchases:
         p['day'] = local_day(p['purchased_at'], zone)
     paid = [p for p in purchases if (p['price'] or 0) > 0 and p['revoked_at'] is None]
@@ -90,7 +104,136 @@ def summary(path, days, now=None):
         'versions': versions(usage, utc_start),
         'recent': recent(paid, usage, zone, start),
         'takeHome': take_home(os.getenv('DASHBOARD_PROCEEDS_FILE'), paid, today, utc_today, utc_start),
+        'appStore': app_store(os.getenv('DASHBOARD_STORE_FILE'), utc_start),
+        'retention': retention(installs, usage, utc_start, utc_today, since['activity']),
+        'playback': playback(usage, utc_start),
+        'pro': pro(usage, utc_start),
+        'stability': stability(usage, systems, utc_start),
     }
+
+def app_store(path, utc_start):
+    """Apple's App Store reports over the range: totals, and the App Store figures by
+    where people came from and by device. Deletions and sessions count only people
+    who share analytics with developers; `optInShare` says what share that is."""
+    try:
+        rows = json.loads(Path(path).read_text())['rows'] if path else None
+    except (OSError, ValueError, KeyError):
+        rows = None
+    if not rows:
+        return {'available': False}
+    start = utc_start.isoformat()
+    totals = defaultdict(int)
+    by = {'source': defaultdict(lambda: defaultdict(int)), 'device': defaultdict(lambda: defaultdict(int))}
+    for r in rows:
+        if r['date'] < start:
+            continue
+        totals[r['metric']] += r['count']
+        if r['metric'] in ('impressions', 'pageViews', 'downloads'):
+            by['source'][r['source']][r['metric']] += r['count']
+            by['device'][r['device']][r['metric']] += r['count']
+    def split(kind):
+        return sorted(({kind: k, **{m: v[m] for m in ('impressions', 'pageViews', 'downloads')}} for k, v in by[kind].items()),
+                      key=lambda r: (-r['downloads'], -r['pageViews']))
+    return {
+        'available': True, 'through': max(r['date'] for r in rows),
+        'totals': {m: totals[m] for m in STORE_METRICS},
+        'optInShare': totals['optedIn'] / totals['downloadingUsers'] if totals['downloadingUsers'] else None,
+        'bySource': split('source'), 'byDevice': split('device'),
+    }
+
+def retention(installs, usage, utc_start, utc_today, since):
+    """Of the installs first seen in the range, how many opened the app again 1, 7 and
+    30 days later (only installs old enough to have had that day), and how soon
+    they first watched something."""
+    if since is None:
+        return {'days': [], 'firstWatch': None}
+    active, watched = defaultdict(set), defaultdict(set)
+    for r in usage:
+        if r['name'] == 'active':
+            active[r['installation']].add(r['day'])
+        elif r['name'] == 'watched':
+            watched[r['installation']].add(r['day'])
+    first = max(utc_start, since)
+    cohort = [(i['id'], i['utcDay']) for i in installs if first <= i['utcDay'] < utc_today]
+    days = []
+    for n in RETENTION_DAYS:
+        eligible = [(i, d) for i, d in cohort if d + timedelta(days=n) < utc_today]
+        back = sum((d + timedelta(days=n)).isoformat() in active[i] for i, d in eligible)
+        days.append({'day': n, 'installs': len(eligible), 'returned': back})
+    soon = defaultdict(int)
+    for i, d in cohort:
+        if watched[i]:
+            gap = (date.fromisoformat(min(watched[i])) - d).days
+            soon['sameDay' if gap <= 0 else 'withinWeek' if gap < 7 else 'later'] += 1
+    return {'since': first.isoformat(), 'days': days,
+            'firstWatch': {'installs': len(cohort), 'sameDay': soon['sameDay'], 'withinWeek': soon['withinWeek'],
+                           'later': soon['later']}}
+
+def device_days(usage, start, name):
+    """{detail: {(installation, day)}} for event `name` from `start` on."""
+    seen = defaultdict(set)
+    for r in usage:
+        if r['name'] == name and r['day'] >= start:
+            seen[r['detail']].add((r['installation'], r['day']))
+    return seen
+
+def playback(usage, utc_start):
+    """Per player: device-days that played, hit No Signal or buffered, why, and how long
+    channel changes took. Plus how long devices watched on the days they watched.
+    Recorded from 1.11.4 on; `played` is the denominator for every share."""
+    start = utc_start.isoformat()
+    played, failed = device_days(usage, start, 'played'), device_days(usage, start, 'playerFailed')
+    stalled, tuned = device_days(usage, start, 'playerStalled'), device_days(usage, start, 'tuneTime')
+    def of(player, seen):
+        return {k.split('.', 1)[1]: v for k, v in seen.items() if k.startswith(player + '.')}
+    players = []
+    for player in PLAYERS:
+        failures, stalls, times = of(player, failed), of(player, stalled), of(player, tuned)
+        players.append({
+            'player': player, 'played': len(played.get(player, ())),
+            'failed': len(set().union(*failures.values())), 'stalled': len(set().union(*stalls.values())),
+            'reasons': sorted(((r, len(v)) for r, v in failures.items()), key=lambda x: -x[1]),
+            'tuneTimes': {t: len(times.get(t, ())) for t in TUNE_TIMES},
+        })
+    reached = device_days(usage, start, 'watchTime')
+    watch_days = set().union(*played.values()) if played else set()
+    return {'players': players, 'watchDays': len(watch_days), 'watchTime': {t: len(reached.get(t, ())) for t in WATCH_TIMES}}
+
+def pro(usage, utc_start):
+    """Devices that opened the Pro page, by where from, and the steps of buying it.
+    Where-from and purchase steps are recorded from 1.11.4 on (earlier: 'unknown')."""
+    start = utc_start.isoformat()
+    entries, steps = defaultdict(set), defaultdict(set)
+    for r in usage:
+        if r['day'] < start:
+            continue
+        if r['name'] == 'proViewed':
+            entries[r['detail'] or 'unknown'].add(r['installation'])
+        elif r['name'] == 'proPurchase':
+            steps[r['detail']].add(r['installation'])
+    return {'entries': sorted(((e, len(i)) for e, i in entries.items()), key=lambda x: -x[1]),
+            'steps': [(s, len(steps.get(s, ()))) for s in PURCHASE_STEPS]}
+
+def stability(usage, systems, utc_start):
+    """Devices with a crash or hang (MetricKit, iPhone and iPad) per build, and devices
+    active in the range by system version (as each last reported it)."""
+    start = utc_start.isoformat()
+    builds = defaultdict(lambda: {'crashed': set(), 'hung': set()})
+    platform_of = {}
+    for r in usage:
+        if r['day'] < start:
+            continue
+        if r['name'] in ('crashed', 'hung'):
+            builds[r['detail']][r['name']].add(r['installation'])
+        elif r['name'] == 'active':
+            platform_of[r['installation']] = r['platform']
+    counts = defaultdict(int)
+    for install, platform in platform_of.items():
+        version = systems.get(install)
+        counts[f"{SYSTEM_NAMES.get(platform, platform)} {version}" if version else f"{SYSTEM_NAMES.get(platform, platform)} (not reported)"] += 1
+    return {'builds': sorted(({'build': b, 'crashed': len(v['crashed']), 'hung': len(v['hung'])} for b, v in builds.items()),
+                             key=lambda r: r['build'], reverse=True),
+            'systems': sorted(counts.items(), key=lambda x: -x[1])}
 
 def take_home(path, paid, today, utc_today, utc_start):
     """What Apple pays out, in US dollars, per UTC day (Apple's reports use UTC days).

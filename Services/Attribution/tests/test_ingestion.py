@@ -186,7 +186,8 @@ def test_usage_reasons_match_the_app():
     """The app's reason names must be the service's, or its events are dropped."""
     import re
     from pathlib import Path
-    from attribution.usage import REASONS, PROBLEMS, STEPS, LOCATIONS
+    from attribution.usage import (REASONS, PROBLEMS, STEPS, LOCATIONS, PLAYERS, TUNE_TIMES, WATCH_TIMES,
+                                   PRO_ENTRIES, PURCHASE_STEPS)
     swift = (Path(__file__).parents[3] / 'Packages/RetroGuideKit/Sources/RetroGuideKit/Attribution/UsageEvent.swift').read_text()
     def cases(enum):
         body = swift.split(f'enum {enum}:')[1].split('\n    }\n')[0]
@@ -195,6 +196,15 @@ def test_usage_reasons_match_the_app():
     assert cases('SetupProblem') == PROBLEMS
     assert cases('SetupStep') == STEPS
     assert cases('Location') == LOCATIONS
+    assert cases('Player') == set(PLAYERS) and cases('ProEntry') == PRO_ENTRIES
+    assert cases('PurchaseStep') == PURCHASE_STEPS
+    def raw(enum):
+        body = swift.split(f'enum {enum}:')[1].split('\n    }\n')[0]
+        return set(re.findall(r'^\s+case \w+ = "([^"]+)"', body, re.M))
+    assert raw('TuneTime') == set(TUNE_TIMES) and raw('WatchTime') == WATCH_TIMES
+    names = set(re.findall(r'^\s+case (\w+)\s*$', swift.split('enum Name:')[1].split('\n    }\n')[0], re.M))
+    from attribution.usage import EVENTS, BUILD_EVENTS
+    assert names == set(EVENTS) | BUILD_EVENTS
 
 def test_usage_report_says_why_setup_stopped(setup):
     from datetime import datetime, timezone
@@ -238,3 +248,26 @@ def test_country_and_language_split_reports_without_costing_events(setup):
     assert upload(client,identifier).status_code == 200
     assert revenue_report(db,0,3000)['byStorefront'] == [
         {'storefront':'DEU', 'currency':'EUR', 'purchases':1, 'refunds':0}]
+
+def test_player_events_and_system_version_are_kept(tmp_path, setup):
+    """1.11.4's events and system version arrive; a database made before them migrates."""
+    import sqlite3
+    from datetime import datetime, timezone
+    db,apple,client,identifier = setup
+    today = datetime.now(timezone.utc).date().isoformat()
+    assert register(client,identifier).status_code == 200
+    events = [('played','apple'), ('playerFailed','apple.timeout'), ('playerStalled','retroguide.away'),
+              ('tuneTime','apple.1-3s'), ('watchTime','1h'), ('proViewed','guide'), ('proPurchase','cancelled'),
+              ('crashed','20261124.2'), ('hung','20261124.2'),
+              ('playerFailed','vlc.timeout'), ('crashed','1.11.4'), ('tuneTime','apple.2s')]
+    response = client.post(f'/v1/installations/{identifier}/usage', headers={'Authorization':f'Bearer {SECRET}'},
+        json={'platform':'iPhone', 'version':'1.11.4', 'os':'27', 'storefront':'USA',
+              'events':[{'name':n, 'detail':d, 'day':today} for n,d in events]})
+    assert response.json() == {'accepted':9}
+    with db.connection() as c:
+        assert c.execute('SELECT os FROM installation_context').fetchone()['os'] == '27'
+    old = tmp_path/'old.sqlite'
+    with sqlite3.connect(old) as c:
+        c.execute('CREATE TABLE installation_context (installation TEXT PRIMARY KEY, storefront TEXT, language TEXT, updated_at INTEGER NOT NULL)')
+    with Database(str(old)).connection() as c:
+        assert 'os' in {r['name'] for r in c.execute('PRAGMA table_info(installation_context)')}

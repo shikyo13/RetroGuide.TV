@@ -366,6 +366,109 @@ function renderTables(data) {
     data.versions.map(v => [v.version, count(v.devices)])));
 }
 
+
+// ---- Finding and keeping people, playback, Pro, stability ---------------------
+
+const SOURCES = { search: 'App Store search', browse: 'App Store browse', web: 'Web link', app: 'Another app', other: 'Other' };
+const DEVICES = { iPhone: 'iPhone', iPad: 'iPad', AppleTV: 'Apple TV', Mac: 'Mac', other: 'Other' };
+const PLAYER_NAMES = { retroguide: 'RetroGuide Player', apple: 'Apple Player' };
+const WATCH_TIMES = { '15m': '15 minutes', '1h': '1 hour', '3h': '3 hours', '6h': '6 hours' };
+const PRO_ENTRIES = {
+  settings: 'Settings', theme: 'Themes', channels: 'Custom channels', favorites: 'Favorites', guide: 'Guide',
+  reminders: 'Reminders', setup: 'Setup', servers: 'Another server', schedule: 'Schedule options',
+  topShelf: 'Top Shelf', widgets: 'Widgets', other: 'Other', unknown: 'Not recorded (before 1.11.4)',
+};
+const PURCHASE_STEPS = {
+  started: 'Tapped Buy', completed: 'Bought', pending: 'Waiting for approval', cancelled: 'Cancelled',
+  failed: 'Failed', unverified: 'Paid, not verified',
+};
+
+/** Bars where each step's share is of the step before it. */
+function steps(container, rows) {
+  container.replaceChildren(...rows.map((step, i) => {
+    const base = rows[0].count || 0;
+    const share = base ? (100 * step.count) / base : 0;
+    const note = i ? percent(step.count, rows[i - 1].count) : '';
+    return el('div', { class: 'row' }, el('div', {}, step.label),
+      el('div', { class: 'track' }, el('div', { class: 'bar', style: `width:${Math.max(share, 0.5)}%` })),
+      el('div', { class: 'num' }, `${count(step.count)} `, el('small', {}, note)));
+  }));
+}
+
+function renderStore(a) {
+  const byId = id => document.getElementById(id);
+  if (!a.available) {
+    byId('store-note').textContent = "Apple's App Store reports haven't been fetched yet";
+    ['store-funnel', 'store-sources', 'store-devices', 'apple-usage'].forEach(id => byId(id).replaceChildren());
+    byId('apple-usage-note').textContent = '';
+    return;
+  }
+  const t = a.totals;
+  byId('store-note').textContent = `Apple's reports through ${shortDay(a.through)} · devices per day, added up · each step's share of the one before`;
+  steps(byId('store-funnel'), [
+    { label: 'Saw the app', count: t.impressions }, { label: 'Opened its page', count: t.pageViews },
+    { label: 'Downloaded', count: t.downloads }]);
+  const split = (rows, names, key) => rows.map(r => [names[r[key]] ?? r[key], count(r.impressions), count(r.pageViews),
+    count(r.downloads), percent(r.downloads, r.pageViews)]);
+  const heads = label => [[label], ['Saw', true], ['Page', true], ['Downloads', true], ['Page → download', true]];
+  byId('store-sources').replaceChildren(table(heads('Source'), split(a.bySource, SOURCES, 'source')));
+  byId('store-devices').replaceChildren(table(heads('Device'), split(a.byDevice, DEVICES, 'device')));
+  const share = a.optInShare == null ? 'an unknown share' : `about ${Math.round(100 * a.optInShare)}%`;
+  byId('apple-usage-note').textContent =
+    `Only from people who share analytics with developers: ${share} of those downloading in this range, so real numbers are higher`;
+  const minutes = t.sessions ? t.sessionSeconds / t.sessions / 60 : 0;
+  byId('apple-usage').replaceChildren(table([['Measure'], ['Count', true]], [
+    ['Redownloads (everyone)', count(t.redownloads)], ['Deletions', count(t.deletions)], ['Sessions', count(t.sessions)],
+    ['Average session', t.sessions ? `${minutes.toFixed(1)} min` : NOT_REPORTED]]));
+}
+
+function renderRetention(r) {
+  const byId = id => document.getElementById(id);
+  byId('retention-note').textContent = r.since
+    ? `Installs first seen since ${shortDay(r.since)} that opened the app again that many days later · only installs old enough to count`
+    : 'Nothing recorded yet';
+  byId('retention').replaceChildren(table([['Day'], ['Installs', true], ['Came back', true], ['Share', true]],
+    r.days.map(d => [`Day ${d.day}`, count(d.installs), count(d.returned), percent(d.returned, d.installs)])));
+  const w = r.firstWatch;
+  byId('first-watch').replaceChildren(w ? table([['When'], ['Installs', true], ['Share', true]], [
+    ['The first day', count(w.sameDay), percent(w.sameDay, w.installs)],
+    ['Within a week', count(w.withinWeek), percent(w.withinWeek, w.installs)],
+    ['Later', count(w.later), percent(w.later, w.installs)],
+    ['Not yet', count(w.installs - w.sameDay - w.withinWeek - w.later), percent(w.installs - w.sameDay - w.withinWeek - w.later, w.installs)],
+  ]) : el('p', { class: 'empty' }, 'Nothing in this range'));
+}
+
+function renderPlayback(p) {
+  const byId = id => document.getElementById(id);
+  const players = p.players.filter(x => x.played || x.failed || x.stalled);
+  byId('players').replaceChildren(table([['Player'], ['Played', true], ['No Signal', true], ['Buffering', true]],
+    players.map(x => [PLAYER_NAMES[x.player], count(x.played), percent(x.failed, x.played), percent(x.stalled, x.played)])));
+  const times = Object.keys(players[0]?.tuneTimes ?? {});
+  byId('tune-times').replaceChildren(players.length ? table([['Time'], ...players.map(x => [PLAYER_NAMES[x.player], true])],
+    times.map(t => [t.replace('-', '–'), ...players.map(x => count(x.tuneTimes[t]))])) : el('p', { class: 'empty' }, 'Nothing in this range'));
+  const reasons = [];
+  for (const x of players) {
+    if (!x.reasons.length) continue;
+    reasons.push({ group: PLAYER_NAMES[x.player] });
+    for (const [reason, n] of x.reasons) reasons.push([REASONS[reason] || reason, count(n)]);
+  }
+  byId('player-reasons').replaceChildren(table([['Reason'], ['Device-days', true]], reasons));
+  byId('watch-time-note').textContent = p.watchDays
+    ? `Of ${count(p.watchDays)} device-days that played, how many reached at least…` : 'Nothing in this range';
+  steps(byId('watch-time'), p.watchDays ? [{ label: 'Played', count: p.watchDays },
+    ...Object.entries(p.watchTime).map(([k, n]) => ({ label: WATCH_TIMES[k], count: n }))] : []);
+}
+
+function renderProAndStability(pro, s) {
+  const byId = id => document.getElementById(id);
+  byId('pro-entries').replaceChildren(table([['From'], ['Devices', true]], pro.entries.map(([e, n]) => [PRO_ENTRIES[e] ?? e, count(n)])));
+  byId('pro-steps').replaceChildren(table([['Step'], ['Devices', true]],
+    pro.steps.filter(([, n]) => n).map(([step, n]) => [PURCHASE_STEPS[step] ?? step, count(n)])));
+  byId('crashes').replaceChildren(table([['Build'], ['Crashed', true], ['Hung', true]],
+    s.builds.map(b => [b.build, count(b.crashed), count(b.hung)])));
+  byId('systems').replaceChildren(table([['System'], ['Devices', true]], s.systems.map(([name, n]) => [name, count(n)])));
+}
+
 // ---- Loading ----------------------------------------------------------------
 
 function render(data) {
@@ -379,6 +482,10 @@ function render(data) {
   renderCharts(data);
   renderFunnel(data.funnel);
   renderTables(data);
+  renderStore(data.appStore);
+  renderRetention(data.retention);
+  renderPlayback(data.playback);
+  renderProAndStability(data.pro, data.stability);
 }
 
 async function load() {
