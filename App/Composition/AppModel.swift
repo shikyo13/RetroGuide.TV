@@ -124,7 +124,7 @@ final class AppModel {
     /// waiting out ``Lifecycle/backgroundGrace``.
     @ObservationIgnored private var backgroundedAt: ContinuousClock.Instant?
     @ObservationIgnored private var backgroundRelease: Task<Void, Never>?
-    @ObservationIgnored private var isInBackground = false
+    @ObservationIgnored private(set) var isInBackground = false
     @ObservationIgnored private var isRecheckingServers = false
     @ObservationIgnored private let networkMonitor = NetworkChangeMonitor()
     /// The channel to return to once a slower server brings it into the lineup,
@@ -741,6 +741,7 @@ final class AppModel {
                 try? await Task.sleep(for: Refresh.healthCheckInterval)
                 guard !Task.isCancelled else { return }
                 self?.updateWhatsOnWidget()
+                self?.markDayWhileOpen()
                 await self?.recheckServers()
             }
         }

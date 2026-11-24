@@ -19,6 +19,16 @@ extension AppModel {
         recordUsage(.active, detail: UsageEvent.serverKinds(servers.accounts.map(\.kind)))
     }
 
+    /// Keeps the daily marks right for an app left open across midnight UTC
+    /// (an Apple TV playing all evening): opening the app and starting a program
+    /// mark the day, but neither happens again when the day turns over. Marks
+    /// already made today are dropped before sending, so repeating them is free.
+    func markDayWhileOpen() {
+        guard !isInBackground else { return }
+        recordActive()
+        if tuner.signal == .live { recordWatching() }
+    }
+
     /// A program is playing, from a Plex or a Jellyfin server.
     func recordWatching() {
         let serverID = tuner.program?.item.serverID
