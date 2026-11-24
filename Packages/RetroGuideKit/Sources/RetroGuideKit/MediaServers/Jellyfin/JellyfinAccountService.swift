@@ -177,7 +177,9 @@ public struct JellyfinAccountService: Sendable {
             guard let plain = await JellyfinAddress.resolvedPlainHTTP(from: text) else { return .notSecure(plainAddress: nil) }
             guard allowsUnencrypted else { return .notSecure(plainAddress: plain) }
             PlainHTTPOrigins.allowPending(plain)
-            guard case let .server(info) = await probe(plain) else { return .noAnswer(candidates.first ?? plain) }
+            // The server is known to answer over plain HTTP: if it doesn't at this
+            // path, it's kept as plain HTTP, never swapped for an HTTPS address.
+            guard case let .server(info) = await probePlainHTTP(plain) else { return .noAnswer(plain) }
             return Self.same(info, serverID) ? .reachable(info) : .differentServer(info.name)
         case .untrustedCertificate:
             return .untrusted
@@ -185,6 +187,16 @@ public struct JellyfinAccountService: Sendable {
             // Away addresses often can't be reached from home: worth keeping anyway.
             return .noAnswer(candidates.first ?? plain ?? JellyfinAPI.placeholderURL)
         }
+    }
+
+    /// Probes a plain-HTTP address the viewer agreed to and, when its path was
+    /// some page rather than where the server lives, the same address without it.
+    /// Setup and Settings both use this, so they find the same server.
+    public func probePlainHTTP(_ address: URL) async -> JellyfinProbe {
+        let answer = await probe(address)
+        if case .server = answer { return answer }
+        guard let root = JellyfinAddress.withoutPath(address) else { return answer }
+        return await probe(root)
     }
 
     private static func same(_ info: JellyfinServerInfo, _ serverID: String?) -> Bool {

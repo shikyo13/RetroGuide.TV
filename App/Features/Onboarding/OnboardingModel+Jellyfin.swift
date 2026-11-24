@@ -151,11 +151,7 @@ extension OnboardingModel {
         setStep(.connecting(serverName: JellyfinConnectionText.short(address)))
         task = Task { [weak self] in
             guard let self else { return }
-            var answer = await jellyfinService.probe(address)
-            // The path may have been some page rather than where the server lives.
-            if case .server = answer {} else if let root = JellyfinAddress.withoutPath(address) {
-                answer = await jellyfinService.probe(root)
-            }
+            let answer = await jellyfinService.probePlainHTTP(address)
             guard !Task.isCancelled else { return }
             guard case let .server(server) = answer else {
                 setStep(.enteringJellyfinAddress(message: JellyfinSetupText.noAnswer(tried: [address])))
