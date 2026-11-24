@@ -96,11 +96,14 @@ class Database:
                 if db.execute('SELECT 1 FROM notifications WHERE id=?', (notification_id,)).fetchone():
                     return
                 db.execute('INSERT INTO notifications VALUES(?,?)', (notification_id, int(time.time())))
+            # A later revision that leaves out the price keeps the verified one, as a pair.
             db.execute('''INSERT INTO purchases(environment,transaction_id,original_id,account_token,
                 app_identity,purchased_at,signed_at,price,currency,ownership,revoked_at,storefront)
                 VALUES(?,?,?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(environment,transaction_id) DO UPDATE SET
-                signed_at=excluded.signed_at,price=excluded.price,currency=excluded.currency,
+                signed_at=excluded.signed_at,
+                price=CASE WHEN excluded.price IS NULL THEN purchases.price ELSE excluded.price END,
+                currency=CASE WHEN excluded.price IS NULL THEN purchases.currency ELSE excluded.currency END,
                 ownership=excluded.ownership,revoked_at=excluded.revoked_at,
                 account_token=COALESCE(purchases.account_token,excluded.account_token),
                 app_identity=COALESCE(purchases.app_identity,excluded.app_identity),
