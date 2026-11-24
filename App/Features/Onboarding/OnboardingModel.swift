@@ -266,13 +266,17 @@ final class OnboardingModel {
     private func showServers(accountToken: String) async {
         do {
             let all = try await accountService.servers(accountToken: accountToken)
+            // Setup was cancelled or moved on while this was loading.
+            guard !Task.isCancelled else { return }
             if all.isEmpty { record(.plexNoServers) }
             step = .choosingServer(all.filter { !excludedServerIDs.contains($0.id) }, accountHasServers: !all.isEmpty)
         } catch HTTPError.unauthorized {
+            guard !Task.isCancelled else { return }
             self.accountToken = nil
             onPlexAccountTokenChanged(nil)
             beginPlex()
         } catch {
+            guard !Task.isCancelled else { return }
             fail(error)
         }
     }
@@ -302,12 +306,25 @@ final class OnboardingModel {
             )
             let client = PlexServerClient(serverID: server.id, baseURL: baseURL, token: server.accessToken, identity: identities.plex)
             let libraries = try await client.fetchLibraries().filter(\.isSchedulable)
+            guard !Task.isCancelled else { return }
+            // Nothing to build channels from (a music-only share, or no libraries yet):
+            // say so, as Jellyfin does, instead of an empty picker with no way on.
+            guard !libraries.isEmpty else {
+                fail(Self.noLibrariesMessage(serverName: server.name), reason: .noLibraries)
+                return
+            }
             step = .choosingLibraries(
                 PendingServer(account: account, token: server.accessToken, accountToken: accountToken, libraries: libraries)
             )
         } catch {
+            guard !Task.isCancelled else { return }
             fail(error)
         }
+    }
+
+    /// Why a server can't be set up when it has nothing to schedule.
+    static func noLibrariesMessage(serverName: String) -> String {
+        String(localized: "\(serverName) has no movie or TV show libraries this account can see.")
     }
 
     // MARK: - Measurement

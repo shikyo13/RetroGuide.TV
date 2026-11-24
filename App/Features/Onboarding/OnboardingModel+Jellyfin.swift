@@ -15,6 +15,7 @@ extension OnboardingModel {
         task = Task { [weak self] in
             var found = JellyfinScan()
             var scan = JellyfinScan()
+            var recordedFound = false
             // Searches again if nothing answered because access was refused
             // meanwhile (the system can ask only once the search has begun).
             while true {
@@ -25,6 +26,11 @@ extension OnboardingModel {
                     found = partial
                     scan = partial
                     scan.servers.removeAll { excluded.contains($0.id) }
+                    // Recorded as soon as one can be chosen: picking it ends the search early.
+                    if !recordedFound, !scan.servers.isEmpty {
+                        recordedFound = true
+                        record(UsageEvent.SetupStep.jellyfinFound)
+                    }
                     setStep(.findingJellyfin(scan, isSearching: true))
                 }
                 guard !Task.isCancelled else { return }
@@ -32,7 +38,7 @@ extension OnboardingModel {
                 break
             }
             guard let self else { return }
-            if let problem = found.problem { record(problem) } else { record(UsageEvent.SetupStep.jellyfinFound) }
+            if let problem = found.problem { record(problem) }
             lastJellyfinScan = scan
             // One server and nothing else to choose: straight to signing in,
             // or to connecting without encryption.
@@ -217,6 +223,8 @@ extension OnboardingModel {
                 let session = try await jellyfinService.signIn(on: server, username: username, password: password)
                 await finishJellyfin(server, session: session)
             } catch {
+                // Cancel leaves setup; the cancelled request must not bring sign-in back.
+                guard !Task.isCancelled else { return }
                 signIn.isSigningIn = false
                 signIn.message = (error as? HTTPError) == .unauthorized
                     ? String(localized: "That username and password didn't work.")
@@ -285,12 +293,14 @@ extension OnboardingModel {
         )
         do {
             let libraries = try await client.fetchLibraries().filter(\.isSchedulable)
+            guard !Task.isCancelled else { return }
             if libraries.isEmpty {
-                fail(String(localized: "\(server.name) has no movie or TV show libraries this account can see."), reason: .noLibraries)
+                fail(Self.noLibrariesMessage(serverName: server.name), reason: .noLibraries)
             } else {
                 setStep(.choosingLibraries(PendingServer(account: account, token: session.accessToken, accountToken: nil, libraries: libraries)))
             }
         } catch {
+            guard !Task.isCancelled else { return }
             fail(error)
         }
     }
