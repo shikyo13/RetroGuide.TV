@@ -39,9 +39,21 @@ private struct AppSheet<SheetContent: View>: ViewModifier {
     #endif
 
     func body(content: Content) -> some View {
+        #if os(tvOS)
+        // tvOS shows a sheet as a narrow card in the middle of the screen, which cuts
+        // off pages laid out for the full width (Servers, Pro): full screen instead,
+        // as Settings is. Menu still closes it.
+        content.fullScreenCover(isPresented: $isPresented, onDismiss: onDismiss) {
+            sheetContent()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .screenBackground()
+                .modifier(environment)
+        }
+        #else
         content.sheet(isPresented: $isPresented, onDismiss: onDismiss) {
             sheetContent().modifier(environment)
         }
+        #endif
     }
 
     private var environment: AppEnvironment {
