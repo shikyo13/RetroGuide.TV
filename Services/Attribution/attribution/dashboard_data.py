@@ -5,17 +5,28 @@ Two kinds of day appear, and the page names both:
   `DASHBOARD_TIMEZONE` (an IANA name such as Europe/London; UTC when unset).
 - App activity (devices active, programs watched, setup steps) arrives as one
   mark per device per UTC day, so it can only be grouped by UTC day.
+
+Take-home pay comes from Apple, not this service: `DASHBOARD_PROCEEDS_FILE` names a
+JSON file of Apple's purchase reports ({"rows": [{date, territory, purchases,
+proceedsUSD, salesUSD}]}), which say what each sale paid out after Apple's commission
+and taxes. Purchases newer than Apple's latest day are estimated from those figures.
 """
 from collections import defaultdict
 from datetime import date, datetime, timedelta, timezone
 import json
 import os
 import sqlite3
+from pathlib import Path
 from zoneinfo import ZoneInfo
 from .countries import alpha2
 
 DEFAULT_TIMEZONE = 'UTC'
 RECENT_PURCHASES = 15
+# Apple's purchase reports keep filling in for about this many days after a day ends.
+LATE_REPORT_DAYS = 4
+# A country's per-sale payout counts as exact when its last few sales paid the same.
+EXACT_SALES = 3
+CENT = 0.005
 MILLIS = 1000
 PLATFORMS = ('iPhone', 'iPad', 'AppleTV', 'Mac')
 WHY = ('playbackFailed', 'setupProblem', 'setupFailed', 'libraryFailed')
@@ -78,6 +89,73 @@ def summary(path, days, now=None):
         'countries': countries(installs, paid, contexts, start),
         'versions': versions(usage, utc_start),
         'recent': recent(paid, usage, zone, start),
+        'takeHome': take_home(os.getenv('DASHBOARD_PROCEEDS_FILE'), paid, today, utc_today, utc_start),
+    }
+
+def take_home(path, paid, today, utc_today, utc_start):
+    """What Apple pays out, in US dollars, per UTC day (Apple's reports use UTC days).
+
+    Apple's own figures count wherever it has reported. Its last few days fill in
+    late, so for those days (and since) any purchase this service saw that Apple
+    hasn't reported yet is estimated from what sales in the same App Store country
+    paid, or from the average sale where there's none yet.
+
+    Today and yesterday follow the local days of the purchase counts beside them:
+    each of those purchases is valued at what Apple paid per sale in its country,
+    exactly where that has always been the same amount (a US sale: $7.00).
+    """
+    try:
+        rows = json.loads(Path(path).read_text())['rows'] if path else None
+    except (OSError, ValueError, KeyError):
+        rows = None
+    if not rows:
+        return {'available': False}
+    reported, reported_count = defaultdict(float), defaultdict(int)
+    # Per sale, newest first, for each country: prices change, so the latest counts.
+    per_sale = defaultdict(list)
+    for row in sorted(rows, key=lambda r: r['date'], reverse=True):
+        reported[row['date']] += row['proceedsUSD']
+        reported_count[row['date']] += row['purchases']
+        if row['purchases']:
+            per_sale[row['territory']].append(row['proceedsUSD'] / row['purchases'])
+    through = max(reported)
+    latest = [amounts[0] for amounts in per_sale.values()]
+    fallback = sum(latest) / len(latest) if latest else 0.0
+    def estimate(purchase):
+        amounts = per_sale.get(alpha2(purchase['storefront']) or '')
+        return amounts[0] if amounts else fallback
+    def exact(purchase):
+        # The same amount for this country's recent sales: no taxes or rates moving it.
+        recent = per_sale.get(alpha2(purchase['storefront']) or '', [])[:EXACT_SALES]
+        return len(recent) == EXACT_SALES and max(recent) - min(recent) < CENT
+    seen = defaultdict(list)
+    for p in paid:
+        seen[local_day(p['purchased_at'], timezone.utc).isoformat()].append(p)
+    settled_before = (date.fromisoformat(through) - timedelta(days=LATE_REPORT_DAYS)).isoformat()
+    estimated, estimated_count = defaultdict(float), 0
+    for day, purchases in seen.items():
+        missing = len(purchases) - reported_count.get(day, 0)
+        if day >= settled_before and missing > 0:
+            estimated[day] = sum(estimate(p) for p in purchases[-missing:])
+            estimated_count += missing
+    days = sorted(set(reported) | set(estimated))
+    running, series = 0.0, []
+    for day in days:
+        amount = reported.get(day, 0.0) + estimated.get(day, 0.0)
+        running += amount
+        if day >= utc_start.isoformat():
+            series.append({'day': day, 'amount': round(amount, 2), 'estimated': day in estimated, 'total': round(running, 2)})
+    def on(day):
+        bought = [p for p in paid if p['day'] == day]
+        return {'amount': round(sum(estimate(p) for p in bought), 2), 'estimated': not all(exact(p) for p in bought)}
+    month = utc_today.replace(day=1).isoformat()
+    return {
+        'available': True, 'through': through, 'estimatedPurchases': estimated_count,
+        'today': on(today), 'yesterday': on(today - timedelta(days=1)),
+        'allTime': {'amount': round(running, 2), 'estimated': bool(estimated)},
+        'thisMonth': {'amount': round(sum(reported.get(d, 0.0) + estimated.get(d, 0.0) for d in days if d >= month), 2),
+                      'estimated': any(d >= month for d in estimated)},
+        'daily': series,
     }
 
 def local_day(millis, zone):

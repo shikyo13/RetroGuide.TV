@@ -116,10 +116,17 @@ function tile(label, value, yesterday, allTime) {
   return el('div', { class: 'tile' }, el('div', { class: 'label' }, label), el('div', { class: 'value' }, value), compare);
 }
 
-function renderTiles(h) {
+/** Dollars; "≈" marks a figure that includes sales Apple hasn't reported yet. */
+const usd = m => `${m.estimated ? '≈ ' : ''}${new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(m.amount)}`;
+
+function renderTiles(h, takeHome) {
   const counted = (label, m) => tile(label, count(m.today), count(m.yesterday), count(m.allTime));
   const rate = key => percent(h.purchases[key], h.installs[key]);
+  const money = takeHome.available
+    ? [tile('Take-home', usd(takeHome.today), usd(takeHome.yesterday), usd(takeHome.allTime))]
+    : [];
   document.getElementById('tiles').replaceChildren(
+    ...money,
     counted('Installs', h.installs),
     counted('Purchases', h.purchases),
     // Purchases that day over installs that day: not the share of new installs that bought.
@@ -233,6 +240,79 @@ function renderCharts(data) {
       ['Active devices', count(used.reduce((s, p) => s + r[p.key], 0))], ['Watchers', count(r.watched)]]);
 }
 
+/** One series as a line over days, with a crosshair that snaps to the nearest day. */
+function lineChart(container, rows, describe) {
+  container.replaceChildren();
+  const width = container.clientWidth || 600;
+  const height = container.clientHeight || 200;
+  const plotW = width - CHART.left - CHART.right;
+  const plotH = height - CHART.top - CHART.bottom;
+  const max = niceMax(Math.max(1, ...rows.map(r => r.value)));
+  const svg = svgEl('svg', { viewBox: `0 0 ${width} ${height}`, role: 'img' });
+  for (let i = 0; i <= CHART.ticks; i++) {
+    const value = (max / CHART.ticks) * i;
+    const y = CHART.top + plotH - (value / max) * plotH;
+    svg.append(svgEl('line', { x1: CHART.left, x2: width - CHART.right, y1: y, y2: y, class: i ? 'gridline' : 'baseline' }));
+    const label = svgEl('text', { x: CHART.left - 6, y: y + 4, 'text-anchor': 'end' });
+    label.textContent = `$${count(value)}`;
+    svg.append(label);
+  }
+  const step = rows.length > 1 ? plotW / (rows.length - 1) : 0;
+  const points = rows.map((r, i) => [CHART.left + i * step, CHART.top + plotH - (r.value / max) * plotH]);
+  if (points.length) {
+    const line = points.map(([x, y], i) => `${i ? 'L' : 'M'}${x},${y}`).join('');
+    const last = points[points.length - 1];
+    svg.append(svgEl('path', { d: `${line}L${last[0]},${CHART.top + plotH}L${points[0][0]},${CHART.top + plotH}Z`, class: 'area' }));
+    svg.append(svgEl('path', { d: line, class: 'line' }));
+    svg.append(svgEl('circle', { cx: last[0], cy: last[1], r: 4, class: 'marker' }));
+  }
+  const labelEvery = Math.ceil(rows.length / Math.max(1, Math.floor(plotW / CHART.labelSpacing)));
+  rows.forEach((r, i) => {
+    if ((rows.length - 1 - i) % labelEvery !== 0) return;
+    const label = svgEl('text', { x: points[i][0], y: height - 6, 'text-anchor': 'middle' });
+    label.textContent = shortDay(r.day);
+    svg.append(label);
+  });
+  const crosshair = svgEl('line', { y1: CHART.top, y2: CHART.top + plotH, class: 'crosshair', visibility: 'hidden' });
+  svg.append(crosshair);
+  const hit = svgEl('rect', { x: CHART.left, y: CHART.top, width: plotW, height: plotH, class: 'hit' });
+  hit.addEventListener('pointermove', e => {
+    if (!rows.length) return;
+    const bounds = svg.getBoundingClientRect();
+    const x = (e.clientX - bounds.left) * (width / bounds.width);
+    const i = Math.max(0, Math.min(rows.length - 1, Math.round((x - CHART.left) / (step || 1))));
+    crosshair.setAttribute('x1', points[i][0]);
+    crosshair.setAttribute('x2', points[i][0]);
+    crosshair.setAttribute('visibility', 'visible');
+    showTip(e, shortDay(rows[i].day), describe(rows[i]));
+  });
+  hit.addEventListener('pointerleave', () => { crosshair.setAttribute('visibility', 'hidden'); hideTip(); });
+  svg.append(hit);
+  container.append(svg);
+}
+
+/** Running take-home over the range's UTC days; days without a sale carry the total on. */
+function renderTakeHome(t, days) {
+  const card = document.getElementById('take-home-card');
+  card.hidden = !t.available;
+  if (!t.available) return;
+  const byDay = Object.fromEntries(t.daily.map(r => [r.day, r]));
+  let total = t.daily.length ? t.daily[0].total - t.daily[0].amount : t.allTime.amount;
+  const rows = days.map(day => {
+    const sale = byDay[day];
+    if (sale) total = sale.total;
+    return { day, value: total, amount: sale ? sale.amount : 0, estimated: sale ? sale.estimated : false };
+  });
+  lineChart(document.getElementById('take-home'), rows, r => [
+    ['That day', usd({ amount: r.amount, estimated: r.estimated })], ['Running total', usd({ amount: r.value, estimated: false })]]);
+  const plural = t.estimatedPurchases === 1 ? '' : 's';
+  const pending = t.estimatedPurchases
+    ? ` · ≈ includes ${count(t.estimatedPurchases)} sale${plural} Apple hasn't reported yet, estimated from similar sales`
+    : '';
+  document.getElementById('take-home-note').textContent =
+    `What Apple pays you after its commission and taxes, in US dollars (UTC days) · Apple's reports through ${shortDay(t.through)} · this month ${usd(t.thisMonth)}${pending}`;
+}
+
 function renderFunnel(f) {
   const box = document.getElementById('funnel');
   document.getElementById('funnel-note').textContent = f.since
@@ -291,7 +371,8 @@ function renderTables(data) {
 function render(data) {
   latest = data;
   renderStatus(data);
-  renderTiles(data.headline);
+  renderTiles(data.headline, data.takeHome);
+  renderTakeHome(data.takeHome, data.activity.map(r => r.day));
   const first = data.daily[0]?.day;
   document.getElementById('range-note').textContent =
     first ? `Charts and tables below cover ${shortDay(first)} – ${shortDay(data.daily[data.daily.length - 1].day)}` : '';
