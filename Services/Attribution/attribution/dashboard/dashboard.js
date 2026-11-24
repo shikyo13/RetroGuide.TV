@@ -37,6 +37,8 @@ const CHART = { top: 8, right: 4, bottom: 22, left: 30, gap: 2, radius: 4, ticks
 
 let days = readRange();
 let latest = null;
+// Only the newest request may paint: an older, slower one must not overwrite a newer range.
+let requestSeq = 0;
 
 // ---- Small helpers ----------------------------------------------------------
 
@@ -64,7 +66,14 @@ function svgEl(tag, attrs = {}) {
 }
 
 const count = n => new Intl.NumberFormat().format(n);
-const price = (amount, currency) => new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+/** Amounts arrive in milliunits so currencies with three decimals keep them; a missing
+ *  currency is shown as a plain number instead of breaking the currency formatter. */
+function price(milli, currency) {
+  const amount = milli / 1000;
+  if (!currency) return `${new Intl.NumberFormat(undefined, { maximumFractionDigits: 3 }).format(amount)} (currency unknown)`;
+  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount); }
+  catch { return `${amount} ${currency}`; }
+}
 /** One rule for every percentage on the page. */
 const percent = (part, whole) => (whole ? `${((100 * part) / whole).toFixed(1)}%` : NOT_REPORTED);
 
@@ -91,12 +100,13 @@ function renderStatus(data) {
   status.textContent = stale
     ? `Data as of ${clock(asOf)}: not updating. Check the copy from the server.`
     : `Data as of ${clock(asOf)} · refreshes every minute`;
-  // When the UTC day starts, in the viewer's clock.
-  const midnight = new Date(Date.UTC(2000, 0, 1));
+  // When today's UTC day started, in the viewer's clock (it moves with daylight saving).
+  const now = new Date();
+  const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
   const utcStart = midnight.toLocaleTimeString([], { hour: 'numeric', timeZone: data.timezone });
   document.getElementById('days-note').textContent =
     `Installs and purchases count local days (${data.timezone}). App activity counts UTC days, which start at ${utcStart} local time` +
-    (data.activitySince ? `, and has been recorded since ${shortDay(data.activitySince)}.` : '.');
+    (data.since.activity ? `, and has been recorded since ${shortDay(data.since.activity)}.` : '.');
 }
 
 function tile(label, value, yesterday, allTime) {
@@ -112,7 +122,8 @@ function renderTiles(h) {
   document.getElementById('tiles').replaceChildren(
     counted('Installs', h.installs),
     counted('Purchases', h.purchases),
-    tile('Buy rate', rate('today'), rate('yesterday'), rate('allTime')),
+    // Purchases that day over installs that day: not the share of new installs that bought.
+    tile('Purchases / installs', rate('today'), rate('yesterday'), rate('allTime')),
     counted('Active devices', h.active),
     counted('Watchers', h.watched),
   );
@@ -133,7 +144,7 @@ function roundedTop(x, y, w, h, r) {
 
 /** Stacked (or single) bars per day. A day still in progress is drawn faded;
  *  days before anything was recorded get a band instead of empty bars. */
-function barChart(container, rows, series, describe) {
+function barChart(container, rows, series, describe, recordedKey = 'recorded') {
   container.replaceChildren();
   const width = container.clientWidth || 600;
   const height = container.clientHeight || 200;
@@ -145,7 +156,8 @@ function barChart(container, rows, series, describe) {
   const slot = plotW / Math.max(rows.length, 1);
   const barW = Math.max(1, slot - CHART.gap);
 
-  const unrecorded = rows.filter(r => r.recorded === false).length;
+  // Days before this series was recorded lead the range; shade them instead of drawing zeros.
+  const unrecorded = rows.findIndex(r => r[recordedKey] !== false) === -1 ? rows.length : rows.findIndex(r => r[recordedKey] !== false);
   if (unrecorded) {
     svg.append(svgEl('rect', { x: CHART.left, y: CHART.top, width: unrecorded * slot, height: plotH, class: 'unrecorded' }));
     if (unrecorded * slot > 90) {
@@ -184,7 +196,7 @@ function barChart(container, rows, series, describe) {
     }
     const hit = svgEl('rect', { x: CHART.left + i * slot, y: CHART.top, width: slot, height: plotH, class: 'hit' });
     const title = shortDay(row.day) + (row.partial ? ' (so far)' : '');
-    const lines = row.recorded === false ? [['Not recorded yet', '']] : describe(row);
+    const lines = row[recordedKey] === false ? [['Not recorded yet', '']] : describe(row);
     hit.addEventListener('pointermove', e => showTip(e, title, lines));
     hit.addEventListener('pointerleave', hideTip);
     svg.append(hit);
@@ -211,9 +223,9 @@ function hideTip() { document.getElementById('tooltip').hidden = true; }
 
 function renderCharts(data) {
   barChart(document.getElementById('installs'), data.daily, [{ key: 'installs', color: 'var(--series-1)' }],
-    r => [['Installs', count(r.installs)]]);
+    r => [['Installs', count(r.installs)]], 'installsRecorded');
   barChart(document.getElementById('purchases'), data.daily, [{ key: 'purchases', color: 'var(--series-1)' }],
-    r => [['Purchases', count(r.purchases)], ['Buy rate', percent(r.purchases, r.installs)]]);
+    r => [['Purchases', count(r.purchases)], ['Purchases / installs', percent(r.purchases, r.installs)]], 'purchasesRecorded');
   const used = PLATFORMS.filter(p => data.activity.some(r => r[p.key] > 0));
   document.getElementById('activity-legend').replaceChildren(...used.map(p => el('span', { style: `--swatch:${p.color}` }, p.label)));
   barChart(document.getElementById('activity'), data.activity, used,
@@ -256,15 +268,16 @@ function renderTables(data) {
   }
   document.getElementById('reasons').replaceChildren(table([['Reason'], ['Devices', true]], reasons));
 
-  const { currencies, free, refunded } = data.sales;
-  const left = [free && `${count(free)} free with a code`, refunded && `${count(refunded)} refunded`].filter(Boolean);
+  const { currencies, free, unknownPrice, refunded } = data.sales;
+  const left = [free && `${count(free)} free`, unknownPrice && `${count(unknownPrice)} with no price`,
+    refunded && `${count(refunded)} refunded`].filter(Boolean);
   document.getElementById('sales-note').textContent =
     'Price paid, before Apple’s cut; currencies aren’t converted' + (left.length ? ` · not counted: ${left.join(', ')}` : '');
   document.getElementById('sales').replaceChildren(table([['Currency'], ['Purchases', true], ['Sales', true]],
-    currencies.map(s => [s.currency, count(s.purchases), price(s.amount, s.currency)])));
+    currencies.map(s => [s.currency ?? 'Unknown', count(s.purchases), price(s.amountMilli, s.currency)])));
 
   document.getElementById('recent').replaceChildren(table([['When'], ['Device'], ['Country'], ['Price', true]],
-    data.recent.map(p => [p.time, PLATFORM_NAMES[p.platform] ?? NOT_REPORTED, countryName(p), price(p.price, p.currency)])));
+    data.recent.map(p => [p.time, PLATFORM_NAMES[p.platform] ?? NOT_REPORTED, countryName(p), price(p.priceMilli, p.currency)])));
 
   document.getElementById('countries').replaceChildren(table([['Country'], ['Installs', true], ['Purchases', true]],
     data.countries.map(c => [countryName(c, 'Not reported'), count(c.installs), count(c.purchases)])));
@@ -288,17 +301,20 @@ function render(data) {
 }
 
 async function load() {
+  const seq = ++requestSeq;
   document.querySelectorAll('.ranges button').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.days) === days)));
   try {
     const response = await fetch(`data?days=${days}`, { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    render(await response.json());
+    const data = await response.json();
+    if (seq === requestSeq) render(data);
   } catch (error) {
+    if (seq !== requestSeq) return;
     const status = document.getElementById('status');
     status.className = 'status stale';
     status.textContent = `Couldn't refresh (${error.message}). Showing the last numbers.`;
   } finally {
-    document.body.classList.remove('loading');
+    if (seq === requestSeq) document.body.classList.remove('loading');
   }
 }
 

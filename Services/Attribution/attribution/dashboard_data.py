@@ -33,13 +33,19 @@ def local_zone():
     return ZoneInfo(os.getenv('DASHBOARD_TIMEZONE', DEFAULT_TIMEZONE))
 
 def summary(path, days, now=None):
-    """Everything the page shows; ranged parts cover the last `days` local days (0 = all)."""
+    """Everything the page shows; ranged parts cover the last `days` days (0 = all).
+
+    Local-day data (installs, purchases) and UTC-day data (activity) each get
+    their own bounds over the same number of days, and every series says from
+    which day it was recorded, so a series never looks empty before it began.
+    """
     zone = local_zone()
     now = now or datetime.now(timezone.utc)
     today, utc_today = now.astimezone(zone).date(), now.date()
     db = connect(path)
     try:
-        installs = [(r['id'], local_day(r['first_seen'], zone)) for r in db.execute('SELECT id, first_seen FROM installations')]
+        installs = [{'id': r['id'], 'day': local_day(r['first_seen'], zone), 'utcDay': local_day(r['first_seen'], timezone.utc)}
+                    for r in db.execute('SELECT id, first_seen FROM installations')]
         purchases = [dict(r) for r in db.execute(
             '''SELECT purchased_at, price, currency, storefront, account_token, revoked_at FROM purchases
                WHERE environment='Production' AND ownership='PURCHASED' ORDER BY purchased_at''')]
@@ -50,22 +56,27 @@ def summary(path, days, now=None):
     for p in purchases:
         p['day'] = local_day(p['purchased_at'], zone)
     paid = [p for p in purchases if (p['price'] or 0) > 0 and p['revoked_at'] is None]
-    first = min([d for _, d in installs] or [today])
-    start = first if days <= 0 else max(first, today - timedelta(days=days - 1))
-    activity_since = min((r['day'] for r in usage), default=None)
+    since = {'installs': min((i['day'] for i in installs), default=None),
+             'purchases': min((p['day'] for p in purchases), default=None),
+             'activity': min((date.fromisoformat(r['day']) for r in usage), default=None)}
+    if days > 0:
+        start, utc_start = today - timedelta(days=days - 1), utc_today - timedelta(days=days - 1)
+    else:
+        start = min([d for d in since.values() if d] + [today])
+        utc_start = min(start, utc_today)
     return {
         'timezone': str(zone),
         # When the database file last changed: on a copy, when it was copied.
         'dataAsOf': datetime.fromtimestamp(os.path.getmtime(path), timezone.utc).isoformat(),
-        'activitySince': activity_since,
+        'since': {k: v.isoformat() if v else None for k, v in since.items()},
         'headline': headline(installs, paid, usage, today, utc_today),
-        'daily': daily(installs, paid, start, today),
-        'activity': activity(usage, start, utc_today, activity_since),
-        'funnel': funnel(installs, paid, usage, start, activity_since),
-        'reasons': reasons(usage, start),
+        'daily': daily(installs, paid, start, today, since),
+        'activity': activity(usage, utc_start, utc_today, since['activity']),
+        'funnel': funnel(installs, paid, usage, utc_start, since['activity']),
+        'reasons': reasons(usage, utc_start),
         'sales': sales(purchases, start),
         'countries': countries(installs, paid, contexts, start),
-        'versions': versions(usage, start),
+        'versions': versions(usage, utc_start),
         'recent': recent(paid, usage, zone, start),
     }
 
@@ -81,24 +92,27 @@ def headline(installs, paid, usage, today, utc_today):
         on = lambda day: len({r['installation'] for r in usage if r['name'] == name and r['day'] == day})
         return {'today': on(utc_today.isoformat()), 'yesterday': on(utc_yesterday),
                 'allTime': len({r['installation'] for r in usage if r['name'] == name})}
-    return {'installs': counted([d for _, d in installs]), 'purchases': counted([p['day'] for p in paid]),
+    return {'installs': counted([i['day'] for i in installs]), 'purchases': counted([p['day'] for p in paid]),
             'active': devices('active'), 'watched': devices('watched')}
 
 def days_between(start, end):
     return [start + timedelta(days=n) for n in range((end - start).days + 1)]
 
-def daily(installs, paid, start, today):
+def daily(installs, paid, start, today, since):
     """Installs and purchases per local day; today's row is still in progress."""
     counts = defaultdict(lambda: {'installs': 0, 'purchases': 0})
-    for _, day in installs:
-        counts[day]['installs'] += 1
+    for i in installs:
+        counts[i['day']]['installs'] += 1
     for p in paid:
         counts[p['day']]['purchases'] += 1
-    return [{'day': d.isoformat(), **counts[d], 'partial': d == today} for d in days_between(start, today)]
+    recorded = lambda key, d: since[key] is not None and d >= since[key]
+    return [{'day': d.isoformat(), **counts[d], 'partial': d == today,
+             'installsRecorded': recorded('installs', d), 'purchasesRecorded': recorded('purchases', d)}
+            for d in days_between(start, today)]
 
 def activity(usage, start, utc_today, since):
-    """Devices active by type, and devices that watched, per UTC day over the same span
-    as the other charts; days before activity was recorded say so."""
+    """Devices active by type, and devices that watched, per UTC day; days before
+    activity was recorded say so."""
     seen = defaultdict(lambda: defaultdict(set))
     for r in usage:
         if r['name'] in ('active', 'watched'):
@@ -107,15 +121,16 @@ def activity(usage, start, utc_today, since):
     for d in days_between(start, utc_today):
         day = d.isoformat()
         rows.append({'day': day, **{k: len(seen[day][k]) for k in PLATFORMS + ('watched',)},
-                     'recorded': since is not None and day >= since, 'partial': d == utc_today})
+                     'recorded': since is not None and d >= since, 'partial': d == utc_today})
     return rows
 
-def funnel(installs, paid, usage, start, since):
-    """How far installations first seen in the range (once activity was recorded) got."""
+def funnel(installs, paid, usage, utc_start, since):
+    """How far installations first seen in the range (once activity was recorded) got.
+    Admission uses the UTC day, the same clock as the activity it is compared with."""
     if since is None:
         return {'since': None, 'steps': []}
-    since = max(start, date.fromisoformat(since))
-    cohort = {i for i, d in installs if d >= since}
+    since = max(utc_start, since)
+    cohort = {i['id'] for i in installs if i['utcDay'] >= since}
     reached = defaultdict(set)
     for r in usage:
         if r['installation'] in cohort and not (r['name'] == 'lineupReady' and r['detail'] == '0'):
@@ -135,32 +150,33 @@ def reasons(usage, start):
             for name in WHY if name in counts}
 
 def sales(purchases, start):
-    """Paid purchases per currency in the range, plus what was left out of them."""
-    rows = defaultdict(lambda: {'purchases': 0, 'amount': 0})
-    free = refunded = 0
+    """Paid purchases per currency in the range, in milliunits (formatted per currency
+    on the page), plus what was left out of them and why."""
+    rows = defaultdict(lambda: {'purchases': 0, 'amountMilli': 0})
+    left_out = {'free': 0, 'unknownPrice': 0, 'refunded': 0}
     for p in purchases:
         if p['day'] < start:
             continue
         if p['revoked_at'] is not None:
-            refunded += 1
-        elif not p['price']:
-            free += 1
+            left_out['refunded'] += 1
+        elif p['price'] is None:
+            left_out['unknownPrice'] += 1
+        elif p['price'] == 0:
+            left_out['free'] += 1
         else:
-            row = rows[p['currency'] or 'UNKNOWN']
+            row = rows[p['currency']]
             row['purchases'] += 1
-            row['amount'] += p['price']
-    currencies = [{'currency': c, 'purchases': r['purchases'], 'amount': round(r['amount'] / MILLIS, 2)}
-                  for c, r in rows.items()]
-    return {'currencies': sorted(currencies, key=lambda r: (-r['purchases'], r['currency'])),
-            'free': free, 'refunded': refunded}
+            row['amountMilli'] += p['price']
+    currencies = [{'currency': c, **r} for c, r in rows.items()]
+    return {'currencies': sorted(currencies, key=lambda r: (-r['purchases'], r['currency'] or '')), **left_out}
 
 def countries(installs, paid, contexts, start):
     """Installs and purchases per App Store country in the range (`region` is its two-letter
     code, for its name); None when not reported."""
     rows = defaultdict(lambda: {'installs': 0, 'purchases': 0})
-    for installation, day in installs:
-        if day >= start:
-            rows[contexts.get(installation)]['installs'] += 1
+    for i in installs:
+        if i['day'] >= start:
+            rows[contexts.get(i['id'])]['installs'] += 1
     for p in paid:
         if p['day'] >= start:
             rows[p['storefront']]['purchases'] += 1
@@ -172,14 +188,18 @@ def versions(usage, start):
     latest = {}
     for r in usage:
         if r['name'] == 'active' and r['day'] >= start.isoformat():
-            if r['installation'] not in latest or r['day'] >= latest[r['installation']][0]:
-                latest[r['installation']] = (r['day'], r['version'])
+            # Latest day wins; on the same day the newer version does (people update, not downgrade).
+            seen = (r['day'], version_key(r['version']), r['version'])
+            if r['installation'] not in latest or seen > latest[r['installation']]:
+                latest[r['installation']] = seen
     counts = defaultdict(int)
-    for _, version in latest.values():
+    for _, _, version in latest.values():
         counts[version] += 1
     # Newest first: an update ladder, read top to bottom.
-    order = lambda version: tuple(int(part) for part in version.split('.') if part.isdigit())
-    return sorted(({'version': v, 'devices': n} for v, n in counts.items()), key=lambda r: order(r['version']), reverse=True)
+    return sorted(({'version': v, 'devices': n} for v, n in counts.items()), key=lambda r: version_key(r['version']), reverse=True)
+
+def version_key(version):
+    return tuple(int(part) for part in version.split('.') if part.isdigit())
 
 def recent(paid, usage, zone, start):
     """The latest paid purchases in the range, newest first; None where a detail wasn't reported."""
@@ -187,7 +207,7 @@ def recent(paid, usage, zone, start):
     rows = []
     for p in reversed([p for p in paid if p['day'] >= start][-RECENT_PURCHASES:]):
         when = datetime.fromtimestamp(p['purchased_at'] / MILLIS, timezone.utc).astimezone(zone)
-        rows.append({'time': when.strftime('%b %-d, %-I:%M %p'), 'price': round(p['price'] / MILLIS, 2),
+        rows.append({'time': when.strftime('%b %-d, %-I:%M %p'), 'priceMilli': p['price'],
                      'currency': p['currency'], 'country': p['storefront'], 'region': alpha2(p['storefront']), 'platform': platform.get(p['account_token'])})
     return rows
 
