@@ -382,6 +382,9 @@ final class MPVCore: @unchecked Sendable {
                 if event.pointee.event_id == MPV_EVENT_VIDEO_RECONFIG, let format = MPVVideoFormat.read(from: handle) {
                     onEvent?(.format(format), generation)
                 }
+                if event.pointee.event_id == MPV_EVENT_VIDEO_RECONFIG, let aspectRatio = MPVVideoFormat.aspectRatio(from: handle) {
+                    onEvent?(.aspectRatio(aspectRatio), generation)
+                }
                 if let mapped = Self.map(event.pointee) {
                     onEvent?(mapped, generation)
                 }

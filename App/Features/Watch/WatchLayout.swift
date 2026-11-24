@@ -21,6 +21,27 @@ enum WatchLayout {
         let longSide = max(bounds.width, bounds.height)
         return CGSize(width: longSide, height: longSide / pictureInPictureAspectRatio)
     }
+    /// Where the video surface goes in full screen so the video itself, not the
+    /// surface, fills as much of `screen` as its shape allows.
+    ///
+    /// The engine fits the video inside its 16:9 surface, so a narrower picture
+    /// (4:3) has black sides there. On a screen narrower than 16:9 (iPad, an
+    /// open iPhone Duo, an upright iPhone) fitting the surface would add bars
+    /// above and below too; instead the surface grows past the screen edges,
+    /// taking its black sides with it. A 16:9 screen (Apple TV) is unchanged.
+    /// Without a known shape the video is taken to be 16:9.
+    static func fullScreenSurfaceFrame(in screen: CGSize, videoAspectRatio: CGFloat?) -> CGRect {
+        let surfaceRatio = pictureInPictureAspectRatio
+        let videoRatio = videoAspectRatio ?? surfaceRatio
+        // The video's size within a surface one unit tall.
+        let video = videoRatio < surfaceRatio
+            ? CGSize(width: videoRatio, height: 1)
+            : CGSize(width: surfaceRatio, height: surfaceRatio / videoRatio)
+        let height = min(screen.width / video.width, screen.height / video.height)
+        let width = height * surfaceRatio
+        return CGRect(x: (screen.width - width) / 2, y: (screen.height - height) / 2, width: width, height: height)
+    }
+
     /// Distance from the screen edges: the tvOS overscan-safe margins, or a
     /// small gap inside the safe area on iPhone and iPad.
     static let pictureInPictureHorizontalInset = PlatformMetric.value(tv: CGFloat(80), touch: 16)

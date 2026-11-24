@@ -114,6 +114,10 @@ final class Tuner {
     /// The playing video's dynamic range and frame rate. Kept while surfing
     /// until the next video reports its own, so the TV doesn't switch modes in between.
     private(set) var videoFormat: VideoFormat?
+    /// The shape of the picture on screen (width over height), so full screen
+    /// can fit the video itself rather than a 16:9 frame. Kept until the next
+    /// video reports its own; `nil` until the first does.
+    private(set) var videoAspectRatio: Double?
     private(set) var engine: any PlaybackEngine
 
     @ObservationIgnored var commercialAllowed: (MediaItem) -> Bool = { _ in false }
@@ -722,6 +726,11 @@ final class Tuner {
     }
 
     private func handle(_ event: PlaybackEvent) {
+        // Describes whatever the engine is drawing, a commercial or an earlier tune's stream included.
+        if case let .aspectRatio(aspectRatio) = event {
+            if aspectRatio != videoAspectRatio { videoAspectRatio = aspectRatio }
+            return
+        }
         if let commercialPlayback { commercialPlayback.handle(event); return }
         // Events from a stream started for an earlier tune (the viewer changed
         // channel before it reported) don't describe what's tuned now.
@@ -750,6 +759,8 @@ final class Tuner {
             guard signal == .live else { stallWatch.reset(); stallRecovery?.cancel(); return }
             stallWatch.buffering(isBuffering, location: streamLocation)
             if isBuffering { recoverIfStillStalled() } else { stallRecovery?.cancel() }
+        case .aspectRatio:
+            break // Taken above.
         }
     }
 

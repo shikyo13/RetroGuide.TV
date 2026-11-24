@@ -76,9 +76,15 @@ final class AVPlaybackEngine: PlaybackEngine {
         opening = Task { [weak self] in
             guard let self else { return }
             do {
-                let relay = try LoopbackPlaybackRelay(origin: request.url)
-                self.relay = relay
-                let localURL = try await relay.start()
+                let override = DebugLaunchOptions.playURLOverride
+                let localURL: URL
+                if let override {
+                    localURL = override
+                } else {
+                    let relay = try LoopbackPlaybackRelay(origin: request.url)
+                    self.relay = relay
+                    localURL = try await relay.start()
+                }
                 try Task.checkCancellation()
                 let asset = AVURLAsset(url: localURL, options: [
                     AVURLAssetReferenceRestrictionsKey: AVAssetReferenceRestrictions.forbidAll.rawValue
@@ -88,7 +94,7 @@ final class AVPlaybackEngine: PlaybackEngine {
                     ? Tuning.extendedForwardBufferSeconds : Tuning.forwardBufferSeconds
                 self.observe(item)
                 self.player.replaceCurrentItem(with: item)
-                if !request.startsAtPosition {
+                if !request.startsAtPosition, override == nil {
                     await self.player.seek(to: CMTime(seconds: request.startPosition, preferredTimescale: Tuning.seekTimescale))
                     try Task.checkCancellation()
                 }
@@ -142,6 +148,15 @@ final class AVPlaybackEngine: PlaybackEngine {
                     self?.onEvent?(.failed(item?.error?.localizedDescription ?? String(localized: "The stream could not be played."),
                         item?.error.map(Self.reason) ?? .player))
                 }
+            }
+            .store(in: &itemCancellables)
+        // The size the picture is shown at, pixel shape applied; zero until known.
+        item.publisher(for: \.presentationSize)
+            .filter { $0.width > .zero && $0.height > .zero }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] size in
+                MainActor.assumeIsolated { self?.onEvent?(.aspectRatio(Double(size.width / size.height))) }
             }
             .store(in: &itemCancellables)
         NotificationCenter.default.publisher(for: AVPlayerItem.didPlayToEndTimeNotification, object: item)

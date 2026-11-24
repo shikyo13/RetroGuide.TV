@@ -13,9 +13,10 @@ import SwiftUI
 ///   tuning (for screenshots, so it's still showing once video starts).
 /// - `RETROGUIDE_DEV_AUTOTUNE`: seconds after launch to tune the next channel
 ///   from the guide, as if it had been picked (for testing that path).
-/// - `RETROGUIDE_DEV_PLAY_URL`: plays this URL whenever a channel is tuned
-///   (RetroGuide Player only), to test specific files on a device.
-/// - `RETROGUIDE_DEV_PLAY_START`: seconds into that file to start (default 60).
+/// - `RETROGUIDE_DEV_PLAY_URL`: plays this URL whenever a channel is tuned,
+///   to test specific files on a device.
+/// - `RETROGUIDE_DEV_PLAY_START`: seconds into that file to start (default 60;
+///   RetroGuide Player only, Apple Player starts at the beginning).
 /// - `RETROGUIDE_DEV_AUDIO_PROBE`: `1` to record the audio route at launch and
 ///   write libmpv's log to Library/Caches (see ``AudioRouteProbe``).
 ///

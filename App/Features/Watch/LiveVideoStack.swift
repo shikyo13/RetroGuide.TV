@@ -19,8 +19,9 @@ struct LiveVideoStack: View {
 
     var body: some View {
         let picture = Self.pictureArea(in: screen)
+        let fullScreen = WatchLayout.fullScreenSurfaceFrame(in: screen, videoAspectRatio: tuner.videoAspectRatio.map { CGFloat($0) })
         ZStack(alignment: .topLeading) {
-            video(fittingIn: window ?? picture)
+            video(fittingIn: window ?? fullScreen)
             overlays(picture: picture)
             if let window, let channel = tuner.channel {
                 channelLabel(channel)
@@ -29,6 +30,8 @@ struct LiveVideoStack: View {
             }
         }
         .frame(width: screen.width, height: screen.height, alignment: .topLeading)
+        // In full screen the surface's empty sides can reach past the screen.
+        .clipped()
     }
 
     /// The engine's surface, scaled into `target` (a 16:9 rectangle).
@@ -66,7 +69,9 @@ struct LiveVideoStack: View {
         window == nil ? .zero : DesignTokens.Radius.large
     }
 
-    /// The largest 16:9 rectangle centered in `screen`: where the video appears.
+    /// The largest 16:9 rectangle centered in `screen`: the picture area the
+    /// signal overlays map into a window (full screen video uses
+    /// ``WatchLayout/fullScreenSurfaceFrame(in:videoAspectRatio:)``).
     static func pictureArea(in screen: CGSize) -> CGRect {
         let aspectRatio = WatchLayout.pictureInPictureAspectRatio
         let width = min(screen.width, screen.height * aspectRatio)

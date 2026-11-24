@@ -14,6 +14,8 @@ enum PlaybackEvent: Equatable, Sendable {
     case buffering(Bool)
     /// The video's dynamic range and frame rate, once known.
     case format(VideoFormat)
+    /// The picture's shape as shown (width over height), once known.
+    case aspectRatio(Double)
 }
 
 /// The video players RetroGuide can use.

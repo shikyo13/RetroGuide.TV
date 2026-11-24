@@ -2,13 +2,15 @@ import Foundation
 import Libmpv
 import RetroGuideKit
 
-/// Reads the playing video's dynamic range and frame rate from libmpv.
+/// Reads the playing video's dynamic range, frame rate and shape from libmpv.
 enum MPVVideoFormat {
     private enum Property {
         /// Transfer characteristic of the decoded video ("pq", "hlg", "bt.1886", …).
         static let gamma = "video-params/gamma"
         /// Frame rate from the container, then as measured by the decoder.
         static let frameRates = ["container-fps", "estimated-vf-fps"]
+        /// Display aspect ratio, with the file's pixel shape applied.
+        static let aspect = "video-params/aspect"
     }
 
     private enum Gamma {
@@ -23,6 +25,11 @@ enum MPVVideoFormat {
             .compactMap { string($0, handle).flatMap(Double.init) }
             .first { $0 > .zero }
         return VideoFormat(dynamicRange: dynamicRange(forGamma: gamma), frameRate: frameRate)
+    }
+
+    /// The current video's shape as shown (width over height), or `nil` if not known yet.
+    static func aspectRatio(from handle: OpaquePointer) -> Double? {
+        string(Property.aspect, handle).flatMap(Double.init).flatMap { $0.isFinite && $0 > .zero ? $0 : nil }
     }
 
     static func dynamicRange(forGamma gamma: String) -> VideoDynamicRange {
