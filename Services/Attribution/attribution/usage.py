@@ -52,6 +52,8 @@ EVENTS = {
     'tuneTime': per_player(TUNE_TIMES),
     'watchTime': WATCH_TIMES,
     'proPurchase': PURCHASE_STEPS,
+    'ratingRequested': {''},
+    'rateTapped': {''},
 }
 # Crashes and hangs MetricKit reported (iPhone and iPad), by the build they happened in.
 BUILD = re.compile(r'[0-9]{8}\.[0-9]{1,3}')

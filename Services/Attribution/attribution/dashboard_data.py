@@ -116,9 +116,10 @@ def app_store(path, utc_start):
     where people came from and by device. Deletions and sessions count only people
     who share analytics with developers; `optInShare` says what share that is."""
     try:
-        rows = json.loads(Path(path).read_text())['rows'] if path else None
+        stored = json.loads(Path(path).read_text()) if path else {}
+        rows = stored['rows'] if stored else None
     except (OSError, ValueError, KeyError):
-        rows = None
+        stored, rows = {}, None
     if not rows:
         return {'available': False}
     start = utc_start.isoformat()
@@ -139,6 +140,8 @@ def app_store(path, utc_start):
         'totals': {m: totals[m] for m in STORE_METRICS},
         'optInShare': totals['optedIn'] / totals['downloadingUsers'] if totals['downloadingUsers'] else None,
         'bySource': split('source'), 'byDevice': split('device'),
+        # Star ratings on the App Store right now, per country (not limited to the range).
+        'ratings': sorted(({'region': k, **v} for k, v in stored.get('ratings', {}).items()), key=lambda r: -r['count']),
     }
 
 def retention(installs, usage, utc_start, utc_today, since):
@@ -203,7 +206,7 @@ def pro(usage, utc_start):
     """Devices that opened the Pro page, by where from, and the steps of buying it.
     Where-from and purchase steps are recorded from 1.11.4 on (earlier: 'unknown')."""
     start = utc_start.isoformat()
-    entries, steps = defaultdict(set), defaultdict(set)
+    entries, steps, rating = defaultdict(set), defaultdict(set), defaultdict(set)
     for r in usage:
         if r['day'] < start:
             continue
@@ -211,8 +214,11 @@ def pro(usage, utc_start):
             entries[r['detail'] or 'unknown'].add(r['installation'])
         elif r['name'] == 'proPurchase':
             steps[r['detail']].add(r['installation'])
+        elif r['name'] in ('ratingRequested', 'rateTapped'):
+            rating[r['name']].add(r['installation'])
     return {'entries': sorted(((e, len(i)) for e, i in entries.items()), key=lambda x: -x[1]),
-            'steps': [(s, len(steps.get(s, ()))) for s in PURCHASE_STEPS]}
+            'steps': [(s, len(steps.get(s, ()))) for s in PURCHASE_STEPS],
+            'rating': {k: len(rating.get(k, ())) for k in ('ratingRequested', 'rateTapped')}}
 
 def stability(usage, systems, utc_start):
     """Devices with a crash or hang (MetricKit, iPhone and iPad) per build, and devices

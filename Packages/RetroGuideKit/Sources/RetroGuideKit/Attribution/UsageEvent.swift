@@ -47,6 +47,11 @@ public struct UsageEvent: Codable, Hashable, Sendable {
         case crashed
         /// The app stopped responding for a while (MetricKit). Detail: the build.
         case hung
+        /// The app asked the system to show its rating prompt (the system decides
+        /// whether it appears; there's no way to know if someone rated).
+        case ratingRequested
+        /// The viewer chose Rate in Settings.
+        case rateTapped
     }
 
     /// The video player, for the `player…` events.

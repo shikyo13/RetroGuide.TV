@@ -484,6 +484,14 @@ function renderProAndStability(pro, s) {
   byId('pro-entries').replaceChildren(table([['From'], ['Devices', true]], pro.entries.map(([e, n]) => [PRO_ENTRIES[e] ?? e, count(n)])));
   byId('pro-steps').replaceChildren(table([['Step'], ['Devices', true]],
     pro.steps.filter(([, n]) => n).map(([step, n]) => [PURCHASE_STEPS[step] ?? step, count(n)])));
+  const asked = pro.rating;
+  byId('ratings-note').textContent = 'App Store star ratings now (all versions), and what the app did in the range (from 1.11.5)';
+  const store = latest?.appStore?.ratings ?? [];
+  byId('ratings').replaceChildren(table([['Where'], ['Count', true], ['Average', true]], [
+    ...store.map(r => [countryName({ country: r.region, region: r.region }), count(r.count), `${r.average.toFixed(1)} ★`]),
+    ['Devices the app asked to rate', count(asked.ratingRequested), ''],
+    ['Devices that tapped Rate in Settings', count(asked.rateTapped), ''],
+  ]));
   byId('crashes').replaceChildren(table([['Build'], ['Crashed', true], ['Hung', true]],
     s.builds.map(b => [b.build, count(b.crashed), count(b.hung)])));
   byId('systems').replaceChildren(table([['System'], ['Devices', true]], s.systems.map(([name, n]) => [name, count(n)])));

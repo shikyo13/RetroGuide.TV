@@ -46,6 +46,7 @@ private struct RatingPrompt: ViewModifier {
             .onChange(of: finishedTasks) {
                 guard isGoodMoment, prompter.isRequestDue else { return }
                 prompter.requested()
+                app.recordUsage(.ratingRequested)
                 requestReview()
             }
     }
