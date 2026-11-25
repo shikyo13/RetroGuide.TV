@@ -43,7 +43,11 @@ let requestSeq = 0;
 // ---- Small helpers ----------------------------------------------------------
 
 function readRange() {
-  try { const v = localStorage.getItem(RANGE_KEY); if (v !== null) return Number(v); } catch { /* storage off */ }
+  // Only a range the page offers: anything else saved (an old or broken value) falls back.
+  try {
+    const v = Number(localStorage.getItem(RANGE_KEY));
+    if (localStorage.getItem(RANGE_KEY) !== null && [...document.querySelectorAll('[data-days]')].some(b => Number(b.dataset.days) === v)) return v;
+  } catch { /* storage off */ }
   return DEFAULT_DAYS;
 }
 
@@ -506,7 +510,7 @@ function render(data) {
 
 async function load() {
   const seq = ++requestSeq;
-  document.querySelectorAll('.ranges button').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.days) === days)));
+  document.querySelectorAll('[data-days]').forEach(b => b.setAttribute('aria-pressed', String(Number(b.dataset.days) === days)));
   try {
     const response = await fetch(`data?days=${days}`, { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -522,7 +526,7 @@ async function load() {
   }
 }
 
-document.querySelectorAll('.ranges button').forEach(button => button.addEventListener('click', () => {
+document.querySelectorAll('[data-days]').forEach(button => button.addEventListener('click', () => {
   days = Number(button.dataset.days);
   saveRange(days);
   // Keep the current charts, dimmed, until the new range arrives.
