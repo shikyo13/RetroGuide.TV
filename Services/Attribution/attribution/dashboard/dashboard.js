@@ -119,14 +119,10 @@ function tile(label, value, yesterday, allTime) {
 /** Dollars; "≈" marks a figure that includes sales Apple hasn't reported yet. */
 const usd = m => `${m.estimated ? '≈ ' : ''}${new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(m.amount)}`;
 
-function renderTiles(h, takeHome) {
+function renderTiles(h) {
   const counted = (label, m) => tile(label, count(m.today), count(m.yesterday), count(m.allTime));
   const rate = key => percent(h.purchases[key], h.installs[key]);
-  const money = takeHome.available
-    ? [tile('Take-home', usd(takeHome.today), usd(takeHome.yesterday), usd(takeHome.allTime))]
-    : [];
   document.getElementById('tiles').replaceChildren(
-    ...money,
     counted('Installs', h.installs),
     counted('Purchases', h.purchases),
     // Purchases that day over installs that day: not the share of new installs that bought.
@@ -150,8 +146,8 @@ function roundedTop(x, y, w, h, r) {
 }
 
 /** Stacked (or single) bars per day. A day still in progress is drawn faded;
- *  days before anything was recorded get a band instead of empty bars. */
-function barChart(container, rows, series, describe, recordedKey = 'recorded') {
+ *  days before anything was recorded are left blank. */
+function barChart(container, rows, series, describe, recordedKey = 'recorded', format = count) {
   container.replaceChildren();
   const width = container.clientWidth || 600;
   const height = container.clientHeight || 200;
@@ -163,22 +159,12 @@ function barChart(container, rows, series, describe, recordedKey = 'recorded') {
   const slot = plotW / Math.max(rows.length, 1);
   const barW = Math.max(1, slot - CHART.gap);
 
-  // Days before this series was recorded lead the range; shade them instead of drawing zeros.
-  const unrecorded = rows.findIndex(r => r[recordedKey] !== false) === -1 ? rows.length : rows.findIndex(r => r[recordedKey] !== false);
-  if (unrecorded) {
-    svg.append(svgEl('rect', { x: CHART.left, y: CHART.top, width: unrecorded * slot, height: plotH, class: 'unrecorded' }));
-    if (unrecorded * slot > 90) {
-      const label = svgEl('text', { x: CHART.left + (unrecorded * slot) / 2, y: CHART.top + plotH / 2, 'text-anchor': 'middle' });
-      label.textContent = 'Not recorded yet';
-      svg.append(label);
-    }
-  }
   for (let i = 0; i <= CHART.ticks; i++) {
     const value = (max / CHART.ticks) * i;
     const y = CHART.top + plotH - (value / max) * plotH;
     svg.append(svgEl('line', { x1: CHART.left, x2: width - CHART.right, y1: y, y2: y, class: i ? 'gridline' : 'baseline' }));
     const label = svgEl('text', { x: CHART.left - 6, y: y + 4, 'text-anchor': 'end' });
-    label.textContent = count(value);
+    label.textContent = format(value);
     svg.append(label);
   }
   const labelEvery = Math.ceil(rows.length / Math.max(1, Math.floor(plotW / CHART.labelSpacing)));
@@ -201,9 +187,10 @@ function barChart(container, rows, series, describe, recordedKey = 'recorded') {
       label.textContent = shortDay(row.day);
       svg.append(label);
     }
+    if (row[recordedKey] === false) return;
     const hit = svgEl('rect', { x: CHART.left + i * slot, y: CHART.top, width: slot, height: plotH, class: 'hit' });
     const title = shortDay(row.day) + (row.partial ? ' (so far)' : '');
-    const lines = row[recordedKey] === false ? [['Not recorded yet', '']] : describe(row);
+    const lines = describe(row);
     hit.addEventListener('pointermove', e => showTip(e, title, lines));
     hit.addEventListener('pointerleave', hideTip);
     svg.append(hit);
@@ -291,27 +278,56 @@ function lineChart(container, rows, describe) {
   container.append(svg);
 }
 
-/** Running take-home over the range's UTC days; days without a sale carry the total on. */
+const MONEY_KEY = 'retroguide-stats-money-chart';
+let moneyChart = (() => { try { return localStorage.getItem(MONEY_KEY) || 'total'; } catch { return 'total'; } })();
+const dollars = v => `$${count(Math.round(v))}`;
+
+/** The money card: the all-time take-home, big, with today, yesterday, this month and the
+ *  range beside it; the chart shows the range as a running total or per day. */
 function renderTakeHome(t, days) {
   const card = document.getElementById('take-home-card');
   card.hidden = !t.available;
   if (!t.available) return;
   const byDay = Object.fromEntries(t.daily.map(r => [r.day, r]));
   let total = t.daily.length ? t.daily[0].total - t.daily[0].amount : t.allTime.amount;
+  let inRange = 0;
+  let rangeEstimated = false;
   const rows = days.map(day => {
     const sale = byDay[day];
-    if (sale) total = sale.total;
+    if (sale) {
+      total = sale.total;
+      inRange += sale.amount;
+      rangeEstimated = rangeEstimated || sale.estimated;
+    }
     return { day, value: total, amount: sale ? sale.amount : 0, estimated: sale ? sale.estimated : false };
   });
-  lineChart(document.getElementById('take-home'), rows, r => [
-    ['That day', usd({ amount: r.amount, estimated: r.estimated })], ['Running total', usd({ amount: r.value, estimated: false })]]);
+  document.getElementById('take-home-total').textContent = usd(t.allTime);
+  const span = days.length ? `${shortDay(days[0])} – ${shortDay(days[days.length - 1])}` : 'This range';
+  const facts = [['Today', usd(t.today)], ['Yesterday', usd(t.yesterday)], ['This month', usd(t.thisMonth)],
+    [span, usd({ amount: inRange, estimated: rangeEstimated })]];
+  document.getElementById('take-home-facts').replaceChildren(...facts.flatMap(([k, v]) => [el('dt', {}, k), el('dd', {}, v)]));
   const plural = t.estimatedPurchases === 1 ? '' : 's';
-  const pending = t.estimatedPurchases
-    ? ` · ≈ includes ${count(t.estimatedPurchases)} sale${plural} Apple hasn't reported yet, estimated from similar sales`
-    : '';
   document.getElementById('take-home-note').textContent =
-    `What Apple pays you after its commission and taxes, in US dollars (UTC days) · Apple's reports through ${shortDay(t.through)} · this month ${usd(t.thisMonth)}${pending}`;
+    `After Apple's commission and taxes, in US dollars · Apple's reports through ${shortDay(t.through)}` +
+    (t.estimatedPurchases ? ` · ≈ includes ${count(t.estimatedPurchases)} sale${plural} Apple hasn't reported yet, estimated` : '');
+  document.getElementById('take-home-range').textContent =
+    moneyChart === 'daily' ? 'Take-home per day (UTC days)' : 'Running total (UTC days)';
+  document.querySelectorAll('[data-money]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.money === moneyChart)));
+  const describe = r => [['That day', usd({ amount: r.amount, estimated: r.estimated })],
+    ['Running total', usd({ amount: r.value, estimated: false })]];
+  const chart = document.getElementById('take-home');
+  if (moneyChart === 'daily') {
+    barChart(chart, rows, [{ key: 'amount', color: 'var(--series-1)' }], describe, 'recorded', dollars);
+  } else {
+    lineChart(chart, rows, describe);
+  }
 }
+
+document.querySelectorAll('[data-money]').forEach(button => button.addEventListener('click', () => {
+  moneyChart = button.dataset.money;
+  try { localStorage.setItem(MONEY_KEY, moneyChart); } catch { /* a per-viewer convenience only */ }
+  if (latest) renderTakeHome(latest.takeHome, latest.activity.map(r => r.day));
+}));
 
 function renderFunnel(f) {
   const box = document.getElementById('funnel');
@@ -474,7 +490,7 @@ function renderProAndStability(pro, s) {
 function render(data) {
   latest = data;
   renderStatus(data);
-  renderTiles(data.headline, data.takeHome);
+  renderTiles(data.headline);
   renderTakeHome(data.takeHome, data.activity.map(r => r.day));
   const first = data.daily[0]?.day;
   document.getElementById('range-note').textContent =

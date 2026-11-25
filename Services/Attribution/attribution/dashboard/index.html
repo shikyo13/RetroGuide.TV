@@ -16,6 +16,25 @@
     <p class="note" id="days-note"></p>
   </header>
 
+  <article class="card money" id="take-home-card" hidden>
+    <div class="money-total">
+      <h2>Take-home, all time</h2>
+      <p class="big" id="take-home-total"></p>
+      <dl class="money-facts" id="take-home-facts"></dl>
+      <p class="note" id="take-home-note"></p>
+    </div>
+    <div class="money-chart">
+      <div class="money-head">
+        <p class="note" id="take-home-range"></p>
+        <div class="ranges" role="group" aria-label="Take-home chart">
+          <button type="button" data-money="total">Running total</button>
+          <button type="button" data-money="daily">Per day</button>
+        </div>
+      </div>
+      <div class="chart" id="take-home"></div>
+    </div>
+  </article>
+
   <h2 class="section">Today <span class="note">so far · active devices and watchers count the UTC day</span></h2>
   <section class="tiles" id="tiles" aria-label="Today"></section>
 
@@ -28,12 +47,6 @@
     </div>
     <p class="note" id="range-note"></p>
   </div>
-
-  <article class="card take-home" id="take-home-card" hidden>
-    <h2>Take-home, running total</h2>
-    <p class="note" id="take-home-note"></p>
-    <div class="chart" id="take-home"></div>
-  </article>
 
   <section class="grid two">
     <article class="card">
